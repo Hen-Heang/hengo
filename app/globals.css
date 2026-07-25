@@ -255,11 +255,14 @@
     padding-top: max(1rem, env(safe-area-inset-top));
   }
 
-  /* Optimize backdrop blurs for accessibility and performance */
+  /* Optimize backdrop blurs for accessibility and performance.
+     Excludes forced-dark surfaces (e.g. the live voice practice screen) since
+     `var(--background)` is the light-theme color and would paint a white patch
+     over UI that never switches out of dark mode. */
   @media (prefers-reduced-transparency: reduce) {
-    .backdrop-blur-xl,
-    .backdrop-blur-2xl,
-    .backdrop-blur-3xl {
+    .backdrop-blur-xl:not(.dark, .dark *),
+    .backdrop-blur-2xl:not(.dark, .dark *),
+    .backdrop-blur-3xl:not(.dark, .dark *) {
       backdrop-filter: none !important;
       background-color: var(--background) !important;
       opacity: 1 !important;
