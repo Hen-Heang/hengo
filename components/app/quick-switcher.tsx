@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { usePathname, useRouter } from "next/navigation"
-import { ArrowUpRight, ListPlus, MessageCircle, Plus, Search } from "lucide-react"
+import { ArrowUpRight, ListPlus, MessageCircle, Plus, Search, Zap } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -21,7 +21,10 @@ import {
   shippedItems,
   type NavItem,
 } from "@/lib/navigation"
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { cn } from "@/lib/utils"
+
+const QUICK_CAPTURE_ACTION_KEY = "action-quick-capture"
 
 type Entry = {
   key: string
@@ -55,8 +58,19 @@ const PAGE_ENTRIES: Entry[] = navSections.flatMap((section) =>
 const ENTRY_BY_ID = new Map(PAGE_ENTRIES.map((entry) => [entry.key, entry]))
 
 // Global actions. `href` is a plain route — no mutations happen here, the
-// destination page owns the actual creation flow.
+// destination page owns the actual creation flow. "Quick capture" is the one
+// exception: it opens the shared QuickCaptureDialog directly (see
+// lib/quick-capture-bus.ts) instead of navigating, so ⌘K stays the single
+// safe entry point for capture without a second global keyboard listener.
 const ACTION_ENTRIES: Entry[] = [
+  {
+    key: QUICK_CAPTURE_ACTION_KEY,
+    label: "Quick capture",
+    hint: "Jot down an idea, task, or phrase",
+    icon: Zap,
+    href: "",
+    keywords: "quick capture inbox idea note task phrase journal dev second brain",
+  },
   {
     key: "action-create-goal",
     label: "Create goal",
@@ -185,9 +199,13 @@ export function QuickSwitcher({
       ?.scrollIntoView({ block: "nearest" })
   }, [activeIndex])
 
-  function visit(href: string) {
+  function visit(entry: Entry) {
     setOpen(false)
-    router.push(href)
+    if (entry.key === QUICK_CAPTURE_ACTION_KEY) {
+      openQuickCapture()
+      return
+    }
+    router.push(entry.href)
   }
 
   function handleInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
@@ -199,7 +217,7 @@ export function QuickSwitcher({
       setActiveIndex((current) => Math.max(current - 1, 0))
     } else if (event.key === "Enter" && flat[activeIndex]) {
       event.preventDefault()
-      visit(flat[activeIndex].href)
+      visit(flat[activeIndex])
     }
   }
 
@@ -292,7 +310,7 @@ export function QuickSwitcher({
                         aria-selected={active}
                         data-active={active}
                         onMouseEnter={() => setActiveIndex(index)}
-                        onClick={() => visit(entry.href)}
+                        onClick={() => visit(entry)}
                         className={cn(
                           "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left outline-none transition-colors",
                           active ? "bg-accent" : "hover:bg-accent/50"

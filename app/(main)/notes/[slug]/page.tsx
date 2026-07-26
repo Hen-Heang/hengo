@@ -9,13 +9,15 @@ import { NoteView } from "@/components/notes/NoteView"
 import { NoteEditor, type NoteEditorValues } from "@/components/notes/NoteEditor"
 import { renderMarkdown } from "@/lib/notes-markdown"
 import { useNote, useNoteMutations } from "@/hooks/useNotes"
+import { useSessionTimer } from "@/hooks/useSessionTimer"
 
 export default function NotePage() {
+  useSessionTimer("notes")
   const params = useParams<{ slug: string }>()
   const slug = params.slug
   const router = useRouter()
   const { note, loading, error } = useNote(slug)
-  const { update, remove } = useNoteMutations()
+  const { update, remove, togglePinned } = useNoteMutations()
   const [isEditing, setIsEditing] = useState(false)
 
   const html = useMemo(() => (note ? renderMarkdown(note.content) : ""), [note])
@@ -47,6 +49,11 @@ export default function NotePage() {
       title: note.title,
       description: note.description,
       icon: note.icon,
+      category: note.category ?? "",
+      noteType: note.noteType,
+      tags: note.tags ?? [],
+      sourceUrl: note.sourceUrl ?? "",
+      pinned: note.pinned,
       content: note.content,
     }
     return (
@@ -62,9 +69,12 @@ export default function NotePage() {
                 title: values.title,
                 description: values.description,
                 icon: values.icon,
-                category: values.icon,
+                category: values.category || undefined,
+                noteType: values.noteType,
                 content: values.content,
-                tags: values.icon ? [values.icon] : [],
+                tags: values.tags,
+                pinned: values.pinned,
+                sourceUrl: values.sourceUrl.trim() || null,
               },
             })
             toast.success("Note saved")
@@ -81,6 +91,9 @@ export default function NotePage() {
       note={note}
       html={html}
       onEdit={() => setIsEditing(true)}
+      onTogglePin={async () => {
+        await togglePinned.mutateAsync({ slug: note.slug, pinned: !note.pinned })
+      }}
       onDelete={async () => {
         await remove.mutateAsync(note.slug)
         toast.success("Note deleted")

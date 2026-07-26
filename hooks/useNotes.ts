@@ -4,9 +4,11 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { notesApi, type NoteInput, type NoteMeta } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
+import { useDebouncedValue } from "@/hooks/useDebouncedValue"
 
 export const notesQueryKey = (userId?: string | null) => ["notes", userId] as const
 export const noteQueryKey = (slug: string) => ["note", slug] as const
+export const noteSearchQueryKey = (userId?: string | null, query?: string) => ["notes-search", userId, query] as const
 
 // List of note metadata for the library/index page.
 export function useNotes() {
@@ -39,6 +41,28 @@ export function useNote(slug: string) {
   }
 }
 
+/**
+ * Server-side full-text search (title/description/content) for a debounced
+ * query — the metadata-only list above can't search content, and downloading
+ * every note to filter client-side isn't acceptable at scale. Callers should
+ * fall back to `useNotes()`'s metadata filter when `query` is empty.
+ */
+export function useNoteSearch(query: string, delayMs = 300) {
+  const userId = getUserId()
+  const debouncedQuery = useDebouncedValue(query.trim(), delayMs)
+  const { data, isPending, isError } = useQuery({
+    queryKey: noteSearchQueryKey(userId, debouncedQuery),
+    queryFn: () => notesApi.search(debouncedQuery),
+    enabled: userId != null && debouncedQuery.length > 0,
+  })
+
+  return {
+    results: (data ?? []) as NoteMeta[],
+    searching: debouncedQuery.length > 0 && isPending,
+    error: isError ? "Search failed." : "",
+  }
+}
+
 export function useNoteMutations() {
   const queryClient = useQueryClient()
   const userId = getUserId()
@@ -59,10 +83,18 @@ export function useNoteMutations() {
     },
   })
 
+  const togglePinned = useMutation({
+    mutationFn: ({ slug, pinned }: { slug: string; pinned: boolean }) => notesApi.togglePinned(slug, pinned),
+    onSuccess: (_res, { slug }) => {
+      invalidateList()
+      queryClient.invalidateQueries({ queryKey: noteQueryKey(slug) })
+    },
+  })
+
   const remove = useMutation({
     mutationFn: (slug: string) => notesApi.remove(slug),
     onSuccess: () => invalidateList(),
   })
 
-  return { create, update, remove }
+  return { create, update, togglePinned, remove }
 }

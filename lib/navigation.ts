@@ -2,6 +2,8 @@ import {
   BarChart3,
   BookOpen,
   BookOpenText,
+  BrainCircuit,
+  CalendarClock,
   CalendarDays,
   Compass,
   Drama,
@@ -10,16 +12,19 @@ import {
   Headphones,
   History,
   Home,
+  Inbox,
   Languages,
   ListChecks,
   Map,
   MessageCircle,
+  Mic,
   NotebookPen,
   RotateCcw,
   ScanText,
   Settings,
   Smile,
   Sparkles,
+  Sunrise,
   Target,
   TreeDeciduous,
   Trophy,
@@ -120,6 +125,16 @@ export const aiCoachItem: NavItem = {
   match: { pathname: "/chat", absentQuery: ["mode"] },
 }
 
+export const askHengoItem: NavItem = {
+  id: "ai-ask-hengo",
+  href: "/ask-hengo",
+  label: "Ask Hengo",
+  shortLabel: "Memory",
+  icon: BrainCircuit,
+  description: "Ask about your notes, goals, habits, and journal",
+  keywords: ["memory", "ask", "second brain", "recall", "remember", "search"],
+}
+
 // ─── Sections ─────────────────────────────────────────────────────────────────
 
 export const navSections: NavSection[] = [
@@ -143,6 +158,15 @@ export const navSections: NavSection[] = [
         icon: Sparkles,
         description: "Today's Korean practice session",
         keywords: ["learn", "korean", "daily", "drill", "speaking"],
+      },
+      {
+        id: "learn-korean-coach",
+        href: "/korean-coach",
+        label: "Korean Coach",
+        shortLabel: "Coach",
+        icon: Mic,
+        description: "Listening and speaking practice with AI feedback",
+        keywords: ["voice", "speaking", "listening", "workplace", "korean", "coach"],
       },
       {
         id: "learn-vocab",
@@ -231,6 +255,14 @@ export const navSections: NavSection[] = [
         icon: NotebookPen,
         keywords: ["note", "scratchpad", "ideas"],
       },
+      {
+        id: "goals-inbox",
+        href: "/inbox",
+        label: "Inbox",
+        icon: Inbox,
+        description: "Quick capture for ideas, tasks, and phrases",
+        keywords: ["capture", "quick capture", "idea", "second brain", "triage"],
+      },
     ],
   },
   {
@@ -253,9 +285,16 @@ export const navSections: NavSection[] = [
         icon: Compass,
         keywords: ["recovery", "urge", "trigger", "pause", "plan"],
       },
+      {
+        id: "growth-journal",
+        href: "/growth/journal",
+        label: "Journal",
+        icon: NotebookPen,
+        description: "Daily reflection — mood, wins, lessons",
+        keywords: ["journal", "reflection", "mood", "energy", "gratitude", "diary"],
+      },
       { id: "growth-deep-work", href: "/growth/focus", label: "Deep Work", icon: Zap, soon: true },
       { id: "growth-mood", href: "/growth/mood", label: "Mood", icon: Smile, soon: true },
-      { id: "growth-journal", href: "/growth/journal", label: "Journal", icon: NotebookPen, soon: true },
       { id: "growth-rewards", href: "/growth/rewards", label: "Rewards", icon: Trophy, soon: true },
     ],
   },
@@ -285,6 +324,25 @@ export const navSections: NavSection[] = [
         label: "History",
         icon: History,
         keywords: ["activity", "log", "past", "sessions"],
+      },
+      {
+        id: "progress-timeline",
+        href: "/timeline",
+        label: "Timeline",
+        icon: CalendarClock,
+        description: "Everything you did, day by day",
+        keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
+      },
+      {
+        id: "progress-review",
+        href: "/review/morning",
+        label: "Review",
+        icon: Sunrise,
+        description: "Morning brief, evening review, weekly review",
+        keywords: ["review", "morning", "evening", "weekly", "brief", "reflection", "summary"],
+        // Any of the three review pages should light this item up, not just
+        // the default one it links to.
+        match: { pathname: "/review" },
       },
     ],
   },
@@ -319,6 +377,7 @@ export const navSections: NavSection[] = [
         keywords: ["ai", "mistakes", "corrections", "fix", "grammar"],
         match: { pathname: "/chat", query: { mode: "corrections" } },
       },
+      askHengoItem,
     ],
   },
 ]
@@ -505,7 +564,10 @@ export const moreGroups: MoreGroup[] = [
   {
     id: "tools",
     label: "Tools",
-    items: shippedItems(section("goals").items).filter((i) => !HIDDEN_FROM_MORE.has(i.id)),
+    items: [
+      askHengoItem,
+      ...shippedItems(section("goals").items).filter((i) => !HIDDEN_FROM_MORE.has(i.id)),
+    ],
   },
   {
     id: "learn-more",

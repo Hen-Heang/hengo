@@ -49,7 +49,7 @@ export function MobileBottomNav({
                 <Icon size={21} strokeWidth={active ? 2.4 : 2} aria-hidden className="shrink-0" />
                 <span
                   className={cn(
-                    "w-full truncate px-0.5 text-center text-[11px] leading-none",
+                    "w-full truncate px-0.5 text-center text-xs leading-none",
                     active ? "font-semibold" : "font-medium"
                   )}
                 >
@@ -79,7 +79,7 @@ export function MobileBottomNav({
             />
             <span
               className={cn(
-                "w-full truncate px-0.5 text-center text-[11px] leading-none",
+                "w-full truncate px-0.5 text-center text-xs leading-none",
                 activeIndex === bottomTabs.length ? "font-semibold" : "font-medium"
               )}
             >

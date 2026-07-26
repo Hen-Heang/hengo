@@ -42,12 +42,12 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen w-full bg-background selection:bg-blue-500/30">
+    <main className="flex min-h-dvh w-full bg-background selection:bg-blue-500/30">
       {/* Brand panel — desktop only */}
       <BrandPanel />
 
       {/* Form panel */}
-      <div className="relative flex w-full flex-col px-5 py-8 sm:px-8 lg:w-1/2 lg:px-12">
+      <div className="relative flex w-full flex-col px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] sm:px-8 lg:w-1/2 lg:px-12">
         <div className="flex items-center justify-between lg:hidden">
           <Link href="/" className="group flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">
@@ -118,7 +118,7 @@ export default function LoginPage() {
                       <button
                         type="button"
                         onClick={() => setShowPassword((v) => !v)}
-                        className="absolute right-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+                        className="absolute right-0 top-1/2 flex size-11 -translate-y-1/2 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                         aria-label={showPassword ? "Hide password" : "Show password"}
                         aria-pressed={showPassword}
                       >

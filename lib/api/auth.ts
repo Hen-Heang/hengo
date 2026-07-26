@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase"
+import { assertSupabaseConfigured, supabase } from "@/lib/supabase"
 
 // Auth over Supabase. Signup stashes the onboarding answers in user_metadata,
 // and ensureProfile() copies them into kori_profiles on the first authenticated
@@ -40,6 +40,7 @@ async function ensureProfile() {
 
 export const authApi = {
   register: async (input: RegisterInput) => {
+    assertSupabaseConfigured()
     const { data, error } = await supabase.auth.signUp({
       email: input.email,
       password: input.password,
@@ -67,6 +68,7 @@ export const authApi = {
   },
 
   login: async (input: { email: string; password: string }) => {
+    assertSupabaseConfigured()
     const { data, error } = await supabase.auth.signInWithPassword(input)
     if (error) throw error
     await ensureProfile()
@@ -76,6 +78,7 @@ export const authApi = {
   // Google Identity Services ID token → Supabase session. The Google provider
   // (with the same client ID) must be enabled under Supabase Auth > Providers.
   loginWithGoogle: async (idToken: string, nonce?: string) => {
+    assertSupabaseConfigured()
     const { data, error } = await supabase.auth.signInWithIdToken({
       provider: "google",
       token: idToken,
@@ -87,6 +90,7 @@ export const authApi = {
   },
 
   logout: async () => {
+    assertSupabaseConfigured()
     const { error } = await supabase.auth.signOut()
     if (error) throw error
   },
@@ -94,6 +98,7 @@ export const authApi = {
   // Sends a reset-password email; the link lands on /reset-password, where
   // Supabase's detectSessionInUrl picks up the recovery token automatically.
   requestPasswordReset: async (email: string) => {
+    assertSupabaseConfigured()
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${window.location.origin}/reset-password`,
     })
@@ -103,6 +108,7 @@ export const authApi = {
   // Called from /reset-password once Supabase has exchanged the recovery
   // link for a session; sets the new password on that session.
   updatePassword: async (newPassword: string) => {
+    assertSupabaseConfigured()
     const { error } = await supabase.auth.updateUser({ password: newPassword })
     if (error) throw error
   },

@@ -4,7 +4,12 @@ import { createClient, type SupabaseClient, type User } from "@supabase/supabase
 import { openai } from "@ai-sdk/openai"
 import { generateObject } from "ai"
 import { z } from "zod"
-import { SUPABASE_URL, SUPABASE_KEY } from "@/lib/supabase"
+import {
+  IS_SUPABASE_CONFIGURED,
+  SUPABASE_CONFIGURATION_MESSAGE,
+  SUPABASE_KEY,
+  SUPABASE_URL,
+} from "@/lib/supabase"
 import { DEFAULT_ALLOWED_MODEL, resolveAllowedModel } from "@/lib/server/models"
 import { checkRateLimit, recordUsage, RATE_LIMIT_BUCKETS } from "@/lib/server/ai-limits"
 
@@ -40,6 +45,9 @@ export interface AuthedRequest {
 }
 
 export async function requireUser(req: Request): Promise<AuthedRequest | Response> {
+  if (!IS_SUPABASE_CONFIGURED) {
+    return Response.json({ error: SUPABASE_CONFIGURATION_MESSAGE }, { status: 503 })
+  }
   const token = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "")
   if (!token) return Response.json({ error: "Not signed in" }, { status: 401 })
   const db = createClient(SUPABASE_URL, SUPABASE_KEY, {

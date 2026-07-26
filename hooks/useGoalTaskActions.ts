@@ -52,6 +52,14 @@ export function useGoalTaskActions({
     [run],
   )
 
+  /** Title and/or description — the two fields the detail sheet previously
+   * only ever displayed read-only. */
+  const setDetails = useCallback(
+    (task: Task, patch: { title?: string; description?: string }) =>
+      run("Couldn't update that task.", () => tasksApi.update(task.id, patch)),
+    [run],
+  )
+
   const setPhase = useCallback(
     (task: Task, phaseId: string | null) =>
       run("Couldn't move that task.", () => tasksApi.update(task.id, { phase_id: phaseId })),
@@ -110,6 +118,7 @@ export function useGoalTaskActions({
   return {
     toggleCompleted,
     setStatus,
+    setDetails,
     setPhase,
     setKeyResult,
     setImpact,

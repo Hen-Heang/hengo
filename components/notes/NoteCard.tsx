@@ -2,18 +2,21 @@
 
 import Link from "next/link"
 import { motion } from "motion/react"
-import { ArrowUpRight } from "lucide-react"
+import { ArrowUpRight, Star } from "lucide-react"
 import { TechIcon, getTechColor } from "@/components/notes/TechIcon"
+import { NOTE_TYPES, type NoteType } from "@/lib/notes"
 
 interface NoteCardProps {
   slug: string
   title: string
   description: string
   icon: string
+  noteType?: NoteType
+  pinned?: boolean
   index: number
 }
 
-export function NoteCard({ slug, title, description, icon, index }: NoteCardProps) {
+export function NoteCard({ slug, title, description, icon, noteType, pinned, index }: NoteCardProps) {
   const accentColor = getTechColor(icon || slug)
 
   return (
@@ -43,12 +46,15 @@ export function NoteCard({ slug, title, description, icon, index }: NoteCardProp
               <TechIcon name={icon} size={28} />
             </div>
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-lg font-black tracking-tight text-foreground transition-colors sm:text-xl">
-                {title}
-              </h2>
+              <div className="flex items-center gap-1.5">
+                <h2 className="truncate text-lg font-black tracking-tight text-foreground transition-colors sm:text-xl">
+                  {title}
+                </h2>
+                {pinned && <Star size={14} className="shrink-0 fill-current text-blue-500" />}
+              </div>
               <div className="mt-1.5 flex items-center gap-2">
                 <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-                  Module
+                  {noteType ? NOTE_TYPES.find((t) => t.value === noteType)?.label ?? "Module" : "Module"}
                 </span>
                 <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
                 <span className="font-mono text-[11px] font-bold text-blue-500/70">/{slug}</span>

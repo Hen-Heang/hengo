@@ -619,6 +619,17 @@ export const recoveryApi = {
     return (data as DailyCheckInRow[]).map(toDailyCheckIn)
   },
 
+  // All habits' daily check-ins in a date range — for the Timeline aggregator
+  // (lib/timeline.ts), which needs check-ins across every Recovery habit.
+  getDailyCheckInsInRange: async (params: { from?: string; to?: string } = {}): Promise<DailyCheckIn[]> => {
+    let query = supabase.from("kori_focus_daily_checkins").select("*").order("local_date", { ascending: false })
+    if (params.from) query = query.gte("local_date", params.from)
+    if (params.to) query = query.lte("local_date", params.to)
+    const { data, error } = await query
+    if (error) throw error
+    return (data as DailyCheckInRow[]).map(toDailyCheckIn)
+  },
+
   saveDailyCheckIn: async (habitId: string, data: DailyCheckInInput): Promise<DailyCheckIn> => {
     const input = dailyCheckInInputSchema.parse(data)
     const now = new Date().toISOString()

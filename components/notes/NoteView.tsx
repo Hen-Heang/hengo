@@ -3,26 +3,33 @@
 import { useEffect, useState } from "react"
 import Link from "next/link"
 import dynamic from "next/dynamic"
-import { ChevronLeft, ChevronDown, List, ArrowUp, Hash } from "lucide-react"
+import { ChevronLeft, ChevronDown, List, ArrowUp, Hash, ExternalLink, Clock } from "lucide-react"
 import { ReadingProgress } from "@/components/notes/ReadingProgress"
 import { CodeCopy } from "@/components/notes/CodeCopy"
 import { TechIcon } from "@/components/notes/TechIcon"
 import { NoteActions } from "@/components/notes/NoteActions"
+import { NOTE_TYPES, type Note } from "@/lib/notes"
 
 const TableOfContents = dynamic(
   () => import("@/components/notes/TableOfContents").then((mod) => mod.TableOfContents),
   { ssr: false }
 )
 
+function formatDate(iso?: string): string {
+  if (!iso) return ""
+  return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+}
+
 interface NoteViewProps {
   slug: string
-  note: { content: string; title: string; icon: string; description: string }
+  note: Note
   html: string
   onEdit: () => void
+  onTogglePin?: () => Promise<void> | void
   onDelete: () => Promise<void> | void
 }
 
-export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) {
+export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: NoteViewProps) {
   const [showMobileToc, setShowMobileToc] = useState(false)
   const [showFloatingNav, setShowFloatingNav] = useState(false)
   const [activeSectionLabel, setActiveSectionLabel] = useState("Contents")
@@ -67,14 +74,14 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
                 document.getElementById("note-toc-mobile")?.scrollIntoView({ behavior: "smooth", block: "start" })
               })
             }}
-            className="flex max-w-[16rem] items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-[11px] font-semibold text-muted-foreground shadow-lg backdrop-blur-xl active:scale-95"
+            className="flex min-h-11 max-w-[16rem] items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-lg backdrop-blur-xl active:scale-95"
           >
             <List size={13} className="shrink-0" />
             <span className="truncate">{activeSectionLabel}</span>
           </button>
           <button
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-[11px] font-semibold text-muted-foreground shadow-lg backdrop-blur-xl active:scale-95"
+            className="flex min-h-11 items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-lg backdrop-blur-xl active:scale-95"
           >
             <ArrowUp size={13} />
             Top
@@ -82,11 +89,11 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
         </div>
       )}
 
-      <div className="mx-auto flex min-h-screen max-w-[1440px] justify-center">
+      <div className="mx-auto flex min-h-dvh max-w-[1440px] justify-center">
         {/* Main content column */}
         <div className="min-w-0 max-w-4xl flex-1">
           {/* Top action bar */}
-          <div className="sticky top-0 z-20 flex items-center justify-between border-b border-border/60 bg-background/90 px-4 py-3 backdrop-blur-xl sm:px-8">
+          <div className="flex items-center justify-between gap-2 border-b border-border/60 bg-background/90 px-4 py-3 backdrop-blur-xl sm:px-8 md:sticky md:top-0 md:z-20">
             <Link
               href="/notes"
               className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -94,7 +101,15 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
               <ChevronLeft size={14} />
               All notes
             </Link>
-            <NoteActions onEdit={onEdit} onDelete={onDelete} />
+            <NoteActions
+              pinned={note.pinned}
+              onEdit={onEdit}
+              onTogglePin={onTogglePin}
+              onDelete={onDelete}
+              noteId={note.id}
+              noteSlug={note.slug}
+              noteTitle={note.title}
+            />
           </div>
 
           {/* Page header */}
@@ -115,19 +130,59 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
 
             <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-border/60 pt-5 text-sm text-muted-foreground">
               <div className="flex min-w-[120px] items-center gap-2">
-                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Category</span>
-                <span className="flex items-center gap-1.5 font-medium capitalize text-foreground/80">
-                  <Hash size={12} className="text-muted-foreground" />
-                  {note.icon}
+                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Type</span>
+                <span className="font-medium capitalize text-foreground/80">
+                  {NOTE_TYPES.find((t) => t.value === note.noteType)?.label ?? note.noteType}
                 </span>
               </div>
+              {note.category && (
+                <div className="flex min-w-[120px] items-center gap-2">
+                  <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Category</span>
+                  <span className="flex items-center gap-1.5 font-medium text-foreground/80">
+                    <Hash size={12} className="text-muted-foreground" />
+                    {note.category}
+                  </span>
+                </div>
+              )}
               <div className="flex min-w-[120px] items-center gap-2">
                 <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Module</span>
                 <span className="rounded border border-border bg-card px-2 py-0.5 font-mono text-xs font-medium text-foreground/80">
                   {slug}
                 </span>
               </div>
+              {(note.createdAt || note.updatedAt) && (
+                <div className="flex min-w-[160px] items-center gap-2">
+                  <Clock size={12} className="text-muted-foreground" />
+                  <span className="text-xs">
+                    Created {formatDate(note.createdAt)} · Updated {formatDate(note.updatedAt)}
+                  </span>
+                </div>
+              )}
+              {note.sourceUrl && (
+                <a
+                  href={note.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 font-medium text-blue-600 hover:underline dark:text-blue-400"
+                >
+                  <ExternalLink size={12} />
+                  Source
+                </a>
+              )}
             </div>
+
+            {note.tags && note.tags.length > 0 && (
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {note.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-border bg-card px-2.5 py-0.5 text-xs font-medium text-muted-foreground"
+                  >
+                    #{tag}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Mobile TOC */}
@@ -153,7 +208,7 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
 
           {/* Article content */}
           <article
-            className="prose prose-zinc max-w-none px-4 pb-16 prose-sm dark:prose-invert sm:px-8 sm:prose-base md:px-16 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-code:rounded prose-code:bg-accent prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400"
+            className="prose prose-zinc max-w-none break-words px-4 pb-16 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:px-8 sm:prose-base md:px-16 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-pre:max-w-full prose-pre:overflow-x-auto prose-code:rounded prose-code:bg-accent prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400"
             dangerouslySetInnerHTML={{ __html: html }}
           />
 
@@ -171,7 +226,7 @@ export function NoteView({ slug, note, html, onEdit, onDelete }: NoteViewProps) 
         </div>
 
         {/* Desktop right TOC panel */}
-        <div className="sticky top-0 hidden h-screen w-80 shrink-0 flex-col gap-5 overflow-y-auto border-l border-border/60 px-6 py-8 xl:flex">
+        <div className="sticky top-0 hidden h-dvh w-80 shrink-0 flex-col gap-5 overflow-y-auto border-l border-border/60 px-6 py-8 xl:flex">
           <div className="overflow-hidden rounded-xl border border-border/60 bg-card/40">
             <TableOfContents html={html} />
           </div>

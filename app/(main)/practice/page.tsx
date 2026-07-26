@@ -38,10 +38,12 @@ import {
 } from "@/lib/api"
 import { containerVariants, itemVariants } from "@/lib/motion"
 import { cn } from "@/lib/utils"
+import { useSessionTimer } from "@/hooks/useSessionTimer"
 import type { LevelSuggestion } from "@/lib/api/user"
 import type { PracticeToday } from "@/lib/types"
 
 export default function PracticePage() {
+  useSessionTimer("practice")
   const router = useRouter()
   const [data, setData] = useState<PracticeToday | null>(null)
   const [loading, setLoading] = useState(true)

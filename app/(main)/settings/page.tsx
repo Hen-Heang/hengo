@@ -680,7 +680,7 @@ export default function SettingsPage() {
           </SectionRow>
 
           {/* Study reminders */}
-          <SectionRow last>
+          <SectionRow>
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
@@ -720,6 +720,22 @@ export default function SettingsPage() {
                 </select>
               </div>
             )}
+          </SectionRow>
+
+          <SectionRow last>
+            <button
+              type="button"
+              onClick={() => router.push("/settings/reminders")}
+              className="flex w-full items-center justify-between gap-4 text-left"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Custom reminders</p>
+                <p className="text-[11px] font-medium text-muted-foreground">
+                  Manage reminders you&apos;ve set on tasks, habits, notes, and more
+                </p>
+              </div>
+              <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+            </button>
           </SectionRow>
         </SectionCard>
       </motion.div>

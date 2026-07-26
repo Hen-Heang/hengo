@@ -180,7 +180,7 @@ export default function Home() {
   }, [router])
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground selection:bg-blue-500/30">
+    <div className="min-h-dvh overflow-x-hidden bg-background text-foreground selection:bg-blue-500/30">
       {/* Ambient background */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute -top-32 left-1/2 h-[600px] w-[600px] -translate-x-1/2 rounded-full bg-gradient-radial from-blue-300/20 via-indigo-200/5 to-transparent blur-3xl dark:from-blue-600/15 dark:via-indigo-500/5" />
@@ -190,7 +190,7 @@ export default function Home() {
 
       <div className="relative z-10">
         {/* Navbar */}
-        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/60 px-4 backdrop-blur-xl sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-50 border-b border-border/40 bg-background/60 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl sm:px-6 lg:px-8">
           <div className="mx-auto flex h-16 max-w-7xl items-center justify-between">
             <Link href="/" className="group flex items-center gap-3">
               <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">

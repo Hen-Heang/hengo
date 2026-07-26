@@ -325,7 +325,7 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
             )}
             <div
               className={cn(
-                "relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.75rem] border bg-white shadow-2xl shadow-blue-500/25 sm:h-24 sm:w-24 sm:rounded-[2rem]",
+                "relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.75rem] border bg-slate-900 shadow-2xl shadow-blue-500/25 sm:h-24 sm:w-24 sm:rounded-[2rem]",
                 phase === "error" ? "border-red-400/40" : "border-blue-300/30",
               )}
             >

@@ -4,24 +4,14 @@ import { useState } from "react"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { motion } from "motion/react"
-import { ArrowLeft, Flame, Trash2 } from "lucide-react"
+import { ArrowLeft, Flame } from "lucide-react"
 
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { CompletionCelebration } from "@/components/ui/completion-celebration"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { CheckinCalendar } from "@/components/habits/CheckinCalendar"
+import { EditHabitDialog } from "@/components/habits/EditHabitDialog"
 import { MilestoneBadge } from "@/components/habits/MilestoneBadge"
 import { CATEGORY_LABELS } from "@/components/habits/categoryMeta"
 import { MILESTONE_LABELS } from "@/lib/milestones"
@@ -43,9 +33,8 @@ export default function HabitDetailPage() {
   const router = useRouter()
   const params = useParams<{ id: string }>()
   const [celebrate, setCelebrate] = useState(false)
-  const [deleting, setDeleting] = useState(false)
 
-  const { habits, loading: habitsLoading, error: habitsError, deleteHabit } = useHabits()
+  const { habits, loading: habitsLoading, error: habitsError, updateHabit, deleteHabit } = useHabits()
   const habit = habits.find((h) => h.id === params.id) ?? null
 
   const {
@@ -77,16 +66,6 @@ export default function HabitDetailPage() {
     if (!wasCompleted && date === toCheckinDate()) setCelebrate(true)
   }
 
-  const handleDelete = async () => {
-    setDeleting(true)
-    try {
-      await deleteHabit(habit.id)
-      router.push("/growth/habits")
-    } finally {
-      setDeleting(false)
-    }
-  }
-
   return (
     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-xl space-y-5 pb-12">
       <CompletionCelebration show={celebrate} onDone={() => setCelebrate(false)} subtitle="Checked in" />
@@ -98,31 +77,14 @@ export default function HabitDetailPage() {
             Habits
           </Link>
         </Button>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button variant="ghost" size="icon-sm" aria-label="Delete habit">
-              <Trash2 size={16} strokeWidth={2} />
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Delete this habit?</AlertDialogTitle>
-              <AlertDialogDescription>
-                This permanently deletes &quot;{habit.label}&quot; along with all its check-ins. This can&apos;t be undone.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-              <AlertDialogAction
-                disabled={deleting}
-                onClick={handleDelete}
-                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              >
-                {deleting ? "Deleting…" : "Delete"}
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <EditHabitDialog
+          habit={habit}
+          onUpdate={(data) => updateHabit(habit.id, data)}
+          onDelete={async () => {
+            await deleteHabit(habit.id)
+            router.push("/growth/habits")
+          }}
+        />
       </motion.div>
 
       <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">

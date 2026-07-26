@@ -8,13 +8,15 @@ import { PageHero } from "@/components/app/page-hero"
 import { NoteSearch } from "@/components/notes/NoteSearch"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useNotes } from "@/hooks/useNotes"
+import { useSessionTimer } from "@/hooks/useSessionTimer"
 import { containerVariants, itemVariants } from "@/lib/motion"
 
 export default function NotesPage() {
+  useSessionTimer("notes")
   const { notes, loading, error } = useNotes()
 
   const noteCount = notes.length
-  const categories = Array.from(new Set(notes.map((n) => (n as { category?: string }).category).filter(Boolean))).length
+  const categories = Array.from(new Set(notes.map((n) => n.category).filter(Boolean))).length
 
   return (
     <motion.div

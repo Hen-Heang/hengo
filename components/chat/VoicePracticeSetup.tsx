@@ -85,9 +85,9 @@ export function VoicePracticeSetup({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="bottom"
-        className="max-h-[92dvh] gap-0 overflow-hidden rounded-t-3xl border-border/60 p-0"
+        className="dark max-h-[92dvh] gap-0 overflow-hidden rounded-t-3xl border-white/10 bg-slate-950 p-0 text-white shadow-2xl shadow-black/50"
       >
-        <SheetHeader className="border-b border-border/50 px-5 pt-5 pb-4 text-left">
+        <SheetHeader className="border-b border-white/10 px-5 pt-5 pb-4 text-left">
           <SheetTitle className="text-[17px] font-bold tracking-tight">Set up your speaking practice</SheetTitle>
           <SheetDescription className="text-[13px]">
             {scenarioTitle ? `Roleplay: ${scenarioTitle}` : "Choose how you want to practice today."}
@@ -121,7 +121,7 @@ export function VoicePracticeSetup({
           />
         </div>
 
-        <div className="shrink-0 border-t border-border/50 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="shrink-0 border-t border-white/10 bg-slate-950/95 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <Button
             type="button"
             onClick={() => onStart(options)}

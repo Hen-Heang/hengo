@@ -111,6 +111,17 @@ export const habitsApi = {
     return (data as CheckInRow[]).map(toCheckIn)
   },
 
+  // All habits' check-ins in a date range — for the Timeline aggregator
+  // (lib/timeline.ts), which needs check-ins across every habit, not one.
+  getCheckinsInRange: async (params: { from?: string; to?: string } = {}): Promise<HabitCheckIn[]> => {
+    let query = supabase.from("kori_habit_checkins").select("*").order("date", { ascending: false })
+    if (params.from) query = query.gte("date", params.from)
+    if (params.to) query = query.lte("date", params.to)
+    const { data, error } = await query
+    if (error) throw error
+    return (data as CheckInRow[]).map(toCheckIn)
+  },
+
   // Marks a date as completed — upserts on the (habit_id, date) unique
   // constraint so re-checking an already-completed day is idempotent.
   setCheckin: async (habitId: string, date: string, note?: string): Promise<HabitCheckIn> => {

@@ -8,6 +8,7 @@ export const RATE_LIMIT_BUCKETS = {
   chat: { limit: 100, description: "Chat messages" },
   structured: { limit: 50, description: "AI grading / generation requests" },
   tts: { limit: 50, description: "Text-to-speech requests" },
+  transcription: { limit: 50, description: "Speech transcription requests" },
   large_generation: { limit: 20, description: "Large content generation (vocab sets, listening lessons)" },
 } as const
 
@@ -40,6 +41,11 @@ const FEATURE_TO_BUCKET: Record<string, RateLimitBucket> = {
   translate: "structured",
   realtime_session: "structured",
   realtime_turn_analysis: "structured",
+  korean_coach_feedback: "structured",
+  korean_coach_speech: "tts",
+  korean_coach_transcription: "transcription",
+  ask_hengo: "structured",
+  review_summary: "structured",
 }
 
 export function bucketForFeature(feature: string): RateLimitBucket {

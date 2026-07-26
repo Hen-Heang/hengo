@@ -2,14 +2,17 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
+import { Zap } from "lucide-react"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
+import { QuickCaptureDialog } from "@/components/inbox/QuickCaptureDialog"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useMobileKeyboard } from "@/hooks/useMobileKeyboard"
 import { useNavigationMode } from "@/hooks/useNavigationMode"
 import { useSidebarState } from "@/hooks/useSidebarState"
 import { getActiveNavItem, getSectionForPath } from "@/lib/navigation"
 import { recordRecentNavId } from "@/lib/last-visited"
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { cn } from "@/lib/utils"
 
 import { DesktopHeader } from "./DesktopHeader"
@@ -131,20 +134,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // always a visible way back; `/growth/recovery/pause` is fully immersive by
   // design — navigation must never overlay the breathing timer.
   const isChatRoute = pathname === "/chat" || pathname.startsWith("/chat/")
+  const isHomeRoute = pathname === "/home"
   // `/growth/recovery/pause` is a server redirect to `/growth/recovery/urge`,
   // which is the screen that actually renders the guided pause as a fixed
   // full-screen overlay. Both are listed so no navigation is ever drawn over
   // the pause timer, whichever URL the user arrives on.
   const isPauseRoute = pathname === "/growth/recovery/pause" || pathname === "/growth/recovery/urge"
-  const fullBleed = isChatRoute || isPauseRoute
+  const fullBleed = isHomeRoute || isChatRoute || isPauseRoute
 
   // Chat renders its own compact top bar (mode switcher + a "Back to home"
   // button), so the shell header would be a second one — but the escape route
   // is still always visible, which is what matters.
-  const showMobileHeader = isMobile && !isPauseRoute && !isChatRoute
+  const showMobileHeader = isMobile && !isHomeRoute && !isPauseRoute && !isChatRoute
   // Unmounted (not just hidden) when the keyboard is up, so nothing inside
   // stays focusable behind the keyboard.
-  const showBottomNav = isMobile && !isPauseRoute && !isChatRoute && !isKeyboardOpen
+  const showBottomNav = isMobile && !isHomeRoute && !isPauseRoute && !isChatRoute && !isKeyboardOpen
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -161,7 +165,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </NavSuspense>
 
         <div className="flex min-h-[100dvh] bg-background">
-          {mode === "desktop" && !isPauseRoute && (
+          {mode === "desktop" && !isHomeRoute && !isPauseRoute && (
             <NavSuspense
               fallback={
                 <div
@@ -175,7 +179,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavSuspense>
           )}
 
-          {mode === "tablet" && !isPauseRoute && (
+          {mode === "tablet" && !isHomeRoute && !isPauseRoute && (
             <NavSuspense
               fallback={
                 <div
@@ -190,7 +194,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           <div className="flex min-w-0 flex-1 flex-col">
-            {!isMobile && !isPauseRoute && (
+            {!isMobile && !isHomeRoute && !isPauseRoute && (
               <NavSuspense fallback={<div aria-hidden className="h-[57px] border-b border-border" />}>
                 <DesktopHeaderChrome />
               </NavSuspense>
@@ -210,7 +214,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 fullBleed ? "p-0" : "px-4 pt-5 sm:px-6 lg:px-8",
                 !fullBleed &&
                   (showBottomNav
-                    ? "pb-[calc(5rem+env(safe-area-inset-bottom))]"
+                    ? "pb-[calc(9rem+env(safe-area-inset-bottom))]"
                     : "pb-10")
               )}
             >
@@ -236,6 +240,26 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             one QuickSwitcher is mounted at a time (the desktop header owns the
             other), so the ⌘K / "/" shortcuts never open two dialogs. */}
         {isMobile && <QuickSwitcher hideTrigger open={searchOpen} onOpenChange={setSearchOpen} />}
+
+        {/* Mobile has no header slot for a Quick Capture button (root pages
+            already show Search + notifications), so it gets a floating action
+            button instead — above the bottom nav, hidden with it when the
+            keyboard is up or on immersive routes. Desktop's entry point is the
+            header's Capture button (DesktopHeader.tsx). */}
+        {isMobile && showBottomNav && (
+          <button
+            type="button"
+            onClick={() => openQuickCapture()}
+            aria-label="Quick capture"
+            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform active:scale-95"
+          >
+            <Zap size={22} strokeWidth={2.25} />
+          </button>
+        )}
+
+        {/* Single shared instance — every entry point (⌘K action, desktop
+            header button, mobile FAB) just dispatches the open event. */}
+        <QuickCaptureDialog />
       </MobileHeaderTitleProvider>
     </TooltipProvider>
   )

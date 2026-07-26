@@ -13,6 +13,7 @@ import { ErrorBanner } from "@/components/ui/error-banner"
 import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { scenarioApi, getApiErrorMessage } from "@/lib/api"
+import { useSessionTimer } from "@/hooks/useSessionTimer"
 import { containerVariants, itemVariants } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import type { ScenarioDetail } from "@/lib/types"
@@ -24,6 +25,7 @@ const LEVEL_BADGE: Record<string, string> = {
 }
 
 export default function ScenariosPage() {
+  useSessionTimer("scenarios")
   const router = useRouter()
   const [scenarios, setScenarios] = useState<ScenarioDetail[]>([])
   const [loading, setLoading] = useState(true)
