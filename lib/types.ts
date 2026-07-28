@@ -546,3 +546,139 @@ export interface HabitCheckIn {
   note?: string
   createdAt: string
 }
+
+// ── Phrasebook ───────────────────────────────────────────────────────────────
+
+// 반말 (casual) is deliberately excluded — Phrasebook only covers workplace
+// and daily-life register a foreign professional actually needs, and 해요체
+// is polite, not casual (see lib/korean-phrasebook/schemas.ts for the rule).
+export type PhraseRegister = "formal" | "polite"
+
+export type PhraseDifficulty = "easy" | "medium" | "hard"
+
+// "new" | "learning" | "mastered" mirrors the vocab mastery bands in
+// lib/vocab-review.ts (weak<50 / learning 50-79 / mastered>=80) so Due/New/
+// Learning/Mastered read the same way across features.
+export type PhraseState = "new" | "learning" | "mastered"
+
+export interface PhraseQuestionContent {
+  korean: string
+  romanization: string
+  english: string
+  register: PhraseRegister
+}
+
+export interface PhraseAnswerContent {
+  korean: string
+  romanization: string
+  english: string
+  register: PhraseRegister
+  usageNote?: string
+  isRecommended: boolean
+}
+
+export interface PhraseVocabularyItem {
+  korean: string
+  english: string
+}
+
+export interface PhraseCollection {
+  id: string
+  userId: string
+  sourceKey: string | null
+  titleKo: string
+  titleEn: string
+  description: string | null
+  category: string
+  seedVersion: number
+  pinned: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PhraseCard {
+  id: string
+  userId: string
+  collectionId: string
+  sourceKey: string | null
+  category: string
+  situation: string
+  difficulty: PhraseDifficulty
+  question: PhraseQuestionContent
+  questionVariants: string[]
+  answers: PhraseAnswerContent[]
+  usageNote: string | null
+  vocabulary: PhraseVocabularyItem[]
+  tags: string[]
+  position: number
+  active: boolean
+  isUserEdited: boolean
+  createdAt: string
+  updatedAt: string
+}
+
+export interface PhraseProgress {
+  phraseId: string
+  state: PhraseState
+  repetitions: number
+  intervalDays: number
+  easeFactor: number
+  lapses: number
+  mastery: number
+  attemptCount: number
+  successfulCount: number
+  lastGrade: ReviewRatingLike | null
+  lastReviewedAt: string | null
+  nextReviewAt: string
+  mastered: boolean
+}
+
+// Duplicated as a string union (not imported) to keep lib/types.ts free of a
+// dependency on lib/srs.ts — callers that need the real type import
+// ReviewRating from lib/srs directly; this is just the on-the-wire shape.
+export type ReviewRatingLike = "AGAIN" | "HARD" | "GOOD" | "EASY"
+
+export type PhrasePracticeMode = "learn" | "listen" | "speak" | "review"
+
+export type PhraseInputMethod = "voice" | "text" | "manual"
+
+export interface PhraseAttemptFeedback {
+  recognizedTranscript: string
+  communicationSuccess: boolean
+  correctedSentence: string
+  naturalAlternative: string
+  explanation: string
+  vocabulary: PhraseVocabularyItem[]
+  retryWords: string[]
+}
+
+export interface PhraseAttempt {
+  id: string
+  phraseId: string
+  practiceMode: PhrasePracticeMode
+  inputMethod: PhraseInputMethod
+  transcript: string | null
+  feedback: PhraseAttemptFeedback | null
+  hintUsed: boolean
+  transcriptRevealed: boolean
+  taskCompleted: boolean
+  createdAt: string
+}
+
+export interface PhraseCardWithProgress extends PhraseCard {
+  progress: PhraseProgress | null
+}
+
+export type RomanizationPreference = "always" | "on_request" | "never"
+
+export interface PhrasebookStats {
+  cardsLearned: number
+  cardsDue: number
+  cardsMastered: number
+  listeningAttempts: number
+  speakingAttempts: number
+  successfulCommunicationRate: number
+  mostDifficultSituations: Array<{ situation: string; failureCount: number }>
+  workplaceActivityCount: number
+  dailyActivityCount: number
+}

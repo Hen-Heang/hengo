@@ -7,6 +7,7 @@ import type { SkillCode } from "@/lib/learning/skills"
 import { correctionApi, dailyPhraseApi, listeningApi, scenarioApi } from "./learning"
 import { vocabApi } from "./vocab"
 import { skillsApi } from "./skills"
+import { phrasebookApi } from "./phrasebook"
 
 // Daily mission over kori_daily_missions / kori_daily_mission_items. A
 // mission is generated once per (user, Korea-calendar day) and then only
@@ -117,7 +118,7 @@ async function fetchMission(userId: string, dateKey: string): Promise<DailyMissi
 }
 
 async function buildContext(dateKey: string): Promise<MissionContext> {
-  const [profileRes, dueVocabulary, dueVocabularyCount, dueCorrections, weakSkills, phrase, scenarios, activity] =
+  const [profileRes, dueVocabulary, dueVocabularyCount, dueCorrections, weakSkills, phrase, scenarios, activity, duePhrases] =
     await Promise.all([
       supabase.from("kori_profiles").select("korean_level, learning_goal").maybeSingle(),
       vocabApi.getDueWords(),
@@ -131,6 +132,7 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
         .select("feature")
         .order("created_at", { ascending: false })
         .limit(20),
+      phrasebookApi.getDuePhrases().catch(() => []),
     ])
 
   const listeningTopics = await listeningApi.getTopics()
@@ -144,6 +146,8 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
     dueVocabularyCount,
     dueCorrections: dueCorrections.map((c) => ({ id: c.id, originalText: c.originalText, correctedText: c.correctedText })),
     dueCorrectionsCount: dueCorrections.length,
+    duePhrases: duePhrases.map((p) => ({ id: p.id, category: p.category })),
+    duePhrasesCount: duePhrases.length,
     weakSkills: weakSkills.map((s) => ({ skillCode: s.skillCode, masteryScore: s.masteryScore })),
     recentFeatures: (activity.data ?? []).map((a) => a.feature),
     recentTopics: [],
@@ -239,10 +243,11 @@ export const missionsApi = {
     const pending = mission.items.filter((i) => i.status !== "completed")
     if (pending.length === 0) return mission
 
-    const [dueVocabIds, dueCorrectionIds, phrase] = await Promise.all([
+    const [dueVocabIds, dueCorrectionIds, phrase, duePhraseIds] = await Promise.all([
       vocabApi.getDueCount().then(() => vocabApi.getDueWords()).then((rows) => new Set(rows.map((r) => r.id))),
       correctionApi.getDueReviews().then((rows) => new Set(rows.map((r) => r.id))),
       dailyPhraseApi.getToday().catch(() => null),
+      phrasebookApi.getDuePhrases().then((rows) => new Set(rows.map((r) => r.id))).catch(() => new Set<string>()),
     ])
 
     for (const item of pending) {
@@ -260,6 +265,26 @@ export const missionsApi = {
       } else if (item.type === "daily_phrase") {
         completed = Boolean(phrase?.learned)
         progressCount = completed ? 1 : 0
+      } else if (item.type === "phrase_review") {
+        // Evidence is either a saved SRS review grade (the card left the due
+        // set) or a listening/speaking attempt that was actually completed —
+        // never just having opened the practice page.
+        const stillDue = item.referenceIds.filter((id) => duePhraseIds.has(id))
+        let reviewedCount = item.referenceIds.length - stillDue.length
+        if (reviewedCount < item.targetCount && item.referenceIds.length > 0) {
+          const { data: attemptRows } = await supabase
+            .from("kori_phrase_attempts")
+            .select("phrase_id")
+            .eq("user_id", userId)
+            .eq("task_completed", true)
+            .in("phrase_id", item.referenceIds)
+            .gte("created_at", mission.createdAt)
+          const engaged = new Set((attemptRows ?? []).map((r) => r.phrase_id as string))
+          const reviewedIds = item.referenceIds.filter((id) => !duePhraseIds.has(id))
+          reviewedCount = new Set([...reviewedIds, ...engaged]).size
+        }
+        progressCount = reviewedCount
+        completed = item.referenceIds.length > 0 && reviewedCount >= item.targetCount
       } else if (item.type === "scenario") {
         const scenarioId = item.referenceIds[0]
         if (scenarioId) {

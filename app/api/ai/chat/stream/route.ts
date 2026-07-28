@@ -4,6 +4,7 @@ import { checkRateLimit, recordUsage } from "@/lib/server/ai-limits"
 import { shouldAnalyzeKoreanTurn } from "@/lib/learning/korean-text"
 import { runTurnAnalysis } from "@/lib/server/turn-analysis"
 import { persistTurnMistakes } from "@/lib/server/corrections-store"
+import { buildPhrasebookContextBlock } from "@/lib/server/phrasebook-context"
 
 const MAX_MESSAGE_LENGTH = 4000
 
@@ -51,7 +52,7 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "Conversation not found" }, { status: 404 })
   }
 
-  const [{ data: historyRows }, { data: profile }, { data: userMessage, error: insertError }] = await Promise.all([
+  const [{ data: historyRows }, { data: profile }, { data: userMessage, error: insertError }, phrasebookBlock] = await Promise.all([
     db
       .from("kori_messages")
       .select("role, content")
@@ -67,6 +68,7 @@ export async function POST(req: Request): Promise<Response> {
       .insert({ conversation_id: conversationId, user_id: user.id, role: "user", content: displayMessage })
       .select("id")
       .single(),
+    buildPhrasebookContextBlock(db, user.id),
   ])
   if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
 
@@ -110,7 +112,8 @@ export async function POST(req: Request): Promise<Response> {
     "- When useful, ground examples in the learner's job and goal so practice is relevant to their real work.\n" +
     "- Stay supportive and motivating without praising the learner automatically on every turn.\n" +
     "- Use the conversation so far for context; do not repeat yourself or forget what was already said.\n\n" +
-    (profileBlock ? `${profileBlock}\n\n` : "")
+    (profileBlock ? `${profileBlock}\n\n` : "") +
+    (phrasebookBlock ? `${phrasebookBlock}\n\n` : "")
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {

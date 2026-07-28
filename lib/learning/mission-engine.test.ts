@@ -11,6 +11,8 @@ function baseContext(overrides: Partial<MissionContext> = {}): MissionContext {
     dueVocabularyCount: 0,
     dueCorrections: [],
     dueCorrectionsCount: 0,
+    duePhrases: [],
+    duePhrasesCount: 0,
     weakSkills: [],
     recentFeatures: [],
     recentTopics: [],
@@ -107,6 +109,33 @@ describe("buildDailyMission", () => {
     // At least the single highest-weight item is always included even if it
     // alone exceeds the budget, but nothing further should pile on.
     expect(plan.items.length).toBeLessThanOrEqual(2)
+  })
+
+  it("includes a phrase_review item when Phrasebook cards are due", () => {
+    const ctx = baseContext({
+      duePhrasesCount: 6,
+      duePhrases: Array.from({ length: 6 }, (_, i) => ({ id: `p${i}`, category: "workplace" })),
+    })
+    const plan = buildDailyMission(ctx)
+    const phraseItem = plan.items.find((i) => i.type === "phrase_review")
+    expect(phraseItem).toBeDefined()
+    expect(phraseItem?.referenceIds).toHaveLength(6)
+  })
+
+  it("omits phrase_review when nothing is due", () => {
+    const ctx = baseContext({ duePhrasesCount: 0 })
+    const plan = buildDailyMission(ctx)
+    expect(plan.items.some((i) => i.type === "phrase_review")).toBe(false)
+  })
+
+  it("caps the phrase_review target count at 10 even with a larger backlog", () => {
+    const ctx = baseContext({
+      duePhrasesCount: 25,
+      duePhrases: Array.from({ length: 25 }, (_, i) => ({ id: `p${i}`, category: "daily" })),
+    })
+    const plan = buildDailyMission(ctx)
+    const phraseItem = plan.items.find((i) => i.type === "phrase_review")
+    expect(phraseItem?.targetCount).toBe(10)
   })
 
   it("never produces an empty mission", () => {

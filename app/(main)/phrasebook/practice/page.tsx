@@ -1,0 +1,147 @@
+"use client"
+
+import { Suspense, useEffect, useState } from "react"
+import { useRouter, useSearchParams } from "next/navigation"
+import { PartyPopper } from "lucide-react"
+import { motion } from "motion/react"
+
+import { BackLink } from "@/components/ui/back-link"
+import { Button } from "@/components/ui/button"
+import { ErrorBanner } from "@/components/ui/error-banner"
+import { Skeleton } from "@/components/ui/skeleton"
+import { LearnModeView } from "@/components/phrasebook/practice/LearnModeView"
+import { ListeningModeView } from "@/components/phrasebook/practice/ListeningModeView"
+import { SpeakingModeView } from "@/components/phrasebook/practice/SpeakingModeView"
+import { ReviewModeView } from "@/components/phrasebook/practice/ReviewModeView"
+import { phrasebookApi, getApiErrorMessage } from "@/lib/api"
+import { useRomanizationPreference } from "@/hooks/useRomanizationPreference"
+import { useSessionTimer } from "@/hooks/useSessionTimer"
+import { isCardDue } from "@/lib/korean-phrasebook/mastery"
+import { containerVariants, itemVariants } from "@/lib/motion"
+import type { PhraseCardWithProgress } from "@/lib/types"
+
+type Mode = "learn" | "listen" | "speak" | "review"
+
+const MODE_TITLE: Record<Mode, string> = {
+  learn: "Learn",
+  listen: "Listening practice",
+  speak: "Speaking practice",
+  review: "Review",
+}
+
+function PhrasebookPracticeInner() {
+  useSessionTimer("phrasebook")
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const modeParam = searchParams.get("mode")
+  const mode: Mode = modeParam === "listen" || modeParam === "speak" || modeParam === "review" ? modeParam : "learn"
+  const collectionId = searchParams.get("collectionId") ?? undefined
+  const romanizationPreference = useRomanizationPreference()
+
+  const [cards, setCards] = useState<PhraseCardWithProgress[]>([])
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
+  const [done, setDone] = useState(false)
+
+  const exitHref = collectionId ? `/phrasebook/${collectionId}` : "/phrasebook"
+
+  useEffect(() => {
+    let active = true
+    setLoading(true)
+    setError("")
+    setDone(false)
+
+    async function load() {
+      try {
+        let queue: PhraseCardWithProgress[]
+        if (mode === "learn") {
+          queue = collectionId ? await phrasebookApi.getCardsForCollection(collectionId) : await phrasebookApi.getAllCards()
+        } else if (mode === "review") {
+          const pool = await phrasebookApi.getPracticeQueue({ collectionId, limit: 30 })
+          const due = pool.filter((c) => c.progress && isCardDue(c.progress.nextReviewAt))
+          queue = due.length > 0 ? due : pool.slice(0, 10)
+        } else {
+          queue = await phrasebookApi.getPracticeQueue({ collectionId, limit: 10 })
+        }
+        if (active) setCards(queue)
+      } catch (err) {
+        if (active) setError(getApiErrorMessage(err, "Could not load practice cards."))
+      } finally {
+        if (active) setLoading(false)
+      }
+    }
+    load()
+    return () => {
+      active = false
+    }
+  }, [mode, collectionId])
+
+  if (loading) {
+    return (
+      <div className="space-y-4 pb-12">
+        <Skeleton className="h-8 w-32 rounded-xl" />
+        <Skeleton className="h-96 w-full rounded-3xl" />
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="space-y-4 pb-12">
+        <BackLink href={exitHref} label="Back" />
+        <ErrorBanner>{error}</ErrorBanner>
+      </div>
+    )
+  }
+
+  if (cards.length === 0) {
+    return (
+      <div className="space-y-4 pb-12">
+        <BackLink href={exitHref} label="Back" />
+        <p className="rounded-2xl border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+          No cards available for this session yet.
+        </p>
+      </div>
+    )
+  }
+
+  if (done) {
+    return (
+      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-5 pb-12 text-center">
+        <motion.div variants={itemVariants} className="flex flex-col items-center gap-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-10">
+          <PartyPopper size={36} className="text-emerald-600" />
+          <h2 className="text-lg font-bold text-foreground">Session complete</h2>
+          <p className="text-sm text-muted-foreground">You practiced {cards.length} {cards.length === 1 ? "card" : "cards"}.</p>
+          <div className="mt-3 flex gap-2.5">
+            <Button variant="outline" onClick={() => router.push(exitHref)}>
+              Back
+            </Button>
+            <Button onClick={() => setDone(false)}>Practice again</Button>
+          </div>
+        </motion.div>
+      </motion.div>
+    )
+  }
+
+  return (
+    <div className="space-y-5 pb-12">
+      <div className="flex items-center justify-between">
+        <BackLink href={exitHref} label="Back" />
+        <h1 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{MODE_TITLE[mode]}</h1>
+      </div>
+
+      {mode === "learn" && <LearnModeView cards={cards} romanizationPreference={romanizationPreference} />}
+      {mode === "listen" && <ListeningModeView cards={cards} onExhausted={() => setDone(true)} />}
+      {mode === "speak" && <SpeakingModeView cards={cards} onExhausted={() => setDone(true)} />}
+      {mode === "review" && <ReviewModeView cards={cards} onExhausted={() => setDone(true)} />}
+    </div>
+  )
+}
+
+export default function PhrasebookPracticePage() {
+  return (
+    <Suspense fallback={null}>
+      <PhrasebookPracticeInner />
+    </Suspense>
+  )
+}

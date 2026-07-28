@@ -365,7 +365,7 @@ describe("WorkspaceFlyout", () => {
       within(panel)
         .getAllByRole("link")
         .map((el) => el.textContent)
-    ).toEqual(["Practice", "Vocabulary", "Foundations", "Reading", "Listening", "Scenarios", "Exam Prep"])
+    ).toEqual(["Practice", "Vocabulary", "Phrasebook", "Foundations", "Reading", "Listening", "Scenarios", "Exam Prep"])
   })
 
   it("marks the current child route", () => {

@@ -37,6 +37,7 @@ const FEATURE_TO_BUCKET: Record<string, RateLimitBucket> = {
   goals_coach: "structured",
   goals_generate_tasks: "structured",
   recovery_coach: "structured",
+  phrasebook_evaluate: "structured",
   translate: "structured",
   realtime_session: "structured",
   realtime_turn_analysis: "structured",

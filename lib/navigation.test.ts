@@ -259,6 +259,7 @@ describe("More sheet grouping", () => {
     const learnMore = moreGroups.find((g) => g.id === "learn-more")!
     expect(learnMore.items.map((i) => i.label)).toEqual([
       "Vocabulary",
+      "Phrasebook",
       "Foundations",
       "Reading",
       "Listening",

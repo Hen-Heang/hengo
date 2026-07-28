@@ -10,6 +10,7 @@ import {
   Drama,
   Flame,
   MessageCircle,
+  MessagesSquare,
   RotateCcw,
   Sparkles,
   TrendingUp,
@@ -158,6 +159,8 @@ export default function PracticePage() {
         return `/listening${item.referenceIds[0] ? `?topic=${encodeURIComponent(item.referenceIds[0])}` : ""}`
       case "interview":
         return "/interview"
+      case "phrase_review":
+        return "/phrasebook/practice?mode=review"
       default:
         return null
     }
@@ -452,6 +455,25 @@ export default function PracticePage() {
                 icon={<Sparkles size={14} className="mr-2" />}
               >
                 Generate a message
+              </ActionButton>
+            </Card>
+
+            {/* Phrasebook */}
+            <Card
+              icon={<MessagesSquare size={20} strokeWidth={2.5} />}
+              iconClass="bg-amber-500/10 text-amber-600 dark:text-amber-400"
+              eyebrow="Phrasebook"
+              title="Workplace & daily-life Q&A"
+            >
+              <p className="text-sm text-muted-foreground">
+                Listen to real questions, answer aloud, get feedback, and review with spaced repetition.
+              </p>
+              <ActionButton
+                onClick={() => router.push("/phrasebook")}
+                className="bg-amber-600 hover:bg-amber-500"
+                icon={<MessagesSquare size={14} className="mr-2" />}
+              >
+                Open Phrasebook
               </ActionButton>
             </Card>
           </motion.div>

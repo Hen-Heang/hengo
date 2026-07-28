@@ -8,6 +8,7 @@ import {
   Headphones,
   Languages,
   MessageCircle,
+  MessagesSquare,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -22,6 +23,7 @@ const FEATURE_LABELS: Record<string, { label: string; icon: LucideIcon }> = {
   listening: { label: "Listening", icon: Headphones },
   foundations: { label: "Foundations", icon: Languages },
   interview: { label: "Exam Prep", icon: GraduationCap },
+  phrasebook: { label: "Phrasebook", icon: MessagesSquare },
 }
 
 // Where the last 30 days of practice time actually went — grouped from the

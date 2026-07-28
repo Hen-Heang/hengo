@@ -7,6 +7,7 @@ import dynamic from "next/dynamic"
 
 import { PageHero } from "@/components/app/page-hero"
 import { FeatureBreakdown } from "@/components/progress/FeatureBreakdown"
+import { PhrasebookStatsCard } from "@/components/phrasebook/PhrasebookStatsCard"
 import { Skeleton } from "@/components/ui/skeleton"
 import { achievementsApi } from "@/lib/api"
 import { useProgress } from "@/hooks/useProgress"
@@ -82,6 +83,13 @@ export default function StatisticsPage() {
           <div className="mt-4">
             <FeatureBreakdown />
           </div>
+        </div>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40">
+        <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">Phrasebook</h2>
+        <div className="mt-4">
+          <PhrasebookStatsCard />
         </div>
       </motion.div>
 

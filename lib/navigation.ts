@@ -14,6 +14,7 @@ import {
   ListChecks,
   Map,
   MessageCircle,
+  MessagesSquare,
   NotebookPen,
   RotateCcw,
   ScanText,
@@ -150,6 +151,14 @@ export const navSections: NavSection[] = [
         label: "Vocabulary",
         icon: BookOpen,
         keywords: ["words", "srs", "review", "flashcards", "korean"],
+      },
+      {
+        id: "learn-phrasebook",
+        href: "/phrasebook",
+        label: "Phrasebook",
+        icon: MessagesSquare,
+        description: "Workplace and daily-life Q&A practice",
+        keywords: ["phrasebook", "questions", "answers", "workplace", "qa", "speaking", "listening", "korean"],
       },
       {
         id: "learn-foundations",

@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase"
 import { getUserEmail } from "@/lib/auth-store"
 import { resolveAllowedModel } from "@/lib/server/models"
 import { recommendLevel, type CategoryEvidence } from "@/lib/learning/level-engine"
+import type { RomanizationPreference } from "@/lib/types"
 import { skillsApi } from "./skills"
 
 // User profile over kori_profiles (snake_case columns mapped to the camelCase
@@ -28,6 +29,7 @@ type ProfileRow = {
   study_reminders_enabled: boolean
   study_reminder_hour: number | null
   avatar_url: string | null
+  romanization_preference: RomanizationPreference | null
 }
 
 function toCamel(row: ProfileRow | null) {
@@ -46,6 +48,7 @@ function toCamel(row: ProfileRow | null) {
     studyReminderHour: row?.study_reminder_hour ?? 20,
     hasProfileImage: Boolean(row?.avatar_url),
     avatarUrl: row?.avatar_url ?? null,
+    romanizationPreference: (row?.romanization_preference ?? "always") as RomanizationPreference,
   }
 }
 
@@ -126,6 +129,14 @@ export const userApi = {
     const { error } = await supabase
       .from("kori_profiles")
       .update({ study_reminders_enabled: enabled, study_reminder_hour: hour })
+      .eq("id", id)
+    if (error) throw error
+  },
+
+  updateRomanizationPreference: async (id: string, preference: RomanizationPreference) => {
+    const { error } = await supabase
+      .from("kori_profiles")
+      .update({ romanization_preference: preference })
       .eq("id", id)
     if (error) throw error
   },

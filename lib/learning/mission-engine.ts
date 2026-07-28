@@ -13,6 +13,7 @@ export type MissionItemType =
   | "scenario"
   | "listening"
   | "interview"
+  | "phrase_review"
 
 export interface DueVocabularyItem {
   id: string
@@ -24,6 +25,11 @@ export interface DueCorrectionItem {
   id: string
   originalText: string
   correctedText: string
+}
+
+export interface DuePhraseItem {
+  id: string
+  category: string
 }
 
 export interface SkillMasterySummary {
@@ -50,6 +56,8 @@ export interface MissionContext {
   dueVocabularyCount: number
   dueCorrections: DueCorrectionItem[]
   dueCorrectionsCount: number
+  duePhrases: DuePhraseItem[]
+  duePhrasesCount: number
   weakSkills: SkillMasterySummary[]
   recentFeatures: string[]
   recentTopics: string[]
@@ -140,6 +148,23 @@ function buildCorrectionCandidate(ctx: MissionContext, weight: number): Candidat
       referenceIds: ctx.dueCorrections.slice(0, targetCount).map((c) => c.id),
       skillCodes: [],
       estimatedMinutes: Math.min(15, Math.max(5, Math.ceil(ctx.dueCorrectionsCount / 2))),
+    },
+  }
+}
+
+function buildPhraseCandidate(ctx: MissionContext, weight: number): Candidate | null {
+  if (ctx.duePhrasesCount <= 0) return null
+  const targetCount = Math.min(ctx.duePhrasesCount, 10)
+  return {
+    weight,
+    item: {
+      type: "phrase_review",
+      title: `Review ${plural(ctx.duePhrasesCount, "Phrasebook Q&A card")}`,
+      reason: `${plural(ctx.duePhrasesCount, "phrase")} you saved earlier came due for review today.`,
+      targetCount,
+      referenceIds: ctx.duePhrases.slice(0, targetCount).map((p) => p.id),
+      skillCodes: [],
+      estimatedMinutes: Math.min(15, Math.max(5, Math.ceil(ctx.duePhrasesCount / 2))),
     },
   }
 }
@@ -256,10 +281,13 @@ function buildVarietyCandidate(ctx: MissionContext, alreadyPresent: Set<MissionI
  *  across recently-neglected features. Same input → same output, always. */
 export function buildDailyMission(ctx: MissionContext): DailyMissionPlan {
   const candidates: Candidate[] = []
-  const vocabCandidate = buildVocabCandidate(ctx, 0.4 * (ctx.dueVocabularyCount / Math.max(1, ctx.dueVocabularyCount + ctx.dueCorrectionsCount) || 0.5))
-  const correctionCandidate = buildCorrectionCandidate(ctx, 0.4 * (ctx.dueCorrectionsCount / Math.max(1, ctx.dueVocabularyCount + ctx.dueCorrectionsCount) || 0.5))
+  const totalDue = ctx.dueVocabularyCount + ctx.dueCorrectionsCount + ctx.duePhrasesCount
+  const vocabCandidate = buildVocabCandidate(ctx, 0.4 * (ctx.dueVocabularyCount / Math.max(1, totalDue) || 0.34))
+  const correctionCandidate = buildCorrectionCandidate(ctx, 0.4 * (ctx.dueCorrectionsCount / Math.max(1, totalDue) || 0.34))
+  const phraseCandidate = buildPhraseCandidate(ctx, 0.4 * (ctx.duePhrasesCount / Math.max(1, totalDue) || 0.34))
   if (vocabCandidate) candidates.push(vocabCandidate)
   if (correctionCandidate) candidates.push(correctionCandidate)
+  if (phraseCandidate) candidates.push(phraseCandidate)
 
   const presentTypes = new Set(candidates.map((c) => c.item.type))
   const weaknessCandidate = buildWeaknessCandidate(ctx, presentTypes)
