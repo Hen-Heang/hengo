@@ -1,67 +1,130 @@
 "use client"
 
 import { useState } from "react"
-import { Pencil, Trash2, Loader2, AlertTriangle } from "lucide-react"
+import { Pencil, Star, Trash2, Loader2 } from "lucide-react"
+
+import { ReminderButton } from "@/components/reminders/ReminderButton"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface NoteActionsProps {
+  pinned?: boolean
   onEdit: () => void
+  onTogglePin?: () => Promise<void> | void
   onDelete: () => Promise<void> | void
+  /** When provided, shows a reminder bell for this note. */
+  noteId?: string
+  noteSlug?: string
+  noteTitle?: string
 }
 
-export function NoteActions({ onEdit, onDelete }: NoteActionsProps) {
+export function NoteActions({ pinned = false, onEdit, onTogglePin, onDelete, noteId, noteSlug, noteTitle }: NoteActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false)
+  const [isPinning, setIsPinning] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
 
-  const handleDelete = async () => {
+  const handleDelete = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    if (isDeleting) return
     setIsDeleting(true)
     try {
       await onDelete()
-    } catch (err) {
-      console.error(err)
-      setIsDeleting(false)
       setShowConfirm(false)
+    } catch {
+      setIsDeleting(false)
     }
   }
 
-  if (showConfirm) {
-    return (
-      <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/10 p-3">
-        <AlertTriangle size={16} className="text-red-500" />
-        <span className="text-xs font-bold text-red-600 dark:text-red-300">Delete this note?</span>
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShowConfirm(false)}
-            className="rounded-lg bg-accent px-3 py-1 text-[10px] font-bold text-muted-foreground transition-colors hover:bg-accent/70"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleDelete}
-            disabled={isDeleting}
-            className="rounded-lg bg-red-600 px-3 py-1 text-[10px] font-bold text-white shadow-lg transition-all hover:bg-red-500"
-          >
-            {isDeleting ? <Loader2 size={12} className="animate-spin" /> : "Delete"}
-          </button>
-        </div>
-      </div>
-    )
+  const handleTogglePin = async () => {
+    if (!onTogglePin || isPinning) return
+    setIsPinning(true)
+    try {
+      await onTogglePin()
+    } finally {
+      setIsPinning(false)
+    }
   }
 
   return (
     <div className="flex items-center gap-2">
-      <button
+      {noteId && (
+        <ReminderButton
+          entityType="note"
+          entityId={noteId}
+          deepLink={noteSlug ? `https://hengo.henheang.site/notes/${noteSlug}` : undefined}
+          defaultTitle={`Revisit: ${noteTitle ?? "note"}`}
+        />
+      )}
+      {onTogglePin && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon-sm"
+          onClick={handleTogglePin}
+          disabled={isPinning}
+          aria-pressed={pinned}
+          aria-label={pinned ? "Unpin note" : "Pin note"}
+          className={cn(
+            "hover:border-blue-500/50",
+            pinned ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground"
+          )}
+        >
+          <Star size={14} className={pinned ? "fill-current" : ""} />
+        </Button>
+      )}
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
         onClick={onEdit}
-        className="flex items-center gap-2 rounded-xl border border-border bg-card px-3 py-1.5 text-xs font-bold text-muted-foreground transition-all hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400"
+        className="text-muted-foreground hover:border-blue-500/50 hover:text-blue-600 dark:hover:text-blue-400"
       >
         <Pencil size={14} />
         Edit
-      </button>
-      <button
-        onClick={() => setShowConfirm(true)}
-        className="rounded-xl border border-border bg-card p-1.5 text-muted-foreground transition-all hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
-      >
-        <Trash2 size={14} />
-      </button>
+      </Button>
+      <AlertDialog open={showConfirm} onOpenChange={setShowConfirm}>
+        <AlertDialogTrigger asChild>
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            aria-label="Delete note"
+            className="text-muted-foreground hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-500"
+          >
+            <Trash2 size={14} />
+          </Button>
+        </AlertDialogTrigger>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this note?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes the note. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeleting ? <Loader2 size={16} className="animate-spin" /> : null}
+              Delete note
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   )
 }

@@ -258,6 +258,7 @@ describe("More sheet grouping", () => {
   it("puts the less-used learning pages under Learn more", () => {
     const learnMore = moreGroups.find((g) => g.id === "learn-more")!
     expect(learnMore.items.map((i) => i.label)).toEqual([
+      "Korean Coach",
       "Vocabulary",
       "Phrasebook",
       "Foundations",
@@ -281,7 +282,7 @@ describe("Coming Soon filtering", () => {
   })
 
   it("collects the soon placeholders separately", () => {
-    expect(moreComingSoon.map((i) => i.label)).toEqual(["Deep Work", "Mood", "Journal", "Rewards"])
+    expect(moreComingSoon.map((i) => i.label)).toEqual(["Deep Work", "Mood", "Rewards"])
   })
 
   it("shippedItems / comingSoonItems partition a list", () => {

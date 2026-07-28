@@ -10,6 +10,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   aiCoachItem,
+  askHengoItem,
   isNavigationItemActive,
   primarySections,
   settingsItem,
@@ -26,10 +27,8 @@ import { WorkspaceFlyout } from "./WorkspaceFlyout"
 export const SIDEBAR_EXPANDED_WIDTH = 272
 export const SIDEBAR_COLLAPSED_WIDTH = 76
 
-// Sections whose child links are hidden behind the "AI Coach" single row —
-// AI is a destination, not a group, so its modes never appear in the sidebar.
 const AI_SECTION: NavSectionId = "ai"
-const sidebarSections = primarySections.filter((s) => s.id !== AI_SECTION)
+const sidebarSections = primarySections.filter((section) => section.id !== AI_SECTION)
 
 export function DesktopSidebar({
   pathname,
@@ -56,14 +55,14 @@ export function DesktopSidebar({
   // Which collapsed-mode flyout is open — only one at a time, same as the
   // tablet rail.
   const [openFlyoutId, setOpenFlyoutId] = useState<string | null>(null)
-
   const aiActive = isNavigationItemActive({ pathname, searchParams, item: aiCoachItem })
+  const askHengoActive = isNavigationItemActive({ pathname, searchParams, item: askHengoItem })
 
   return (
     <aside
       aria-label="Main navigation"
       style={{ width: collapsed ? SIDEBAR_COLLAPSED_WIDTH : SIDEBAR_EXPANDED_WIDTH }}
-      className="sticky top-0 flex h-screen shrink-0 flex-col border-r border-border bg-sidebar"
+      className="sticky top-0 flex h-dvh shrink-0 flex-col border-r border-border bg-sidebar"
     >
       {/* Brand + collapse toggle. Branding lives here only — never also in the
           top bar. */}
@@ -187,13 +186,18 @@ export function DesktopSidebar({
           )
         })}
 
-        {/* AI Coach — one destination, no competing buttons elsewhere. */}
         <div className="pt-3">
           <div className="mb-2 h-px bg-border" />
           {collapsed ? (
-            <NavIconRow item={aiCoachItem} active={aiActive} />
+            <>
+              <NavIconRow item={aiCoachItem} active={aiActive} />
+              <NavIconRow item={askHengoItem} active={askHengoActive} />
+            </>
           ) : (
-            <NavRow item={aiCoachItem} active={aiActive} />
+            <>
+              <NavRow item={aiCoachItem} active={aiActive} />
+              <NavRow item={askHengoItem} active={askHengoActive} />
+            </>
           )}
         </div>
       </nav>

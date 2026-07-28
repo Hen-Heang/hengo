@@ -1,0 +1,96 @@
+import { describe, expect, it } from "vitest"
+
+import {
+  filterNotesMeta,
+  isNoteInputValid,
+  MAX_NOTE_CONTENT_LENGTH,
+  MAX_NOTE_TITLE_LENGTH,
+  sortNotesMeta,
+  validateNoteInput,
+  type NoteMeta,
+} from "./notes"
+
+function makeNote(overrides: Partial<NoteMeta> = {}): NoteMeta {
+  return {
+    slug: "note",
+    title: "A note",
+    description: "",
+    icon: "common",
+    noteType: "technical",
+    tags: [],
+    pinned: false,
+    createdAt: "2026-07-01T00:00:00.000Z",
+    updatedAt: "2026-07-01T00:00:00.000Z",
+    ...overrides,
+  }
+}
+
+describe("validateNoteInput", () => {
+  it("requires a title", () => {
+    expect(validateNoteInput({ title: "  ", content: "ok" }).title).toBeTruthy()
+  })
+
+  it("requires content", () => {
+    expect(validateNoteInput({ title: "ok", content: "  " }).content).toBeTruthy()
+  })
+
+  it("rejects an overlong title", () => {
+    expect(validateNoteInput({ title: "a".repeat(MAX_NOTE_TITLE_LENGTH + 1), content: "ok" }).title).toBeTruthy()
+  })
+
+  it("rejects overlong content", () => {
+    expect(validateNoteInput({ title: "ok", content: "a".repeat(MAX_NOTE_CONTENT_LENGTH + 1) }).content).toBeTruthy()
+  })
+
+  it("accepts a note with no source URL", () => {
+    expect(isNoteInputValid({ title: "Title", content: "Body" })).toBe(true)
+  })
+
+  it("accepts a valid http(s) source URL", () => {
+    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "https://example.com/docs" }).sourceUrl).toBeUndefined()
+  })
+
+  it("rejects a malformed source URL", () => {
+    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "not a url" }).sourceUrl).toBeTruthy()
+  })
+
+  it("rejects a non-http(s) source URL", () => {
+    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "javascript:alert(1)" }).sourceUrl).toBeTruthy()
+  })
+})
+
+describe("filterNotesMeta", () => {
+  const notes = [
+    makeNote({ slug: "a", noteType: "technical", pinned: true, title: "Spring Boot notes" }),
+    makeNote({ slug: "b", noteType: "korean", pinned: false, title: "Workplace phrases", tags: ["office"] }),
+    makeNote({ slug: "c", noteType: "technical", pinned: false, title: "SQL indexes", description: "postgres" }),
+  ]
+
+  it("filters by note type", () => {
+    expect(filterNotesMeta(notes, { noteType: "korean" }).map((n) => n.slug)).toEqual(["b"])
+  })
+
+  it("filters by pinned-only", () => {
+    expect(filterNotesMeta(notes, { pinnedOnly: true }).map((n) => n.slug)).toEqual(["a"])
+  })
+
+  it("matches query against title, description, and tags", () => {
+    expect(filterNotesMeta(notes, { query: "postgres" }).map((n) => n.slug)).toEqual(["c"])
+    expect(filterNotesMeta(notes, { query: "office" }).map((n) => n.slug)).toEqual(["b"])
+  })
+
+  it("combines filters", () => {
+    expect(filterNotesMeta(notes, { noteType: "technical", pinnedOnly: true }).map((n) => n.slug)).toEqual(["a"])
+  })
+})
+
+describe("sortNotesMeta", () => {
+  it("puts pinned notes first, then most recently updated", () => {
+    const notes = [
+      makeNote({ slug: "old", updatedAt: "2026-07-01T00:00:00.000Z" }),
+      makeNote({ slug: "new", updatedAt: "2026-07-20T00:00:00.000Z" }),
+      makeNote({ slug: "pinned-old", updatedAt: "2026-06-01T00:00:00.000Z", pinned: true }),
+    ]
+    expect(sortNotesMeta(notes).map((n) => n.slug)).toEqual(["pinned-old", "new", "old"])
+  })
+})

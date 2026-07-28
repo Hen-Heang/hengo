@@ -2,18 +2,25 @@
 
 import { useQuery } from "@tanstack/react-query"
 
-import { userApi } from "@/lib/api"
+import { koreanCoachApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
-import type { RomanizationPreference } from "@/lib/types"
+import type { RomanizationMode } from "@/lib/korean-coach/schemas"
 
-/** The user's Settings > Romanization choice, cached like the rest of the profile reads. */
-export function useRomanizationPreference(): RomanizationPreference {
+/**
+ * The learner's romanization display choice, read from the single source of
+ * truth: `kori_korean_coach_preferences.romanization_mode` (set in
+ * /korean-coach/preferences). Phrasebook and the daily study plan both read
+ * through here so there is exactly one romanization setting in the app —
+ * an earlier `kori_profiles.romanization_preference` column duplicated this
+ * and is no longer read by anything.
+ */
+export function useRomanizationPreference(): RomanizationMode {
   const userId = getUserId()
   const { data } = useQuery({
-    queryKey: ["romanization-preference", userId],
-    queryFn: () => userApi.getById(userId as string),
+    queryKey: ["korean-coach-preferences", userId],
+    queryFn: () => koreanCoachApi.getPreferences(),
     enabled: userId != null,
     staleTime: 60_000,
   })
-  return data?.romanizationPreference ?? "always"
+  return data?.romanizationMode ?? "on-request"
 }

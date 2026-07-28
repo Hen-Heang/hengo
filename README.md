@@ -131,6 +131,7 @@ The unified **AI Coach** workspace at `/chat` has four tabs, all backed by the `
 | **Reading** | `/reading` | Multi-unit reading practice | Tap-to-translate, audio playback, comprehension quizzes | `lib/reading.ts`, TTS route |
 | **Listening** | `/listening` | AI-generated listening passages | Slow/normal playback, transcript, quiz — part of the Learning workspace nav | `listening/generate` route, TTS |
 | **Daily Practice / Today** | `/practice` | The home surface: "Today's Mission" checklist | One place showing vocab due, daily phrase, mistakes due, and scenario practice, mixed for your level | `daily-phrase/{generate,practice,check-practice}` routes |
+| **AI Korean Voice Coach** | `/korean-coach` | Transcript-hidden listening and scenario speaking practice | Secure chained transcription → structured correction → AI voice retry; deduplicated mistake notebook, preferences, and session summaries | MediaRecorder, `app/api/ai/korean/*`, Supabase RLS; [architecture and setup](docs/ai-korean-voice-coach.md) |
 
 > `/daily-phrase` redirects to `/practice` and `/mistakes` redirects to the Corrections tab in AI Coach — both were merged into larger surfaces, and the redirect stubs are kept deliberately so old bookmarks still work.
 
@@ -498,12 +499,17 @@ Create `.env.local` in the repo root:
 ```env
 NEXT_PUBLIC_SUPABASE_URL=https://<project>.supabase.co
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
-OPENAI_API_KEY=sk-...
+OPENAI_API_KEY=your_openai_api_key
 NEXT_PUBLIC_GOOGLE_CLIENT_ID=your_google_web_oauth_client_id
 NEXT_PUBLIC_VAPID_KEY=your_web_push_vapid_public_key
 # optional
 AI_MODEL=gpt-5-mini
 TTS_MODEL=...
+OPENAI_TEXT_MODEL=gpt-5.6-terra
+OPENAI_TRANSCRIBE_MODEL=gpt-4o-transcribe
+OPENAI_TTS_MODEL=tts-1
+# explicit local UI mode; visibly labeled when enabled
+KOREAN_COACH_MOCK_MODE=false
 ```
 
 | Variable | Used by | Notes |
@@ -513,6 +519,10 @@ TTS_MODEL=...
 | `NEXT_PUBLIC_GOOGLE_CLIENT_ID` | `components/google-sign-in-button.tsx` | Create a **Web application** OAuth client in Google Cloud Console with `http://localhost:3000` in its authorized origins, and register the same client under Supabase Auth → Providers → Google. Restart the dev server after changing it (`NEXT_PUBLIC_*` vars are read at startup). |
 | `NEXT_PUBLIC_VAPID_KEY` | `lib/api/push.ts`, `public/sw.js` | Web push, paired with the `kori-send-push` Supabase Edge Function. |
 | `AI_MODEL` / `TTS_MODEL` | `lib/server/ai.ts`, `tts` route | Optional model overrides (defaults: `gpt-5-mini`, OpenAI TTS default). |
+| `OPENAI_TEXT_MODEL` / `OPENAI_TRANSCRIBE_MODEL` / `OPENAI_TTS_MODEL` | `lib/server/korean-coach/*` | Optional Korean Coach model overrides. Defaults are documented in `.env.example`; all remain server-only. |
+| `KOREAN_COACH_MOCK_MODE` | `lib/server/korean-coach/*` | Explicit `true` enables visibly labeled fixture feedback and browser speech preview without calling OpenAI. |
+
+See [AI Korean Voice Coach](docs/ai-korean-voice-coach.md) for the complete data flow, privacy model, migration, mock mode, known limitations, and Phase 2 plan.
 
 ### Development
 
@@ -530,7 +540,7 @@ pnpm test:watch   # vitest watch mode
 npx vitest run lib/vocab-review.test.ts   # run a single test file
 ```
 
-Tests are plain Vitest unit tests colocated in `lib/*.test.ts` (srs, vocab-review, vocab-import, reading, interview, interview-drills, interview-history, interview-modes, interview-unexpected, study-focus, study-plan, recovery, habits). There is no vitest config file — defaults apply. They cover the pure domain logic (SRS scheduling, prompt building, plan math, recovery/habit streak math), which is why that logic is kept framework-free in `lib/`.
+Tests are Vitest unit/component tests colocated with the code. `vitest.config.ts` supplies the root alias and excludes the nested side projects. The suite covers pure domain logic, structured contracts, prompt building, route validation, and focused jsdom component behavior without spending AI credits.
 
 ### Linting
 
@@ -646,6 +656,7 @@ The UI follows one calm, consistent visual language — keep new screens on the 
 - Statistics page (platform-wide streaks, weekly chart, per-feature breakdown), XP/achievements
 - Foundations, Reading, Listening, Scenarios, Daily Practice hub, Dev Notes, web push
 - Automated study reminders (July 2026): `pg_cron`-scheduled Postgres functions send reviews-due, streak-saver, and exam-countdown nudges through both web push and Telegram — a Postgres port of the old Spring backend's `StudyReminderScheduler`, which the earlier Supabase migration had left unported
+- AI Korean Voice Coach (July 2026): secure chained voice practice, 20 workplace/daily scenarios, listening challenges, structured corrections, mistake review, preferences, and durable summaries
 - Growth workspace: generic **Habits** tracking (streaks, consistency %) and **Recovery** (urge logging, guided pause, post-slip debrief, spaced-repetition if-then plans) — both wired into the platform-wide activity log, streak, and Statistics feature-breakdown; Recovery is deliberately domain-neutral (no specific behavior named anywhere in code/copy, by design — see [§4 Growth](#4-key-features))
 
 ### In progress
@@ -655,7 +666,7 @@ The UI follows one calm, consistent visual language — keep new screens on the 
 ### Planned
 
 - **AI pronunciation analysis** — real audio-signal scoring (today's pronunciation/confidence scores are estimated from the speech-recognition transcript)
-- **Speaking coach** — dedicated free-speaking practice outside the interview format
+- **Realtime speaking coach** — low-latency interruption and streaming transcripts layered behind the stable chained Voice Coach interfaces
 - **Smart review** — one cross-feature review queue merging vocab, mistakes, and phrases
 - **Shadowing** — listen-and-repeat drills with TTS pacing
 - **Gamification** — richer achievement tracks beyond XP/levels

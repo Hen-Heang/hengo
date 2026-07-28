@@ -29,7 +29,7 @@ function getGreeting() {
 
 function HomeLoadingState() {
   return (
-    <div className="space-y-6 pb-12 sm:space-y-8">
+    <div className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-8 lg:px-8">
       <Skeleton className="h-24 w-full rounded-2xl" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <Skeleton className="h-72 w-full rounded-3xl" />
@@ -78,7 +78,7 @@ export default function HomePage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-8 pb-12 sm:space-y-10"
+      className="mx-auto max-w-6xl space-y-8 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-10 sm:px-6 sm:pt-8 lg:px-8"
     >
       {/* ── Hero strip ── */}
       <motion.div

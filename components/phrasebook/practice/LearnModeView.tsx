@@ -8,11 +8,12 @@ import { Button } from "@/components/ui/button"
 import { PhraseRegisterBadge } from "@/components/phrasebook/PhraseRegisterBadge"
 import { RevealText } from "@/components/phrasebook/RevealText"
 import { cn } from "@/lib/utils"
-import type { PhraseCardWithProgress, RomanizationPreference } from "@/lib/types"
+import type { PhraseCardWithProgress } from "@/lib/types"
+import type { RomanizationMode } from "@/lib/korean-coach/schemas"
 
 interface LearnModeViewProps {
   cards: PhraseCardWithProgress[]
-  romanizationPreference: RomanizationPreference
+  romanizationPreference: RomanizationMode
 }
 
 export function LearnModeView({ cards, romanizationPreference }: LearnModeViewProps) {

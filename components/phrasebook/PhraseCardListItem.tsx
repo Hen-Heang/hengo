@@ -15,7 +15,8 @@ import { PhraseRegisterBadge } from "./PhraseRegisterBadge"
 import { RevealText } from "./RevealText"
 import { isCardDue } from "@/lib/korean-phrasebook/mastery"
 import { cn } from "@/lib/utils"
-import type { PhraseCardWithProgress, RomanizationPreference } from "@/lib/types"
+import type { PhraseCardWithProgress } from "@/lib/types"
+import type { RomanizationMode } from "@/lib/korean-coach/schemas"
 
 const STATE_LABEL: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-sky-500/10 text-sky-600 dark:text-sky-400" },
@@ -31,7 +32,7 @@ export function PhraseCardListItem({
   onDelete,
 }: {
   card: PhraseCardWithProgress
-  romanizationPreference: RomanizationPreference
+  romanizationPreference: RomanizationMode
   editHref?: string
   onArchive?: () => void
   onDelete?: () => void

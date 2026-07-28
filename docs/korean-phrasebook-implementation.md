@@ -65,11 +65,44 @@ architecture and is followed as specified.
    compact, RLS-scoped summary of the user's due/weak Phrasebook cards is
    spliced into the existing `/chat` system prompt (same pattern as
    `learnerProfileBlock`), not a new retrieval tool with citations.
-4. **Romanization preference**: implemented for real — new
-   `kori_profiles.romanization_preference` column
-   (`always | on_request | never`, default `always`), a Settings control, and
-   Phrasebook UI honors it (falls back to a per-card manual reveal toggle
-   when set to `on_request`).
+4. **Romanization preference**: originally implemented as a new
+   `kori_profiles.romanization_preference` column plus a Settings control.
+   **Superseded — see §2a.**
+
+## 2a. Post-merge correction: romanization has one source of truth
+
+The audit in §1 was performed against a checkout that did not yet contain the
+Korean Coach / Inbox / Ask Hengo code — it existed only in the live database
+and in an unmerged branch. After that branch was merged, three of the four
+decisions above turned out to have a pre-existing implementation:
+
+| Concept | Pre-existing implementation (now merged) |
+|---|---|
+| Korean Coach | `/korean-coach/*`, `lib/api/korean-coach.ts`, `lib/korean-coach/schemas.ts` |
+| Inbox | `kori_inbox_items`, `/inbox`, `lib/api/inbox.ts` (has a `converted_to_type`/`converted_to_id` conversion pattern) |
+| Ask Hengo | `/ask-hengo`, `kori_memory_candidates`, `app/api/ai/memory/ask` |
+
+Only romanization was an outright duplicate, and it was resolved:
+
+- **Single source of truth:** `kori_korean_coach_preferences.romanization_mode`
+  (`always | on-request | never`), edited at `/korean-coach/preferences`.
+- `hooks/useRomanizationPreference.ts` is the one adapter onto it; Phrasebook
+  and `lib/api/daily-study-plan.ts` both read through it.
+- The duplicate Settings control was replaced with a link to
+  `/korean-coach/preferences` — kept for discoverability, not duplicated state.
+- `kori_profiles.romanization_preference` is no longer read by anything and is
+  marked deprecated via a SQL `COMMENT`
+  (`20260728120000_deprecate_profile_romanization_preference.sql`). It was
+  deliberately **not** dropped; that is a separate step once no branch
+  references it.
+
+Note the two value spellings differed (`on_request` vs `on-request`); the
+coach spelling won, since it was the already-shipped one.
+
+**Still open after the merge:** Inbox → Phrasebook conversion is now actually
+buildable (§8 deferred it because no Inbox existed). `kori_inbox_items`
+already has `item_type` and `converted_to_type`/`converted_to_id`, so a
+"Save to Phrasebook" action would follow the established conversion pattern.
 
 ## 3. Database design
 
@@ -168,7 +201,7 @@ function (unit tested) that:
 - [x] Supabase migration (tables, RLS, indexes, romanization pref, mission
       constraint)
 - [x] `lib/api/phrasebook.ts` + barrel export
-- [x] Romanization preference (API + Settings UI)
+- [x] Romanization preference (unified onto Korean Coach prefs — see §2a)
 - [x] AI evaluation route (`app/api/ai/phrasebook/evaluate`)
 - [x] Mission engine `phrase_review` type + evidence check + practice-page link
 - [x] Navigation entry + `/practice` homepage card

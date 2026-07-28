@@ -7,6 +7,7 @@ import { useState } from "react"
 import { NavIconRow } from "@/components/layout/NavItem"
 import {
   aiCoachItem,
+  askHengoItem,
   isNavigationItemActive,
   primarySections,
   settingsItem,
@@ -19,9 +20,7 @@ import { WorkspaceFlyout } from "./WorkspaceFlyout"
 
 export const RAIL_WIDTH = 80
 
-// AI Coach is a single destination, not a group — it gets a direct icon row
-// rather than a flyout, so tapping it always lands on /chat.
-const railSections = primarySections.filter((s) => s.id !== "ai")
+const railSections = primarySections.filter((section) => section.id !== "ai")
 
 /**
  * 768–1199px navigation. Compact icon rail; sections with child routes open an
@@ -43,7 +42,7 @@ export function TabletNavigationRail({
     <aside
       aria-label="Main navigation"
       style={{ width: RAIL_WIDTH }}
-      className="sticky top-0 flex h-screen shrink-0 flex-col border-r border-border bg-sidebar"
+      className="sticky top-0 flex h-dvh shrink-0 flex-col border-r border-border bg-sidebar"
     >
       <div className="flex justify-center px-2 py-4">
         <Link
@@ -82,6 +81,11 @@ export function TabletNavigationRail({
             item={aiCoachItem}
             showLabel
             active={isNavigationItemActive({ pathname, searchParams, item: aiCoachItem })}
+          />
+          <NavIconRow
+            item={askHengoItem}
+            showLabel
+            active={isNavigationItemActive({ pathname, searchParams, item: askHengoItem })}
           />
         </div>
       </nav>

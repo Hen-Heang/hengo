@@ -6,6 +6,7 @@ import { Trash2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Textarea } from "@/components/ui/textarea"
 import {
   Sheet,
   SheetContent,
@@ -64,6 +65,8 @@ function TaskDetailsBody({
   onClose,
 }: Omit<GoalTaskDetailsSheetProps, "task"> & { task: Task }) {
   const isMobile = useIsMobile()
+  const [titleDraft, setTitleDraft] = useState(task.title ?? "")
+  const [descriptionDraft, setDescriptionDraft] = useState(task.description ?? "")
   const [blockedReason, setBlockedReason] = useState(task.blocked_reason ?? "")
   const [effortDraft, setEffortDraft] = useState(() => {
     const effort = taskEffortMinutes(task)
@@ -77,6 +80,17 @@ function TaskDetailsBody({
   const due = taskDueDate(task)
   const schedule = taskScheduleDisplay(task, todayYmd)
   const title = task.title || task.description || "Untitled task"
+
+  const commitTitle = () => {
+    const trimmed = titleDraft.trim()
+    if (trimmed === (task.title ?? "")) return
+    void actions.setDetails(task, { title: trimmed })
+  }
+
+  const commitDescription = () => {
+    if (descriptionDraft === task.description) return
+    void actions.setDetails(task, { description: descriptionDraft })
+  }
 
   const setDate = (value: string) => {
     const parsed = parseYMD(value)
@@ -107,9 +121,29 @@ function TaskDetailsBody({
         </SheetHeader>
 
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-          {task.description && (
-            <p className="text-sm leading-relaxed text-muted-foreground">{task.description}</p>
-          )}
+          <div className="space-y-1.5">
+            <Label htmlFor="task-title">Title</Label>
+            <Input
+              id="task-title"
+              value={titleDraft}
+              onChange={(e) => setTitleDraft(e.target.value)}
+              onBlur={commitTitle}
+              placeholder="Task title"
+              className="rounded-xl"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <Label htmlFor="task-description">Description</Label>
+            <Textarea
+              id="task-description"
+              value={descriptionDraft}
+              onChange={(e) => setDescriptionDraft(e.target.value)}
+              onBlur={commitDescription}
+              placeholder="Add more detail…"
+              className="min-h-20 rounded-xl"
+            />
+          </div>
 
           <fieldset className="space-y-2">
             <legend className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

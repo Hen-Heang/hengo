@@ -65,7 +65,7 @@ export function MoreNavigationSheet({
               <MessageCircle size={20} strokeWidth={2.2} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[15px] font-semibold text-foreground">Ask Hengo AI</span>
+              <span className="block truncate text-[15px] font-semibold text-foreground">Korean AI Coach</span>
               <span className="block truncate text-xs text-muted-foreground">
                 Practice, analyze, plan, or get support
               </span>
@@ -77,7 +77,7 @@ export function MoreNavigationSheet({
             <section key={group.id} aria-labelledby={`more-${group.id}`} className="pt-5">
               <h3
                 id={`more-${group.id}`}
-                className="px-1 pb-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground"
+                className="px-1 pb-1.5 text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground"
               >
                 {group.label}
               </h3>

@@ -1,12 +1,16 @@
 "use client"
 
+import { Zap } from "lucide-react"
+
 import { QuickSwitcher } from "@/components/app/quick-switcher"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { Button } from "@/components/ui/button"
 import {
   getActiveNavItem,
   getSectionForPath,
   type NavSearchParams,
 } from "@/lib/navigation"
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 import { BreadcrumbTrail } from "./PageHeader"
 import { ProfileMenu } from "./ProfileMenu"
@@ -43,6 +47,16 @@ export function DesktopHeader({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => openQuickCapture()}
+          className="h-9 gap-1.5 rounded-lg px-3"
+        >
+          <Zap size={15} />
+          Capture
+        </Button>
         <QuickSwitcher />
         <NotificationBell />
         <ProfileMenu collapsed side="bottom" align="end" className="size-11" />

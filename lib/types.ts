@@ -669,7 +669,6 @@ export interface PhraseCardWithProgress extends PhraseCard {
   progress: PhraseProgress | null
 }
 
-export type RomanizationPreference = "always" | "on_request" | "never"
 
 export interface PhrasebookStats {
   cardsLearned: number

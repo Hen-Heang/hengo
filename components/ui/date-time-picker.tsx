@@ -46,6 +46,7 @@ export function DateTimePicker({
     <input
       id={id}
       type={withTime ? "datetime-local" : "date"}
+      aria-label={id ? undefined : withTime ? "Date and time" : "Date"}
       disabled={disabled}
       value={toInputValue(value, withTime)}
       min={min ? toInputValue(min, withTime) : undefined}
@@ -61,7 +62,7 @@ export function DateTimePicker({
         onChange(isNaN(parsed.getTime()) ? null : parsed)
       }}
       className={cn(
-        "flex h-9 w-full items-center rounded-lg border border-border bg-background px-3 py-2 text-sm shadow-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]",
+        "flex h-11 w-full items-center rounded-xl border border-border bg-background px-3 py-2 text-base shadow-sm outline-none focus-visible:border-ring focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 [color-scheme:light] dark:[color-scheme:dark]",
         className
       )}
     />

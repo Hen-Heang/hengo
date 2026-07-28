@@ -65,7 +65,7 @@ export default function ResetPasswordPage() {
   }
 
   return (
-    <main className="flex min-h-screen w-full items-center justify-center bg-background px-5 py-8 selection:bg-blue-500/30">
+    <main className="flex min-h-dvh w-full items-center justify-center bg-background px-5 pb-[max(2rem,env(safe-area-inset-bottom))] pt-[max(2rem,env(safe-area-inset-top))] selection:bg-blue-500/30">
       <div className="absolute inset-x-0 top-0 flex items-center justify-between px-5 py-8 sm:px-8 lg:px-12">
         <Link href="/" className="group flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">

@@ -155,7 +155,7 @@ describe("MoreNavigationSheet", () => {
   it("opens with the AI Coach card at the top", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
-    expect(within(dialog).getByText("Ask Hengo AI")).toBeTruthy()
+    expect(within(dialog).getByText("Korean AI Coach")).toBeTruthy()
     expect(within(dialog).getByText("Practice, analyze, plan, or get support")).toBeTruthy()
     const aiLink = within(dialog).getAllByRole("link")[0]
     expect(aiLink.getAttribute("href")).toBe("/chat")
@@ -365,7 +365,17 @@ describe("WorkspaceFlyout", () => {
       within(panel)
         .getAllByRole("link")
         .map((el) => el.textContent)
-    ).toEqual(["Practice", "Vocabulary", "Phrasebook", "Foundations", "Reading", "Listening", "Scenarios", "Exam Prep"])
+    ).toEqual([
+      "Practice",
+      "Korean Coach",
+      "Vocabulary",
+      "Phrasebook",
+      "Foundations",
+      "Reading",
+      "Listening",
+      "Scenarios",
+      "Exam Prep",
+    ])
   })
 
   it("marks the current child route", () => {
@@ -397,7 +407,7 @@ describe("WorkspaceFlyout", () => {
       />
     )
     const panel = screen.getByRole("navigation", { name: "Growth" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Habits", "Recovery"])
+    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Habits", "Recovery", "Journal"])
     expect(screen.getByText(/Coming soon:/)).toBeTruthy()
   })
 })

@@ -37,18 +37,11 @@ import { getUserId } from "@/lib/auth-store"
 import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
 import { cn } from "@/lib/utils"
-import type { RomanizationPreference } from "@/lib/types"
 
 const levels = [
   { value: "BEGINNER", label: "Beginner", desc: "Just starting out", emoji: "🌱" },
   { value: "INTERMEDIATE", label: "Intermediate", desc: "Basic conversations", emoji: "🌿" },
   { value: "ADVANCED", label: "Advanced", desc: "Fluent situations", emoji: "🌳" },
-]
-
-const romanizationOptions: Array<{ value: RomanizationPreference; label: string; desc: string }> = [
-  { value: "always", label: "Always", desc: "Show romanization everywhere it's available" },
-  { value: "on_request", label: "On request", desc: "Hide it behind a reveal button" },
-  { value: "never", label: "Never", desc: "Don't show romanization at all" },
 ]
 
 const models = [
@@ -158,8 +151,6 @@ export default function SettingsPage() {
   const [studyRemindersEnabled, setStudyRemindersEnabled] = useState(true)
   const [studyReminderHour, setStudyReminderHour] = useState(20)
   const [savingReminders, setSavingReminders] = useState(false)
-  const [romanizationPreference, setRomanizationPreference] = useState<RomanizationPreference>("always")
-  const [savingRomanization, setSavingRomanization] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const savedSnapshotRef = useRef<string | null>(null)
 
@@ -182,7 +173,6 @@ export default function SettingsPage() {
         if (!models.some((m) => m.value === model)) setCustomModel(model)
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
-        setRomanizationPreference(data.romanizationPreference ?? "always")
         if (data.hasProfileImage) {
           userApi.getProfileImageUrl(userId).then(setAvatarUrl).catch(() => {})
         }
@@ -216,22 +206,6 @@ export default function SettingsPage() {
       toast.error("Could not save study reminders", { description: "Please try again." })
     } finally {
       setSavingReminders(false)
-    }
-  }
-
-  async function saveRomanizationPreference(preference: RomanizationPreference) {
-    const userId = getUserId()
-    if (!userId) return
-    const previous = romanizationPreference
-    setRomanizationPreference(preference)
-    setSavingRomanization(true)
-    try {
-      await userApi.updateRomanizationPreference(userId, preference)
-    } catch {
-      setRomanizationPreference(previous)
-      toast.error("Could not save romanization preference", { description: "Please try again." })
-    } finally {
-      setSavingRomanization(false)
     }
   }
 
@@ -517,42 +491,29 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Romanization preference — governs Phrasebook and other Korean-content
-          surfaces that support hide/reveal by preference. */}
+      {/* Romanization lives in Korean Coach preferences — the single source of
+          truth (kori_korean_coach_preferences.romanization_mode) that Korean
+          Coach and Phrasebook both read. Linked rather than duplicated here so
+          there is only ever one control for it. */}
       <motion.div variants={itemVariants}>
         <SectionCard>
-          <SectionRow last>
+          <button
+            type="button"
+            onClick={() => router.push("/korean-coach/preferences")}
+            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+          >
             <SectionHeader
               icon={Type}
-              title="Romanization"
-              description="How much romanized reading support to show alongside Korean"
+              title="Romanization & Korean Coach"
+              description="Romanization, speech speed, and correction strictness"
               color="text-teal-500"
             />
-            <div className="mt-3 grid gap-2 sm:grid-cols-3">
-              {romanizationOptions.map((option) => {
-                const active = romanizationPreference === option.value
-                return (
-                  <button
-                    key={option.value}
-                    type="button"
-                    disabled={savingRomanization}
-                    onClick={() => saveRomanizationPreference(option.value)}
-                    className={cn(
-                      "flex flex-col gap-0.5 rounded-2xl border px-4 py-3.5 text-left transition-all active:scale-[0.98] disabled:opacity-60",
-                      active
-                        ? "border-teal-500/30 bg-teal-500/5 ring-1 ring-teal-500/20"
-                        : "border-border bg-accent/5 hover:border-teal-500/20 hover:bg-background"
-                    )}
-                  >
-                    <p className={cn("text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
-                      {option.label}
-                    </p>
-                    <p className="text-[11px] font-medium text-muted-foreground">{option.desc}</p>
-                  </button>
-                )
-              })}
-            </div>
-          </SectionRow>
+            <ChevronRight
+              size={14}
+              strokeWidth={2}
+              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+            />
+          </button>
         </SectionCard>
       </motion.div>
 
@@ -746,7 +707,7 @@ export default function SettingsPage() {
           </SectionRow>
 
           {/* Study reminders */}
-          <SectionRow last>
+          <SectionRow>
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
                 <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
@@ -786,6 +747,22 @@ export default function SettingsPage() {
                 </select>
               </div>
             )}
+          </SectionRow>
+
+          <SectionRow last>
+            <button
+              type="button"
+              onClick={() => router.push("/settings/reminders")}
+              className="flex w-full items-center justify-between gap-4 text-left"
+            >
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-foreground">Custom reminders</p>
+                <p className="text-[11px] font-medium text-muted-foreground">
+                  Manage reminders you&apos;ve set on tasks, habits, notes, and more
+                </p>
+              </div>
+              <ChevronRight size={16} className="shrink-0 text-muted-foreground" />
+            </button>
           </SectionRow>
         </SectionCard>
       </motion.div>

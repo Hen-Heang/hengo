@@ -262,7 +262,7 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.99 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-0 z-[9999] flex h-[100dvh] w-screen min-h-0 flex-col overflow-hidden bg-slate-950 text-white"
+      className="dark fixed inset-0 z-[9999] flex h-[100dvh] w-screen min-h-0 flex-col overflow-hidden bg-slate-950 text-white"
       role="dialog"
       aria-modal="true"
       aria-label="Live Korean voice practice"
@@ -325,7 +325,7 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
             )}
             <div
               className={cn(
-                "relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.75rem] border bg-white shadow-2xl shadow-blue-500/25 sm:h-24 sm:w-24 sm:rounded-[2rem]",
+                "relative flex h-20 w-20 items-center justify-center overflow-hidden rounded-[1.75rem] border bg-slate-900 shadow-2xl shadow-blue-500/25 sm:h-24 sm:w-24 sm:rounded-[2rem]",
                 phase === "error" ? "border-red-400/40" : "border-blue-300/30",
               )}
             >

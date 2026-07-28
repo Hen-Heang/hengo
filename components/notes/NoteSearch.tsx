@@ -1,30 +1,35 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { Search, X } from "lucide-react"
+import { Search, Star, X } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { NoteCard } from "@/components/notes/NoteCard"
-import type { NoteMeta } from "@/lib/api"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useNoteSearch } from "@/hooks/useNotes"
+import { filterNotesMeta, NOTE_TYPES, sortNotesMeta, type NoteMeta, type NoteType } from "@/lib/notes"
+import { cn } from "@/lib/utils"
 
 export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
   const [query, setQuery] = useState("")
+  const [noteType, setNoteType] = useState<NoteType | "all">("all")
+  const [pinnedOnly, setPinnedOnly] = useState(false)
 
+  const hasQuery = query.trim().length > 0
+  const { results: searchResults, searching, error: searchError } = useNoteSearch(query)
+
+  // A typed query searches note CONTENT server-side (bounded, RLS-safe) —
+  // never an unlimited client-side scan. With no query, filter the already-
+  // fetched metadata list locally (title/description/category/tags only).
   const filtered = useMemo(() => {
-    const q = query.toLowerCase().trim()
-    if (!q) return notes
-    return notes.filter(
-      (n) =>
-        n.title.toLowerCase().includes(q) ||
-        n.description.toLowerCase().includes(q) ||
-        (n.category ?? "").toLowerCase().includes(q) ||
-        (n.tags ?? []).some((tag) => tag.toLowerCase().includes(q))
-    )
-  }, [query, notes])
+    const base = hasQuery ? searchResults : notes
+    const withTypeAndPin = filterNotesMeta(base, { noteType, pinnedOnly, query: hasQuery ? "" : query })
+    return sortNotesMeta(withTypeAndPin)
+  }, [hasQuery, searchResults, notes, noteType, pinnedOnly, query])
 
   return (
     <div>
       {/* Search input */}
-      <div className="group relative mb-10">
+      <div className="group relative mb-6">
         <div className="absolute -inset-1 rounded-2xl bg-linear-to-r from-blue-500/20 to-sky-500/20 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100" />
 
         <div className="relative flex items-center rounded-2xl border border-border bg-card/80 px-4 py-4 shadow-sm backdrop-blur-xl transition-all duration-300 group-focus-within:border-blue-500/40">
@@ -34,10 +39,11 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
           />
           <input
             type="text"
+            aria-label="Search notes"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search notes by topic, concept, or tag..."
-            className="flex-1 bg-transparent text-sm text-foreground placeholder-muted-foreground/60 focus:outline-none"
+            placeholder="Search notes by topic, concept, tag, or content..."
+            className="min-w-0 flex-1 bg-transparent text-base text-foreground placeholder-muted-foreground/60 focus:outline-none sm:text-sm"
           />
 
           <AnimatePresence>
@@ -46,14 +52,48 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.8 }}
+                type="button"
                 onClick={() => setQuery("")}
-                className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                aria-label="Clear note search"
+                className="flex size-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
               >
                 <X size={16} />
               </motion.button>
             )}
           </AnimatePresence>
         </div>
+      </div>
+
+      <div className="mb-10 flex flex-wrap items-center gap-2">
+        <Select value={noteType} onValueChange={(value) => setNoteType(value as NoteType | "all")}>
+          <SelectTrigger className="w-36" aria-label="Filter by note type">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All types</SelectItem>
+            {NOTE_TYPES.map((type) => (
+              <SelectItem key={type.value} value={type.value}>
+                {type.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <button
+          type="button"
+          onClick={() => setPinnedOnly((v) => !v)}
+          aria-pressed={pinnedOnly}
+          className={cn(
+            "flex h-11 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors",
+            pinnedOnly
+              ? "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400"
+              : "border-border text-muted-foreground hover:text-foreground"
+          )}
+        >
+          <Star size={14} className={pinnedOnly ? "fill-current" : ""} />
+          Pinned
+        </button>
+        {hasQuery && searching && <span className="text-xs text-muted-foreground">Searching…</span>}
+        {searchError && <span className="text-xs text-destructive">{searchError}</span>}
       </div>
 
       {/* Results */}
@@ -72,8 +112,9 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
             </p>
             {query && (
               <button
+                type="button"
                 onClick={() => setQuery("")}
-                className="mt-4 text-xs text-blue-500 hover:underline"
+                className="mt-4 min-h-11 px-3 text-sm text-blue-500 hover:underline"
               >
                 Clear search
               </button>
@@ -88,6 +129,8 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
                 title={note.title}
                 description={note.description}
                 icon={note.icon}
+                noteType={note.noteType}
+                pinned={note.pinned}
                 index={i}
               />
             ))}

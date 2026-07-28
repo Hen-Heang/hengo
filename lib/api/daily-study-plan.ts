@@ -60,14 +60,17 @@ function toPlan(row: PlanRow): DailyStudyPlan {
 }
 
 async function profileSettings(): Promise<{ timezone: string; romanizationVisible: boolean }> {
-  const { data } = await supabase
-    .from("kori_profiles")
-    .select("timezone, korean_level, romanization_preference")
-    .maybeSingle()
+  // Timezone comes from the profile; romanization comes from the Korean Coach
+  // preferences, which are the single source of truth for it app-wide (see
+  // hooks/useRomanizationPreference.ts).
+  const [{ data }, { data: coachPrefs }] = await Promise.all([
+    supabase.from("kori_profiles").select("timezone, korean_level").maybeSingle(),
+    supabase.from("kori_korean_coach_preferences").select("romanization_mode").maybeSingle(),
+  ])
   const beginner = !data?.korean_level || String(data.korean_level).toUpperCase().includes("BEGINNER")
   return {
     timezone: data?.timezone || DEFAULT_TIME_ZONE,
-    romanizationVisible: data?.romanization_preference === "never" ? false : beginner,
+    romanizationVisible: coachPrefs?.romanization_mode === "never" ? false : beginner,
   }
 }
 

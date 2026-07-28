@@ -297,6 +297,24 @@ export const progressApi = {
       .sort((a, b) => b.totalMinutes - a.totalMinutes)
   },
 
+  // Bounded, dated raw rows for the Timeline aggregator (lib/timeline.ts) —
+  // distinct from getFeatureBreakdown (which sums into totals, dropping
+  // created_at) and getActivityDates (which drops feature and duration).
+  getActivityLog: async (params: { from?: string; to?: string } = {}): Promise<
+    { feature: string; durationMs: number; createdAt: string }[]
+  > => {
+    let query = supabase.from("kori_activity_log").select("feature, duration_ms, created_at")
+    if (params.from) query = query.gte("created_at", params.from)
+    if (params.to) query = query.lte("created_at", params.to)
+    const { data, error } = await query
+    if (error) throw error
+    return (data ?? []).map((row) => ({
+      feature: row.feature,
+      durationMs: row.duration_ms ?? 0,
+      createdAt: row.created_at,
+    }))
+  },
+
   // Live count backing a goal's optional `metadata.learning_metric` — lets a
   // goal auto-track real learning activity instead of a manual checklist.
   getMetricCount: async (metric: LearningMetric): Promise<number> => {

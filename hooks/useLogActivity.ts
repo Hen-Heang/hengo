@@ -20,6 +20,15 @@ export type ActivityFeature =
   | "recovery"
   | "habits"
   | "phrasebook"
+  | "journal"
+  | "timeline"
+  | "ask_hengo"
+  | "review"
+  | "notes"
+  | "inbox"
+  | "korean_coach"
+  | "practice"
+  | "scenarios"
 
 /**
  * `const { logActivity } = useLogActivity("vocab")` — call `logActivity()`

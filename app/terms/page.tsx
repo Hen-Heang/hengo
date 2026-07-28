@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function TermsPage() {
   return (
-    <main className="mx-auto max-w-2xl px-5 py-10 sm:px-8">
+    <main className="mx-auto max-w-2xl px-5 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))] sm:px-8">
       <div className="mb-10 flex items-center justify-between">
         <Link href="/" className="group flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">
@@ -19,13 +19,13 @@ export default function TermsPage() {
         </Link>
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
+          className="inline-flex min-h-11 items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft size={15} /> Back to sign in
         </Link>
       </div>
 
-      <article className="prose prose-sm dark:prose-invert max-w-none prose-headings:font-semibold prose-headings:tracking-tight">
+      <article className="prose prose-sm dark:prose-invert max-w-none break-words [overflow-wrap:anywhere] prose-headings:font-semibold prose-headings:tracking-tight">
         <h1>Terms of Service</h1>
         <p className="text-muted-foreground">Last updated: 2026</p>
 
