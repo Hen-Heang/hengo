@@ -18,6 +18,7 @@ import {
   Cloud,
   CloudCheck,
   Download,
+  Eye,
   FileText,
   History,
   Languages,
@@ -39,6 +40,10 @@ import {
   INTERVIEW_TOPICS,
   type QAItem,
 } from "@/lib/interview"
+import {
+  duplicateVersionLabel,
+  suggestUniqueVersionLabel,
+} from "@/lib/interview-practice"
 import { cn } from "@/lib/utils"
 
 const topic = INTERVIEW_TOPICS[0]
@@ -182,6 +187,7 @@ export default function InterviewScriptPage() {
   // untouched by this) — "Original" / "Script V1" / "Mentor Correction" / etc.
   const [versions, setVersions] = useState<ScriptVersion[]>([])
   const [versionsOpen, setVersionsOpen] = useState(false)
+  const [previewVersion, setPreviewVersion] = useState<ScriptVersion | null>(null)
   useEffect(() => {
     interviewApi
       .listScriptVersions(topic.id)
@@ -481,14 +487,24 @@ export default function InterviewScriptPage() {
 
   // ── Script version snapshots ──────────────────────────────────────────────
   async function saveVersion() {
-    const label = window.prompt(
-      'Name this version (e.g. "Script V1", "Mentor Correction", "Final Practice Version"):',
+    const enteredLabel = window.prompt(
+      'Name this version (examples: "Final Practice Version 2", "Mentor Review", "Exam Week Version"):',
       ""
     )
-    if (!label || !label.trim()) return
+    if (!enteredLabel || !enteredLabel.trim()) return
+    let label = enteredLabel.trim()
+    const existingLabels = versions.map((version) => version.versionLabel)
+    if (duplicateVersionLabel(label, existingLabels)) {
+      const suggested = suggestUniqueVersionLabel(label, existingLabels)
+      const useSuggestion = window.confirm(
+        `A version named "${label}" already exists. Save this snapshot as "${suggested}" instead?`
+      )
+      if (!useSuggestion) return
+      label = suggested
+    }
     try {
       const version = await interviewApi.saveScriptVersion(topic.id, {
-        versionLabel: label.trim(),
+        versionLabel: label,
         sections: values,
         makeActive: true,
       })
@@ -499,10 +515,16 @@ export default function InterviewScriptPage() {
     }
   }
 
-  async function activateVersion(id: string) {
+  async function activateVersion(version: ScriptVersion) {
+    if (
+      !window.confirm(
+        `Make "${version.versionLabel}" the active practice version? Your live editor draft will not be overwritten.`
+      )
+    ) return
     try {
-      await interviewApi.setActiveScriptVersion(topic.id, id)
-      setVersions((prev) => prev.map((v) => ({ ...v, isActive: v.id === id })))
+      await interviewApi.setActiveScriptVersion(topic.id, version.id)
+      setVersions((prev) => prev.map((v) => ({ ...v, isActive: v.id === version.id })))
+      setPreviewVersion((current) => current?.id === version.id ? { ...current, isActive: true } : current)
     } catch {
       // ignore
     }
@@ -804,10 +826,17 @@ export default function InterviewScriptPage() {
                           </p>
                         </div>
                         <div className="flex shrink-0 items-center gap-1.5">
+                          <button
+                            type="button"
+                            onClick={() => setPreviewVersion(v)}
+                            className="rounded-lg px-2 py-1 text-[10px] font-bold text-muted-foreground hover:bg-accent"
+                          >
+                            <Eye size={12} className="mr-1 inline" /> Preview
+                          </button>
                           {!v.isActive && (
                             <button
                               type="button"
-                              onClick={() => activateVersion(v.id)}
+                              onClick={() => activateVersion(v)}
                               className="rounded-lg px-2 py-1 text-[10px] font-bold text-blue-600 hover:bg-blue-500/10 dark:text-blue-400"
                             >
                               Mark active
@@ -823,6 +852,61 @@ export default function InterviewScriptPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                )}
+                {previewVersion && (
+                  <div className="mt-3 rounded-2xl border border-blue-500/25 bg-background p-4 shadow-sm dark:bg-slate-900">
+                    <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-3">
+                      <div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <p className="text-sm font-bold text-foreground">{previewVersion.versionLabel}</p>
+                          {previewVersion.isActive && (
+                            <Badge className="border-none bg-blue-500/10 text-blue-600 dark:text-blue-400">Active</Badge>
+                          )}
+                        </div>
+                        <p className="mt-1 text-xs text-muted-foreground">
+                          {new Date(previewVersion.createdAt).toLocaleString()} {"\u00B7"} Source: {previewVersion.sourceType}
+                        </p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {!previewVersion.isActive && (
+                          <Button size="sm" onClick={() => activateVersion(previewVersion)} className="h-8 rounded-lg bg-blue-600 text-xs text-white hover:bg-blue-700">
+                            Make active
+                          </Button>
+                        )}
+                        <Button size="sm" variant="outline" onClick={() => restoreVersion(previewVersion)} className="h-8 rounded-lg text-xs">Load into editor</Button>
+                        <Button size="sm" variant="ghost" onClick={() => setPreviewVersion(null)} className="h-8 rounded-lg text-xs">Close</Button>
+                      </div>
+                    </div>
+                    <p className="mt-3 text-xs text-muted-foreground">Preview only. Activating a version does not overwrite the live draft.</p>
+                    <div className="mt-4 grid gap-4 md:grid-cols-2">
+                      <section className="rounded-xl border border-border p-3">
+                        <h3 className="text-xs font-bold text-muted-foreground">Korean</h3>
+                        <div className="mt-3 space-y-4">
+                          {outline.map((section) => (
+                            <div key={section.id}>
+                              <p className="text-xs font-medium text-muted-foreground">{section.titleKo}</p>
+                              <p lang="ko" className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                                {previewVersion.sections[section.id] || "\u2014"}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                      <section className="rounded-xl border border-border p-3">
+                        <h3 className="text-xs font-bold text-muted-foreground">English</h3>
+                        <div className="mt-3 space-y-4">
+                          {outline.map((section) => (
+                            <div key={section.id}>
+                              <p className="text-xs font-medium text-muted-foreground">{section.titleEn}</p>
+                              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                                {previewVersion.sections[`en-${section.id}`] || "\u2014"}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </section>
+                    </div>
                   </div>
                 )}
               </div>

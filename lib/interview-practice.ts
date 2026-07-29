@@ -21,6 +21,7 @@ export type QuestionCategory =
   | "unexpected_followup"
 
 export type QuestionDifficulty = "beginner" | "normal" | "challenging"
+export type PracticeDifficulty = QuestionDifficulty | "mixed"
 export type QuestionPriority = "must_practice" | "recommended" | "optional"
 export type QuestionProgressStatus = "new" | "practicing" | "improving" | "strong"
 
@@ -47,6 +48,64 @@ export interface QuestionProgress {
   status: QuestionProgressStatus
 }
 
+export const INTERVIEW_TIME_ZONE = "Asia/Seoul"
+
+export interface QuestionProgressSummary {
+  total: number
+  practiced: number
+  newCount: number
+  practicing: number
+  improving: number
+  strong: number
+  needsRetry: number
+}
+
+function civilDateNumber(dateKey: string): number {
+  const [year, month, day] = dateKey.split("-").map(Number)
+  return Date.UTC(year, month - 1, day) / 86_400_000
+}
+
+function dateKeyInZone(date: Date, timeZone: string): string {
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(date)
+  const values = Object.fromEntries(parts.map((part) => [part.type, part.value]))
+  return `${values.year}-${values.month}-${values.day}`
+}
+
+/** Whole Seoul civil days remaining, including 0 on exam day. */
+export function daysRemainingInSeoul(
+  examDate: string,
+  now: Date = new Date(),
+  timeZone = INTERVIEW_TIME_ZONE,
+): number {
+  const today = dateKeyInZone(now, timeZone)
+  return Math.max(0, civilDateNumber(examDate) - civilDateNumber(today))
+}
+
+export function recommendedDifficulty(daysRemaining: number): PracticeDifficulty {
+  if (daysRemaining >= 25) return "beginner"
+  if (daysRemaining >= 14) return "normal"
+  if (daysRemaining >= 6) return "challenging"
+  return "mixed"
+}
+
+export function difficultyRecommendationLabel(difficulty: PracticeDifficulty): string {
+  switch (difficulty) {
+    case "beginner":
+      return "Beginner foundation"
+    case "normal":
+      return "Normal questions"
+    case "challenging":
+      return "Challenging follow-ups"
+    case "mixed":
+      return "Mixed weak-question review"
+  }
+}
+
 /** Mean of every numeric value in a scores object (works for both the 6-key
  *  drill SpeakingCheckResponse.scores and the 4-key mock-interview scores). */
 export function averageScore(scores: Record<string, number>): number {
@@ -60,6 +119,34 @@ function deriveStatus(timesPracticed: number, avgScore: number): QuestionProgres
   if (avgScore >= 4.3) return "strong"
   if (timesPracticed >= 2 && avgScore >= 3.5) return "improving"
   return "practicing"
+}
+
+export function summarizeQuestionProgress(
+  questions: QuestionBankItem[],
+  progressByQuestionId: Record<string, QuestionProgress>,
+): QuestionProgressSummary {
+  const summary: QuestionProgressSummary = {
+    total: questions.length,
+    practiced: 0,
+    newCount: 0,
+    practicing: 0,
+    improving: 0,
+    strong: 0,
+    needsRetry: 0,
+  }
+  for (const question of questions) {
+    const progress = progressByQuestionId[question.id]
+    const status = !progress || progress.timesPracticed === 0
+      ? "new"
+      : deriveStatus(progress.timesPracticed, progress.avgScore ?? 0)
+    if (status === "new") summary.newCount += 1
+    else summary.practiced += 1
+    if (status === "practicing") summary.practicing += 1
+    if (status === "improving") summary.improving += 1
+    if (status === "strong") summary.strong += 1
+    if (status === "practicing") summary.needsRetry += 1
+  }
+  return summary
 }
 
 /** Incremental-average update of a question's progress after one new answer
@@ -139,6 +226,120 @@ export function selectFocusQueue(
       return a.displayOrder - b.displayOrder
     })
     .slice(0, Math.max(0, size))
+}
+
+function dailyRank(
+  question: QuestionBankItem,
+  progress: QuestionProgress | null,
+): [number, number, number, number] {
+  const priority =
+    question.priority === "must_practice" ? 0 : question.priority === "recommended" ? 1 : 2
+  const isNew = !progress || progress.timesPracticed === 0
+  const learningState = isNew ? 0 : progress.status === "strong" ? 2 : 1
+  const score = isNew ? 0 : progress.avgScore ?? 0
+  return [priority, learningState, score, question.displayOrder]
+}
+
+function compareRank(a: number[], b: number[]): number {
+  for (let index = 0; index < Math.max(a.length, b.length); index += 1) {
+    const difference = (a[index] ?? 0) - (b[index] ?? 0)
+    if (difference !== 0) return difference
+  }
+  return 0
+}
+
+/**
+ * Deterministic Today's 5 selector. Stored ids are accepted first so progress
+ * written during a drill cannot reshuffle the same Seoul-day queue on refresh.
+ * A short difficulty pool is filled from the remaining mixed bank.
+ */
+export function selectTodaysQueue(
+  questions: QuestionBankItem[],
+  progressByQuestionId: Record<string, QuestionProgress>,
+  difficulty: PracticeDifficulty,
+  size = 5,
+  storedIds: string[] = [],
+): QuestionBankItem[] {
+  const wanted = Math.max(0, size)
+  const byId = new Map(questions.map((question) => [question.id, question]))
+  const selected: QuestionBankItem[] = []
+  const selectedIds = new Set<string>()
+
+  for (const id of storedIds) {
+    const question = byId.get(id)
+    if (!question || selectedIds.has(id) || selected.length >= wanted) continue
+    selected.push(question)
+    selectedIds.add(id)
+  }
+
+  const ordered = [...questions].sort((a, b) =>
+    compareRank(
+      dailyRank(a, progressByQuestionId[a.id] ?? null),
+      dailyRank(b, progressByQuestionId[b.id] ?? null),
+    ),
+  )
+  const preferred = difficulty === "mixed"
+    ? ordered
+    : ordered.filter((question) => question.difficulty === difficulty)
+  const fallback = difficulty === "mixed"
+    ? []
+    : ordered.filter((question) => question.difficulty !== difficulty)
+
+  for (const question of [...preferred, ...fallback]) {
+    if (selected.length >= wanted) break
+    if (selectedIds.has(question.id)) continue
+    selected.push(question)
+    selectedIds.add(question.id)
+  }
+  return selected
+}
+
+export function difficultyCounts(
+  questions: QuestionBankItem[],
+): Record<PracticeDifficulty, number> {
+  return {
+    beginner: questions.filter((question) => question.difficulty === "beginner").length,
+    normal: questions.filter((question) => question.difficulty === "normal").length,
+    challenging: questions.filter((question) => question.difficulty === "challenging").length,
+    mixed: questions.length,
+  }
+}
+
+export function scoreImprovement(firstScore: number, retryScore: number): number {
+  return Math.round((retryScore - firstScore) * 10) / 10
+}
+
+export function shouldRecommendRetry(score: number): boolean {
+  return score < 3.5
+}
+
+export type RetryFlowState = "ready" | "correction" | "retrying" | "completed"
+export type RetryFlowEvent = "score" | "retry" | "retry_scored" | "skip"
+
+export function transitionRetryFlow(
+  state: RetryFlowState,
+  event: RetryFlowEvent,
+): RetryFlowState {
+  if (state === "ready" && event === "score") return "correction"
+  if (state === "correction" && event === "retry") return "retrying"
+  if (state === "correction" && event === "skip") return "completed"
+  if (state === "retrying" && event === "retry_scored") return "correction"
+  return state
+}
+
+export function duplicateVersionLabel(label: string, existingLabels: string[]): boolean {
+  const normalized = label.trim().toLocaleLowerCase()
+  return existingLabels.some((existing) => existing.trim().toLocaleLowerCase() === normalized)
+}
+
+export function suggestUniqueVersionLabel(
+  preferred: string,
+  existingLabels: string[],
+): string {
+  if (!duplicateVersionLabel(preferred, existingLabels)) return preferred
+  let suffix = 2
+  while (duplicateVersionLabel(`${preferred} ${suffix}`, existingLabels)) suffix += 1
+  return `${preferred} ${suffix}`
 }
 
 export interface ScriptVersionRef {

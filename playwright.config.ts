@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test"
 
 const externalBaseUrl = process.env.PLAYWRIGHT_BASE_URL
+const executablePath = process.env.PLAYWRIGHT_EXECUTABLE_PATH
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -17,6 +18,7 @@ export default defineConfig({
     hasTouch: true,
     isMobile: true,
     colorScheme: "light",
+    launchOptions: executablePath ? { executablePath } : undefined,
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
   },

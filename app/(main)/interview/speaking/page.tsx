@@ -1,548 +1,419 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
-import Link from "next/link"
-import {
-  AlertCircle,
-  ArrowLeft,
-  ArrowRight,
-  Award,
-  Info,
-  Loader2,
-  Mic,
-  RotateCcw,
-  Send,
-  Target,
-} from "lucide-react"
-import { motion } from "motion/react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Send } from "lucide-react"
 
-import { PageHero } from "@/components/app/page-hero"
-import { DrillAnswerBox } from "@/components/interview/DrillAnswerBox"
-import { SpeakingScoreCard } from "@/components/interview/SpeakingScoreCard"
-import { SpeakButton, getCachedAudioUrl } from "@/components/ui/SpeakButton"
+import { AnswerFrameHint } from "@/components/interview/AnswerFrameHint"
+import { CorrectionRetryPanel, PRONUNCIATION_DISCLAIMER } from "@/components/interview/CorrectionRetryPanel"
+import { ExamPracticeDashboard } from "@/components/interview/ExamPracticeDashboard"
+import { ListeningQuestionCard } from "@/components/interview/ListeningQuestionCard"
+import { QuestionBankBrowser } from "@/components/interview/QuestionBankBrowser"
+import { SpeakingControls } from "@/components/interview/SpeakingControls"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useSpeechRecognition } from "@/hooks/useSpeechRecognition"
 import { useLogActivity } from "@/hooks/useLogActivity"
 import { useScrollToTopOnChange } from "@/hooks/useScrollToTopOnChange"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
+import { useSpeechRecognition } from "@/hooks/useSpeechRecognition"
 import { getApiErrorMessage, interviewApi } from "@/lib/api"
-import type { SpeakingCheckResponse } from "@/lib/api/interview"
+import type { InterviewAttempt, SpeakingCheckResponse } from "@/lib/api/interview"
+import { dateKeyInTimeZone } from "@/lib/date-key"
 import {
+  DRILL_SIZE,
   averageSpeakingScores,
   buildDrillQueue,
-  DRILL_SIZE,
   pickStyleExamples,
   replaceUnseenTail,
-  SPEAKING_SCORE_KEYS,
-  SPEAKING_SCORE_LABELS,
   type DrillQuestion,
-  type SpeakingScores,
 } from "@/lib/interview-drills"
-import { selectFocusQueue } from "@/lib/interview-practice"
-import { registerSpeechAudio, stopSpeechAudio } from "@/lib/speech-audio"
-import { cn } from "@/lib/utils"
+import {
+  INTERVIEW_TIME_ZONE,
+  daysRemainingInSeoul,
+  mostDifficultQuestions,
+  recommendedDifficulty,
+  selectFocusQueue,
+  selectTodaysQueue,
+  type PracticeDifficulty,
+  type QuestionBankItem,
+  type QuestionProgress,
+} from "@/lib/interview-practice"
+import { stopSpeechAudio } from "@/lib/speech-audio"
+import { EXAM_DATE } from "@/lib/study-plan"
 
-const LAST_SESSION_KEY = "kori.drill.speaking.last"
+type PagePhase = "dashboard" | "bank" | "drill" | "summary"
+type PracticeMode = "today" | "ai" | "weak" | "selected"
 
-interface DrillResult {
-  question: DrillQuestion
+interface GradedAttempt {
   answer: string
+  detectedTranscript: string
   result: SpeakingCheckResponse
 }
 
-interface LastSession {
-  finishedAt: string
-  answered: number
-  averages: SpeakingScores | null
+interface QuestionRun {
+  question: DrillQuestion
+  attempts: GradedAttempt[]
+  skippedRetry: boolean
 }
 
-function loadLastSession(): LastSession | null {
-  if (typeof window === "undefined") return null
-  try {
-    const raw = window.localStorage.getItem(LAST_SESSION_KEY)
-    return raw ? (JSON.parse(raw) as LastSession) : null
-  } catch {
-    return null
-  }
+const LAST_SESSION_KEY = "kori.drill.speaking.last"
+
+function toDrillQuestion(question: QuestionBankItem): DrillQuestion {
+  return { id: question.id, ko: question.questionKo, en: question.questionEn ?? "" }
 }
 
-// Auto-speak through the shared session cache (SpeakButton owns the URLs, so
-// nothing to revoke). Autoplay failures are silent — the SpeakButton remains.
-// Resolves true only after playback finished, so the hands-free mic never
-// opens while the question audio is still playing.
-async function autoSpeak(text: string): Promise<boolean> {
-  if (!text) return false
-  let stopAudio: (() => void) | undefined
-  try {
-    const url = await getCachedAudioUrl(text)
-    const audio = new Audio(url)
-    const done = new Promise<boolean>((resolve) => {
-      stopAudio = registerSpeechAudio(audio, () => resolve(audio.ended))
-    })
-    await audio.play()
-    return await done
-  } catch {
-    // Blocked autoplay or TTS down — manual playback still works.
-    stopAudio?.()
-    return false
-  }
+function uniqueQueue(queue: DrillQuestion[]): DrillQuestion[] {
+  const seen = new Set<string>()
+  return queue.filter((question) => {
+    const key = question.id ?? question.ko
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 }
 
 export default function SpeakingDrillPage() {
   const { logActivity } = useLogActivity("interview")
   useSessionTimer("interview")
+  const speech = useSpeechRecognition({ lang: "ko-KR", continuous: true })
 
-  const [phase, setPhase] = useState<"intro" | "drill" | "summary">("intro")
+  const daysRemaining = daysRemainingInSeoul(EXAM_DATE)
+  const recommended = recommendedDifficulty(daysRemaining)
+  const [difficulty, setDifficulty] = useState<PracticeDifficulty>(recommended)
+  const [phase, setPhase] = useState<PagePhase>("dashboard")
+  const [mode, setMode] = useState<PracticeMode>("today")
+  const [questions, setQuestions] = useState<QuestionBankItem[]>([])
+  const [progress, setProgress] = useState<Record<string, QuestionProgress>>({})
+  const [latestAttempt, setLatestAttempt] = useState<InterviewAttempt | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState("")
   const [queue, setQueue] = useState<DrillQuestion[]>([])
   const [index, setIndex] = useState(0)
-  const [results, setResults] = useState<DrillResult[]>([])
-  const [current, setCurrent] = useState<SpeakingCheckResponse | null>(null)
+  const [runs, setRuns] = useState<QuestionRun[]>([])
+  const [detectedTranscript, setDetectedTranscript] = useState("")
+  const [audioPlaying, setAudioPlaying] = useState(false)
   const [isScoring, setIsScoring] = useState(false)
-  const [error, setError] = useState("")
-  const [lastSession, setLastSession] = useState<LastSession | null>(null)
-  // "Focus on weak questions" pulls from the DB-backed question bank + this
-  // account's per-question progress (lib/interview-practice.ts selectFocusQueue)
-  // instead of the static offline pool, so never-practiced and low-scoring
-  // questions come up first.
-  const [focusMode, setFocusMode] = useState(false)
+  const [retryCycle, setRetryCycle] = useState(0)
+  const sessionIdRef = useRef("")
+  const indexRef = useRef(0)
+  const [isRetrying, setIsRetrying] = useState(false)
+  indexRef.current = index
   useScrollToTopOnChange(phase)
 
-  // Continuous capture: the mic stays open across pauses (answers are 2–3
-  // sentences) until the candidate stops it or submits.
-  const speech = useSpeechRecognition({ lang: "ko-KR", continuous: true })
-  // Mirrors `index` so the background AI splice never clobbers a shown question.
-  const indexRef = useRef(0)
-  indexRef.current = index
-  // Guards the hands-free auto-listen: question audio can outlive the drill
-  // (End drill mid-playback), and the mic must not open then.
-  const drillActiveRef = useRef(false)
-  // Groups every answer saved during one drill under the same id
-  // (kori_interview_answers.session_id) — regenerated each time a drill starts.
-  const sessionIdRef = useRef<string>("")
-
-  useEffect(() => {
-    setLastSession(loadLastSession())
-    return () => {
-      drillActiveRef.current = false
-      stopSpeechAudio()
+  const loadDashboard = useCallback(async () => {
+    setLoading(true)
+    setError("")
+    try {
+      const [bank, savedProgress, attempts] = await Promise.all([
+        interviewApi.listQuestions("weather"),
+        interviewApi.listQuestionProgress(),
+        interviewApi.listAttempts(1),
+      ])
+      setQuestions(bank)
+      setProgress(savedProgress)
+      setLatestAttempt(attempts.at(-1) ?? null)
+    } catch (loadError) {
+      setError(getApiErrorMessage(loadError, "Could not load your exam question bank."))
+    } finally {
+      setLoading(false)
     }
   }, [])
 
-  const question = queue[index]
+  useEffect(() => {
+    void loadDashboard()
+    return () => {
+      stopSpeechAudio()
+    }
+  }, [loadDashboard])
 
-  function launchQueue(initialQueue: DrillQuestion[]) {
-    setQueue(initialQueue)
-    setIndex(0)
-    setResults([])
-    setCurrent(null)
-    setError("")
+  const currentQuestion = queue[index]
+  const currentRun = runs.find((run) => (run.question.id ?? run.question.ko) === (currentQuestion?.id ?? currentQuestion?.ko))
+  const firstAttempt = currentRun?.attempts[0]
+  const retryAttempt = currentRun && currentRun.attempts.length > 1 ? currentRun.attempts.at(-1) : undefined
+
+  function launchQueue(nextQueue: DrillQuestion[], nextMode: PracticeMode) {
+    const unique = uniqueQueue(nextQueue).slice(0, DRILL_SIZE)
+    if (unique.length === 0) {
+      setError("No eligible questions are available for this practice mode.")
+      return
+    }
+    stopSpeechAudio()
     speech.reset()
-    drillActiveRef.current = true
+    setDetectedTranscript("")
+    setAudioPlaying(false)
+    setQueue(unique)
+    setIndex(0)
+    setRuns([])
+    setRetryCycle(0)
+    setIsRetrying(false)
+    setError("")
+    setMode(nextMode)
     sessionIdRef.current = crypto.randomUUID()
     setPhase("drill")
-    void autoSpeak(initialQueue[0]?.ko ?? "").then((played) => {
-      if (played && drillActiveRef.current) speech.start()
+  }
+
+  function startToday() {
+    const dateKey = dateKeyInTimeZone(new Date(), INTERVIEW_TIME_ZONE)
+    const storageKey = `koriai.interview.today:${dateKey}:${difficulty}`
+    let storedIds: string[] = []
+    try {
+      storedIds = JSON.parse(window.localStorage.getItem(storageKey) ?? "[]") as string[]
+    } catch {
+      storedIds = []
+    }
+    const selected = selectTodaysQueue(questions, progress, difficulty, DRILL_SIZE, storedIds)
+    try {
+      window.localStorage.setItem(storageKey, JSON.stringify(selected.map((question) => question.id)))
+    } catch {
+      // The pure deterministic order still remains stable when storage is unavailable.
+    }
+    launchQueue(selected.map(toDrillQuestion), "today")
+  }
+
+  function startWeak() {
+    const weakPool = questions.filter((question) => {
+      const item = progress[question.id]
+      return item && item.timesPracticed > 0 && item.status !== "strong"
+    })
+    const selected = selectFocusQueue(weakPool, progress, DRILL_SIZE)
+    const fallback = selected.length > 0 ? selected : mostDifficultQuestions(questions, progress, DRILL_SIZE)
+    if (fallback.length === 0) {
+      setError("Complete Today's 5 to begin identifying your weak questions.")
+      return
+    }
+    launchQueue(fallback.map(toDrillQuestion), "weak")
+  }
+
+  function startAiRandom() {
+    const staticQueue = buildDrillQueue()
+    launchQueue(staticQueue, "ai")
+    interviewApi.drillQuestions({
+      kind: "speaking",
+      count: DRILL_SIZE,
+      complexityHint: "natural weather-interview phrasing for a beginner answer of 2-3 sentences",
+      styleExamples: pickStyleExamples(),
+      avoid: staticQueue.map((question) => question.ko),
+    }).then(({ questions: generated }) => {
+      if (generated.length === 0) return
+      setQueue((current) => uniqueQueue(replaceUnseenTail(
+        current,
+        generated.map((question) => ({ ko: question.ko, en: question.en })),
+        indexRef.current + 1,
+      )))
+    }).catch(() => {
+      // Static questions provide a complete offline-safe AI-mode fallback.
     })
   }
 
-  function startDrill() {
-    if (focusMode) {
-      // Bank questions have stable ids, so progress tracking works; if the
-      // fetch fails (offline, not signed in yet), fall back to the static
-      // pool rather than blocking the drill.
-      Promise.all([interviewApi.listQuestions("weather"), interviewApi.listQuestionProgress()])
-        .then(([questions, progress]) => {
-          const focusQueue = selectFocusQueue(questions, progress, DRILL_SIZE).map(
-            (q): DrillQuestion => ({ id: q.id, ko: q.questionKo, en: q.questionEn ?? "" })
-          )
-          launchQueue(focusQueue.length > 0 ? focusQueue : buildDrillQueue())
-        })
-        .catch(() => launchQueue(buildDrillQueue()))
+  async function submitAnswer() {
+    if (!currentQuestion || isScoring) return
+    const stoppedTranscript = speech.status === "listening" ? speech.stop() : ""
+    const answer = (stoppedTranscript || speech.transcript).trim()
+    const detected = (detectedTranscript || stoppedTranscript || speech.transcript).trim()
+    if (!answer) {
+      speech.setError("Record or type a complete Korean answer before submitting.")
       return
     }
-
-    const staticQueue = buildDrillQueue()
-    launchQueue(staticQueue)
-
-    // Fresh AI questions replace whatever hasn't been shown yet; failure is
-    // silent — the static queue is a complete drill on its own.
-    interviewApi
-      .drillQuestions({
-        kind: "speaking",
-        count: DRILL_SIZE,
-        complexityHint: "natural interview phrasing",
-        styleExamples: pickStyleExamples(),
-        avoid: staticQueue.map((q) => q.ko),
-      })
-      .then(({ questions }) => {
-        if (questions.length === 0) return
-        setQueue((prev) =>
-          replaceUnseenTail(
-            prev,
-            questions.map((q) => ({ ko: q.ko, en: q.en })),
-            indexRef.current + 1
-          )
-        )
-      })
-      .catch(() => {})
-  }
-
-  async function submitAnswer() {
-    const answer = (speech.status === "listening" ? speech.stop() : speech.transcript).trim()
-    if (!answer || !question || isScoring) return
-    setError("")
+    if (!detectedTranscript) setDetectedTranscript(detected)
     setIsScoring(true)
+    setError("")
     try {
-      const result = await interviewApi.speakingCheck({ question: question.ko, answer })
-      setCurrent(result)
-      setResults((prev) => [...prev, { question, answer, result }])
+      const result = await interviewApi.speakingCheck({ question: currentQuestion.ko, answer })
+      const attempt: GradedAttempt = { answer, detectedTranscript: detected, result }
+      setRuns((currentRuns) => {
+        const key = currentQuestion.id ?? currentQuestion.ko
+        const existing = currentRuns.find((run) => (run.question.id ?? run.question.ko) === key)
+        if (!existing) return [...currentRuns, { question: currentQuestion, attempts: [attempt], skippedRetry: false }]
+        return currentRuns.map((run) => (run.question.id ?? run.question.ko) === key
+          ? { ...run, attempts: [...run.attempts, attempt] }
+          : run)
+      })
+      setIsRetrying(false)
+      await interviewApi.saveAnswer({
+        questionId: currentQuestion.id ?? null,
+        sessionType: "speaking_drill",
+        sessionId: sessionIdRef.current,
+        questionKo: currentQuestion.ko,
+        answerText: answer,
+        scores: result.scores,
+        feedback: result.feedback,
+        correctedAnswer: result.correctedAnswer,
+        naturalAlternative: result.betterAlternative,
+        tip: result.tip,
+      })
+      if (currentQuestion.id) {
+        const nextProgress = await interviewApi.listQuestionProgress()
+        setProgress(nextProgress)
+      }
       void logActivity()
-      // Fire-and-forget: history/progress persistence must never block the
-      // drill, and a failure here has already been surfaced to the user via
-      // the scorecard they can see (see lib/api/interview.ts saveAnswer).
-      void interviewApi
-        .saveAnswer({
-          questionId: question.id ?? null,
-          sessionType: "speaking_drill",
-          sessionId: sessionIdRef.current,
-          questionKo: question.ko,
-          answerText: answer,
-          scores: result.scores,
-          feedback: result.feedback,
-          correctedAnswer: result.correctedAnswer,
-          naturalAlternative: result.betterAlternative,
-          tip: result.tip,
-        })
-        .catch((err) => console.warn("Could not save interview answer:", err))
-    } catch (err) {
-      setError(getApiErrorMessage(err, "Could not score your answer. Try again."))
+    } catch (submitError) {
+      setError(getApiErrorMessage(submitError, "Could not score or save this answer. Your transcript is preserved - try again."))
     } finally {
       setIsScoring(false)
     }
   }
 
-  function nextQuestion() {
-    speech.reset()
-    setCurrent(null)
-    setError("")
-    if (index + 1 >= queue.length) {
-      finishDrill()
-      return
-    }
-    const nextIdx = index + 1
-    setIndex(nextIdx)
-    void autoSpeak(queue[nextIdx]?.ko ?? "").then((played) => {
-      if (played && drillActiveRef.current) speech.start()
-    })
-  }
-
-  function finishDrill() {
-    drillActiveRef.current = false
+  function retryAnswer() {
     stopSpeechAudio()
     speech.reset()
-    const summary: LastSession = {
-      finishedAt: new Date().toISOString(),
-      answered: results.length,
-      averages: averageSpeakingScores(results.map((r) => r.result.scores)),
+    setDetectedTranscript("")
+    setAudioPlaying(false)
+    setError("")
+    setIsRetrying(true)
+    setRetryCycle((value) => value + 1)
+  }
+
+  function nextQuestion() {
+    if (!currentQuestion) return
+    setRuns((currentRuns) => currentRuns.map((run) =>
+      (run.question.id ?? run.question.ko) === (currentQuestion.id ?? currentQuestion.ko) && run.attempts.length === 1
+        ? { ...run, skippedRetry: true }
+        : run,
+    ))
+    setIsRetrying(false)
+    stopSpeechAudio()
+    speech.reset()
+    setDetectedTranscript("")
+    setAudioPlaying(false)
+    setError("")
+    setRetryCycle(0)
+    if (index + 1 >= queue.length) {
+      finishSession()
+      return
     }
+    setIndex((value) => value + 1)
+  }
+
+  function finishSession() {
+    stopSpeechAudio()
+    speech.reset()
+    const allAttempts = runs.flatMap((run) => run.attempts)
+    const averages = averageSpeakingScores(allAttempts.map((attempt) => attempt.result.scores))
     try {
-      window.localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(summary))
+      window.localStorage.setItem(LAST_SESSION_KEY, JSON.stringify({
+        finishedAt: new Date().toISOString(),
+        answered: runs.length,
+        averages,
+      }))
     } catch {
-      // ignore
+      // Summary still renders for this session.
     }
-    setLastSession(summary)
     setPhase("summary")
   }
 
-  // ── Intro ────────────────────────────────────────────────────────
-  if (phase === "intro") {
+  const stateLabel = useMemo(() => {
+    if (isScoring) return "Scoring"
+    if (speech.status === "listening") return "Listening"
+    if (speech.transcript.trim()) return "Ready to submit"
+    if (retryCycle > 0) return "Retrying"
+    return speech.supported ? "Ready" : "Ready for manual entry"
+  }, [isScoring, retryCycle, speech.status, speech.supported, speech.transcript])
+
+  if (phase === "bank") {
+    return <QuestionBankBrowser questions={questions} progress={progress} onBack={() => setPhase("dashboard")} onPractice={(selected) => launchQueue(selected.map(toDrillQuestion), "selected")} />
+  }
+
+  if (phase === "dashboard") {
     return (
-      <div className="space-y-6 pb-12 sm:space-y-8">
-        <PageHero
-          eyebrow="Exam Prep · 말하기 드릴"
-          title="Speaking Drill"
-          description="Rapid reps for the real interview: one question at a time — answer out loud in 2–3 sentences and get instant scores with a corrected version and a natural model answer."
-          stats={[
-            { label: "Questions", value: String(DRILL_SIZE) },
-            { label: "Answer length", value: "2–3 sentences" },
-            { label: "Scored on", value: "6 criteria" },
-          ]}
-          actions={
-            <Button
-              asChild
-              variant="outline"
-              className="h-10 rounded-xl border-border bg-background px-4 font-bold hover:bg-accent"
-            >
-              <Link href="/interview">
-                <ArrowLeft size={16} className="mr-2" /> Mock Interview
-              </Link>
-            </Button>
-          }
+      <div className="pb-12">
+        <ExamPracticeDashboard
+          questions={questions}
+          progress={progress}
+          latestAttempt={latestAttempt}
+          daysRemaining={daysRemaining}
+          recommended={recommended}
+          difficulty={difficulty}
+          loading={loading}
+          error={error}
+          onDifficultyChange={setDifficulty}
+          onPracticeToday={startToday}
+          onAiRandom={startAiRandom}
+          onReviewWeak={startWeak}
+          onBrowse={() => setPhase("bank")}
         />
-
-        {lastSession?.averages && (
-          <Card className="rounded-[1.8rem] border-border bg-card shadow-sm dark:bg-slate-900/40 sm:rounded-[2.2rem]">
-            <CardContent className="p-5 sm:p-6">
-              <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Last session · {new Date(lastSession.finishedAt).toLocaleDateString()}
-              </p>
-              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-6">
-                {SPEAKING_SCORE_KEYS.map((key) => (
-                  <div key={key} className="rounded-2xl border border-border bg-accent/5 px-3 py-2">
-                    <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                      {SPEAKING_SCORE_LABELS[key]}
-                    </p>
-                    <p className="text-lg font-bold tabular-nums text-foreground">
-                      {lastSession.averages![key]}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={() => setFocusMode((v) => !v)}
-            aria-pressed={focusMode}
-            className={cn(
-              "inline-flex items-center gap-2 rounded-2xl border px-4 py-2.5 text-sm font-bold shadow-sm transition-all active:scale-95",
-              focusMode
-                ? "border-amber-500/40 bg-amber-500/10 text-amber-700 dark:text-amber-400"
-                : "border-border bg-background text-muted-foreground hover:bg-accent"
-            )}
-          >
-            <Target size={16} strokeWidth={2.5} />
-            Focus on weak questions
-          </button>
-        </div>
-
-        <div className="flex justify-center">
-          <Button
-            onClick={startDrill}
-            className="h-14 w-full rounded-2xl bg-blue-600 px-10 text-base font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95 sm:w-auto"
-          >
-            <Mic size={20} className="mr-2" /> Start Drill
-          </Button>
-        </div>
       </div>
     )
   }
 
-  // ── Summary ──────────────────────────────────────────────────────
   if (phase === "summary") {
-    const averages = averageSpeakingScores(results.map((r) => r.result.scores))
+    const allAttempts = runs.flatMap((run) => run.attempts)
+    const averages = averageSpeakingScores(allAttempts.map((attempt) => attempt.result.scores))
+    const retried = runs.filter((run) => run.attempts.length > 1).length
     return (
-      <div className="space-y-5 pb-12 sm:space-y-6">
-        <PageHero
-          eyebrow="Speaking Drill · Result"
-          title="Drill Complete"
-          description={`You answered ${results.length} question${results.length === 1 ? "" : "s"}. Review the model answers below — reading them aloud once is the fastest way to lock them in.`}
-          stats={[
-            { label: "Answered", value: String(results.length) },
-            {
-              label: "Avg Speaking",
-              value: averages ? `${averages.speaking} / 5` : "—",
-            },
-            {
-              label: "Avg Naturalness",
-              value: averages ? `${averages.naturalness} / 5` : "—",
-            },
-          ]}
-        />
-
-        {averages && (
-          <Card className="rounded-[1.8rem] border-border bg-card shadow-xl dark:bg-slate-900/40 sm:rounded-[2.2rem]">
-            <CardContent className="p-5 sm:p-6">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
-                  Session averages
-                </p>
-                <Badge className="rounded-lg border-none bg-amber-500/10 px-2.5 py-1 text-[11px] font-bold text-amber-700 dark:text-amber-400">
-                  <Info size={12} className="mr-1" strokeWidth={2.5} />
-                  Estimated from transcript — no audio analysis
-                </Badge>
-              </div>
-              <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                {SPEAKING_SCORE_KEYS.map((key) => {
-                  const score = averages[key]
-                  return (
-                    <div key={key} className="rounded-2xl border border-border bg-accent/5 px-3 py-2.5">
-                      <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                        {SPEAKING_SCORE_LABELS[key]}
-                      </p>
-                      <p
-                        className={cn(
-                          "mt-0.5 text-xl font-bold tabular-nums",
-                          score >= 4
-                            ? "text-emerald-600 dark:text-emerald-400"
-                            : score >= 3
-                              ? "text-foreground"
-                              : "text-rose-600 dark:text-rose-400"
-                        )}
-                      >
-                        {score}
-                        <span className="text-xs font-medium text-muted-foreground"> / 5</span>
-                      </p>
-                    </div>
-                  )
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Review list */}
-        {results.map((r, i) => (
-          <Card
-            key={i}
-            className="rounded-[1.8rem] border-border bg-card shadow-sm dark:bg-slate-900/40 sm:rounded-[2.2rem]"
-          >
-            <CardContent className="space-y-3 p-5 sm:p-6">
-              <div className="flex items-start justify-between gap-3">
-                <p className="font-bold leading-snug text-foreground">
-                  {i + 1}. {r.question.ko}
-                </p>
-                <SpeakButton text={r.question.ko} className="mt-0.5 shrink-0 p-1.5" />
-              </div>
-              <p className="text-sm font-medium text-muted-foreground">You: {r.answer}</p>
-              {r.result.betterAlternative && (
-                <div className="flex items-start justify-between gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3">
-                  <p className="text-sm font-bold leading-relaxed text-foreground">
-                    {r.result.betterAlternative}
-                  </p>
-                  <SpeakButton text={r.result.betterAlternative} className="mt-0.5 shrink-0 p-1.5" />
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ))}
-
-        <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-          <Button
-            onClick={startDrill}
-            className="h-14 w-full rounded-2xl bg-blue-600 px-10 text-base font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-700 active:scale-95 sm:w-auto"
-          >
-            <RotateCcw size={20} className="mr-2" /> Drill Again
-          </Button>
-          <Button
-            asChild
-            variant="outline"
-            className="h-14 w-full rounded-2xl border-border bg-background px-8 text-base font-bold hover:bg-accent active:scale-95 sm:w-auto"
-          >
-            <Link href="/interview">
-              <ArrowLeft size={20} className="mr-2" /> Back to Mock Interview
-            </Link>
-          </Button>
-        </div>
+      <div className="mx-auto max-w-3xl space-y-5 pb-12">
+        <Card className="rounded-2xl border-blue-500/25 shadow-sm">
+          <CardContent className="p-6 text-center sm:p-8">
+            <CheckCircle2 className="mx-auto size-10 text-blue-600" />
+            <h1 className="mt-4 text-2xl font-bold text-foreground">Today&apos;s practice is complete</h1>
+            <p className="mt-2 text-sm text-muted-foreground">You completed {runs.length} questions and retried {retried}. Your stable-question progress has been updated.</p>
+            <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              <div className="rounded-xl bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Questions</p><p className="mt-1 text-xl font-bold">{runs.length}</p></div>
+              <div className="rounded-xl bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Speaking estimate</p><p className="mt-1 text-xl font-bold">{averages?.speaking.toFixed(1) ?? "\u2014"}</p></div>
+              <div className="col-span-2 rounded-xl bg-muted/40 p-3 sm:col-span-1"><p className="text-xs text-muted-foreground">Retries</p><p className="mt-1 text-xl font-bold">{retried}</p></div>
+            </div>
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{PRONUNCIATION_DISCLAIMER}</p>
+            <Button onClick={() => { setPhase("dashboard"); void loadDashboard() }} className="mt-6 h-12 w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700 sm:w-auto sm:px-8">Back to exam dashboard</Button>
+          </CardContent>
+        </Card>
       </div>
     )
   }
 
-  // ── Drill ────────────────────────────────────────────────────────
   return (
-    <div className="space-y-5 pb-12 sm:space-y-6">
-      <PageHero
-        eyebrow="Speaking Drill · In Progress"
-        title={`Question ${index + 1} of ${queue.length}`}
-        description="Answer out loud in 2–3 complete sentences. Short, clear, confident — exactly like the real exam."
-        stats={[
-          { label: "Question", value: `${index + 1}/${queue.length}` },
-          { label: "Scored", value: String(results.length) },
-          { label: "Input", value: speech.supported ? "Voice" : "Manual" },
-        ]}
-        actions={
-          <Button
-            variant="outline"
-            onClick={finishDrill}
-            className="h-10 rounded-xl border-border bg-background px-4 font-bold hover:bg-accent"
-          >
-            End drill
-          </Button>
-        }
-      />
+    <div className="mx-auto max-w-3xl space-y-4 pb-32 sm:pb-16">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <Button variant="ghost" onClick={() => { stopSpeechAudio(); speech.reset(); setPhase("dashboard") }} className="-ml-3 rounded-xl"><ArrowLeft className="mr-2 size-4" />End drill</Button>
+          <div className="mt-1 flex flex-wrap items-center gap-2"><Badge variant="outline">{mode === "today" ? "Today's 5" : mode === "ai" ? "AI Random" : mode === "weak" ? "Weak review" : "Selected questions"}</Badge><span className="text-sm text-muted-foreground">{index + 1} / {queue.length}</span></div>
+        </div>
+        <div className="h-2 w-32 overflow-hidden rounded-full bg-muted" aria-label={`${index + 1} of ${queue.length} questions`}><div className="h-full bg-blue-600 transition-[width] motion-reduce:transition-none" style={{ width: `${((index + 1) / queue.length) * 100}%` }} /></div>
+      </div>
 
-      {/* Question */}
-      <Card className="rounded-[1.8rem] border-border bg-card shadow-xl dark:bg-slate-900/40 sm:rounded-[2.2rem]">
-        <CardContent className="space-y-4 p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-3">
-            <p className="text-[1.4rem] font-bold leading-tight text-foreground sm:text-2xl">
-              {question?.ko}
-            </p>
-          </div>
-          <div className="flex items-center gap-1.5 rounded-2xl border border-border bg-background p-1.5 shadow-sm w-fit">
-            <div className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-accent">
-              <SpeakButton text={question?.ko ?? ""} className="p-0" />
-              <span className="text-xs font-bold uppercase tracking-tighter text-muted-foreground">
-                Normal
-              </span>
-            </div>
-            <div className="mx-1 h-4 w-px bg-border" />
-            <div className="flex items-center gap-2 rounded-xl px-3 py-2 hover:bg-accent">
-              <SpeakButton text={question?.ko ?? ""} className="p-0" playbackRate={0.75} />
-              <span className="text-xs font-bold uppercase tracking-tighter text-muted-foreground">
-                Slow
-              </span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      {currentQuestion ? (
+        <ListeningQuestionCard
+          question={currentQuestion}
+          questionNumber={index + 1}
+          total={queue.length}
+          resetKey={`${currentQuestion.id ?? currentQuestion.ko}:${retryCycle}`}
+          onPlayingChange={setAudioPlaying}
+        />
+      ) : null}
 
-      {/* Answer or result */}
-      {current ? (
-        <>
-          <SpeakingScoreCard result={current} />
-          <Button
-            onClick={nextQuestion}
-            className="h-12 w-full rounded-2xl bg-foreground px-6 text-sm font-bold text-background shadow-lg transition-all active:scale-95 sm:h-14"
-          >
-            {index + 1 >= queue.length ? (
-              <>
-                <Award size={18} className="mr-2" /> See Session Summary
-              </>
-            ) : (
-              <>
-                <ArrowRight size={18} className="mr-2" /> Next Question
-              </>
-            )}
-          </Button>
-        </>
+      {firstAttempt && !isRetrying ? (
+        <CorrectionRetryPanel
+          questionId={currentQuestion?.id ?? currentQuestion?.ko ?? "unknown"}
+          firstAnswer={firstAttempt.answer}
+          firstResult={firstAttempt.result}
+          retryAnswer={retryAttempt?.answer}
+          retryResult={retryAttempt?.result}
+          onRetry={retryAnswer}
+          onNext={nextQuestion}
+          isLast={index + 1 >= queue.length}
+        />
       ) : (
-        <Card className="rounded-[1.8rem] border-border bg-card shadow-xl dark:bg-slate-900/40 sm:rounded-[2.2rem]">
-          <CardContent className="space-y-5 p-5 sm:p-6">
-            <DrillAnswerBox speech={speech} disabled={isScoring} />
-            {error && (
-              <motion.div
-                initial={{ opacity: 0, scale: 0.97 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex items-start gap-3 rounded-2xl border border-destructive/20 bg-destructive/5 p-4"
-              >
-                <AlertCircle size={18} className="mt-0.5 shrink-0 text-destructive" />
-                <p className="text-sm font-bold leading-relaxed text-destructive">{error}</p>
-              </motion.div>
-            )}
-            <Button
-              onClick={submitAnswer}
-              disabled={!speech.transcript.trim() || isScoring}
-              className="h-12 w-full rounded-2xl bg-foreground px-6 text-sm font-bold text-background shadow-lg transition-all active:scale-95 disabled:opacity-40 sm:h-14"
-            >
-              {isScoring ? (
-                <>
-                  <Loader2 size={18} className="mr-2 animate-spin" /> Scoring…
-                </>
-              ) : (
-                <>
-                  <Send size={18} className="mr-2" /> Submit for Scoring
-                </>
-              )}
-            </Button>
+        <Card className="rounded-2xl border-border shadow-sm">
+          <CardContent className="space-y-4 p-4 sm:p-6">
+            <AnswerFrameHint />
+            <SpeakingControls
+              speech={speech}
+              audioPlaying={audioPlaying}
+              disabled={isScoring}
+              detectedTranscript={detectedTranscript}
+              onDetectedTranscript={setDetectedTranscript}
+              stateLabel={stateLabel}
+            />
+            {error ? <div role="alert" aria-live="assertive" className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"><AlertCircle className="mt-0.5 size-4 shrink-0" />{error}</div> : null}
           </CardContent>
         </Card>
       )}
+
+      {!firstAttempt || isRetrying ? (
+        <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-border bg-background/95 p-2 shadow-lg backdrop-blur sm:bottom-4">
+          <Button onClick={submitAnswer} disabled={!speech.transcript.trim() || isScoring || audioPlaying} className="h-12 w-full rounded-xl bg-blue-600 font-semibold text-white hover:bg-blue-700">
+            {isScoring ? <><Loader2 className="mr-2 size-4 animate-spin" />Scoring</> : <><Send className="mr-2 size-4" />Submit confirmed transcript</>}
+          </Button>
+        </div>
+      ) : null}
     </div>
   )
 }

@@ -3,9 +3,19 @@ import { describe, expect, it } from "vitest"
 import {
   averageScore,
   computeNextProgress,
+  daysRemainingInSeoul,
+  difficultyCounts,
+  duplicateVersionLabel,
   focusScore,
   mostDifficultQuestions,
+  recommendedDifficulty,
+  scoreImprovement,
   selectFocusQueue,
+  selectTodaysQueue,
+  shouldRecommendRetry,
+  suggestUniqueVersionLabel,
+  summarizeQuestionProgress,
+  transitionRetryFlow,
   versionsToDeactivate,
   type QuestionBankItem,
   type QuestionProgress,
@@ -136,6 +146,128 @@ describe("selectFocusQueue", () => {
   it("caps results to the requested size", () => {
     const questions = [question({ id: "a" }), question({ id: "b" }), question({ id: "c" })]
     expect(selectFocusQueue(questions, {}, 1)).toHaveLength(1)
+  })
+})
+
+describe("exam planning", () => {
+  it("calculates remaining civil days in Asia/Seoul", () => {
+    expect(daysRemainingInSeoul("2026-08-29", new Date("2026-08-03T15:30:00Z"))).toBe(25)
+    expect(daysRemainingInSeoul("2026-08-29", new Date("2026-08-28T15:30:00Z"))).toBe(0)
+  })
+
+  it("recommends the correct difficulty window", () => {
+    expect(recommendedDifficulty(25)).toBe("beginner")
+    expect(recommendedDifficulty(24)).toBe("normal")
+    expect(recommendedDifficulty(14)).toBe("normal")
+    expect(recommendedDifficulty(13)).toBe("challenging")
+    expect(recommendedDifficulty(6)).toBe("challenging")
+    expect(recommendedDifficulty(5)).toBe("mixed")
+  })
+})
+
+describe("selectTodaysQueue", () => {
+  const bank = [
+    question({ id: "b1", difficulty: "beginner", priority: "recommended", displayOrder: 1 }),
+    question({ id: "b2", difficulty: "beginner", priority: "must_practice", displayOrder: 2 }),
+    question({ id: "b3", difficulty: "beginner", priority: "recommended", displayOrder: 3 }),
+    question({ id: "b4", difficulty: "beginner", priority: "recommended", displayOrder: 4 }),
+    question({ id: "b5", difficulty: "beginner", priority: "recommended", displayOrder: 5 }),
+    question({ id: "n1", difficulty: "normal", priority: "must_practice", displayOrder: 6 }),
+  ]
+
+  it("filters by difficulty and returns stable unique ids", () => {
+    const first = selectTodaysQueue(bank, {}, "beginner", 5)
+    const second = selectTodaysQueue(bank, {}, "beginner", 5)
+    expect(first.map((item) => item.id)).toEqual(second.map((item) => item.id))
+    expect(first.every((item) => item.difficulty === "beginner")).toBe(true)
+    expect(new Set(first.map((item) => item.id)).size).toBe(5)
+  })
+
+  it("prioritizes must-practise questions", () => {
+    expect(selectTodaysQueue(bank, {}, "beginner", 1)[0].id).toBe("b2")
+  })
+
+  it("prioritizes new questions over strong questions", () => {
+    const samePriority = bank.map((item) => ({ ...item, priority: "recommended" as const }))
+    const progressMap = {
+      b2: progress({ questionId: "b2", status: "strong", avgScore: 4.8, timesPracticed: 4 }),
+    }
+    expect(selectTodaysQueue(samePriority, progressMap, "beginner", 2).map((item) => item.id)).toEqual([
+      "b1",
+      "b3",
+    ])
+  })
+
+  it("prioritizes lower-scoring practised questions", () => {
+    const practised = bank.slice(0, 2).map((item) => ({ ...item, priority: "recommended" as const }))
+    const queue = selectTodaysQueue(practised, {
+      b1: progress({ questionId: "b1", avgScore: 4, timesPracticed: 2 }),
+      b2: progress({ questionId: "b2", avgScore: 2, timesPracticed: 2 }),
+    }, "beginner", 2)
+    expect(queue.map((item) => item.id)).toEqual(["b2", "b1"])
+  })
+
+  it("fills from other difficulties when fewer than five match", () => {
+    const queue = selectTodaysQueue(bank, {}, "normal", 5)
+    expect(queue).toHaveLength(5)
+    expect(queue[0].id).toBe("n1")
+  })
+
+  it("preserves stored ids after progress changes", () => {
+    const stored = ["b4", "b3", "b2", "b1", "b5"]
+    const queue = selectTodaysQueue(bank, {
+      b4: progress({ questionId: "b4", avgScore: 5, status: "strong" }),
+    }, "beginner", 5, stored)
+    expect(queue.map((item) => item.id)).toEqual(stored)
+  })
+
+  it("derives level counts from the bank", () => {
+    expect(difficultyCounts(bank)).toEqual({ beginner: 5, normal: 1, challenging: 0, mixed: 6 })
+  })
+})
+
+describe("progress summary and retry", () => {
+  it("explains an empty progress state through zero practiced counts", () => {
+    const summary = summarizeQuestionProgress([question({ id: "a" }), question({ id: "b" })], {})
+    expect(summary).toMatchObject({ total: 2, practiced: 0, newCount: 2, needsRetry: 0 })
+  })
+
+  it("counts practising, improving, and strong states", () => {
+    const questions = [question({ id: "a" }), question({ id: "b" }), question({ id: "c" })]
+    const summary = summarizeQuestionProgress(questions, {
+      a: progress({ questionId: "a", status: "practicing", avgScore: 2 }),
+      b: progress({ questionId: "b", status: "improving", avgScore: 3.7, timesPracticed: 2 }),
+      c: progress({ questionId: "c", status: "strong", avgScore: 4.5, timesPracticed: 3 }),
+    })
+    expect(summary).toMatchObject({ practiced: 3, practicing: 1, improving: 1, strong: 1, needsRetry: 1 })
+  })
+
+  it("computes first-attempt versus retry improvement", () => {
+    expect(scoreImprovement(2.3, 3.8)).toBe(1.5)
+    expect(shouldRecommendRetry(3.4)).toBe(true)
+    expect(shouldRecommendRetry(3.5)).toBe(false)
+  })
+})
+
+describe("retry flow", () => {
+  it("moves through correction, retry, and completion states", () => {
+    expect(transitionRetryFlow("ready", "score")).toBe("correction")
+    expect(transitionRetryFlow("correction", "retry")).toBe("retrying")
+    expect(transitionRetryFlow("retrying", "retry_scored")).toBe("correction")
+    expect(transitionRetryFlow("correction", "skip")).toBe("completed")
+  })
+})
+
+describe("script version labels", () => {
+  it("warns about duplicate labels case-insensitively", () => {
+    expect(duplicateVersionLabel("final practice version", ["Final Practice Version"])).toBe(true)
+  })
+
+  it("suggests the next unique numbered label", () => {
+    expect(suggestUniqueVersionLabel("Final Practice Version", [
+      "Final Practice Version",
+      "Final Practice Version 2",
+    ])).toBe("Final Practice Version 3")
   })
 })
 

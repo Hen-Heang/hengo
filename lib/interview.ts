@@ -153,9 +153,9 @@ const WEATHER_SCRIPT_SEED: Record<string, string> = {
   intro:
     "안녕하세요. 오늘은 한국과 캄보디아의 여름이 어떻게 다른지, 그리고 그 날씨가 우리 생활과 건강에 주는 영향을 제 경험과 함께 이야기해 보겠습니다.",
   "korea-summer":
-    "한국의 여름은 6월부터 8월까지입니다. 보통 30도 정도인데, 더운 날은 35도가 넘습니다. 그리고 장마라고 해서 비가 계속 오는 때가 있습니다. 습도도 높아서 실제 온도보다 더 덥게 느껴집니다.\n그래서 사람들은 우산을 항상 가지고 다니고, 수영장이나 바다에 가기도 하고, 삼계탕을 먹으면서 힘을 얻기도 합니다.",
+    "한국의 여름은 보통 6월부터 8월까지입니다. 기온은 보통 30도 정도이지만, 더운 날에는 35도가 넘을 때도 있습니다. 장마철에는 비가 많이 오고 습도도 높아서 실제 기온보다 더 덥게 느껴집니다. 그래서 사람들은 우산을 가지고 다니고, 에어컨이 있는 실내에서 많은 시간을 보냅니다.",
   compare:
-    "캄보디아는 좀 다릅니다. 일 년 내내 덥고, 건기와 우기 두 계절만 있습니다. 가장 더운 때는 3월부터 5월인데, 40도 가까이 올라갑니다. 그래서 낮에는 너무 더워서 밖에 잘 나가지 않고, 저녁이 되면 시원해져서 그때 친구들과 밖에 나가곤 합니다.\n한국도 비슷하게, 더운 날에는 다들 에어컨이나 선풍기를 틀어놓은 곳에서 시간을 보냅니다.",
+    "캄보디아는 한국과 조금 다릅니다. 캄보디아는 일 년 내내 덥고, 건기와 우기 두 계절이 있습니다. 가장 더운 시기는 3월부터 5월까지이고, 기온이 40도 가까이 올라갈 때도 있습니다. 낮에는 너무 더워서 밖에 잘 나가지 않고, 저녁에 날씨가 조금 시원해지면 친구들과 밖에 나가곤 했습니다.\n\n가장 더운 시기에는 가끔 친구들과 캄폿이나 시아누크빌, 즉 껌뽕솜 같은 바닷가에 갔습니다. 바다에서 수영하고 시원한 바람을 느끼면서 더위를 식혔습니다. 친구들과 함께 즐거운 시간을 보내서 좋은 추억이 되었습니다.\n\n한국도 비슷한 점이 있습니다. 날씨가 더울 때 사람들은 수영장이나 바다에 가고, 에어컨이 있는 카페나 쇼핑몰에서 시간을 보냅니다. 하지만 한국은 캄보디아보다 습도가 높아서 실제 기온이 더 낮아도 더 덥고 답답하게 느껴질 때가 있습니다.",
   "daily-life":
     "날씨가 다르니까 생활 방식도 조금 달라집니다. 밖에 다니는 시간도 바꾸게 되고, 낮에는 활동을 줄이게 됩니다.",
   health:
@@ -171,9 +171,9 @@ const WEATHER_SCRIPT_SEED_EN: Record<string, string> = {
   intro:
     "Hello. Today, I would like to talk about the differences between summer in Korea and Cambodia, and how the weather affects our daily life and health based on my own experience.",
   "korea-summer":
-    "Summer in Korea is from June to August. The temperature is usually around 30°C, but on very hot days it can go over 35°C. There is also a rainy season called jangma, when it rains continuously. The humidity is also very high, so it feels hotter than the actual temperature.\nBecause of this, people always carry umbrellas, go to swimming pools or the beach, and sometimes eat food like samgyetang to regain their energy.",
+    "Summer in Korea is usually from June to August. The temperature is normally around 30°C, but it can rise above 35°C on very hot days. During the rainy season, it rains a lot and the humidity is high, so it feels hotter than the actual temperature. Therefore, people carry umbrellas and spend a lot of time indoors with air conditioning.",
   compare:
-    "Cambodia is a little different. It is hot all year round and has only two seasons: the dry season and the rainy season. The hottest period is from March to May, when the temperature can reach nearly 40°C. During the daytime, it is too hot to go outside, so people usually stay indoors. In the evening, when it becomes cooler, people often go outside with their friends.\nKorea is similar in some ways. On hot days, people also spend time in places with air conditioning or fans.",
+    "Cambodia is a little different from Korea. It is hot throughout the year and has two seasons: the dry season and the rainy season. The hottest period is from March to May, and the temperature can sometimes rise to nearly 40°C. During the day, it is often too hot to go outside. When the weather becomes cooler in the evening, I used to go out with my friends.\n\nDuring the hottest period, I sometimes went to seaside areas such as Kampot or Sihanoukville, also known as Kampong Som, with my friends. We swam in the sea and enjoyed the cool breeze to escape the heat. Spending time there with my friends became a good memory.\n\nKorea is similar in some ways. When the weather is hot, people visit swimming pools or beaches and spend time in air-conditioned cafés or shopping malls. However, Korea has higher humidity, so it can sometimes feel hotter and more uncomfortable even when the actual temperature is lower than in Cambodia.",
   "daily-life":
     "Because the weather is different, our lifestyle also changes. We change the time we go outside and reduce outdoor activities during the daytime.",
   health:
