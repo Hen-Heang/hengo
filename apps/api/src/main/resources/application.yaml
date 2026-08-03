@@ -1,0 +1,107 @@
+server:
+  port: ${PORT:8080}
+  compression:
+    enabled: true
+    mime-types: application/json,text/plain,text/css,text/html,application/javascript
+    min-response-size: 1024
+  tomcat:
+    threads:
+      max: ${TOMCAT_MAX_THREADS:20}
+      min-spare: ${TOMCAT_MIN_SPARE_THREADS:5}
+
+spring:
+  application:
+    name: koriai-backend
+  main:
+    lazy-initialization: true
+  servlet:
+    multipart:
+      # Profile image uploads are capped at 2 MB in UserController; give a small
+      # headroom so the framework limit isn't hit before our own validation.
+      max-file-size: 3MB
+      max-request-size: 3MB
+  datasource:
+    url: ${DATABASE_URL:${DB_URL:jdbc:postgresql://localhost:5432/aitestdb}}
+    username: ${DB_USERNAME:${DATABASE_USERNAME:${PGUSER:postgres}}}
+    password: ${DB_PASSWORD:${DATABASE_PASSWORD:${PGPASSWORD:123}}}
+    driver-class-name: org.postgresql.Driver
+    # Explicit HikariCP sizing. Overridable via env for deploy. connection-timeout
+    # is the key "smoothness" knob — fail fast (10s) if the pool is exhausted
+    # instead of blocking the request thread; keep-warm idle connections avoid
+    # cold-connect latency on the first query after a quiet period.
+    hikari:
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:5}
+      minimum-idle: ${DB_POOL_MIN_IDLE:1}
+      connection-timeout: ${DB_POOL_CONNECTION_TIMEOUT:10000}
+      idle-timeout: 300000
+      max-lifetime: 1200000
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: ${SPRING_FLYWAY_BASELINE_ON_MIGRATE:true}
+    baseline-version: ${SPRING_FLYWAY_BASELINE_VERSION:1}
+    # Disabled because seed migrations (e.g. reading units) embed dollar-quoted
+    # JSONB literals like `$json${...}` where the `$` + `{` forms `${`, which
+    # Flyway otherwise tries to resolve as a placeholder and fails to parse.
+    placeholder-replacement: false
+
+openai:
+  api-key: ${OPENAI_API_KEY:}
+  base-url: https://api.openai.com/v1
+  model: gpt-5-mini
+  mock-enabled: ${OPENAI_MOCK_ENABLED:false}
+
+springdoc:
+  api-docs:
+    enabled: ${SPRINGDOC_ENABLED:false}
+  swagger-ui:
+    enabled: ${SPRINGDOC_ENABLED:false}
+
+mybatis:
+  mapper-locations: classpath*:mapper/**/*.xml
+  type-aliases-package: com.heang.koriaibackend.domain
+  type-handlers-package: com.heang.koriaibackend.common.mybatis
+  configuration:
+    map-underscore-to-camel-case: true
+
+jwt:
+  secret: ${JWT_SECRET:replace-this-with-a-long-random-256-bit-secret}
+  access-token-expiration-ms: 3600000
+  # Refresh token lifetime: 30 days. Clients exchange it at /api/auth/refresh for a
+  # new short-lived access token, so users stay logged in without re-entering credentials.
+  refresh-token-expiration-ms: ${JWT_REFRESH_TOKEN_EXPIRATION_MS:2592000000}
+
+google:
+  # Comma-separated list of accepted Google OAuth client IDs (token audiences).
+  # Include the web client ID used by the frontend and, if reused, the Supabase Google client ID.
+  client-ids: ${GOOGLE_CLIENT_IDS:816815778182-9nipn87u732cj9cqgs1k4nihiohch17s.apps.googleusercontent.com}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000,http://localhost:3001}
+
+# Absolute base URL of the frontend, used to build clickable links in push
+# notifications (e.g. Telegram messages). Leave blank to send link-less messages.
+app:
+  frontend-base-url: ${APP_FRONTEND_BASE_URL:}
+
+# Telegram bot push channel. The channel self-disables when the bot-token is blank.
+#   bot-token: token from @BotFather
+#   bot-username: the bot's @name (without @), used to build t.me deep links
+#   webhook-secret: optional shared secret validated on the webhook header
+#   webhook-base-url: public HTTPS origin of THIS backend; the webhook is auto-registered with Telegram on startup at <base>/api/telegram/webhook. On
+#     Railway, it defaults to RAILWAY_PUBLIC_DOMAIN (https:// is added if missing).
+telegram:
+  bot-token: ${TELEGRAM_BOT_TOKEN:}
+  bot-username: ${TELEGRAM_BOT_USERNAME:}
+  webhook-secret: ${TELEGRAM_WEBHOOK_SECRET:}
+  webhook-base-url: ${TELEGRAM_WEBHOOK_BASE_URL:${RAILWAY_PUBLIC_DOMAIN:}}
+
+# Web Push (browser) VAPID keys. The channel self-disables when keys are blank.
+# Generate once: npx web-push generate-vapid-keys
+#   subject must be a mailto: or https: URL identifying the sender.
+webpush:
+  vapid:
+    public-key: ${VAPID_PUBLIC_KEY:}
+    private-key: ${VAPID_PRIVATE_KEY:}
+    subject: ${VAPID_SUBJECT:mailto:admin@koriai.app}
+

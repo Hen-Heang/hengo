@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.chat.mapper.ConversationMapper">
+
+    <resultMap id="ConversationResultMap" type="com.heang.koriaibackend.domain.chat.model.Conversation">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="scenarioId" column="scenario_id"/>
+        <result property="title" column="title"/>
+        <result property="conversationType" column="conversation_type"/>
+        <result property="modelUsed" column="model_used"/>
+        <result property="messageCount" column="message_count"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, user_id, scenario_id, title, conversation_type, model_used, message_count, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.heang.koriaibackend.domain.chat.model.Conversation"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO conversations (
+            user_id,
+            scenario_id,
+            title,
+            conversation_type,
+            model_used
+        ) VALUES (
+            #{userId},
+            #{scenarioId},
+            #{title},
+            #{conversationType},
+            #{modelUsed}
+        )
+    </insert>
+
+    <select id="findById" resultMap="ConversationResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM conversations
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByUserId" resultMap="ConversationResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM conversations
+        WHERE user_id = #{userId}
+        ORDER BY updated_at DESC
+        LIMIT #{limit} OFFSET #{offset}
+    </select>
+
+    <update id="updateTitle">
+        UPDATE conversations
+        SET title = #{title},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="incrementMessageCount">
+        UPDATE conversations
+        SET message_count = message_count + 1,
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM conversations WHERE id = #{id}
+    </delete>
+</mapper>

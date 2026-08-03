@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.goal.mapper.TaskMapper">
+
+    <resultMap id="TaskResultMap" type="com.heang.koriaibackend.domain.goal.model.Task">
+        <id property="id" column="id"/>
+        <result property="goalId" column="goal_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="completed" column="completed"/>
+        <result property="startDate" column="start_date"/>
+        <result property="endDate" column="end_date"/>
+        <result property="dailyStartTime" column="daily_start_time"/>
+        <result property="dailyEndTime" column="daily_end_time"/>
+        <result property="anytime" column="is_anytime"/>
+        <result property="durationMinutes" column="duration_minutes"/>
+        <result property="color" column="color"/>
+        <result property="tags" column="tags"
+                typeHandler="com.heang.koriaibackend.common.mybatis.StringListTypeHandler"/>
+        <result property="updatedBy" column="updated_by"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, goal_id, user_id, title, description, completed, start_date, end_date,
+        daily_start_time, daily_end_time, is_anytime, duration_minutes, color,
+        tags, updated_by, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.heang.koriaibackend.domain.goal.model.Task">
+        INSERT INTO tasks (
+            id, goal_id, user_id, title, description, completed,
+            start_date, end_date, daily_start_time, daily_end_time,
+            is_anytime, duration_minutes, color, tags, updated_by
+        ) VALUES (
+            #{id}, #{goalId}, #{userId}, #{title}, #{description}, #{completed},
+            #{startDate}, #{endDate}, #{dailyStartTime}, #{dailyEndTime},
+            #{anytime}, #{durationMinutes}, #{color},
+            #{tags, typeHandler=com.heang.koriaibackend.common.mybatis.StringListTypeHandler, jdbcType=ARRAY},
+            #{updatedBy}
+        )
+    </insert>
+
+    <select id="findById" resultMap="TaskResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM tasks
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByGoal" resultMap="TaskResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM tasks
+        WHERE goal_id = #{goalId}
+        ORDER BY start_date NULLS LAST, created_at
+    </select>
+
+    <select id="findRange" resultMap="TaskResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM tasks
+        <choose>
+            <when test="goalId != null">
+                WHERE goal_id = #{goalId}
+            </when>
+            <otherwise>
+                WHERE user_id = #{userId}
+            </otherwise>
+        </choose>
+        <if test="from != null">AND start_date &gt;= #{from}</if>
+        <if test="to != null">AND start_date &lt;= #{to}</if>
+        ORDER BY start_date NULLS LAST, created_at
+    </select>
+
+    <update id="update" parameterType="com.heang.koriaibackend.domain.goal.model.Task">
+        UPDATE tasks
+        SET title            = #{title},
+            description      = #{description},
+            completed        = #{completed},
+            start_date       = #{startDate},
+            end_date         = #{endDate},
+            daily_start_time = #{dailyStartTime},
+            daily_end_time   = #{dailyEndTime},
+            is_anytime       = #{anytime},
+            duration_minutes = #{durationMinutes},
+            color            = #{color},
+            tags             = #{tags, typeHandler=com.heang.koriaibackend.common.mybatis.StringListTypeHandler, jdbcType=ARRAY},
+            updated_by       = #{updatedBy},
+            updated_at       = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateCompleted">
+        UPDATE tasks
+        SET completed  = #{completed},
+            updated_by = #{updatedBy},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteById">
+        DELETE FROM tasks WHERE id = #{id}
+    </delete>
+
+    <!--
+      Due reminders (ported from Orbit's get_due_task_reminders RPC).
+      A task's absolute start instant is its wall-clock daily time interpreted in
+      the owner's timezone: (date(start_date in tz) + daily_start_time) in tz.
+      We remind once the (start_instant - offset) window has opened but the task
+      hasn't started yet. reminder_sent_at (stamped by markReminderSent) dedupes,
+      so a missed cron minute still fires on the next run rather than being lost.
+    -->
+    <resultMap id="DueTaskReminderMap" type="com.heang.koriaibackend.domain.goal.model.DueTaskReminder">
+        <id property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="goalId" column="goal_id"/>
+    </resultMap>
+
+    <select id="findDueReminders" resultMap="DueTaskReminderMap">
+        WITH computed AS (
+            SELECT
+                t.id      AS task_id,
+                t.user_id AS user_id,
+                COALESCE(NULLIF(TRIM(t.title), ''), LEFT(t.description, 80), 'Task') AS title,
+                t.goal_id AS goal_id,
+                u.reminder_offset_minutes AS offset_min,
+                (
+                    (date(t.start_date AT TIME ZONE COALESCE(u.timezone, 'UTC')) + t.daily_start_time)
+                        AT TIME ZONE COALESCE(u.timezone, 'UTC')
+                ) AS start_instant
+            FROM tasks t
+            JOIN users u ON u.id = t.user_id
+            WHERE t.completed = false
+              AND COALESCE(t.is_anytime, false) = false
+              AND t.daily_start_time IS NOT NULL
+              AND t.reminder_sent_at IS NULL
+        )
+        SELECT task_id, user_id, title, goal_id
+        FROM computed
+        WHERE start_instant > now()
+          AND (start_instant - make_interval(mins => COALESCE(offset_min, 30))) &lt;= now()
+    </select>
+
+    <update id="markReminderSent">
+        UPDATE tasks SET reminder_sent_at = now() WHERE id = #{id}
+    </update>
+
+    <!--
+      Due-soon reminders. Same shape as findDueReminders but on the task's END
+      instant: (date(end_date in tz) + daily_end_time) in tz. We warn once the
+      (end_instant - offset) window has opened, but the deadline hasn't passed yet.
+      due_soon_sent_at dedupes; a missed cron minute self-healing on the next run.
+    -->
+    <select id="findDueSoonReminders" resultMap="DueTaskReminderMap">
+        WITH computed AS (
+            SELECT
+                t.id      AS task_id,
+                t.user_id AS user_id,
+                COALESCE(NULLIF(TRIM(t.title), ''), LEFT(t.description, 80), 'Task') AS title,
+                t.goal_id AS goal_id,
+                u.reminder_offset_minutes AS offset_min,
+                (
+                    (date(t.end_date AT TIME ZONE COALESCE(u.timezone, 'UTC')) + t.daily_end_time)
+                        AT TIME ZONE COALESCE(u.timezone, 'UTC')
+                ) AS end_instant
+            FROM tasks t
+            JOIN users u ON u.id = t.user_id
+            WHERE t.completed = false
+              AND COALESCE(t.is_anytime, false) = false
+              AND t.daily_end_time IS NOT NULL
+              AND t.due_soon_sent_at IS NULL
+        )
+        SELECT task_id, user_id, title, goal_id
+        FROM computed
+        WHERE end_instant > now()
+          AND (end_instant - make_interval(mins => COALESCE(offset_min, 30))) &lt;= now()
+    </select>
+
+    <update id="markDueSoonSent">
+        UPDATE tasks SET due_soon_sent_at = now() WHERE id = #{id}
+    </update>
+
+    <!--
+      Overdue reminders. The task's END instant has already passed and it's still
+      incomplete. overdue_sent_at dedupes (one warning per task); the V28 backfill
+      stamps tasks already overdue at deploy time so this never retro-fires.
+    -->
+    <select id="findOverdueReminders" resultMap="DueTaskReminderMap">
+        WITH computed AS (
+            SELECT
+                t.id      AS task_id,
+                t.user_id AS user_id,
+                COALESCE(NULLIF(TRIM(t.title), ''), LEFT(t.description, 80), 'Task') AS title,
+                t.goal_id AS goal_id,
+                (
+                    (date(t.end_date AT TIME ZONE COALESCE(u.timezone, 'UTC')) + t.daily_end_time)
+                        AT TIME ZONE COALESCE(u.timezone, 'UTC')
+                ) AS end_instant
+            FROM tasks t
+            JOIN users u ON u.id = t.user_id
+            WHERE t.completed = false
+              AND COALESCE(t.is_anytime, false) = false
+              AND t.daily_end_time IS NOT NULL
+              AND t.overdue_sent_at IS NULL
+        )
+        SELECT task_id, user_id, title, goal_id
+        FROM computed
+        WHERE end_instant &lt;= now()
+    </select>
+
+    <update id="markOverdueSent">
+        UPDATE tasks SET overdue_sent_at = now() WHERE id = #{id}
+    </update>
+
+</mapper>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.notification.mapper.StudyReminderMapper">
+
+    <!-- Anchored to Seoul wall clock, matching the dashboard's streak/due logic. -->
+    <sql id="seoulToday">(now() AT TIME ZONE 'Asia/Seoul')::date</sql>
+    <sql id="seoulTimeOfDay">(now() AT TIME ZONE 'Asia/Seoul')::time</sql>
+
+    <!-- Same activity sources the dashboard counts toward the streak, but grouped
+         by user so the scheduler can scan every user in one pass. -->
+    <sql id="activityByUser">
+        SELECT user_id, DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM sentence_corrections
+        UNION ALL
+        SELECT c.user_id, DATE(m.created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM messages m JOIN conversations c ON m.conversation_id = c.id
+        WHERE m.role = 'USER'
+        UNION ALL
+        SELECT user_id, DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM vocab_cards
+        UNION ALL
+        SELECT user_id, DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM vocab_cards WHERE last_reviewed_at IS NOT NULL
+        UNION ALL
+        SELECT user_id, DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM listening_attempts
+    </sql>
+
+    <!--
+      Reviews-due recipients: the user's study hour has arrived (Seoul), they
+      haven't been reminded today, and they actually have SRS cards due. The
+      due-count filter is applied in the outer query so the message can report it.
+    -->
+    <select id="findReviewsDueRecipients"
+            resultType="com.heang.koriaibackend.domain.notification.model.StudyReminderRecipient">
+        SELECT "userId", "dueCount" FROM (
+            SELECT
+                u.id AS "userId",
+                (
+                    SELECT COUNT(*) FROM vocab_cards v
+                    WHERE v.user_id = u.id
+                      AND v.next_review_date &lt;= <include refid="seoulToday"/>
+                ) + (
+                    SELECT COUNT(*) FROM sentence_corrections sc
+                    WHERE sc.user_id = u.id
+                      AND sc.next_review_date &lt;= <include refid="seoulToday"/>
+                ) AS "dueCount"
+            FROM users u
+            WHERE COALESCE(u.study_reminders_enabled, true) = true
+              AND (u.reviews_due_pushed_on IS NULL
+                   OR u.reviews_due_pushed_on &lt; <include refid="seoulToday"/>)
+              AND <include refid="seoulTimeOfDay"/> &gt;= make_time(COALESCE(u.study_reminder_hour, 20), 0, 0)
+        ) s
+        WHERE "dueCount" &gt; 0
+    </select>
+
+    <update id="markReviewsDuePushed">
+        UPDATE users SET reviews_due_pushed_on = <include refid="seoulToday"/> WHERE id = #{userId}
+    </update>
+
+    <!--
+      Streak-saver recipients: evening (Seoul) window, not yet reminded today,
+      had activity yesterday (so a streak is live) but none yet today. Firing at
+      21:00 leaves a window to act before midnight, and the 20:00 reviews nudge
+      means anyone who already studied is naturally excluded by the "no activity
+      today" check.
+    -->
+    <select id="findStreakSaverRecipients"
+            resultType="com.heang.koriaibackend.domain.notification.model.StudyReminderRecipient">
+        WITH act AS (
+            <include refid="activityByUser"/>
+        )
+        SELECT u.id AS "userId", 0 AS "dueCount"
+        FROM users u
+        WHERE COALESCE(u.study_reminders_enabled, true) = true
+          AND (u.streak_saver_pushed_on IS NULL
+               OR u.streak_saver_pushed_on &lt; <include refid="seoulToday"/>)
+          AND <include refid="seoulTimeOfDay"/> &gt;= make_time(21, 0, 0)
+          AND NOT EXISTS (
+              SELECT 1 FROM act a WHERE a.user_id = u.id AND a.day = <include refid="seoulToday"/>
+          )
+          AND EXISTS (
+              SELECT 1 FROM act a WHERE a.user_id = u.id AND a.day = <include refid="seoulToday"/> - 1
+          )
+    </select>
+
+    <update id="markStreakSaverPushed">
+        UPDATE users SET streak_saver_pushed_on = <include refid="seoulToday"/> WHERE id = #{userId}
+    </update>
+
+    <!--
+      Exam-countdown recipients: the user's study hour has arrived (Seoul) and
+      they haven't been reminded today. No activity/due-count gate — this nudge
+      should land every day regardless, right alongside the reviews-due check.
+      The exam-passed cutoff is applied in Java (StudyReminderScheduler), not here.
+    -->
+    <select id="findExamCountdownRecipients"
+            resultType="com.heang.koriaibackend.domain.notification.model.StudyReminderRecipient">
+        SELECT u.id AS "userId", 0 AS "dueCount"
+        FROM users u
+        WHERE COALESCE(u.study_reminders_enabled, true) = true
+          AND (u.exam_countdown_pushed_on IS NULL
+               OR u.exam_countdown_pushed_on &lt; <include refid="seoulToday"/>)
+          AND <include refid="seoulTimeOfDay"/> &gt;= make_time(COALESCE(u.study_reminder_hour, 20), 0, 0)
+    </select>
+
+    <update id="markExamCountdownPushed">
+        UPDATE users SET exam_countdown_pushed_on = <include refid="seoulToday"/> WHERE id = #{userId}
+    </update>
+
+</mapper>
