@@ -10,7 +10,6 @@ import {
   XAxis,
 } from "recharts"
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import type { ProgressPoint } from "@/lib/types"
 import { formatDuration } from "@/lib/utils"
 

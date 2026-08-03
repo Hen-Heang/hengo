@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react"
+import type { ReactNode } from "react"
 
 export function TipCard({
   icon: Icon,
@@ -7,7 +8,7 @@ export function TipCard({
 }: {
   icon: LucideIcon
   title: string
-  children: React.ReactNode
+  children: ReactNode
 }) {
   return (
     <div className="rounded-3xl border border-border bg-card/50 p-6 backdrop-blur-sm dark:bg-slate-900/20">

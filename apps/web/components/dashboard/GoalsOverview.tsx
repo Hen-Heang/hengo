@@ -3,7 +3,7 @@
 import { useMemo } from "react"
 import Link from "next/link"
 import { motion } from "motion/react"
-import { ArrowRight, ClipboardList, Plus, Target } from "lucide-react"
+import { ClipboardList, Target } from "lucide-react"
 
 import { Button as UIButton } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
