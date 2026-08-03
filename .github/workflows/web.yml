@@ -28,7 +28,9 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     env:
-      NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+      # The task mutation suite rejects non-local URLs even though it replaces
+      # the Supabase client with an in-memory fake.
+      NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: placeholder-publishable-key
       OPENAI_API_KEY: sk-placeholder-ci-key
       NEXT_PUBLIC_GOOGLE_CLIENT_ID: placeholder.apps.googleusercontent.com
