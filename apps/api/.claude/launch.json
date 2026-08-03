@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "koriai-frontend",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--dir", "/Users/mac/Documents/koriai-frontend", "dev"],
+      "port": 3000
+    }
+  ]
+}

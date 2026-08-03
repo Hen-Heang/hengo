@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.users.mapper.UserMapper">
+
+    <resultMap id="UserResultMap" type="com.heang.koriaibackend.domain.users.model.User">
+        <id property="id" column="id"/>
+        <result property="email" column="email"/>
+        <result property="passwordHash" column="password_hash"/>
+        <result property="displayName" column="display_name"/>
+        <result property="koreanLevel" column="korean_level"/>
+        <result property="preferredModel" column="preferred_model"/>
+        <result property="country" column="country"/>
+        <result property="nativeLanguage" column="native_language"/>
+        <result property="occupation" column="occupation"/>
+        <result property="yearsOfExperience" column="years_of_experience"/>
+        <result property="learningGoal" column="learning_goal"/>
+        <result property="hasProfileImage" column="has_profile_image"/>
+        <result property="studyRemindersEnabled" column="study_reminders_enabled"/>
+        <result property="studyReminderHour" column="study_reminder_hour"/>
+        <result property="vocabBestStreak" column="vocab_best_streak"/>
+        <result property="profileImageContentType" column="profile_image_content_type"/>
+        <result property="profileImageData" column="profile_image_data"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="BaseColumns">
+        id, email, password_hash, display_name, korean_level, preferred_model,
+        country, native_language, occupation, years_of_experience, learning_goal,
+        (profile_image_data IS NOT NULL) AS has_profile_image,
+        study_reminders_enabled, study_reminder_hour, vocab_best_streak,
+        created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.heang.koriaibackend.domain.users.model.User"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO users (
+            email,
+            password_hash,
+            display_name,
+            korean_level,
+            preferred_model
+        ) VALUES (
+            #{email},
+            #{passwordHash},
+            #{displayName},
+            #{koreanLevel},
+            #{preferredModel}
+        )
+    </insert>
+
+    <select id="findById" resultMap="UserResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByEmail" resultMap="UserResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM users
+        WHERE email = #{email}
+    </select>
+
+    <select id="searchByQuery" resultMap="UserResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM users
+        WHERE id &lt;&gt; #{excludeId}
+          AND (display_name ILIKE '%' || #{query} || '%' OR email ILIKE '%' || #{query} || '%')
+        ORDER BY display_name
+        LIMIT #{limit}
+    </select>
+
+    <update id="updateProfile">
+        UPDATE users
+        SET display_name        = #{displayName},
+            korean_level        = #{koreanLevel},
+            country             = COALESCE(#{country}, country),
+            native_language     = COALESCE(#{nativeLanguage}, native_language),
+            occupation          = COALESCE(#{occupation}, occupation),
+            years_of_experience = COALESCE(#{yearsOfExperience}, years_of_experience),
+            learning_goal       = COALESCE(#{learningGoal}, learning_goal),
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updatePreferredModel">
+        UPDATE users
+        SET preferred_model = #{preferredModel},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateKoreanLevel">
+        UPDATE users
+        SET korean_level = #{koreanLevel},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateStudyReminders">
+        UPDATE users
+        SET study_reminders_enabled = #{enabled},
+            study_reminder_hour = #{hour},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateVocabBestStreakIfHigher">
+        UPDATE users
+        SET vocab_best_streak = GREATEST(vocab_best_streak, #{streak}),
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <update id="updateProfileImage">
+        UPDATE users
+        SET profile_image_content_type = #{contentType},
+            profile_image_data = #{data},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="findProfileImage" resultMap="UserResultMap">
+        SELECT id, profile_image_content_type, profile_image_data
+        FROM users
+        WHERE id = #{id}
+    </select>
+
+    <delete id="deleteById">
+        DELETE FROM users WHERE id = #{id}
+    </delete>
+</mapper>

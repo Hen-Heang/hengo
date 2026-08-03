@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.dashboard.mapper.DashboardMapper">
+
+    <!-- KoriAI targets developers in Korea, so "today" is anchored to Seoul time,
+         not the server/UTC date. Use this fragment instead of CURRENT_DATE so a
+         late-evening Seoul session doesn't land on the wrong calendar day. -->
+    <sql id="seoulToday">(NOW() AT TIME ZONE 'Asia/Seoul')::date</sql>
+
+    <!-- Any learning action counts as activity: corrections (created or SRS-reviewed),
+         chat messages, vocab deck building, flashcard reviews, listening practice,
+         reading units (started/quizzed), Foundations lessons, and any other AI
+         feature use (daily phrase, analyzer, message generator, goal task
+         generation, ...) recorded in api_usage_logs. -->
+    <sql id="activityDaysUnion">
+        SELECT DISTINCT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM sentence_corrections WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM sentence_corrections WHERE user_id = #{userId} AND last_reviewed_at IS NOT NULL
+        UNION
+        SELECT DISTINCT DATE(m.created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM messages m JOIN conversations c ON m.conversation_id = c.id
+        WHERE c.user_id = #{userId} AND m.role = 'USER'
+        UNION
+        SELECT DISTINCT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM vocab_cards WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM vocab_cards WHERE user_id = #{userId} AND last_reviewed_at IS NOT NULL
+        UNION
+        SELECT DISTINCT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM listening_attempts WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT DATE(updated_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM reading_progress WHERE user_id = #{userId}
+        UNION
+        SELECT DISTINCT DATE(last_attempt_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM foundation_progress WHERE user_id = #{userId} AND last_attempt_at IS NOT NULL
+        UNION
+        SELECT DISTINCT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+        FROM api_usage_logs WHERE user_id = #{userId}
+    </sql>
+
+    <select id="countCorrectionsThisWeek" resultType="int">
+        SELECT COUNT(*) FROM sentence_corrections
+        WHERE user_id = #{userId}
+          AND created_at >= NOW() - INTERVAL '7 days'
+    </select>
+
+    <select id="countTotalWordsSaved" resultType="int">
+        SELECT COUNT(*) FROM vocab_cards WHERE user_id = #{userId}
+    </select>
+
+    <select id="countReviewsToday" resultType="int">
+        SELECT
+            (SELECT COUNT(*) FROM vocab_cards
+             WHERE user_id = #{userId}
+               AND last_reviewed_at IS NOT NULL
+               AND DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') = <include refid="seoulToday"/>)
+            +
+            (SELECT COUNT(*) FROM sentence_corrections
+             WHERE user_id = #{userId}
+               AND last_reviewed_at IS NOT NULL
+               AND DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') = <include refid="seoulToday"/>)
+    </select>
+
+    <select id="countCorrectionsToday" resultType="int">
+        SELECT COUNT(*) FROM sentence_corrections
+        WHERE user_id = #{userId}
+          AND DATE(created_at AT TIME ZONE 'Asia/Seoul') = <include refid="seoulToday"/>
+    </select>
+
+    <select id="countDueReviews" resultType="int">
+        SELECT
+            (SELECT COUNT(*) FROM vocab_cards
+             WHERE user_id = #{userId}
+               AND next_review_date &lt;= <include refid="seoulToday"/>)
+            +
+            (SELECT COUNT(*) FROM sentence_corrections
+             WHERE user_id = #{userId}
+               AND next_review_date &lt;= <include refid="seoulToday"/>)
+    </select>
+
+    <!-- Forgiving streak: a single missed day does not break the chain
+         (gaps of up to 2 calendar days connect), and the streak survives
+         until 2 full days pass with no activity. Counts active days only. -->
+    <select id="countStreakDays" resultType="int">
+        WITH activity_days AS (
+            <include refid="activityDaysUnion"/>
+        ),
+        ordered AS (
+            SELECT day FROM activity_days WHERE day &lt;= <include refid="seoulToday"/>
+        ),
+        gaps AS (
+            SELECT day, day - LEAD(day) OVER (ORDER BY day DESC) AS gap
+            FROM ordered
+        ),
+        runs AS (
+            SELECT day,
+                   SUM(CASE WHEN gap IS NULL OR gap &lt;= 2 THEN 0 ELSE 1 END)
+                       OVER (ORDER BY day DESC ROWS UNBOUNDED PRECEDING) AS grp
+            FROM gaps
+        )
+        SELECT CASE
+            WHEN (SELECT MAX(day) FROM ordered) &gt;= <include refid="seoulToday"/> - 2
+            THEN (SELECT COUNT(*) FROM runs WHERE grp = 0)
+            ELSE 0
+        END
+    </select>
+
+    <select id="hasActivityToday" resultType="boolean">
+        SELECT EXISTS (
+            SELECT 1 FROM (
+                <include refid="activityDaysUnion"/>
+            ) a WHERE a.day = <include refid="seoulToday"/>
+        )
+    </select>
+
+    <select id="getActivityDays" resultType="string">
+        SELECT TO_CHAR(a.day, 'YYYY-MM-DD')
+        FROM (
+            <include refid="activityDaysUnion"/>
+        ) a
+        WHERE TO_CHAR(a.day, 'YYYY-MM') = #{month}
+        ORDER BY a.day
+    </select>
+
+    <select id="getDailyActivity" resultType="map">
+        WITH days AS (
+            SELECT generate_series(
+                <include refid="seoulToday"/> - INTERVAL '6 days',
+                <include refid="seoulToday"/>,
+                INTERVAL '1 day'
+            )::date AS day
+        ),
+        corrections AS (
+            SELECT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM sentence_corrections WHERE user_id = #{userId}
+              AND created_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        messages AS (
+            SELECT DATE(m.created_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM messages m JOIN conversations c ON m.conversation_id = c.id
+            WHERE c.user_id = #{userId} AND m.role = 'USER'
+              AND m.created_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        <!-- LISTENING is counted directly from listening_attempts below (it has
+             the actual per-attempt date; api_usage_logs only has the one-time
+             generation event), so it's excluded here to avoid double-counting. -->
+        other_usage AS (
+            SELECT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM api_usage_logs
+            WHERE user_id = #{userId}
+              AND feature NOT IN ('CHAT', 'CORRECTION', 'LISTENING')
+              AND created_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        <!-- Vocab review/deck-building never logs to api_usage_logs, so it has to
+             be read straight from vocab_cards (mirrors activityDaysUnion above) —
+             otherwise a day spent only reviewing flashcards shows zero activity. -->
+        vocab_activity AS (
+            SELECT day, COUNT(*) AS cnt FROM (
+                SELECT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day
+                FROM vocab_cards WHERE user_id = #{userId}
+                  AND created_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+                UNION ALL
+                SELECT DATE(last_reviewed_at AT TIME ZONE 'Asia/Seoul') AS day
+                FROM vocab_cards WHERE user_id = #{userId} AND last_reviewed_at IS NOT NULL
+                  AND last_reviewed_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            ) v
+            GROUP BY 1
+        ),
+        listening_activity AS (
+            SELECT DATE(created_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM listening_attempts
+            WHERE user_id = #{userId}
+              AND created_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        <!-- Reading units (start/quiz/complete) and Foundations lessons never log
+             to api_usage_logs either — read straight from their progress tables,
+             same as vocab_activity above. One row per (user, unit/lesson), and
+             updated_at/last_attempt_at is touched on every action including the
+             first (unlike vocab_cards.last_reviewed_at, which starts NULL) — so
+             unlike vocab_activity, only ONE timestamp column is counted here to
+             avoid double-counting that first action. -->
+        reading_activity AS (
+            SELECT DATE(updated_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM reading_progress WHERE user_id = #{userId}
+              AND updated_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        foundation_activity AS (
+            SELECT DATE(last_attempt_at AT TIME ZONE 'Asia/Seoul') AS day, COUNT(*) AS cnt
+            FROM foundation_progress WHERE user_id = #{userId} AND last_attempt_at IS NOT NULL
+              AND last_attempt_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        ),
+        <!-- Real time-on-page from the frontend useSessionTimer hook.
+             Prefer this over the count-based proxy; falls back to 0 for days
+             before activity_logs existed (honest — we simply didn't track then). -->
+        real_minutes AS (
+            SELECT DATE(logged_at AT TIME ZONE 'Asia/Seoul') AS day,
+                   LEAST(480, SUM(duration_ms) / 60000) AS minutes
+            FROM activity_logs
+            WHERE user_id = #{userId}
+              AND logged_at >= <include refid="seoulToday"/> - INTERVAL '6 days'
+            GROUP BY 1
+        )
+        SELECT
+            TO_CHAR(d.day, 'Dy') AS day,
+            COALESCE(rm.minutes, 0) AS minutes,
+            CASE WHEN COALESCE(m.cnt, 0) + COALESCE(cor.cnt, 0) + COALESCE(o.cnt, 0)
+                      + COALESCE(v.cnt, 0) + COALESCE(l.cnt, 0)
+                      + COALESCE(r.cnt, 0) + COALESCE(f.cnt, 0) > 0
+                 THEN LEAST(100, 70 + COALESCE(cor.cnt, 0) * 5)
+                 ELSE 0 END AS accuracy
+        FROM days d
+        LEFT JOIN real_minutes rm ON rm.day = d.day
+        LEFT JOIN messages m ON m.day = d.day
+        LEFT JOIN corrections cor ON cor.day = d.day
+        LEFT JOIN other_usage o ON o.day = d.day
+        LEFT JOIN vocab_activity v ON v.day = d.day
+        LEFT JOIN listening_activity l ON l.day = d.day
+        LEFT JOIN reading_activity r ON r.day = d.day
+        LEFT JOIN foundation_activity f ON f.day = d.day
+        ORDER BY d.day ASC
+    </select>
+
+</mapper>

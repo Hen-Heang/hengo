@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.goal.mapper.GoalMapper">
+
+    <resultMap id="GoalResultMap" type="com.heang.koriaibackend.domain.goal.model.Goal">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="description" column="description"/>
+        <result property="targetDate" column="target_date"/>
+        <result property="status" column="status"/>
+        <result property="metadata" column="metadata"/>
+        <result property="shareCode" column="share_code"/>
+        <result property="publicGoal" column="is_public"/>
+        <result property="publicSlug" column="public_slug"/>
+        <result property="aiPrompt" column="ai_prompt"/>
+        <result property="themeId" column="theme_id"/>
+        <result property="preferences" column="preferences"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+        <result property="taskTotal" column="task_total"/>
+        <result property="taskCompleted" column="task_completed"/>
+        <result property="starred" column="starred"/>
+    </resultMap>
+
+    <!-- Enrichment columns: task counts + per-viewer star flag. -->
+    <sql id="EnrichColumns">
+        (SELECT COUNT(*) FROM tasks t WHERE t.goal_id = g.id) AS task_total,
+        (SELECT COUNT(*) FROM tasks t WHERE t.goal_id = g.id AND t.completed) AS task_completed,
+        EXISTS (SELECT 1 FROM goal_stars s WHERE s.goal_id = g.id AND s.user_id = #{userId}) AS starred
+    </sql>
+
+    <sql id="BaseColumns">
+        id, user_id, title, description, target_date, status,
+        metadata::text AS metadata, share_code, is_public, public_slug,
+        ai_prompt, theme_id, preferences::text AS preferences, created_at, updated_at
+    </sql>
+
+    <insert id="insert" parameterType="com.heang.koriaibackend.domain.goal.model.Goal">
+        INSERT INTO goals (
+            id, user_id, title, description, target_date, status,
+            metadata, share_code, is_public, public_slug, ai_prompt, theme_id, preferences
+        ) VALUES (
+            #{id}, #{userId}, #{title}, #{description}, #{targetDate}, #{status},
+            CAST(#{metadata} AS jsonb), #{shareCode}, #{publicGoal}, #{publicSlug},
+            #{aiPrompt}, #{themeId}, CAST(#{preferences} AS jsonb)
+        )
+    </insert>
+
+    <select id="findById" resultMap="GoalResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM goals
+        WHERE id = #{id}
+    </select>
+
+    <select id="findByIdEnriched" resultMap="GoalResultMap">
+        SELECT g.id, g.user_id, g.title, g.description, g.target_date, g.status,
+               g.metadata::text AS metadata, g.share_code, g.is_public, g.public_slug,
+               g.ai_prompt, g.theme_id, g.preferences::text AS preferences, g.created_at, g.updated_at,
+               <include refid="EnrichColumns"/>
+        FROM goals g
+        WHERE g.id = #{id}
+    </select>
+
+    <select id="findByShareCode" resultMap="GoalResultMap">
+        SELECT <include refid="BaseColumns"/>
+        FROM goals
+        WHERE share_code = #{shareCode}
+    </select>
+
+    <update id="regenerateShareCode">
+        UPDATE goals SET share_code = #{shareCode}, updated_at = NOW() WHERE id = #{id}
+    </update>
+
+    <select id="findAccessibleByUser" resultMap="GoalResultMap">
+        SELECT g.id, g.user_id, g.title, g.description, g.target_date, g.status,
+               g.metadata::text AS metadata, g.share_code, g.is_public, g.public_slug,
+               g.ai_prompt, g.theme_id, g.preferences::text AS preferences, g.created_at, g.updated_at,
+               <include refid="EnrichColumns"/>
+        FROM goals g
+        WHERE g.user_id = #{userId}
+           OR EXISTS (SELECT 1 FROM goal_members m WHERE m.goal_id = g.id AND m.user_id = #{userId})
+        ORDER BY g.created_at DESC
+    </select>
+
+    <update id="update" parameterType="com.heang.koriaibackend.domain.goal.model.Goal">
+        UPDATE goals
+        SET title       = #{title},
+            description = #{description},
+            target_date = #{targetDate},
+            status      = #{status},
+            metadata    = CAST(#{metadata} AS jsonb),
+            is_public   = #{publicGoal},
+            ai_prompt   = #{aiPrompt},
+            theme_id    = #{themeId},
+            updated_at  = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteByIdAndOwner">
+        DELETE FROM goals WHERE id = #{id} AND user_id = #{userId}
+    </delete>
+
+    <select id="countAccess" resultType="int">
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 FROM goals g
+            WHERE g.id = #{id}
+              AND (
+                  g.user_id = #{userId}
+                  OR g.is_public = TRUE
+                  OR EXISTS (SELECT 1 FROM goal_members m WHERE m.goal_id = g.id AND m.user_id = #{userId})
+              )
+        ) THEN 1 ELSE 0 END
+    </select>
+
+    <select id="countOwner" resultType="int">
+        SELECT CASE WHEN EXISTS (
+            SELECT 1 FROM goals WHERE id = #{id} AND user_id = #{userId}
+        ) THEN 1 ELSE 0 END
+    </select>
+
+</mapper>

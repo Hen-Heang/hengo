@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.vocab.mapper.VocabCardMapper">
+
+    <resultMap id="VocabCardResultMap" type="com.heang.koriaibackend.domain.vocab.model.VocabCard">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="category" column="category"/>
+        <result property="term" column="term"/>
+        <result property="meaning" column="meaning"/>
+        <result property="example" column="example"/>
+        <result property="exampleTranslation" column="example_translation"/>
+        <result property="pronunciation" column="pronunciation"/>
+        <result property="difficultyLevel" column="difficulty_level"/>
+        <result property="mastery" column="mastery"/>
+        <result property="nextReviewDate" column="next_review_date"/>
+        <result property="tags" column="tags"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="easeFactor" column="ease_factor"/>
+        <result property="intervalDays" column="interval_days"/>
+        <result property="repetitions" column="repetitions"/>
+        <result property="lapses" column="lapses"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.heang.koriaibackend.domain.vocab.model.VocabCard"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO vocab_cards (user_id, category, term, meaning, example, example_translation, pronunciation, difficulty_level, mastery, next_review_date, tags)
+        VALUES (#{userId}, #{category}, #{term}, #{meaning}, #{example}, #{exampleTranslation}, #{pronunciation}, #{difficultyLevel}, #{mastery}, CURRENT_DATE, CAST(#{tags} AS jsonb))
+    </insert>
+
+    <select id="findByUserId" resultMap="VocabCardResultMap">
+        SELECT id, user_id, category, term, meaning, example, example_translation, pronunciation, difficulty_level, mastery, next_review_date, tags::text, created_at, ease_factor, interval_days, repetitions, lapses
+        FROM vocab_cards
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+    <select id="findDueByUserId" resultMap="VocabCardResultMap">
+        SELECT id, user_id, category, term, meaning, example, example_translation, pronunciation, difficulty_level, mastery, next_review_date, tags::text, created_at, ease_factor, interval_days, repetitions, lapses
+        FROM vocab_cards
+        WHERE user_id = #{userId}
+          AND next_review_date &lt;= CURRENT_DATE
+        ORDER BY next_review_date ASC
+    </select>
+
+    <select id="findByIdAndUser" resultMap="VocabCardResultMap">
+        SELECT id, user_id, category, term, meaning, example, example_translation, pronunciation, difficulty_level, mastery, next_review_date, tags::text, created_at, ease_factor, interval_days, repetitions, lapses
+        FROM vocab_cards
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </select>
+
+    <update id="updateCard">
+        UPDATE vocab_cards
+        SET category = #{category},
+            term = #{term},
+            meaning = #{meaning},
+            example = #{example},
+            pronunciation = #{pronunciation}
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteByIdAndUser">
+        DELETE FROM vocab_cards
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </delete>
+
+    <update id="updateSrs" parameterType="com.heang.koriaibackend.domain.vocab.model.VocabCard">
+        UPDATE vocab_cards
+        SET mastery = #{mastery},
+            next_review_date = #{nextReviewDate},
+            ease_factor = #{easeFactor},
+            interval_days = #{intervalDays},
+            repetitions = #{repetitions},
+            lapses = #{lapses},
+            last_reviewed_at = NOW()
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </update>
+
+    <update id="updateMastery">
+        UPDATE vocab_cards
+        SET mastery = #{mastery},
+            next_review_date = CAST(#{nextReviewDate} AS date),
+            last_reviewed_at = NOW()
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </update>
+
+</mapper>

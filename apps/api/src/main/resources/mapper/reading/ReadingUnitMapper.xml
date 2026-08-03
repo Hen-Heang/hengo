@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.heang.koriaibackend.domain.reading.mapper.ReadingUnitMapper">
+
+    <resultMap id="ReadingUnitResultMap" type="com.heang.koriaibackend.domain.reading.model.ReadingUnit">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="episode" column="episode"/>
+        <result property="title" column="title"/>
+        <result property="titleEnglish" column="title_english"/>
+        <result property="category" column="category"/>
+        <result property="level" column="level"/>
+        <result property="summary" column="summary"/>
+        <result property="source" column="source"/>
+        <result property="grammarNote" column="grammar_note"/>
+        <result property="paragraphs" column="paragraphs"/>
+        <result property="vocab" column="vocab"/>
+        <result property="quiz" column="quiz"/>
+        <result property="createdAt" column="created_at"/>
+        <result property="updatedAt" column="updated_at"/>
+    </resultMap>
+
+    <sql id="selectColumns">
+        id, user_id, episode, title, title_english, category, level, summary, source,
+        grammar_note::text AS grammar_note,
+        paragraphs::text AS paragraphs,
+        vocab::text AS vocab,
+        quiz::text AS quiz,
+        created_at, updated_at
+    </sql>
+
+    <insert id="insertUnit" parameterType="com.heang.koriaibackend.domain.reading.model.ReadingUnit"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO reading_units (user_id, episode, title, title_english, category, level, summary, source,
+                                   grammar_note, paragraphs, vocab, quiz)
+        VALUES (#{userId}, #{episode}, #{title}, #{titleEnglish}, #{category}, #{level}, #{summary}, #{source},
+                CAST(#{grammarNote, jdbcType=VARCHAR} AS jsonb),
+                CAST(#{paragraphs} AS jsonb),
+                CAST(#{vocab} AS jsonb),
+                CAST(#{quiz} AS jsonb))
+    </insert>
+
+    <update id="updateUnit" parameterType="com.heang.koriaibackend.domain.reading.model.ReadingUnit">
+        UPDATE reading_units
+        SET episode       = #{episode},
+            title         = #{title},
+            title_english = #{titleEnglish},
+            category      = #{category},
+            level         = #{level},
+            summary       = #{summary},
+            source        = #{source},
+            grammar_note  = CAST(#{grammarNote, jdbcType=VARCHAR} AS jsonb),
+            paragraphs    = CAST(#{paragraphs} AS jsonb),
+            vocab         = CAST(#{vocab} AS jsonb),
+            quiz          = CAST(#{quiz} AS jsonb),
+            updated_at    = NOW()
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </update>
+
+    <delete id="deleteUnitByIdAndUser">
+        DELETE
+        FROM reading_units
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </delete>
+
+    <select id="findUnitByIdAndUser" resultMap="ReadingUnitResultMap">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM reading_units
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </select>
+
+    <select id="findUnitsByUserId" resultMap="ReadingUnitResultMap">
+        SELECT
+        <include refid="selectColumns"/>
+        FROM reading_units
+        WHERE user_id = #{userId}
+        ORDER BY created_at DESC
+    </select>
+
+</mapper>
