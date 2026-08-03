@@ -1,7 +1,5 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,14 +9,16 @@
 !.yarn/versions
 
 # testing
-/coverage
+coverage/
 
 # next.js
-/.next/
-/out/
+.next/
+.next-stale/
+out/
 
-# production
-/build
+# build output
+build/
+target/
 
 # misc
 .DS_Store
@@ -36,20 +36,19 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files (examples remain tracked in nested apps)
 .env*
 !.env.example
+!**/.env.example
 
-# reference copy of the Orbit/goalmap source used during integration — not part of this app
-/goalmap
+# reference copy of Orbit/goalmap source — not part of Hengo
+goalmap/
 
-# vercel
-.vercel
+# deployment tooling
+.vercel/
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.next-stale/
-
 
 package-lock.json
