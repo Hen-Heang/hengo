@@ -1,4 +1,4 @@
-# Hengo Dashboard UI/UX Improvement Prompt for Claude Code
+# Legacy Hengo Dashboard UI/UX Improvement Prompt
 
 You are an expert Frontend Developer and UI/UX Engineer. We have just completed a comprehensive UI/UX audit of the Hengo dashboard (a React/Next.js application). The audit identified several areas for improvement, particularly concerning design consistency, accessibility, and overall polish.
 
