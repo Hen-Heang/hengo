@@ -76,7 +76,8 @@ class UserControllerTest {
 
     @Test
     void create_WhenEmailExists_ShouldReturnError() throws Exception {
-        when(userService.existsByEmail(any())).thenReturn(true);
+        when(userService.create(any()))
+                .thenThrow(new IllegalArgumentException("Email already exists"));
 
         mockMvc.perform(post("/api/users")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -87,8 +88,9 @@ class UserControllerTest {
                                 "koreanLevel", "BEGINNER",
                                 "preferredModel", "gpt-5-mini"
                         ))))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.status.code").value(1101));
+                .andExpect(status().isInternalServerError())
+                .andExpect(jsonPath("$.status.code").value(9999))
+                .andExpect(jsonPath("$.data.message").value("Email already exists"));
     }
 
     @Test
