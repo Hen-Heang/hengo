@@ -2,9 +2,10 @@
 
 import { useSyncExternalStore } from "react"
 import Link from "next/link"
-import { BookOpen, MessageCircle, Settings, X } from "lucide-react"
+import { Inbox, Target, TreeDeciduous, X } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { cn } from "@/lib/utils"
 
 const DISMISSED_KEY = "hengo_first_run_dismissed"
@@ -13,32 +14,32 @@ const DISMISSED_EVENT = "hengo:first-run-dismissed"
 const STEPS = [
   {
     num: 1,
-    icon: Settings,
-    title: "Set your Korean level",
-    description: "Tell us where you're starting so the AI adapts to you.",
-    href: "/settings",
+    icon: Inbox,
+    title: "Capture your first thought",
+    description: "Save an idea, task, note, or anything you want to remember.",
+    href: null,
     color: "text-blue-600 dark:text-blue-400",
     bg: "bg-blue-500/10",
   },
   {
     num: 2,
-    icon: BookOpen,
-    title: "Add your first vocab words",
-    description: "Generate a themed deck or paste your own word list.",
-    href: "/vocab",
+    icon: Target,
+    title: "Create your first goal",
+    description: "Choose an outcome and break it into manageable actions.",
+    href: "/goals/create",
     color: "text-emerald-600 dark:text-emerald-400",
     bg: "bg-emerald-500/10",
   },
   {
     num: 3,
-    icon: MessageCircle,
-    title: "Chat with your AI Coach",
-    description: "Ask anything in Korean — corrections, phrases, pronunciation.",
-    href: "/chat",
+    icon: TreeDeciduous,
+    title: "Add one helpful habit",
+    description: "Start with one small routine that supports your growth.",
+    href: "/growth/habits",
     color: "text-violet-600 dark:text-violet-400",
     bg: "bg-violet-500/10",
   },
-]
+] as const
 
 export function FirstRunBanner() {
   const dismissed = useSyncExternalStore(
@@ -85,31 +86,51 @@ export function FirstRunBanner() {
             </p>
             <h2 className="mt-1 text-lg font-semibold text-foreground">Welcome to Hengo 👋</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Three steps to get your first session running.
+              Three steps to get your workspace running.
             </p>
           </div>
 
           <div className="grid sm:grid-cols-3">
-            {STEPS.map(({ num, icon: Icon, title, description, href, color, bg }) => (
-              <Link
-                key={num}
-                href={href}
-                onClick={dismiss}
-                className={cn(
-                  "group flex min-h-16 items-start gap-3 border-t border-blue-500/10 px-1 py-3 outline-none transition-colors first:border-t-0 hover:bg-blue-500/5 focus-visible:ring-2 focus-visible:ring-blue-500/50 sm:border-l sm:border-t-0 sm:px-3 sm:first:border-l-0"
-                )}
-              >
-                <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", bg, color)}>
-                  <Icon size={18} strokeWidth={2.5} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">
-                    <span className={color}>{num}.</span> {title}
-                  </p>
-                  <p className="mt-0.5 text-sm leading-5 text-muted-foreground">{description}</p>
-                </div>
-              </Link>
-            ))}
+            {STEPS.map(({ num, icon: Icon, title, description, href, color, bg }) => {
+              const itemClassName = cn(
+                "group flex min-h-16 w-full items-start gap-3 border-t border-blue-500/10 px-1 py-3 text-left outline-none transition-colors first:border-t-0 hover:bg-blue-500/5 focus-visible:ring-2 focus-visible:ring-blue-500/50 sm:border-l sm:border-t-0 sm:px-3 sm:first:border-l-0"
+              )
+              const content = (
+                <>
+                  <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", bg, color)}>
+                    <Icon size={18} strokeWidth={2.5} />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground">
+                      <span className={color}>{num}.</span> {title}
+                    </p>
+                    <p className="mt-0.5 text-sm leading-5 text-muted-foreground">{description}</p>
+                  </div>
+                </>
+              )
+
+              if (href === null) {
+                return (
+                  <button
+                    key={num}
+                    type="button"
+                    onClick={() => {
+                      openQuickCapture()
+                      dismiss()
+                    }}
+                    className={itemClassName}
+                  >
+                    {content}
+                  </button>
+                )
+              }
+
+              return (
+                <Link key={num} href={href} onClick={dismiss} className={itemClassName}>
+                  {content}
+                </Link>
+              )
+            })}
           </div>
 
           <button

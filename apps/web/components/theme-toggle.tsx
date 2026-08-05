@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { cn } from "@/lib/utils"
 
 function subscribeToHydration(callback: () => void) {
   queueMicrotask(callback)
@@ -23,7 +24,7 @@ const themes = [
   { label: "System", value: "system", icon: Laptop },
 ] as const
 
-export function ThemeToggle() {
+export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme, theme } = useTheme()
   const mounted = useSyncExternalStore(
     subscribeToHydration,
@@ -40,7 +41,7 @@ export function ThemeToggle() {
         <Button
           variant="outline"
           size="sm"
-          className="size-11 rounded-full border-border/70 bg-background/80 px-0 backdrop-blur"
+          className={cn("size-11 rounded-full border-border/70 bg-background/80 px-0 backdrop-blur", className)}
           aria-label="Toggle theme"
         >
           <ActiveIcon size={20} strokeWidth={1.5} className="text-current" />

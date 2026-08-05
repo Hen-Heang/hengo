@@ -1,13 +1,11 @@
 import type { LucideIcon } from "lucide-react"
 import {
   BookOpen,
-  BookOpenText,
   Drama,
   GraduationCap,
   Headphones,
-  Languages,
+  Library,
   Mic,
-  MessagesSquare,
   Sparkles,
 } from "lucide-react"
 
@@ -74,11 +72,18 @@ export const learningModules: LearningModule[] = [
     showInSidebar: true,
   },
   {
-    id: "foundations",
-    title: "Foundations",
-    description: "Survival phrases, Hangul, and basic grammar from zero.",
-    href: "/learn/foundations",
-    icon: Languages,
+    // One card for the merged Phrasebook/Reading/Foundations hub (see
+    // app/(main)/phrasebook/page.tsx's mode switcher) — Learn and More both
+    // show a single entry point into it rather than three separate cards.
+    // The Quick Switcher and sidebar search still resolve Phrasebook/
+    // Reading/Foundations individually (see learn-phrasebook/learn-reading/
+    // learn-foundations in lib/navigation.ts) — this only affects the /learn
+    // hub's card grid.
+    id: "study",
+    title: "Study",
+    description: "Workplace phrases, real reading passages, and Hangul & grammar foundations — build your Korean from every angle.",
+    href: "/phrasebook",
+    icon: Library,
     category: "study",
     badge: "Korean",
     showInSidebar: true,
@@ -89,26 +94,6 @@ export const learningModules: LearningModule[] = [
     description: "Review saved words with spaced-repetition flashcards.",
     href: "/vocab",
     icon: BookOpen,
-    category: "study",
-    badge: "Korean",
-    showInSidebar: true,
-  },
-  {
-    id: "phrasebook",
-    title: "Phrasebook",
-    description: "Workplace and daily-life questions and answers.",
-    href: "/phrasebook",
-    icon: MessagesSquare,
-    category: "study",
-    badge: "Korean",
-    showInSidebar: true,
-  },
-  {
-    id: "reading",
-    title: "Reading",
-    description: "Short articles with comprehension practice.",
-    href: "/reading",
-    icon: BookOpenText,
     category: "study",
     badge: "Korean",
     showInSidebar: true,

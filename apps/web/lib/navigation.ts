@@ -116,20 +116,17 @@ export const todayItem: NavItem = {
   match: { pathname: "/home", includeChildren: false },
 }
 
+// `/account` is a legacy alias for this same page (`app/(main)/account/page.tsx`
+// re-exports the Settings component) — kept working for old links/bookmarks,
+// but deliberately has no nav item of its own. It used to (see git history),
+// which put "Settings" and "Account" side by side in the sidebar, the mobile
+// More sheet, and the header menus, all pointing at identical content.
 export const settingsItem: NavItem = {
   id: "settings",
   href: "/settings",
   label: "Settings",
   icon: Settings,
   keywords: ["preferences", "account", "profile", "theme"],
-}
-
-export const accountItem: NavItem = {
-  id: "account",
-  href: "/account",
-  label: "Account",
-  icon: Settings,
-  keywords: ["profile", "sign out", "subscription"],
 }
 
 // AI Coach and its mode variants are preserved routes (Chat, Analyze,
@@ -175,18 +172,45 @@ export const askHengoItem: NavItem = {
 /**
  * The "Memory" workspace: what Hengo remembers about you, browsable on its
  * own (distinct from the *action* of asking — see `askHengoItem` above).
- * Hidden like `learn-hub` — the "memory" section has no other visible
- * children, so it renders as one flat sidebar/rail/bottom-tab link straight
- * to this route instead of an expandable group.
+ * Labelled "Memories" (not "Memory") so it reads as one of three sibling
+ * rows — Inbox, Notes, Memories — inside the "memory" section rather than
+ * repeating the section's own label.
  */
 export const memoryHubItem: NavItem = {
   id: "memory-hub",
   href: "/ask-hengo/memories",
-  label: "Memory",
+  label: "Memories",
   icon: BrainCircuit,
   description: "Facts Hengo remembers from your notes, goals, habits, and journal",
   keywords: ["memory", "memories", "second brain", "notes", "recall", "context"],
-  showInSidebar: false,
+}
+
+/**
+ * Quick capture for ideas, tasks, and phrases — owned by the "memory"
+ * section (see the ownership note below `notesItem`). Route and data
+ * untouched by this move: still `/inbox`, same `lib/api/inbox.ts` backing.
+ */
+export const inboxItem: NavItem = {
+  id: "memory-inbox",
+  href: "/inbox",
+  label: "Inbox",
+  icon: Inbox,
+  description: "Quick capture for ideas, tasks, and phrases",
+  keywords: ["capture", "quick capture", "idea", "second brain", "triage"],
+}
+
+/**
+ * Freeform notes — owned by the "memory" section, not "goals". Notes and
+ * Inbox are what Hengo *remembers*, not goal-tracking tools, so they moved
+ * out of Goals to sit alongside the Memories hub instead. Route and data
+ * untouched: still `/notes`.
+ */
+export const notesItem: NavItem = {
+  id: "memory-notes",
+  href: "/notes",
+  label: "Notes",
+  icon: NotebookPen,
+  keywords: ["note", "scratchpad", "ideas"],
 }
 
 // ─── Sections ─────────────────────────────────────────────────────────────────
@@ -244,22 +268,36 @@ export const navSections: NavSection[] = [
         icon: MessagesSquare,
         description: "Workplace and daily-life Q&A practice",
         keywords: ["phrasebook", "questions", "answers", "workplace", "qa", "speaking", "listening", "korean"],
+        // Bare /phrasebook only — the "Reading" mode below owns its own
+        // active state (same pattern as aiCoachItem/absentQuery).
+        match: { pathname: "/phrasebook", absentQuery: ["mode"] },
         showInSidebar: false,
       },
       {
+        // Foundations is merged into the Phrasebook hub as a "Foundations"
+        // mode (?mode=foundations on the same route) — see app/(main)/
+        // phrasebook/page.tsx and the redirect stub at app/(main)/learn/
+        // foundations/page.tsx. Same pattern as askHengoItem's
+        // /chat?mode=memory.
         id: "learn-foundations",
-        href: "/learn/foundations",
+        href: "/phrasebook?mode=foundations",
         label: "Foundations",
         icon: Languages,
         keywords: ["grammar", "hangul", "basics", "korean"],
+        match: { pathname: "/phrasebook", query: { mode: "foundations" } },
         showInSidebar: false,
       },
       {
+        // Reading is merged into the Phrasebook hub as a "Reading" mode
+        // (?mode=reading on the same route) — see app/(main)/phrasebook/
+        // page.tsx and the redirect stub at app/(main)/reading/page.tsx.
+        // Same pattern as askHengoItem's /chat?mode=memory.
         id: "learn-reading",
-        href: "/reading",
+        href: "/phrasebook?mode=reading",
         label: "Reading",
         icon: BookOpenText,
         keywords: ["articles", "comprehension", "korean"],
+        match: { pathname: "/phrasebook", query: { mode: "reading" } },
         showInSidebar: false,
       },
       {
@@ -362,28 +400,23 @@ export const navSections: NavSection[] = [
         // search/More sheet. Route and localStorage data are untouched.
         showInSidebar: false,
       },
-      {
-        id: "goals-notes",
-        href: "/notes",
-        label: "Notes",
-        icon: NotebookPen,
-        keywords: ["note", "scratchpad", "ideas"],
-      },
-      {
-        id: "goals-inbox",
-        href: "/inbox",
-        label: "Inbox",
-        icon: Inbox,
-        description: "Quick capture for ideas, tasks, and phrases",
-        keywords: ["capture", "quick capture", "idea", "second brain", "triage"],
-      },
+      // Notes and Inbox live in the "memory" section now — see `notesItem` /
+      // `inboxItem` below. They're what Hengo *remembers*, not goal-tracking
+      // tools, so Goals no longer owns them (route/data unchanged).
     ],
   },
   {
+    // Recovery is Growth's single entry point now — its dashboard embeds a
+    // "Today's habits" card (see components/home/TodayHabitCheckins, reused
+    // as-is), so simple check-off habits are visible and actionable there
+    // without a second sidebar row. Habits stays a real, hidden
+    // (`showInSidebar: false`) route at its original URL with its own data
+    // untouched — same pattern as Goals' Overview/Tasks — reachable via the
+    // "View all" link in that card, the Quick Switcher, and breadcrumbs.
     id: "growth",
     label: "Growth",
     icon: TreeDeciduous,
-    href: "/growth/habits",
+    href: "/growth/recovery",
     items: [
       {
         id: "growth-habits",
@@ -391,13 +424,14 @@ export const navSections: NavSection[] = [
         label: "Habits",
         icon: ListChecks,
         keywords: ["habit", "streak", "routine", "check-in"],
+        showInSidebar: false,
       },
       {
         id: "growth-recovery",
         href: "/growth/recovery",
         label: "Recovery",
         icon: Compass,
-        keywords: ["recovery", "urge", "trigger", "pause", "plan"],
+        keywords: ["recovery", "urge", "trigger", "pause", "plan", "habit", "streak", "check-in"],
       },
       {
         id: "growth-journal",
@@ -465,15 +499,17 @@ export const navSections: NavSection[] = [
     ],
   },
   {
-    // "Memory" (browsing what Hengo remembers) is the primary workspace;
-    // "Ask Hengo" (the action of asking it something) is a hidden child here
-    // — it gets its global entry points elsewhere (header, More sheet,
-    // Quick Switcher) rather than a second visible row in this group.
+    // "Memory" owns everything Hengo remembers about you: quick-captured
+    // Inbox items, freeform Notes, and the Memories hub that surfaces facts
+    // extracted from both (plus goals/habits/journal). "Ask Hengo" (the
+    // *action* of asking it something) is a hidden child here — it gets its
+    // global entry points elsewhere (header, More sheet, Quick Switcher)
+    // rather than a second visible row in this group.
     id: "memory",
     label: "Memory",
     icon: BrainCircuit,
     href: memoryHubItem.href,
-    items: [memoryHubItem, askHengoItem],
+    items: [inboxItem, notesItem, memoryHubItem, askHengoItem],
   },
   {
     // Preserved routes, no primary sidebar/rail presence — see the
@@ -521,10 +557,9 @@ export const navSections: NavSection[] = [
 /** Sections that get their own rail/sidebar entry (Today is rendered on its own). */
 export const primarySections: NavSection[] = navSections.filter((s) => s.id !== "today")
 
-/** Every navigable item in the app, including Settings/Account. */
+/** Every navigable item in the app, including Settings. */
 export const allNavItems: NavItem[] = [
   ...navSections.flatMap((s) => s.items),
-  accountItem,
   settingsItem,
 ]
 
@@ -571,12 +606,13 @@ export const workspaceNavSections: NavSection[] = ["goals", "growth", "memory", 
 
 /**
  * Secondary desktop/tablet destinations, rendered below the primary groups:
- * Learn's card hub and Settings. "Account" is deliberately not listed here —
- * the existing `ProfileMenu` component already serves as the sidebar's
- * Account entry point (avatar + email, labelled "Account"), so adding a
- * second plain Account row would duplicate it.
+ * just Learn's card hub. Neither "Account" nor "Settings" gets its own row
+ * here — the existing `ProfileMenu` component already serves as the
+ * sidebar's Account entry point (avatar + email, labelled "Account") and
+ * its dropdown's first item is Settings, so a standalone Settings row would
+ * duplicate that same destination right above it.
  */
-export const secondaryNavItems: NavItem[] = [navItem("learn-hub"), settingsItem]
+export const secondaryNavItems: NavItem[] = [navItem("learn-hub")]
 
 // ─── Matching ─────────────────────────────────────────────────────────────────
 
@@ -695,10 +731,14 @@ export function getActiveNavItem(pathname: string, searchParams?: NavSearchParam
 export const bottomTabs: NavItem[] = [
   todayItem,
   { ...navItem("goals-goals"), id: "tab-goals", label: "Goals" },
-  { ...navItem("growth-habits"), id: "tab-growth", label: "Growth" },
-  // Lands on the Memory hub, and stays lit for /ask-hengo (Ask Hengo chat)
-  // too via the section-wide match — a hidden child still activates its
-  // parent workspace's tab.
+  // Recovery, not Habits, anchors the Growth tab now — see the note on the
+  // "growth" section above. /growth/habits and /growth/journal fall through
+  // to More, same as /goals/calendar does for Goals.
+  { ...navItem("growth-recovery"), id: "tab-growth", label: "Growth" },
+  // Lands on the Memories hub, and stays lit for the section's other
+  // routes too — /inbox, /notes (and its children), and the Ask Hengo
+  // action (/chat?mode=memory) — via the section-wide match, since all four
+  // now belong to the "memory" section.
   {
     ...navItem("memory-hub"),
     id: "tab-memory",
@@ -751,21 +791,22 @@ export function visibleSidebarItems(section: NavSection): NavItem[] {
 }
 
 /**
- * The More sheet's single flat menu: Review, Learn, Settings, Account.
- * "Ask Hengo" is rendered separately as a pinned card at the top of the sheet
- * (the mobile home for the global AI action), so it's excluded here to avoid
- * listing it twice. Memory, Goals, and Growth aren't repeated here either —
- * they're already bottom tabs. Goals' and Growth's own sub-pages (Calendar,
- * Notes, Inbox, Recovery, Journal, …) and Review's Achievements/Statistics/
- * History/Timeline are real, searchable, breadcrumb-able routes — reachable
- * via the Quick Switcher and each workspace's own flyout on desktop/tablet —
- * just not duplicated into this simplified sheet.
+ * The More sheet's single flat menu: Review, Learn, Settings. "Ask Hengo" is
+ * rendered separately as a pinned card at the top of the sheet (the mobile
+ * home for the global AI action), so it's excluded here to avoid listing it
+ * twice. Memory, Goals, and Growth aren't repeated here either — they're
+ * already bottom tabs. Goals' and Growth's own sub-pages (Calendar, Notes,
+ * Inbox, Recovery, Journal, …) and Review's Achievements/Statistics/History/
+ * Timeline are real, searchable, breadcrumb-able routes — reachable via the
+ * Quick Switcher and each workspace's own flyout on desktop/tablet — just not
+ * duplicated into this simplified sheet. No separate "Account" row — that
+ * used to sit right next to Settings here pointing at the identical page.
  */
 export const moreGroups: MoreGroup[] = [
   {
     id: "menu",
     label: "",
-    items: [navItem("review-hub"), navItem("learn-hub"), settingsItem, accountItem],
+    items: [navItem("review-hub"), navItem("learn-hub"), settingsItem],
   },
 ]
 

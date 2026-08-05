@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react"
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -83,11 +83,6 @@ export function ProfileMenu({
           {email ?? "Signed in"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="rounded-lg">
-          <Link href="/account">
-            <User size={16} /> Profile
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-lg">
           <Link href="/settings">
             <Settings size={16} /> Settings

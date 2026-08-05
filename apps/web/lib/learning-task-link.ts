@@ -14,11 +14,11 @@ const RULES: { keywords: string[]; href: string; label: string }[] = [
   { keywords: ["vocab", "flashcard", "word list"], href: "/vocab", label: "Practice vocab" },
   { keywords: ["scenario", "roleplay", "role-play", "meeting practice"], href: "/scenarios", label: "Practice scenario" },
   { keywords: ["listening", "transcript"], href: "/listening", label: "Practice listening" },
-  { keywords: ["reading", "passage"], href: "/reading", label: "Practice reading" },
+  { keywords: ["reading", "passage"], href: "/phrasebook?mode=reading", label: "Practice reading" },
   { keywords: ["daily phrase", "phrase of the day"], href: "/practice", label: "Open today's phrase" },
   { keywords: ["correction", "mistake", "grammar review"], href: "/chat?mode=corrections", label: "Review corrections" },
   { keywords: ["interview", "exam prep", "mock interview"], href: "/interview", label: "Open exam prep" },
-  { keywords: ["hangul", "alphabet", "foundations", "survival korean"], href: "/learn/foundations", label: "Open foundations" },
+  { keywords: ["hangul", "alphabet", "foundations", "survival korean"], href: "/phrasebook?mode=foundations", label: "Open foundations" },
   { keywords: ["chat", "conversation", "speak", "speaking", "talk"], href: "/chat", label: "Open AI Coach" },
 ]
 

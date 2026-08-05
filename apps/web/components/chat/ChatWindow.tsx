@@ -262,6 +262,50 @@ const HengoWelcome: FC = () => {
   )
 }
 
+const CompactHengoWelcome: FC = () => {
+  const { isTechnicalMode, canInteract } = useHengoChat()
+  const runtime = useThreadRuntime()
+  const suggestions = isTechnicalMode ? TECHNICAL_SUGGESTIONS : GENERAL_SUGGESTIONS
+
+  function handleSuggestion(suggestion: Suggestion) {
+    if (!canInteract) return
+    if (suggestion.prefill) {
+      runtime.composer.setText(suggestion.text)
+      return
+    }
+    runtime.append({ role: "user", content: [{ type: "text", text: suggestion.text }] })
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mx-auto flex w-full max-w-sm flex-col items-center px-3 py-5 text-center"
+    >
+      <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+        <Sparkles className="size-5" aria-hidden="true" />
+      </span>
+      <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">What can I help with?</h2>
+      <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
+        Ask about Korean, workplace communication, or a sentence you want corrected.
+      </p>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">
+        {suggestions.slice(0, 3).map((suggestion) => (
+          <button
+            key={suggestion.label}
+            type="button"
+            disabled={!canInteract}
+            onClick={() => handleSuggestion(suggestion)}
+            className="min-h-10 rounded-full border border-border/70 bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
+          >
+            {suggestion.label}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
 // Rendered inside AssistantRuntimeProvider so it can pull the thread runtime
 // itself (same pattern as ComposerSeeder) rather than assume the shape of
 // the outer useExternalStoreRuntime() object.
@@ -317,6 +361,10 @@ const THREAD_COMPONENTS = {
   ComposerLeading: MicButton,
 }
 
+const COMPACT_THREAD_COMPONENTS = {
+  Welcome: CompactHengoWelcome,
+}
+
 type ChatWindowProps = {
   title: string
   subtitle: string
@@ -331,6 +379,9 @@ type ChatWindowProps = {
   // When rendered inside the AI workspace tabs, the surrounding mode bar already
   // provides the back button and safe-area top padding — so we drop ours here.
   embedded?: boolean
+  // Compact mode is used by the global floating coach: its outer panel owns the
+  // title bar, and the welcome state keeps only the highest-value prompts.
+  compact?: boolean
   // Present only when this conversation is a scenario-practice session
   // (kori_conversations.scenario_id) — enables the "End scenario" evaluation
   // flow that gives the linked mission item real completion evidence.
@@ -347,6 +398,7 @@ export function ChatWindow({
   isStartingNewChat,
   onConversationTitled,
   embedded = false,
+  compact = false,
   scenario,
 }: ChatWindowProps) {
   const {
@@ -495,7 +547,12 @@ export function ChatWindow({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <HengoChatContext.Provider value={hengoContext}>
-        <div className="relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col overflow-hidden border-border/60 bg-card shadow-2xl dark:bg-slate-950/40 dark:backdrop-blur-md md:rounded-3xl md:border">
+        <div
+          className={cn(
+            "relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col overflow-hidden border-border/60 bg-card dark:bg-slate-950/40 dark:backdrop-blur-md",
+            compact ? "border-0 shadow-none" : "shadow-2xl md:rounded-3xl md:border"
+          )}
+        >
           <AnimatePresence>
             {realtimeVoice.isActive && (
               <RealtimeVoicePanel
@@ -555,14 +612,15 @@ export function ChatWindow({
           )}
 
           {/* ── Desktop/Mobile Optimized Header ── */}
-          <div
-            aria-hidden={realtimeVoice.isActive || undefined}
-            inert={realtimeVoice.isActive || undefined}
-            className={cn(
-              "flex shrink-0 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 py-3 shadow-[0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-xl sm:px-5",
-              embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]"
-            )}
-          >
+          {!compact && (
+            <div
+              aria-hidden={realtimeVoice.isActive || undefined}
+              inert={realtimeVoice.isActive || undefined}
+              className={cn(
+                "flex shrink-0 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 py-3 shadow-[0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-xl sm:px-5",
+                embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]"
+              )}
+            >
             <div className="flex min-w-0 items-center gap-3">
               {!embedded && (
                 <Button
@@ -695,7 +753,8 @@ export function ChatWindow({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          </div>
+              </div>
+          )}
 
           <AnimatePresence>
             {turnAnalysis && !realtimeVoice.isActive && (
@@ -721,7 +780,7 @@ export function ChatWindow({
                 <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Syncing History</p>
               </div>
             )}
-            <Thread components={THREAD_COMPONENTS} />
+            <Thread components={compact ? COMPACT_THREAD_COMPONENTS : THREAD_COMPONENTS} />
             {initialDraft ? <ComposerSeeder text={initialDraft} /> : null}
           </div>
         </div>

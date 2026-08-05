@@ -24,13 +24,28 @@ export const viewport: Viewport = {
   ],
 }
 
+const title = "Hengo — Korean for Developers"
+const description =
+  "Practice workplace Korean, prepare for interviews, and build consistent learning habits with an AI coach made for developers."
+
 export const metadata: Metadata = {
   title: {
-    default: "Hengo — Korean for Developers",
+    default: title,
     template: "%s · Hengo",
   },
-  description:
-    "Practice workplace Korean, prepare for interviews, and build consistent learning habits with an AI coach made for developers.",
+  description,
+  openGraph: {
+    title,
+    description,
+    siteName: "Hengo",
+    type: "website",
+    locale: "en_US",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title,
+    description,
+  },
   manifest: "/site.webmanifest",
   icons: {
     icon: [

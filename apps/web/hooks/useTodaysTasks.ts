@@ -78,7 +78,7 @@ export function useTodaysTasks() {
 
   // All of the user's tasks up to end-of-today; filtering to what's visible is
   // derived client-side, so changing the goal selection never refetches.
-  const { data: rawTasks = [], isPending } = useQuery({
+  const { data: rawTasks = [], isPending, isError } = useQuery({
     queryKey: tasksKey,
     queryFn: () => tasksApi.range({ to: endOfTodayIso() }),
     enabled: userId != null,
@@ -313,6 +313,7 @@ export function useTodaysTasks() {
   return {
     tasks,
     loading: isPending,
+    error: isError ? "Failed to load tasks." : "",
     availableGoals,
     selectedGoalIds,
     newTaskTitle,

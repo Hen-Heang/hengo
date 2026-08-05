@@ -2,9 +2,10 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MoreHorizontal, Search, Settings, User } from "lucide-react"
+import { ArrowLeft, MoreHorizontal, Search, Settings, Zap } from "lucide-react"
 
 import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { ThemeToggle } from "@/components/theme-toggle"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
   linkPath,
   type NavSearchParams,
 } from "@/lib/navigation"
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 import { useMobileHeaderTitleValue } from "./mobile-header-title"
 
@@ -78,13 +80,11 @@ export function MobileHeader({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-48 rounded-xl">
+            <DropdownMenuItem onClick={() => openQuickCapture()} className="rounded-lg">
+              <Zap size={16} /> Quick capture
+            </DropdownMenuItem>
             <DropdownMenuItem onClick={onOpenSearch} className="rounded-lg">
               <Search size={16} /> Search
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="rounded-lg">
-              <Link href="/account">
-                <User size={16} /> Profile
-              </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild className="rounded-lg">
               <Link href="/settings">
@@ -95,9 +95,18 @@ export function MobileHeader({
         </DropdownMenu>
       ) : (
         <>
+          <button
+            type="button"
+            onClick={() => openQuickCapture()}
+            aria-label="Quick capture"
+            className={ACTION_BUTTON}
+          >
+            <Zap size={20} />
+          </button>
           <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
             <Search size={20} />
           </button>
+          <ThemeToggle className="h-11 w-11 rounded-xl border-border bg-card shadow-sm" />
           <NotificationBell />
         </>
       )}

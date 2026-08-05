@@ -1,24 +1,29 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { Flame, Sparkles, Target, TreeDeciduous, Trophy } from "lucide-react"
-import { motion } from "motion/react"
+import { useMemo } from "react"
+import { motion, type Variants } from "motion/react"
+import { BrainCircuit, Sparkles, Target, TreeDeciduous, Zap } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
-import { FirstRunBanner } from "@/components/dashboard/FirstRunBanner"
-import { WorkspacePosterCard } from "@/components/home/WorkspacePosterCard"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { achievementsApi } from "@/lib/api"
+import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
+import { TodayTasksCard } from "@/components/home/TodayTasksCard"
 import { useGoals } from "@/hooks/useGoals"
-import { useHabits } from "@/hooks/useHabits"
-import { useProgress } from "@/hooks/useProgress"
-import { useRecoveryEvents, useRecoveryHabits } from "@/hooks/useRecovery"
-import { getUserId } from "@/lib/auth-store"
+import { askHengoItem } from "@/lib/navigation"
+import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { calculateGoalDeadlineInfo } from "@/lib/goals"
-import { daysSince } from "@/lib/recovery"
-import { containerVariants, itemVariants } from "@/lib/motion"
 import { getLastVisited } from "@/lib/last-visited"
+import { cn } from "@/lib/utils"
+
+const staggerContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.06 } },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function getGreeting() {
   const hour = new Date().getHours()
@@ -27,154 +32,147 @@ function getGreeting() {
   return "Good evening"
 }
 
-function HomeLoadingState() {
+function getTodayLabel() {
+  return new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  })
+}
+
+type Shortcut = {
+  href: string
+  label: string
+  icon: LucideIcon
+  badge?: string
+  badgeTone?: "default" | "warning"
+}
+
+// Small "continue where you left off" tiles into the other workspaces — not
+// a data section of their own, so no dedicated loading state; the Goals
+// badge below reuses useGoals' already-cached list (shares its query key
+// with useTodaysTasks, so this never triggers a second goals fetch).
+function WorkspaceShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-6 lg:px-8">
-      <Skeleton className="h-20 w-full rounded-lg" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Skeleton className="h-60 w-full rounded-lg" />
-        <Skeleton className="h-60 w-full rounded-lg" />
-        <Skeleton className="h-60 w-full rounded-lg" />
-        <Skeleton className="h-60 w-full rounded-lg" />
-      </div>
-    </div>
+    <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      {shortcuts.map((s) => (
+        <motion.div
+          key={s.href}
+          variants={fadeUp}
+          whileHover={{ y: -3, transition: { type: "spring", stiffness: 400, damping: 22 } }}
+          whileTap={{ scale: 0.97 }}
+        >
+          <Link
+            href={s.href}
+            className="flex min-h-11 flex-col items-start gap-2 rounded-lg border border-border bg-card p-4 shadow-sm outline-none transition-[background-color,box-shadow] hover:bg-accent/40 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40"
+          >
+            <span className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
+              <s.icon size={18} strokeWidth={2} />
+            </span>
+            <span className="text-sm font-semibold text-foreground">{s.label}</span>
+            {s.badge && (
+              <motion.span
+                key={s.badge}
+                initial={{ opacity: 0, scale: 0.85 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className={cn(
+                  "rounded-md px-1.5 py-0.5 text-xs font-medium",
+                  s.badgeTone === "warning"
+                    ? "bg-red-500/10 text-red-500"
+                    : "bg-foreground/[0.04] text-muted-foreground"
+                )}
+              >
+                {s.badge}
+              </motion.span>
+            )}
+          </Link>
+        </motion.div>
+      ))}
+    </motion.div>
   )
 }
 
 export default function HomePage() {
-  const { loading, stats } = useProgress()
-  const { sortedGoals, isLoading: goalsLoading } = useGoals()
-  const { activeHabits, loading: habitsLoading } = useHabits()
-  const { activeHabit: recoveryHabit, loading: recoveryHabitsLoading } = useRecoveryHabits()
-  const { lastSlipAt, loading: recoveryEventsLoading } = useRecoveryEvents(recoveryHabit?.id ?? null)
-  const userId = getUserId()
-  const { data: achievementsSummary, isPending: achievementsLoading } = useQuery({
-    queryKey: ["achievements-summary", userId],
-    queryFn: () => achievementsApi.getSummary(),
-    enabled: userId != null,
-  })
+  const { sortedGoals } = useGoals()
 
-  if (
-    loading ||
-    goalsLoading ||
-    achievementsLoading ||
-    habitsLoading ||
-    recoveryHabitsLoading ||
-    (recoveryHabit && recoveryEventsLoading)
-  ) {
-    return <HomeLoadingState />
-  }
+  const goalsBadge = useMemo(() => {
+    const active = sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived")
+    const overdue = active.filter((g) => calculateGoalDeadlineInfo(g).status === "overdue")
+    if (active.length === 0) return undefined
+    return overdue.length > 0
+      ? { text: `${overdue.length} overdue`, tone: "warning" as const }
+      : { text: `${active.length} active`, tone: "default" as const }
+  }, [sortedGoals])
 
-  const activeGoals = sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived")
-  const overdueGoals = activeGoals.filter((g) => calculateGoalDeadlineInfo(g).status === "overdue")
-  const completedGoals = sortedGoals.filter((g) => g.status === "completed")
-  const level = achievementsSummary?.level
-  const unlockedCount = achievementsSummary?.unlockedCount ?? 0
-  const totalCount = achievementsSummary?.totalCount ?? 0
-  const recoveryStreakDays = recoveryHabit ? daysSince(recoveryHabit.startedAt, lastSlipAt) : null
+  const shortcuts: Shortcut[] = [
+    {
+      href: getLastVisited("goals", "/goals"),
+      label: "Goals",
+      icon: Target,
+      badge: goalsBadge?.text,
+      badgeTone: goalsBadge?.tone,
+    },
+    { href: getLastVisited("growth", "/growth/recovery"), label: "Growth", icon: TreeDeciduous },
+    { href: getLastVisited("memory", "/ask-hengo/memories"), label: "Memory", icon: BrainCircuit },
+    { href: getLastVisited("learn", "/learn"), label: "Learn", icon: Sparkles },
+  ]
 
   return (
     <motion.div
+      variants={staggerContainer}
       initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-6 lg:px-8"
+      animate="show"
+      className="mx-auto max-w-6xl space-y-5 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:space-y-6 sm:px-6 sm:pt-6 lg:px-8"
     >
-      {/* ── Hero strip ── */}
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div className="max-w-2xl">
-          <p className="app-kicker">Your daily workspace</p>
-          <h1 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-foreground sm:text-3xl">
-            {getGreeting()} 👋
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
-            Choose what needs your attention today, or ask your AI coach for a quick start.
-          </p>
-        </div>
-        <div className="flex w-full flex-wrap items-center gap-2.5 sm:w-auto sm:justify-end">
-          <div className="flex h-10 items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-3.5 shadow-xs">
-            <Flame size={15} className="text-orange-500" />
-            <span className="text-sm font-semibold text-foreground">{stats.streakDays} day streak</span>
-          </div>
-          <Button asChild className="h-10 flex-1 sm:flex-none">
-            <Link href="/chat">
-              <Sparkles data-icon="inline-start" className="size-4" aria-hidden="true" />
-              Ask AI Coach
-            </Link>
-          </Button>
-        </div>
+      {/* ── Greeting ── */}
+      <motion.div variants={fadeUp}>
+        <h1 className="text-2xl font-semibold tracking-[-0.025em] text-foreground sm:text-3xl">
+          {getGreeting()}{" "}
+          <motion.span
+            className="inline-block origin-[70%_70%]"
+            animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
+            transition={{ duration: 1.4, delay: 0.3, ease: "easeInOut" }}
+          >
+            👋
+          </motion.span>
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">{getTodayLabel()}</p>
       </motion.div>
 
-      {/* First-run onboarding — shown once to users with no activity yet */}
-      {stats.wordsSaved === 0 && stats.streakDays === 0 && (
-        <motion.div variants={itemVariants}>
-          <FirstRunBanner />
+      {/* ── Quick actions ── */}
+      <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
+        <motion.button
+          type="button"
+          onClick={() => openQuickCapture()}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 400, damping: 22 }}
+          className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition-[background-color,box-shadow] hover:bg-accent/40 hover:shadow-md dark:bg-slate-900/40"
+        >
+          <Zap size={16} className="text-primary" aria-hidden="true" />
+          Quick Capture
+        </motion.button>
+        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 22 }}>
+          <Link
+            href={askHengoItem.href}
+            className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition-[background-color,box-shadow] hover:bg-accent/40 hover:shadow-md dark:bg-slate-900/40"
+          >
+            <BrainCircuit size={16} className="text-primary" aria-hidden="true" />
+            Ask Hengo
+          </Link>
         </motion.div>
-      )}
+      </motion.div>
 
-      {/* ── Big entry points ── */}
-      {/* Goals and Growth lead, Progress follows, Learn sits last and carries
-          no stat tiles — Hengo's identity is the daily/goals/growth workspace,
-          with Korean learning as one workspace among others, not the headline.
-          Its streak/due/vocab counts still live on /learn and the Korean
-          pages themselves; this card is just a generic door into that hub. */}
-      <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
-        <WorkspacePosterCard
-          href={getLastVisited("goals", "/goals")}
-          eyebrow="Productivity"
-          title="Goal Setting"
-          description="Plan goals, break them into tasks, and track deadlines — see what needs you today."
-          icon={Target}
-          accentColor="emerald"
-          stats={[
-            { label: "Active goals", value: String(activeGoals.length) },
-            {
-              label: overdueGoals.length > 0 ? "Overdue" : "Completed",
-              value: overdueGoals.length > 0 ? String(overdueGoals.length) : String(completedGoals.length),
-            },
-          ]}
-          cta="Continue planning"
-        />
-        <WorkspacePosterCard
-          href="/growth/habits"
-          eyebrow="Growth"
-          title="Habits & Recovery"
-          description="Build identity-based habits and track recovery, one calm check-in at a time."
-          icon={TreeDeciduous}
-          accentColor="violet"
-          stats={[
-            { label: "Active habits", value: String(activeHabits.length) },
-            ...(recoveryStreakDays !== null ? [{ label: "Recovery streak", value: `${recoveryStreakDays}d` }] : []),
-          ]}
-          cta="Open Growth"
-        />
-        <WorkspacePosterCard
-          href={getLastVisited("review", "/achievements")}
-          eyebrow="Progress"
-          title="Your Progress"
-          description="Level, XP, and badges earned across every module — see how far you've come."
-          icon={Trophy}
-          accentColor="amber"
-          stats={[
-            { label: "Level", value: level ? String(level.level) : "1" },
-            { label: "XP", value: level ? String(level.totalXp) : "0" },
-            { label: "Badges", value: `${unlockedCount}/${totalCount}` },
-          ]}
-          cta="View achievements"
-        />
-        <WorkspacePosterCard
-          href="/learn"
-          eyebrow="Learning"
-          title="Learn"
-          description="Access your learning tools and continue when you are ready."
-          icon={Sparkles}
-          accentColor="blue"
-          stats={[]}
-          cta="Open Learn"
-        />
+      {/* ── Today's tasks + habits ── */}
+      <motion.div variants={fadeUp} className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+        <TodayTasksCard />
+        <TodayHabitCheckins />
+      </motion.div>
+
+      {/* ── Workspace shortcuts ── */}
+      <motion.div variants={fadeUp}>
+        <WorkspaceShortcuts shortcuts={shortcuts} />
       </motion.div>
     </motion.div>
   )

@@ -66,9 +66,11 @@ export function TabletNavigationRail({
         {railSections.map((section) => {
           const sectionActive = section.id === activeSectionId
 
-          // A section with nothing left to show individually (Memory — both
-          // its children are hidden) is a plain icon link, not a flyout
-          // trigger with an empty panel.
+          // A section with nothing left to show individually is a plain
+          // icon link, not a flyout trigger with an empty panel. None of the
+          // current primary sections hit this today, but Learn (rendered
+          // separately, below, via `secondaryNavItems`, alongside the
+          // account menu) is the shape this guards against.
           if (visibleSidebarItems(section).length === 0) {
             const flatItem: NavItem = {
               id: `section-${section.id}`,

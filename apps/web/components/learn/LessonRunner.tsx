@@ -121,7 +121,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
     return (
       <div className="space-y-6">
         <ErrorBanner>{error || "Lesson not found."}</ErrorBanner>
-        <Link href="/learn/foundations" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400">
+        <Link href="/phrasebook?mode=foundations" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400">
           <ArrowLeft size={16} /> Back to Foundations
         </Link>
       </div>
@@ -132,7 +132,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
     <motion.div initial={reduceMotion ? false : "hidden"} animate="visible" variants={container} className="space-y-6 pb-16">
       {/* Header */}
       <motion.div variants={item} className="flex items-center justify-between gap-3">
-        <Link href="/learn/foundations" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
+        <Link href="/phrasebook?mode=foundations" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
           <ArrowLeft size={16} /> Foundations
         </Link>
         <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -357,7 +357,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
             >
               <RotateCcw size={16} className="mr-2" /> Practice again
             </Button>
-            <Link href="/learn/foundations">
+            <Link href="/phrasebook?mode=foundations">
               <Button
                 type="button"
                 className="h-12 w-full rounded-xl bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-500 active:scale-95"

@@ -31,7 +31,8 @@ const TRACKS: Array<{ key: LearnTrack; label: string; icon: typeof Type; blurb: 
 
 /**
  * Korean Foundations — lesson tracks (Survival / Alphabet / Grammar) with
- * per-lesson progress. Rendered at `/learn/foundations`.
+ * per-lesson progress. Rendered as the "Foundations" mode of the merged
+ * Phrasebook hub (`/phrasebook?mode=foundations`).
  */
 export function FoundationsHome() {
   useSessionTimer("foundations")

@@ -5,16 +5,11 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Mail,
-  BrainCircuit,
   Cpu,
   CheckCircle2,
-  Laptop,
   LogOut,
   ChevronRight,
-  Moon,
-  Palette,
   ShieldCheck,
-  Sun,
   Globe,
   Camera,
   Loader2,
@@ -22,9 +17,9 @@ import {
   Send,
   AlarmClock,
   Check,
+  Target,
   Type,
 } from "lucide-react"
-import { useTheme } from "next-themes"
 import { motion, AnimatePresence } from "motion/react"
 import { toast } from "sonner"
 
@@ -37,12 +32,6 @@ import { getUserId } from "@/lib/auth-store"
 import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
 import { cn } from "@/lib/utils"
-
-const levels = [
-  { value: "BEGINNER", label: "Beginner", desc: "Just starting out", emoji: "🌱" },
-  { value: "INTERMEDIATE", label: "Intermediate", desc: "Basic conversations", emoji: "🌿" },
-  { value: "ADVANCED", label: "Advanced", desc: "Fluent situations", emoji: "🌳" },
-]
 
 const models = [
   { value: "gpt-5-mini", label: "GPT-5 mini", desc: "Latest · recommended" },
@@ -122,16 +111,9 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
 } as const
 
-const themeOptions = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "Auto", icon: Laptop },
-] as const
-
 export default function SettingsPage() {
   const router = useRouter()
   const push = usePush()
-  const { theme, setTheme } = useTheme()
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
   const [koreanLevel, setKoreanLevel] = useState("BEGINNER")
@@ -428,57 +410,19 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Korean Level + Learning goal */}
+      {/* Learning goal */}
       <motion.div variants={itemVariants}>
         <SectionCard>
           <SectionRow>
             <SectionHeader
-              icon={BrainCircuit}
-              title="Korean Level"
-              description="Adjusts AI complexity to your fluency"
+              icon={Target}
+              title="Learning goal"
+              description="Shapes the scenarios and phrasing the AI practices with you"
               color="text-violet-500"
             />
           </SectionRow>
-          <SectionRow>
-            <div className="grid gap-2 sm:grid-cols-3">
-              {levels.map((level) => {
-                const active = koreanLevel === level.value
-                return (
-                  <button
-                    key={level.value}
-                    type="button"
-                    onClick={() => setKoreanLevel(level.value)}
-                    className={cn(
-                      "group relative flex min-h-11 w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
-                      active
-                        ? "border-blue-500/30 bg-blue-500/5 ring-1 ring-blue-500/20"
-                        : "border-border bg-accent/5 hover:border-blue-500/20 hover:bg-background"
-                    )}
-                  >
-                    <div className={cn(
-                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-lg transition-transform group-hover:scale-110",
-                      active ? "bg-blue-500 shadow-lg shadow-blue-500/20" : "bg-background shadow-sm"
-                    )}>
-                      {level.emoji}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <p className={cn("text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
-                        {level.label}
-                      </p>
-                      <p className="truncate text-xs text-muted-foreground">{level.desc}</p>
-                    </div>
-                    {active && (
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white">
-                        <Check size={11} strokeWidth={3} />
-                      </div>
-                    )}
-                  </button>
-                )
-              })}
-            </div>
-          </SectionRow>
           <SectionRow last>
-            <FieldLabel>Learning goal</FieldLabel>
+            <FieldLabel>What are you working toward?</FieldLabel>
             <select
               value={learningGoal}
               onChange={(e) => setLearningGoal(e.target.value)}
@@ -604,36 +548,6 @@ export default function SettingsPage() {
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-mono text-xs transition-colors focus:bg-background"
                 />
               </div>
-            </div>
-          </SectionRow>
-        </SectionCard>
-      </motion.div>
-
-      {/* Appearance */}
-      <motion.div variants={itemVariants}>
-        <SectionCard>
-          <SectionRow last>
-            <SectionHeader icon={Palette} title="Appearance" color="text-pink-500" />
-            <div className="mt-3 grid grid-cols-3 gap-2">
-              {themeOptions.map(({ value, label, icon: Icon }) => {
-                const active = theme === value
-                return (
-                  <button
-                    key={value}
-                    type="button"
-                    onClick={() => setTheme(value)}
-                    className={cn(
-                      "flex min-h-11 flex-col items-center gap-1.5 rounded-lg border py-3 text-xs font-semibold transition-colors",
-                      active
-                        ? "border-pink-500/30 bg-pink-500/10 text-pink-600 dark:text-pink-400"
-                        : "border-border bg-accent/5 text-muted-foreground hover:text-foreground"
-                    )}
-                  >
-                    <Icon size={16} strokeWidth={active ? 2.5 : 1.75} />
-                    {label}
-                  </button>
-                )
-              })}
             </div>
           </SectionRow>
         </SectionCard>

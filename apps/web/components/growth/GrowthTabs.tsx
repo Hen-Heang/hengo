@@ -4,14 +4,15 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { cn } from "@/lib/utils"
-import { isLinkActive, navSections, shippedItems } from "@/lib/navigation"
+import { isLinkActive, navSections, visibleSidebarItems } from "@/lib/navigation"
 
-const growthLinks = shippedItems(navSections.find((s) => s.id === "growth")!.items)
+const growthLinks = visibleSidebarItems(navSections.find((s) => s.id === "growth")!)
 
-// Segmented switcher between the Growth workspace's shipped features
-// (Habits / Recovery). Rendered at the top of each feature's root page so the
-// mobile "Habits" bottom tab reaches all of Growth; desktop already has the
-// sidebar, so it's hidden there.
+// Segmented switcher between the Growth workspace's visible features
+// (Recovery / Journal — Habits is reachable from inside Recovery's dashboard
+// now, see the "growth" section note in lib/navigation.ts). Rendered at the
+// top of each feature's root page so the mobile "Growth" bottom tab reaches
+// all of Growth; desktop already has the sidebar, so it's hidden there.
 export function GrowthTabs() {
   const pathname = usePathname()
 

@@ -1,17 +1,12 @@
 "use client"
 
-import Link from "next/link"
-import { BrainCircuit, Zap } from "lucide-react"
+import { Zap } from "lucide-react"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
-import {
-  askHengoItem,
-  getActiveNavItem,
-  getSectionForPath,
-  type NavSearchParams,
-} from "@/lib/navigation"
+import { getActiveNavItem, getSectionForPath, type NavSearchParams } from "@/lib/navigation"
 import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 import { BreadcrumbTrail } from "./PageHeader"
@@ -56,19 +51,11 @@ export function DesktopHeader({
           onClick={() => openQuickCapture()}
           className="h-9 gap-1.5 rounded-lg px-3"
         >
-          <Zap size={15} />
-          Capture
-        </Button>
-        {/* The one global AI entry point — see the note on `askHengoItem` in
-            lib/navigation.ts. Lands on /chat's "My Data" mode; no new chat
-            surface. */}
-        <Button asChild variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg px-3">
-          <Link href={askHengoItem.href}>
-            <BrainCircuit size={15} />
-            Ask Hengo
-          </Link>
+          <Zap data-icon="inline-start" className="size-4" aria-hidden="true" />
+          Quick capture
         </Button>
         <QuickSwitcher />
+        <ThemeToggle className="h-11 w-11 rounded-xl border-border bg-card shadow-sm" />
         <NotificationBell />
         <ProfileMenu collapsed side="bottom" align="end" className="size-11" />
       </div>

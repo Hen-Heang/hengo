@@ -52,10 +52,9 @@ export function DesktopSidebar({
   // Which collapsed-mode flyout is open — only one at a time, same as the
   // tablet rail.
   const [openFlyoutId, setOpenFlyoutId] = useState<string | null>(null)
-  // Secondary destinations (Learn's hub, Settings) light up whenever the
-  // current route belongs to their section/route — Learn's flat link mirrors
-  // the primary-section fallback below (a hidden child still activates its
-  // parent), Settings is a simple exact match.
+  // Learn's flat link lights up whenever the current route belongs to its
+  // section, mirroring the primary-section fallback below (a hidden child
+  // still activates its parent).
   const learnActive = activeSectionId === "learn"
 
   return (
@@ -79,7 +78,7 @@ export function DesktopSidebar({
             <span className="min-w-0">
               <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">Hengo</span>
               <span className="block truncate text-xs leading-tight text-muted-foreground">
-                Korean for developers
+                Plan, grow, remember.
               </span>
             </span>
           )}
@@ -205,7 +204,7 @@ export function DesktopSidebar({
         })}
       </nav>
 
-      {/* Secondary destinations (Learn, Settings) + Account */}
+      {/* Secondary destinations (Learn) + Account */}
       <div className="space-y-1 border-t border-border px-3 py-3">
         {secondaryNavItems.map((item) => {
           const active =

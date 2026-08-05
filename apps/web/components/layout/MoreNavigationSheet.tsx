@@ -22,11 +22,12 @@ import {
 /**
  * Mobile "More" sheet. "Ask Hengo" sits at the top as a pinned card — the
  * global AI action's mobile home (see the note on `askHengoItem` in
- * lib/navigation.ts) — followed by a flat menu: Review, Learn, Settings,
- * Account. Today/Goals/Growth/Memory are already bottom tabs, so they (and
- * their own sub-pages) aren't repeated here — see `moreGroups`. Coming Soon
- * features get a single muted line at the bottom rather than a grid of dead
- * tiles.
+ * lib/navigation.ts) — followed by a flat menu: Review, Learn, Settings.
+ * Today/Goals/Growth/Memory are already bottom tabs, so they (and their own
+ * sub-pages) aren't repeated here — see `moreGroups`. No separate "Account"
+ * row — `/account` is just a legacy alias for the Settings page, not a
+ * distinct destination. Coming Soon features get a single muted line at the
+ * bottom rather than a grid of dead tiles.
  */
 export function MoreNavigationSheet({
   open,

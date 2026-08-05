@@ -10,6 +10,7 @@ import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vite
 
 const push = vi.fn()
 const back = vi.fn()
+const { openQuickCapture } = vi.hoisted(() => ({ openQuickCapture: vi.fn() }))
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
@@ -41,6 +42,10 @@ vi.mock("@/lib/auth-store", () => ({
   isAuthenticated: () => true,
 }))
 
+vi.mock("@/lib/quick-capture-bus", () => ({
+  openQuickCapture,
+}))
+
 import { QuickSwitcher } from "@/components/app/quick-switcher"
 import { DesktopSidebar } from "./DesktopSidebar"
 import { WorkspaceFlyout } from "./WorkspaceFlyout"
@@ -69,6 +74,7 @@ beforeAll(() => {
 beforeEach(() => {
   push.mockClear()
   back.mockClear()
+  openQuickCapture.mockClear()
   window.localStorage.clear()
 })
 
@@ -131,10 +137,13 @@ describe("MobileBottomNav", () => {
     expect(first.getAttribute("aria-current")).toBe("page")
   })
 
-  it("points the Memory tab at /ask-hengo/memories and keeps it current for the Ask Hengo action too", () => {
+  it("points the Memory tab at /ask-hengo/memories and keeps it current for Inbox, Notes and the Ask Hengo action too", () => {
     for (const [pathname, searchParams] of [
       ["/ask-hengo/memories", undefined],
       ["/chat", "mode=memory"],
+      ["/inbox", undefined],
+      ["/notes", undefined],
+      ["/notes/abc-123", undefined],
     ] as const) {
       setup(pathname, vi.fn(), searchParams)
       const memoryLink = screen.getByRole("link", { name: "Memory" })
@@ -179,7 +188,7 @@ describe("MoreNavigationSheet", () => {
     expect(aiLink.getAttribute("href")).toBe("/chat?mode=memory")
   })
 
-  it("lists exactly Review, Learn, Settings, Account below the Ask Hengo card — no group headings", () => {
+  it("lists exactly Review, Learn, Settings below the Ask Hengo card — no group headings, no separate Account row", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     expect(within(dialog).queryAllByRole("heading", { level: 3 })).toHaveLength(0)
@@ -188,11 +197,10 @@ describe("MoreNavigationSheet", () => {
       "Review",
       "Learn",
       "Settings",
-      "Account",
     ])
   })
 
-  it("does not duplicate any Korean/Learn function, Goals/Growth sub-page, or Ask Hengo in the flat menu", () => {
+  it("does not duplicate any Korean/Learn function, Goals/Growth/Memory sub-page, or Ask Hengo in the flat menu", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     for (const label of [
@@ -242,11 +250,11 @@ describe("MoreNavigationSheet", () => {
     expect(within(dialog).queryByRole("link", { name: /deep work/i })).toBeNull()
   })
 
-  it("puts Account and Settings in the sheet instead of the mobile header", () => {
+  it("puts Settings in the sheet instead of the mobile header, with no separate Account entry", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
-    expect(within(dialog).getByRole("link", { name: /account/i }).getAttribute("href")).toBe("/account")
     expect(within(dialog).getByRole("link", { name: /settings/i }).getAttribute("href")).toBe("/settings")
+    expect(within(dialog).queryByRole("link", { name: /account/i })).toBeNull()
   })
 })
 
@@ -260,13 +268,20 @@ describe("MobileHeader", () => {
     expect(isDetailRoute("/growth/habits/h1")).toBe(true)
   })
 
-  it("shows a title and two actions on a root page — no avatar, no level badge", () => {
+  it("moves Quick Capture into the root-page top bar", () => {
     render(<MobileHeader pathname="/goals" searchParams={undefined} onOpenSearch={vi.fn()} />)
     expect(screen.getByRole("heading", { name: "Goals" })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Quick capture" })).toBeTruthy()
     expect(screen.getByRole("button", { name: "Search" })).toBeTruthy()
     expect(screen.getByRole("button", { name: /notifications/i })).toBeTruthy()
     expect(screen.queryByRole("button", { name: "Go back" })).toBeNull()
     expect(screen.queryByRole("link", { name: /profile/i })).toBeNull()
+  })
+
+  it("opens the shared Quick Capture dialog from the top bar", () => {
+    render(<MobileHeader pathname="/goals" searchParams={undefined} onOpenSearch={vi.fn()} />)
+    fireEvent.click(screen.getByRole("button", { name: "Quick capture" }))
+    expect(openQuickCapture).toHaveBeenCalledOnce()
   })
 
   it("announces the unread notification count to screen readers", () => {
@@ -279,6 +294,16 @@ describe("MobileHeader", () => {
     expect(screen.getByRole("button", { name: "Go back" })).toBeTruthy()
     expect(screen.getByRole("button", { name: "More actions" })).toBeTruthy()
     expect(screen.queryByRole("button", { name: /notifications/i })).toBeNull()
+  })
+
+  it("keeps Quick Capture in the detail-page top-bar menu", async () => {
+    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />)
+    fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
+      button: 0,
+      ctrlKey: false,
+    })
+    fireEvent.click(await screen.findByRole("menuitem", { name: "Quick capture" }))
+    expect(openQuickCapture).toHaveBeenCalledOnce()
   })
 
   it("goes back through the router", () => {
@@ -318,11 +343,10 @@ describe("DesktopSidebar", () => {
     return onToggle
   }
 
-  it("shows flat Memory + Learn links plus labelled groups for Goals/Growth/Review", () => {
+  it("shows a flat Learn link plus labelled groups for Goals/Growth/Memory/Review", () => {
     setup("/practice", false)
-    expect(screen.getByRole("link", { name: "Memory" })).toBeTruthy()
     expect(screen.getByRole("link", { name: "Learn" })).toBeTruthy()
-    for (const label of ["Goals", "Growth", "Review"]) {
+    for (const label of ["Goals", "Growth", "Memory", "Review"]) {
       expect(screen.getByRole("button", { name: new RegExp(label, "i") })).toBeTruthy()
     }
   })
@@ -337,12 +361,19 @@ describe("DesktopSidebar", () => {
     expect(screen.queryByRole("button", { name: /learn navigation/i })).toBeNull()
   })
 
-  it("has no children to expand — Memory (primary) is also a flat link, straight to the memories hub", () => {
-    setup("/practice", false)
-    const memoryLink = screen.getByRole("link", { name: "Memory" })
-    expect(memoryLink.getAttribute("href")).toBe("/ask-hengo/memories")
-    expect(memoryLink.getAttribute("aria-current")).toBeNull()
-    expect(screen.queryByRole("button", { name: /memory navigation/i })).toBeNull()
+  it("shows Memory's Inbox/Notes/Memories as real flyout children when active — no Ask Hengo row inside", () => {
+    setup("/notes", false)
+    for (const label of ["Inbox", "Notes", "Memories"]) {
+      expect(screen.getByRole("link", { name: label })).toBeTruthy()
+    }
+    expect(screen.getByRole("link", { name: "Notes" }).getAttribute("aria-current")).toBe("page")
+    expect(screen.queryByRole("link", { name: "Ask Hengo" })).toBeNull()
+  })
+
+  it("no longer shows Notes or Inbox under the Goals group", () => {
+    setup("/goals", false)
+    expect(screen.queryByRole("link", { name: "Notes" })).toBeNull()
+    expect(screen.queryByRole("link", { name: "Inbox" })).toBeNull()
   })
 
   it("never renders AI Coach or any of its mode variants — Ask Hengo is the only AI entry point now", () => {
@@ -369,14 +400,15 @@ describe("DesktopSidebar", () => {
 
   it("gives every collapsed icon an accessible name", () => {
     setup("/practice", true)
-    // Today, Memory, Learn and Settings are direct links — neither has
-    // children left to hide behind a flyout. Goals/Growth/Review still
-    // collapse into flyout triggers (their children need the panel open to
-    // render, same as the tablet rail).
-    for (const name of ["Today", "Memory", "Learn", "Settings"]) {
+    // Today and Learn are direct links — neither has children left to hide
+    // behind a flyout. Goals/Growth/Memory/Review all have visible children
+    // now, so they collapse into flyout triggers instead (the children need
+    // the panel open to render, same as the tablet rail). Settings has no
+    // row of its own — it's the first item in the Account dropdown.
+    for (const name of ["Today", "Learn"]) {
       expect(screen.getByRole("link", { name })).toBeTruthy()
     }
-    for (const name of ["Goals navigation", "Growth navigation", "Review navigation"]) {
+    for (const name of ["Goals navigation", "Growth navigation", "Memory navigation", "Review navigation"]) {
       expect(screen.getByRole("button", { name })).toBeTruthy()
     }
   })
@@ -429,14 +461,14 @@ describe("WorkspaceFlyout", () => {
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
   })
 
-  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead", () => {
+  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead; Notes/Inbox moved to Memory", () => {
     setup(true)
     const panel = screen.getByRole("navigation", { name: "Goals" })
     expect(
       within(panel)
         .getAllByRole("link")
         .map((el) => el.textContent)
-    ).toEqual(["Goals", "Calendar", "Notes", "Inbox"])
+    ).toEqual(["Goals", "Calendar"])
   })
 
   it("marks the current child route", () => {
@@ -446,7 +478,7 @@ describe("WorkspaceFlyout", () => {
 
   it("closes after navigating to a child route", () => {
     const onOpenChange = setup(true)
-    fireEvent.click(screen.getByRole("link", { name: "Notes" }))
+    fireEvent.click(screen.getByRole("link", { name: "Goals" }))
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
@@ -456,11 +488,11 @@ describe("WorkspaceFlyout", () => {
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
-  it("does not render Coming Soon items as links", () => {
+  it("does not render Coming Soon items as links, and no longer lists Habits — it's reachable from inside Recovery now", () => {
     renderWithTooltips(
       <WorkspaceFlyout
         section={navSections.find((s) => s.id === "growth")!}
-        pathname="/growth/habits"
+        pathname="/growth/recovery"
         searchParams={undefined}
         open
         onOpenChange={vi.fn()}
@@ -468,7 +500,7 @@ describe("WorkspaceFlyout", () => {
       />
     )
     const panel = screen.getByRole("navigation", { name: "Growth" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Habits", "Recovery", "Journal"])
+    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Recovery", "Journal"])
     expect(screen.getByText(/Coming soon:/)).toBeTruthy()
   })
 
@@ -488,7 +520,7 @@ describe("WorkspaceFlyout", () => {
     expect(within(panel).queryAllByRole("link")).toHaveLength(0)
   })
 
-  it("renders nothing for Memory either — its children are both hidden (the hub link and Ask Hengo)", () => {
+  it("lists Memory's Inbox, Notes and Memories — Ask Hengo stays a hidden global action, not a fourth row", () => {
     const memory = navSections.find((s) => s.id === "memory")!
     renderWithTooltips(
       <WorkspaceFlyout
@@ -501,7 +533,8 @@ describe("WorkspaceFlyout", () => {
       />
     )
     const panel = screen.getByRole("navigation", { name: "Memory" })
-    expect(within(panel).queryAllByRole("link")).toHaveLength(0)
+    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Inbox", "Notes", "Memories"])
+    expect(screen.getByRole("link", { name: "Memories" }).getAttribute("aria-current")).toBe("page")
   })
 
   it("lists Review's five children — the old Progress workspace, absorbed and still fully visible", () => {

@@ -134,7 +134,7 @@ export default function ReadingUnitPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
         <p className="text-lg font-bold text-foreground">Unit not found.</p>
-        <Link href="/reading" className="text-sm font-bold text-emerald-600 hover:underline">
+        <Link href="/phrasebook?mode=reading" className="text-sm font-bold text-emerald-600 hover:underline">
           Back to Reading Units
         </Link>
       </div>
@@ -224,7 +224,7 @@ export default function ReadingUnitPage() {
     try {
       await deleteReadingUnit(unit.id)
       toast.success("Unit deleted.")
-      router.push("/reading")
+      router.push("/phrasebook?mode=reading")
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Could not delete this unit."))
     }
@@ -243,7 +243,7 @@ export default function ReadingUnitPage() {
       {/* ── Header ── */}
       <motion.div variants={itemVariants} className="space-y-4">
         <Link
-          href="/reading"
+          href="/phrasebook?mode=reading"
           className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft size={14} strokeWidth={3} /> All units

@@ -31,8 +31,8 @@ const NO_GOAL = "none"
 
 /**
  * Shared Quick Capture dialog — mounted once in AppShell (see AppShell.tsx),
- * opened from anywhere via `openQuickCapture()` (⌘K action, header button,
- * mobile FAB) so capturing a thought never requires leaving the current page.
+ * opened from anywhere via `openQuickCapture()` (⌘K action or either top bar)
+ * so capturing a thought never requires leaving the current page.
  */
 export function QuickCaptureDialog() {
   const [open, setOpen] = useState(false)

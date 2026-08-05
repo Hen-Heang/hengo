@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { GrowthTabs } from "@/components/growth/GrowthTabs"
+import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
 import { CreateHabitForm } from "@/components/recovery/CreateHabitForm"
 import { RecoveryDashboard } from "@/components/recovery/RecoveryDashboard"
 import { BackLink } from "@/components/ui/back-link"
@@ -62,6 +63,7 @@ export default function RecoveryPage() {
       <div className="mx-auto max-w-5xl pb-14">
         <BackLink href="/home" label="Home" mobileOnly className="mb-2" />
         <GrowthTabs />
+        <div className="mb-4"><TodayHabitCheckins /></div>
         {error && <div className="mx-auto mb-4 max-w-lg"><ErrorBanner>{error}</ErrorBanner></div>}
         <CreateHabitForm
           onCreate={async (input) => {
@@ -84,6 +86,7 @@ export default function RecoveryPage() {
     <div className="mx-auto max-w-5xl">
       <BackLink href="/home" label="Home" mobileOnly className="mb-2" />
       <GrowthTabs />
+      <div className="mb-4"><TodayHabitCheckins /></div>
       {error && <div className="mb-4"><ErrorBanner>{error}</ErrorBanner></div>}
       <RecoveryDashboard
         target={target}

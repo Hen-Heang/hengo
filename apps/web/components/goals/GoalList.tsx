@@ -155,7 +155,10 @@ function GoalIcon({
 }) {
   return (
     <div
-      className={cn("relative shrink-0 overflow-hidden bg-primary/10 font-bold text-primary", className)}
+      className={cn(
+        "relative shrink-0 overflow-hidden bg-primary/10 font-bold text-primary ring-1 ring-primary/10",
+        className
+      )}
       onClick={(e) => e.stopPropagation()}
     >
       <EmojiIconPicker value={icon} onChange={onChange}>
@@ -246,8 +249,8 @@ export function GoalList({
 
   if (isLoading) {
     return viewMode === "grid" ? (
-      <div className="grid grid-cols-2 gap-4 sm:gap-5">
-        {[0, 1, 2, 3].map((i) => (
+      <div className="grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
           <Skeleton key={i} className="h-48 rounded-lg" />
         ))}
       </div>
@@ -279,7 +282,7 @@ export function GoalList({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-end">
-        <div className="flex gap-1 rounded-lg bg-foreground/5 p-1">
+        <div className="relative flex gap-1 rounded-lg bg-foreground/5 p-1">
           {([
             { mode: "list", Icon: List, label: "List view" },
             { mode: "grid", Icon: LayoutGrid, label: "Grid view" },
@@ -290,13 +293,18 @@ export function GoalList({
               aria-label={label}
               aria-pressed={viewMode === mode}
               className={cn(
-                "flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
-                viewMode === mode
-                  ? "bg-background text-foreground shadow-sm"
-                  : "text-muted-foreground/50 hover:text-foreground"
+                "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
+                viewMode === mode ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
               )}
             >
-              <Icon size={16} />
+              {viewMode === mode && (
+                <motion.span
+                  layoutId="goalViewIndicator"
+                  transition={{ type: "spring", stiffness: 500, damping: 35 }}
+                  className="absolute inset-0 rounded-lg bg-background shadow-sm"
+                />
+              )}
+              <Icon size={16} className="relative" />
             </button>
           ))}
         </div>
@@ -312,7 +320,11 @@ export function GoalList({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className={cn(viewMode === "grid" ? "grid grid-cols-2 gap-4 sm:gap-5" : "flex flex-col gap-2.5")}
+          className={cn(
+            viewMode === "grid"
+              ? "grid grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-3 xl:grid-cols-4"
+              : "flex flex-col gap-2.5"
+          )}
         >
           {goals.map((goal, i) => {
             const deadlineInfo = calculateGoalDeadlineInfo(goal)
@@ -375,7 +387,7 @@ export function GoalList({
                   tabIndex={0}
                   aria-label={`Open goal: ${goal.title}`}
                   className={cn(
-                    "group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-3 py-3 transition-all hover:border-primary/30 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
+                    "group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-3 py-3 transition-all hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
                     isOpening && "ring-2 ring-primary",
                     readyToComplete && "border-emerald-500/40 bg-emerald-500/[0.03]",
                     deadlineStyling?.borderColor
