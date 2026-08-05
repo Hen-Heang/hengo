@@ -18,7 +18,7 @@ const RULES: { keywords: string[]; href: string; label: string }[] = [
   { keywords: ["daily phrase", "phrase of the day"], href: "/practice", label: "Open today's phrase" },
   { keywords: ["correction", "mistake", "grammar review"], href: "/chat?mode=corrections", label: "Review corrections" },
   { keywords: ["interview", "exam prep", "mock interview"], href: "/interview", label: "Open exam prep" },
-  { keywords: ["hangul", "alphabet", "foundations", "survival korean"], href: "/learn", label: "Open foundations" },
+  { keywords: ["hangul", "alphabet", "foundations", "survival korean"], href: "/learn/foundations", label: "Open foundations" },
   { keywords: ["chat", "conversation", "speak", "speaking", "talk"], href: "/chat", label: "Open AI Coach" },
 ]
 

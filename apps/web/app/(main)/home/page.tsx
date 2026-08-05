@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { ArrowRight, Flame, MessageCircle, Sparkles, Target, TreeDeciduous, Trophy } from "lucide-react"
+import { Flame, Sparkles, Target, TreeDeciduous, Trophy } from "lucide-react"
 import { motion } from "motion/react"
 
 import { FirstRunBanner } from "@/components/dashboard/FirstRunBanner"
@@ -29,13 +29,13 @@ function getGreeting() {
 
 function HomeLoadingState() {
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-8 lg:px-8">
-      <Skeleton className="h-24 w-full rounded-2xl" />
+    <div className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-6 lg:px-8">
+      <Skeleton className="h-20 w-full rounded-lg" />
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
+        <Skeleton className="h-60 w-full rounded-lg" />
+        <Skeleton className="h-60 w-full rounded-lg" />
+        <Skeleton className="h-60 w-full rounded-lg" />
+        <Skeleton className="h-60 w-full rounded-lg" />
       </div>
     </div>
   )
@@ -78,16 +78,16 @@ export default function HomePage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="mx-auto max-w-6xl space-y-8 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-10 sm:px-6 sm:pt-8 lg:px-8"
+      className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-6 lg:px-8"
     >
       {/* ── Hero strip ── */}
       <motion.div
         variants={itemVariants}
-        className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
+        className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between"
       >
         <div className="max-w-2xl">
           <p className="app-kicker">Your daily workspace</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.035em] text-foreground sm:text-4xl">
+          <h1 className="mt-2 text-2xl font-semibold tracking-[-0.025em] text-foreground sm:text-3xl">
             {getGreeting()} 👋
           </h1>
           <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
@@ -101,9 +101,8 @@ export default function HomePage() {
           </div>
           <Button asChild className="h-10 flex-1 sm:flex-none">
             <Link href="/chat">
-              <MessageCircle size={16} />
+              <Sparkles data-icon="inline-start" className="size-4" aria-hidden="true" />
               Ask AI Coach
-              <ArrowRight size={15} />
             </Link>
           </Button>
         </div>
@@ -117,23 +116,14 @@ export default function HomePage() {
       )}
 
       {/* ── Big entry points ── */}
-      <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
+      {/* Goals and Growth lead, Progress follows, Learn sits last and carries
+          no stat tiles — Hengo's identity is the daily/goals/growth workspace,
+          with Korean learning as one workspace among others, not the headline.
+          Its streak/due/vocab counts still live on /learn and the Korean
+          pages themselves; this card is just a generic door into that hub. */}
+      <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 sm:gap-5 xl:grid-cols-4">
         <WorkspacePosterCard
-          href={getLastVisited("learn", "/practice")}
-          eyebrow="Learning"
-          title="Korean Learning"
-          description="Vocab, grammar corrections, listening, reading, and exam prep — pick up today's practice."
-          icon={Sparkles}
-          accentColor="blue"
-          stats={[
-            { label: "Day streak", value: String(stats.streakDays) },
-            { label: "Due today", value: String(stats.dueReviews) },
-            { label: "Words saved", value: String(stats.wordsSaved) },
-          ]}
-          cta="Continue learning"
-        />
-        <WorkspacePosterCard
-          href={getLastVisited("goals", "/dashboard")}
+          href={getLastVisited("goals", "/goals")}
           eyebrow="Productivity"
           title="Goal Setting"
           description="Plan goals, break them into tasks, and track deadlines — see what needs you today."
@@ -149,7 +139,20 @@ export default function HomePage() {
           cta="Continue planning"
         />
         <WorkspacePosterCard
-          href={getLastVisited("progress", "/achievements")}
+          href="/growth/habits"
+          eyebrow="Growth"
+          title="Habits & Recovery"
+          description="Build identity-based habits and track recovery, one calm check-in at a time."
+          icon={TreeDeciduous}
+          accentColor="violet"
+          stats={[
+            { label: "Active habits", value: String(activeHabits.length) },
+            ...(recoveryStreakDays !== null ? [{ label: "Recovery streak", value: `${recoveryStreakDays}d` }] : []),
+          ]}
+          cta="Open Growth"
+        />
+        <WorkspacePosterCard
+          href={getLastVisited("review", "/achievements")}
           eyebrow="Progress"
           title="Your Progress"
           description="Level, XP, and badges earned across every module — see how far you've come."
@@ -163,17 +166,14 @@ export default function HomePage() {
           cta="View achievements"
         />
         <WorkspacePosterCard
-          href="/growth/habits"
-          eyebrow="Growth"
-          title="Habits & Recovery"
-          description="Build identity-based habits and track recovery, one calm check-in at a time."
-          icon={TreeDeciduous}
-          accentColor="violet"
-          stats={[
-            { label: "Active habits", value: String(activeHabits.length) },
-            ...(recoveryStreakDays !== null ? [{ label: "Recovery streak", value: `${recoveryStreakDays}d` }] : []),
-          ]}
-          cta="Open Growth"
+          href="/learn"
+          eyebrow="Learning"
+          title="Learn"
+          description="Access your learning tools and continue when you are ready."
+          icon={Sparkles}
+          accentColor="blue"
+          stats={[]}
+          cta="Open Learn"
         />
       </motion.div>
     </motion.div>

@@ -10,7 +10,7 @@ const TAB =
   "relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
 
 /**
- * Five mobile destinations: Today, Learn, Goals, Growth, More. A stable
+ * Five mobile destinations: Today, Goals, Growth, Memory, More. A stable
  * elevated bottom surface — one border, one shadow, no glass container, no
  * sliding pill, no per-icon scaling.
  *

@@ -43,7 +43,7 @@ export default function InboxPage() {
         <PageHero
           eyebrow="Productivity"
           title="Inbox"
-          description="Capture anything in a few seconds — ideas, tasks, Korean phrases, dev learnings. Organize it into notes, tasks, or journal thoughts when you're ready."
+          description="Capture ideas, tasks, phrases, or learnings now; organize them into notes, tasks, or journal entries later."
           stats={[{ label: "Unprocessed", value: loading ? "…" : String(inboxCount) }]}
           actions={
             <Button onClick={() => openQuickCapture()} className="gap-1.5">
@@ -62,7 +62,7 @@ export default function InboxPage() {
         {loading ? (
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="rounded-2xl border border-border bg-card p-4">
+              <div key={i} className="rounded-lg border border-border bg-card p-4">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="mt-3 h-4 w-full" />
                 <Skeleton className="mt-2 h-4 w-3/4" />
@@ -70,11 +70,11 @@ export default function InboxPage() {
             ))}
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-border bg-card px-6 py-12 text-center">
+          <div className="rounded-lg border border-border bg-card px-5 py-10 text-center">
             <p className="text-sm font-semibold text-muted-foreground">{error}</p>
           </div>
         ) : visible.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-card/50 px-5 py-12 text-center">
             <p className="text-sm font-semibold text-foreground">Nothing here yet</p>
             <p className="max-w-sm text-sm text-muted-foreground">
               {items.length === 0

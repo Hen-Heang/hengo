@@ -71,7 +71,7 @@ function snapshotOf(fields: {
 
 function SectionCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-3xl border border-border bg-card shadow-sm dark:bg-slate-900/40", className)}>
+    <div className={cn("overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40", className)}>
       {children}
     </div>
   )
@@ -79,7 +79,7 @@ function SectionCard({ children, className }: { children: React.ReactNode; class
 
 function SectionRow({ children, last }: { children: React.ReactNode; last?: boolean }) {
   return (
-    <div className={cn("px-5 py-4 sm:px-6", !last && "border-b border-border/60")}>
+    <div className={cn("px-4 py-4 sm:px-5", !last && "border-b border-border/60")}>
       {children}
     </div>
   )
@@ -93,12 +93,12 @@ function SectionHeader({ icon: Icon, title, description, color = "text-blue-500"
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={cn("flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-accent/5", color)}>
+      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/5", color)}>
         <Icon size={15} strokeWidth={2} />
       </div>
       <div>
         <p className="text-sm font-semibold text-foreground">{title}</p>
-        {description && <p className="text-[11px] font-medium text-muted-foreground">{description}</p>}
+        {description && <p className="text-sm text-muted-foreground">{description}</p>}
       </div>
     </div>
   )
@@ -106,7 +106,7 @@ function SectionHeader({ icon: Icon, title, description, color = "text-blue-500"
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <label className="mb-1.5 block text-[11px] font-medium text-muted-foreground px-1">
+    <label className="mb-1.5 block px-1 text-sm font-medium text-muted-foreground">
       {children}
     </label>
   )
@@ -303,9 +303,9 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="mx-auto max-w-3xl space-y-4 pb-12">
-        <div className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+        <div className="rounded-lg border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-4">
-            <Skeleton className="h-14 w-14 rounded-2xl" />
+            <Skeleton className="h-14 w-14 rounded-lg" />
             <div className="flex-1">
               <Skeleton className="h-5 w-32" />
               <Skeleton className="mt-2 h-4 w-40" />
@@ -313,7 +313,7 @@ export default function SettingsPage() {
           </div>
         </div>
         {[1, 2, 3].map((item) => (
-          <div key={item} className="rounded-3xl border border-border bg-card p-5 shadow-sm">
+          <div key={item} className="rounded-lg border border-border bg-card p-5 shadow-sm">
             <div className="flex items-center gap-3">
               <Skeleton className="h-8 w-8 rounded-xl" />
               <div>
@@ -322,8 +322,8 @@ export default function SettingsPage() {
               </div>
             </div>
             <div className="mt-5 space-y-3">
-              <Skeleton className="h-11 w-full rounded-2xl" />
-              <Skeleton className="h-11 w-full rounded-2xl" />
+              <Skeleton className="h-11 w-full rounded-lg" />
+              <Skeleton className="h-11 w-full rounded-lg" />
             </div>
           </div>
         ))}
@@ -337,7 +337,7 @@ export default function SettingsPage() {
       animate="visible"
       variants={containerVariants}
       onSubmit={handleSave}
-      className="mx-auto max-w-3xl space-y-5 pb-28"
+      className="mx-auto max-w-3xl space-y-5 pb-24"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
@@ -345,13 +345,13 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={handleClose}
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
           >
             <ArrowLeft size={18} strokeWidth={2.5} />
           </button>
           <div>
-            <h1 className="text-lg font-bold text-foreground">Settings</h1>
-            <p className="text-[11px] font-medium text-muted-foreground">Profile, preferences & account</p>
+            <h1 className="text-xl font-semibold text-foreground">Settings</h1>
+            <p className="text-sm text-muted-foreground">Profile, preferences & account</p>
           </div>
         </div>
       </motion.div>
@@ -367,7 +367,7 @@ export default function SettingsPage() {
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingAvatar}
                   title="Change profile photo"
-                  className="group relative flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 text-xl font-bold text-white shadow-lg shadow-blue-500/20 active:scale-95"
+                  className="group relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-linear-to-br from-blue-500 to-indigo-600 text-lg font-semibold text-white shadow-sm"
                 >
                   {avatarUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
@@ -395,7 +395,7 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-bold text-foreground">
+                <p className="truncate text-base font-semibold text-foreground">
                   {displayName || "Your name"}
                 </p>
                 <p className="truncate text-xs font-medium text-muted-foreground">{email}</p>
@@ -410,15 +410,15 @@ export default function SettingsPage() {
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
                   placeholder="Your name"
-                  className="h-11 rounded-2xl border-border bg-accent/5 px-4 font-semibold focus:bg-background transition-all"
+                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
                 />
               </div>
               <div>
                 <FieldLabel>Email address</FieldLabel>
-                <div className="flex h-11 items-center gap-2.5 rounded-2xl border border-border bg-accent/5 px-4 opacity-60">
+                <div className="flex h-11 items-center gap-2.5 rounded-lg border border-border bg-accent/5 px-4 opacity-60">
                   <Mail size={14} className="shrink-0 text-muted-foreground" strokeWidth={2} />
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{email}</span>
-                  <span className="hidden shrink-0 items-center gap-1 text-[9px] font-bold uppercase tracking-wide text-muted-foreground sm:flex">
+                  <span className="hidden shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground sm:flex">
                     <ShieldCheck size={10} strokeWidth={3} /> Verified
                   </span>
                 </div>
@@ -449,7 +449,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={() => setKoreanLevel(level.value)}
                     className={cn(
-                      "group relative flex w-full items-center gap-3 rounded-2xl border px-4 py-3.5 text-left transition-all active:scale-[0.98]",
+                      "group relative flex min-h-11 w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
                       active
                         ? "border-blue-500/30 bg-blue-500/5 ring-1 ring-blue-500/20"
                         : "border-border bg-accent/5 hover:border-blue-500/20 hover:bg-background"
@@ -465,7 +465,7 @@ export default function SettingsPage() {
                       <p className={cn("text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
                         {level.label}
                       </p>
-                      <p className="truncate text-[11px] font-medium text-muted-foreground">{level.desc}</p>
+                      <p className="truncate text-xs text-muted-foreground">{level.desc}</p>
                     </div>
                     {active && (
                       <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-500 text-white">
@@ -482,7 +482,7 @@ export default function SettingsPage() {
             <select
               value={learningGoal}
               onChange={(e) => setLearningGoal(e.target.value)}
-              className="h-11 w-full rounded-2xl border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-all focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
+              className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
             >
               <option value="">Select your main goal</option>
               {["Daily standup participation", "Team meeting communication", "Writing professional messages", "Technical discussion in Korean", "General workplace communication"].map((g) => <option key={g} value={g}>{g}</option>)}
@@ -527,28 +527,28 @@ export default function SettingsPage() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <FieldLabel>Country</FieldLabel>
-                <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-11 w-full rounded-2xl border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-all focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
                   <option value="">Select country</option>
                   {countries.map((c) => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
               <div>
                 <FieldLabel>Native language</FieldLabel>
-                <select value={nativeLanguage} onChange={(e) => setNativeLanguage(e.target.value)} className="h-11 w-full rounded-2xl border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-all focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select value={nativeLanguage} onChange={(e) => setNativeLanguage(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
                   <option value="">Select language</option>
                   {["Khmer", "English", "Chinese", "Japanese", "Vietnamese", "Thai", "Indonesian", "Filipino", "Malay", "Other"].map((l) => <option key={l} value={l}>{l}</option>)}
                 </select>
               </div>
               <div>
                 <FieldLabel>Occupation</FieldLabel>
-                <select value={occupation} onChange={(e) => setOccupation(e.target.value)} className="h-11 w-full rounded-2xl border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-all focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select value={occupation} onChange={(e) => setOccupation(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
                   <option value="">Select role</option>
                   {["Frontend Developer", "Backend Developer", "Full-Stack Developer", "QA Engineer", "DevOps Engineer", "Product Manager", "Data Scientist", "Other"].map((o) => <option key={o} value={o}>{o}</option>)}
                 </select>
               </div>
               <div>
                 <FieldLabel>Years of experience</FieldLabel>
-                <Input type="number" min={0} max={50} value={yearsOfExperience} onChange={(e) => setYearsOfExperience(e.target.value)} placeholder="e.g. 3" className="h-11 rounded-2xl border-border bg-accent/5 px-4 font-semibold focus:bg-background transition-all" />
+                <Input type="number" min={0} max={50} value={yearsOfExperience} onChange={(e) => setYearsOfExperience(e.target.value)} placeholder="e.g. 3" className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background" />
               </div>
             </div>
           </SectionRow>
@@ -577,7 +577,7 @@ export default function SettingsPage() {
                       type="button"
                       onClick={() => { setPreferredModel(model.value); setCustomModel("") }}
                       className={cn(
-                        "group relative flex flex-col gap-0.5 rounded-2xl border px-4 py-3.5 text-left transition-all active:scale-[0.98]",
+                        "group relative flex min-h-11 flex-col gap-0.5 rounded-lg border px-4 py-3 text-left transition-colors",
                         active
                           ? "border-sky-500/30 bg-sky-500/5 ring-1 ring-sky-500/20"
                           : "border-border bg-accent/5 hover:border-sky-500/20 hover:bg-background"
@@ -586,7 +586,7 @@ export default function SettingsPage() {
                       <p className={cn("text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
                         {model.label}
                       </p>
-                      <p className="text-[11px] font-medium text-muted-foreground">{model.desc}</p>
+                      <p className="text-xs text-muted-foreground">{model.desc}</p>
                       {active && (
                         <div className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]" />
                       )}
@@ -601,7 +601,7 @@ export default function SettingsPage() {
                   value={customModel}
                   onChange={(e) => setCustomModel(e.target.value)}
                   placeholder="e.g. gpt-4-turbo"
-                  className="h-11 rounded-2xl border-border bg-accent/5 px-4 font-mono text-xs focus:bg-background transition-all"
+                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-mono text-xs transition-colors focus:bg-background"
                 />
               </div>
             </div>
@@ -623,7 +623,7 @@ export default function SettingsPage() {
                     type="button"
                     onClick={() => setTheme(value)}
                     className={cn(
-                      "flex flex-col items-center gap-1.5 rounded-2xl border py-3.5 text-[11px] font-semibold transition-all active:scale-[0.97]",
+                      "flex min-h-11 flex-col items-center gap-1.5 rounded-lg border py-3 text-xs font-semibold transition-colors",
                       active
                         ? "border-pink-500/30 bg-pink-500/10 text-pink-600 dark:text-pink-400"
                         : "border-border bg-accent/5 text-muted-foreground hover:text-foreground"
@@ -651,7 +651,7 @@ export default function SettingsPage() {
             <div className="flex items-center justify-between gap-4">
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">Browser</p>
-                <p className="text-[11px] font-medium text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {push.supported
                     ? push.webState === "denied"
                       ? "Blocked in browser settings."
@@ -679,12 +679,12 @@ export default function SettingsPage() {
           <SectionRow>
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-sky-500/10 text-sky-500">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
                   <Send size={14} strokeWidth={2} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">Telegram</p>
-                  <p className="text-[11px] font-medium text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {push.telegramLinked ? "Connected" : "Get alerts in Telegram"}
                   </p>
                 </div>
@@ -710,12 +710,12 @@ export default function SettingsPage() {
           <SectionRow>
             <div className="flex items-center justify-between gap-4">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-500">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
                   <AlarmClock size={14} strokeWidth={2} />
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">Daily reminders</p>
-                  <p className="text-[11px] font-medium text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     Review nudge + streak saver
                   </p>
                 </div>
@@ -728,8 +728,8 @@ export default function SettingsPage() {
               />
             </div>
             {studyRemindersEnabled && (
-              <div className="mt-3 flex items-center justify-between gap-4 rounded-2xl bg-accent/5 px-4 py-3 dark:bg-white/5">
-                <label htmlFor="study-hour" className="text-[11px] font-medium text-muted-foreground">
+              <div className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-accent/5 px-4 py-3 dark:bg-white/5">
+                <label htmlFor="study-hour" className="text-sm font-medium text-muted-foreground">
                   Remind me at
                 </label>
                 <select
@@ -737,7 +737,7 @@ export default function SettingsPage() {
                   value={studyReminderHour}
                   disabled={savingReminders}
                   onChange={(e) => saveStudyReminders(studyRemindersEnabled, Number(e.target.value))}
-                  className="h-9 rounded-xl border border-border bg-background px-3 text-sm font-semibold text-foreground outline-none transition-all focus:ring-2 focus:ring-emerald-500/20"
+                  className="h-11 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:ring-2 focus:ring-emerald-500/20"
                 >
                   {Array.from({ length: 24 }, (_, h) => (
                     <option key={h} value={h}>
@@ -753,11 +753,11 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={() => router.push("/settings/reminders")}
-              className="flex w-full items-center justify-between gap-4 text-left"
+              className="flex min-h-11 w-full items-center justify-between gap-4 text-left"
             >
               <div className="min-w-0">
                 <p className="text-sm font-semibold text-foreground">Custom reminders</p>
-                <p className="text-[11px] font-medium text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   Manage reminders you&apos;ve set on tasks, habits, notes, and more
                 </p>
               </div>
@@ -776,12 +776,12 @@ export default function SettingsPage() {
             className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-red-500/5 active:scale-[0.98] sm:px-6"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-red-500/10 text-red-500 transition-transform group-hover:scale-110">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-500/10 text-red-500">
                 <LogOut size={16} strokeWidth={2} />
               </div>
               <div>
                 <p className="text-sm font-semibold text-red-600 dark:text-red-400">Sign out</p>
-                <p className="text-[11px] font-medium text-muted-foreground">End your session</p>
+                <p className="text-xs text-muted-foreground">End your session</p>
               </div>
             </div>
             <ChevronRight size={14} strokeWidth={2} className="text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
@@ -790,7 +790,7 @@ export default function SettingsPage() {
       </motion.div>
 
       <motion.div variants={itemVariants} className="pt-2 text-center">
-        <p className="text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           © 2026 Hen Heang · FullStack Developer
         </p>
       </motion.div>
@@ -803,7 +803,7 @@ export default function SettingsPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 16 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="sticky bottom-4 z-30 mx-auto flex w-full max-w-3xl items-center gap-3 rounded-2xl border border-border bg-card/95 p-3 shadow-xl backdrop-blur-xl dark:bg-slate-900/90"
+            className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 mx-auto flex w-full max-w-3xl items-center gap-3 rounded-lg border border-border bg-card/95 p-3 shadow-md backdrop-blur-xl dark:bg-slate-900/90 lg:bottom-4"
           >
             <p className={cn("flex-1 truncate px-2 text-xs font-medium", error ? "text-destructive" : "text-muted-foreground")}>
               {error || "You have unsaved changes."}
@@ -811,7 +811,7 @@ export default function SettingsPage() {
             <Button
               type="submit"
               disabled={saving || !isDirty}
-              className="h-11 shrink-0 rounded-xl bg-blue-600 px-6 text-sm font-semibold text-white shadow-lg shadow-blue-600/20 hover:bg-blue-500 active:scale-95 disabled:opacity-60 transition-all"
+              className="h-11 shrink-0 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-60"
             >
               {saving ? (
                 <><Loader2 size={16} className="mr-2 animate-spin" /> Saving…</>

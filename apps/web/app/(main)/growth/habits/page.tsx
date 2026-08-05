@@ -18,9 +18,9 @@ import { useSessionTimer } from "@/hooks/useSessionTimer"
 function HabitsLoadingState() {
   return (
     <div className="mx-auto max-w-xl space-y-3">
-      <Skeleton className="h-20 w-full rounded-2xl" />
-      <Skeleton className="h-20 w-full rounded-2xl" />
-      <Skeleton className="h-20 w-full rounded-2xl" />
+      <Skeleton className="h-20 w-full rounded-lg" />
+      <Skeleton className="h-20 w-full rounded-lg" />
+      <Skeleton className="h-20 w-full rounded-lg" />
     </div>
   )
 }
@@ -58,7 +58,7 @@ export default function HabitsPage() {
       ) : (
         <>
           <motion.div variants={itemVariants} className="mb-4 flex items-center justify-between">
-            <h1 className="text-xl font-bold text-foreground">Habits</h1>
+            <h1 className="text-xl font-semibold text-foreground">Habits</h1>
             <Button size="sm" variant="outline" onClick={() => setShowForm(true)}>
               <Plus size={16} strokeWidth={2} />
               New habit

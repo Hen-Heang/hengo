@@ -568,24 +568,25 @@ export function ChatWindow({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 -ml-2 rounded-xl text-muted-foreground transition-all active:scale-95 md:hidden"
+                  className="-ml-2 h-11 w-11 rounded-lg text-muted-foreground transition-colors active:scale-95 md:hidden"
                   onClick={() => router.push("/home")}
                   title="Back to home"
+                  aria-label="Back to home"
                 >
                   <ChevronLeft size={24} strokeWidth={2.5} />
                 </Button>
               )}
 
               <div className="relative shrink-0">
-                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-background shadow-md shadow-blue-500/15 ring-1 ring-blue-500/15 sm:h-10 sm:w-10 sm:rounded-[0.9rem]">
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-blue-500/15">
                   <Image src="/hengo-icon.svg" alt="" width={40} height={40} className="h-full w-full" />
                 </div>
                 <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="truncate text-[15px] font-bold leading-none tracking-tight text-foreground sm:text-[16px]">{title}</h3>
-                  <span className="hidden rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 sm:inline">
+                  <h3 className="truncate text-base font-semibold leading-none tracking-tight text-foreground">{title}</h3>
+                  <span className="hidden rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300 sm:inline">
                     AI Coach
                   </span>
                 </div>
@@ -596,7 +597,7 @@ export function ChatWindow({
                       realtimeVoice.isActive ? "animate-pulse bg-blue-500" : "bg-emerald-500"
                     )}
                   />
-                  <p className="truncate text-[11px] font-semibold text-muted-foreground">{coachStatus}</p>
+                  <p className="truncate text-xs font-medium text-muted-foreground">{coachStatus}</p>
                 </div>
               </div>
             </div>
@@ -608,7 +609,7 @@ export function ChatWindow({
                   size="sm"
                   onClick={() => void evaluateScenario()}
                   disabled={isEvaluatingScenario}
-                  className="h-9 items-center gap-1.5 rounded-xl border-emerald-500/40 bg-emerald-500/10 px-2.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 sm:px-3"
+                  className="h-11 items-center gap-1.5 rounded-lg border-emerald-500/40 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
                 >
                   {isEvaluatingScenario ? "Checking…" : "End scenario"}
                 </Button>
@@ -619,7 +620,7 @@ export function ChatWindow({
                 size="sm"
                 onClick={() => setIsTechnicalMode(!isTechnicalMode)}
                 className={cn(
-                  "hidden h-9 items-center gap-2 rounded-xl px-3 text-[12px] font-bold uppercase tracking-wider transition-all sm:flex",
+                  "hidden h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition-colors sm:flex",
                   isTechnicalMode
                     ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
                     : "border-border/60 bg-background/50 text-muted-foreground"
@@ -637,7 +638,7 @@ export function ChatWindow({
                 title={realtimeVoice.isActive ? "End live voice practice" : "Start live Korean voice practice"}
                 aria-pressed={realtimeVoice.isActive}
                 className={cn(
-                  "h-9 items-center gap-2 rounded-full px-2.5 text-[11px] font-bold transition-all sm:px-3",
+                  "h-11 min-w-11 items-center gap-2 rounded-lg px-2.5 text-xs font-semibold transition-colors sm:px-3",
                   realtimeVoice.isActive
                     ? "border-blue-500/40 bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-500"
                     : "border-border/70 bg-background text-muted-foreground hover:border-blue-500/30 hover:text-foreground"
@@ -651,10 +652,11 @@ export function ChatWindow({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hidden h-9 w-9 rounded-xl border border-border/60 bg-background/50 text-muted-foreground hover:bg-accent hover:text-foreground transition-all active:scale-95 sm:flex"
+                  className="hidden h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95 sm:flex"
                   onClick={onNewChat}
                   disabled={isStartingNewChat}
                   title="Start fresh"
+                  aria-label="Start fresh chat"
                 >
                   <SquarePen size={16} strokeWidth={2.5} />
                 </Button>
@@ -666,7 +668,8 @@ export function ChatWindow({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 rounded-xl border border-border/60 bg-background/50 text-muted-foreground transition-all active:scale-95 sm:hidden"
+                    className="h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors active:scale-95 sm:hidden"
+                    aria-label="Chat options"
                     title="Chat options"
                   >
                     <EllipsisVertical size={18} strokeWidth={2.5} />

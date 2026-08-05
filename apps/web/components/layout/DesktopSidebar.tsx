@@ -9,15 +9,13 @@ import { NavIconRow, NavRow } from "@/components/layout/NavItem"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
-  aiCoachItem,
-  askHengoItem,
   isNavigationItemActive,
-  primarySections,
-  settingsItem,
-  shippedItems,
+  secondaryNavItems,
   todayItem,
+  visibleSidebarItems,
+  workspaceNavSections,
+  type NavItem,
   type NavSearchParams,
-  type NavSectionId,
 } from "@/lib/navigation"
 import { cn } from "@/lib/utils"
 
@@ -27,8 +25,7 @@ import { WorkspaceFlyout } from "./WorkspaceFlyout"
 export const SIDEBAR_EXPANDED_WIDTH = 272
 export const SIDEBAR_COLLAPSED_WIDTH = 76
 
-const AI_SECTION: NavSectionId = "ai"
-const sidebarSections = primarySections.filter((section) => section.id !== AI_SECTION)
+const sidebarSections = workspaceNavSections
 
 export function DesktopSidebar({
   pathname,
@@ -48,15 +45,18 @@ export function DesktopSidebar({
   // can never be collapsed out from under the selected route, and no effect is
   // needed to reopen it on navigation.
   const [closedSections, setClosedSections] = useState<string[]>(() =>
-    sidebarSections.filter((s) => s.id !== (activeSectionId ?? "learn")).map((s) => s.id)
+    sidebarSections.filter((s) => s.id !== (activeSectionId ?? "goals")).map((s) => s.id)
   )
   const isSectionOpen = (id: string) => id === activeSectionId || !closedSections.includes(id)
 
   // Which collapsed-mode flyout is open — only one at a time, same as the
   // tablet rail.
   const [openFlyoutId, setOpenFlyoutId] = useState<string | null>(null)
-  const aiActive = isNavigationItemActive({ pathname, searchParams, item: aiCoachItem })
-  const askHengoActive = isNavigationItemActive({ pathname, searchParams, item: askHengoItem })
+  // Secondary destinations (Learn's hub, Settings) light up whenever the
+  // current route belongs to their section/route — Learn's flat link mirrors
+  // the primary-section fallback below (a hidden child still activates its
+  // parent), Settings is a simple exact match.
+  const learnActive = activeSectionId === "learn"
 
   return (
     <aside
@@ -78,7 +78,7 @@ export function DesktopSidebar({
           {!collapsed && (
             <span className="min-w-0">
               <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">Hengo</span>
-              <span className="block truncate text-[11px] leading-tight text-muted-foreground">
+              <span className="block truncate text-xs leading-tight text-muted-foreground">
                 Korean for developers
               </span>
             </span>
@@ -118,10 +118,26 @@ export function DesktopSidebar({
 
         {/* Labelled, collapsible groups */}
         {sidebarSections.map((section) => {
-          const items = shippedItems(section.items)
+          const items = visibleSidebarItems(section)
           const soonItems = section.items.filter((i) => i.soon)
-          const open = isSectionOpen(section.id)
           const sectionActive = section.id === activeSectionId
+
+          // A section with nothing left to show individually (Learn — its
+          // children all live behind /learn now) collapses into one plain
+          // link. Nothing to expand, so no chevron and no flyout.
+          if (items.length === 0) {
+            const flatItem: NavItem = {
+              id: `section-${section.id}`,
+              href: section.href,
+              label: section.label,
+              icon: section.icon,
+            }
+            return collapsed ? (
+              <NavIconRow key={section.id} item={flatItem} active={sectionActive} />
+            ) : (
+              <NavRow key={section.id} item={flatItem} active={sectionActive} />
+            )
+          }
 
           // Collapsed: one icon per group, opening the same accessible flyout
           // the tablet rail uses. Listing every child as a flat icon column
@@ -140,6 +156,8 @@ export function DesktopSidebar({
             )
           }
 
+          const open = isSectionOpen(section.id)
+
           return (
             <Collapsible
               key={section.id}
@@ -155,7 +173,7 @@ export function DesktopSidebar({
             >
               <CollapsibleTrigger
                 className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
+                  "flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
                   sectionActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
               >
@@ -177,7 +195,7 @@ export function DesktopSidebar({
                 ))}
                 {/* Coming Soon kept quiet — one muted line, not a block of rows. */}
                 {soonItems.length > 0 && (
-                  <p className="px-3 pt-1 text-[11px] text-muted-foreground/60">
+                  <p className="px-3 pt-1 text-xs text-muted-foreground/60">
                     Coming soon: {soonItems.map((i) => i.label).join(", ")}
                   </p>
                 )}
@@ -185,42 +203,20 @@ export function DesktopSidebar({
             </Collapsible>
           )
         })}
-
-        <div className="pt-3">
-          <div className="mb-2 h-px bg-border" />
-          {collapsed ? (
-            <>
-              <NavIconRow item={aiCoachItem} active={aiActive} />
-              <NavIconRow item={askHengoItem} active={askHengoActive} />
-            </>
-          ) : (
-            <>
-              <NavRow item={aiCoachItem} active={aiActive} />
-              <NavRow item={askHengoItem} active={askHengoActive} />
-            </>
-          )}
-        </div>
       </nav>
 
-      {/* Account + Settings */}
+      {/* Secondary destinations (Learn, Settings) + Account */}
       <div className="space-y-1 border-t border-border px-3 py-3">
-        {collapsed ? (
-          <>
-            <ProfileMenu collapsed />
-            <NavIconRow
-              item={settingsItem}
-              active={isNavigationItemActive({ pathname, searchParams, item: settingsItem })}
-            />
-          </>
-        ) : (
-          <>
-            <ProfileMenu />
-            <NavRow
-              item={settingsItem}
-              active={isNavigationItemActive({ pathname, searchParams, item: settingsItem })}
-            />
-          </>
-        )}
+        {secondaryNavItems.map((item) => {
+          const active =
+            item.id === "learn-hub" ? learnActive : isNavigationItemActive({ pathname, searchParams, item })
+          return collapsed ? (
+            <NavIconRow key={item.id} item={item} active={active} />
+          ) : (
+            <NavRow key={item.id} item={item} active={active} />
+          )
+        })}
+        <ProfileMenu collapsed={collapsed} />
       </div>
     </aside>
   )

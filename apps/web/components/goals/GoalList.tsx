@@ -13,7 +13,6 @@ import {
   List,
   MoreHorizontal,
   Pencil,
-  Plus,
   RotateCcw,
   Star,
   Target,
@@ -106,7 +105,7 @@ function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onTog
         aria-label={goal.isStarred ? "Unstar goal" : "Star goal"}
         className={cn(
           size,
-          "rounded-xl",
+          "rounded-lg",
           goal.isStarred
             ? "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
             : "text-muted-foreground/60 hover:bg-amber-500/10 hover:text-amber-500"
@@ -116,12 +115,12 @@ function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onTog
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Goal actions" className={cn(size, "rounded-xl hover:bg-foreground/5")}>
+          <Button variant="ghost" size="icon" aria-label="Goal actions" className={cn(size, "rounded-lg hover:bg-foreground/5")}>
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-44 rounded-2xl p-2 shadow-lg">
-          <DropdownMenuItem className="rounded-xl font-medium" onSelect={() => onToggleComplete?.(goal.id)}>
+        <DropdownMenuContent align="end" className="w-44 rounded-lg p-2 shadow-md">
+          <DropdownMenuItem className="rounded-lg font-medium" onSelect={() => onToggleComplete?.(goal.id)}>
             {isCompleted ? (
               <RotateCcw className="mr-3 h-4 w-4 text-blue-500" />
             ) : (
@@ -129,11 +128,11 @@ function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onTog
             )}
             {isCompleted ? "Reopen goal" : "Mark complete"}
           </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-xl font-medium" onSelect={(e) => onEditGoal?.(goal, e as unknown as React.MouseEvent)}>
+          <DropdownMenuItem className="rounded-lg font-medium" onSelect={(e) => onEditGoal?.(goal, e as unknown as React.MouseEvent)}>
             <Pencil className="mr-3 h-4 w-4 text-primary" /> Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
-          <DropdownMenuItem variant="destructive" className="rounded-xl font-medium" onSelect={(e) => onDeleteGoal(goal, e as unknown as React.MouseEvent)}>
+          <DropdownMenuItem variant="destructive" className="rounded-lg font-medium" onSelect={(e) => onDeleteGoal(goal, e as unknown as React.MouseEvent)}>
             <Trash2 className="mr-3 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -247,15 +246,15 @@ export function GoalList({
 
   if (isLoading) {
     return viewMode === "grid" ? (
-      <div className="grid grid-cols-2 gap-4 sm:gap-6">
+      <div className="grid grid-cols-2 gap-4 sm:gap-5">
         {[0, 1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-52 rounded-2xl" />
+          <Skeleton key={i} className="h-48 rounded-lg" />
         ))}
       </div>
     ) : (
       <div className="flex flex-col gap-2.5">
         {[0, 1, 2, 3].map((i) => (
-          <Skeleton key={i} className="h-[68px] rounded-2xl" />
+          <Skeleton key={i} className="h-[68px] rounded-lg" />
         ))}
       </div>
     )
@@ -263,27 +262,24 @@ export function GoalList({
 
   if (goals.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-4 rounded-2xl border-2 border-dashed border-border bg-card/30 px-4 py-10 text-center sm:gap-6 sm:py-24">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 sm:h-20 sm:w-20">
-          <Target size={32} strokeWidth={1.5} className="sm:size-9" />
+      <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-border bg-card/30 px-4 py-10 text-center sm:py-16">
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+          <Target size={28} strokeWidth={1.5} />
         </div>
         <div>
-          <h3 className="text-xl font-semibold tracking-tight">No goals found</h3>
+          <h3 className="text-lg font-semibold tracking-tight">No goals found</h3>
           <p className="mt-2 max-w-sm text-sm font-medium text-muted-foreground">
             Try adjusting your filters or create a new goal to get started.
           </p>
         </div>
-        <Button onClick={() => router.push("/goals/create")} size="lg" className="rounded-xl font-semibold shadow-lg shadow-blue-600/20">
-          <Plus size={18} strokeWidth={2} className="mr-2" /> New goal
-        </Button>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex items-center justify-end">
-        <div className="flex gap-1 rounded-xl bg-foreground/5 p-1">
+        <div className="flex gap-1 rounded-lg bg-foreground/5 p-1">
           {([
             { mode: "list", Icon: List, label: "List view" },
             { mode: "grid", Icon: LayoutGrid, label: "Grid view" },
@@ -316,7 +312,7 @@ export function GoalList({
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className={cn(viewMode === "grid" ? "grid grid-cols-2 gap-4 sm:gap-6" : "flex flex-col gap-2.5")}
+          className={cn(viewMode === "grid" ? "grid grid-cols-2 gap-4 sm:gap-5" : "flex flex-col gap-2.5")}
         >
           {goals.map((goal, i) => {
             const deadlineInfo = calculateGoalDeadlineInfo(goal)
@@ -372,8 +368,14 @@ export function GoalList({
                   exit="exit"
                   layout
                   onClick={open}
+                  onKeyDown={(event) => {
+                    if (event.target === event.currentTarget && event.key === "Enter") open()
+                  }}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Open goal: ${goal.title}`}
                   className={cn(
-                    "group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-2xl border border-border bg-card px-3 py-3 transition-all hover:border-primary/30 hover:shadow-lg dark:bg-slate-900/40",
+                    "group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-lg border border-border bg-card px-3 py-3 transition-all hover:border-primary/30 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
                     isOpening && "ring-2 ring-primary",
                     readyToComplete && "border-emerald-500/40 bg-emerald-500/[0.03]",
                     deadlineStyling?.borderColor
@@ -383,7 +385,7 @@ export function GoalList({
                     goal={goal}
                     icon={goalIcon}
                     onChange={(emoji) => handleIconChange(goal, emoji)}
-                    className="h-11 w-11 rounded-xl text-lg"
+                    className="h-11 w-11 rounded-lg text-lg"
                   />
                   <div className="min-w-0 flex-1">
                     <h3 title={goal.title} className="truncate text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
@@ -402,7 +404,7 @@ export function GoalList({
                           style={{ background: progressGradient(progress) }}
                         />
                       </div>
-                      <span className="shrink-0 text-[11px] font-medium tabular-nums text-muted-foreground">
+                      <span className="shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
                         {done}/{total}
                       </span>
                     </div>
@@ -411,7 +413,7 @@ export function GoalList({
                     <button
                       type="button"
                       onClick={(e) => handleMarkComplete(goal, e)}
-                      className="shrink-0 animate-pulse rounded-lg bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-600 ring-1 ring-emerald-500/30 hover:animate-none hover:bg-emerald-500/25 dark:text-emerald-400"
+                      className="min-h-11 shrink-0 rounded-lg bg-emerald-500/15 px-2.5 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25 dark:text-emerald-400"
                     >
                       Mark complete
                     </button>
@@ -452,20 +454,26 @@ export function GoalList({
               >
                 <Card
                   className={cn(
-                    "h-full overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 dark:bg-slate-900/40",
+                    "h-full overflow-hidden rounded-lg border border-border bg-card transition-all duration-300 hover:border-primary/30 hover:shadow-md hover:shadow-primary/5 focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
                     isOpening && "ring-2 ring-primary",
                     readyToComplete && "border-emerald-500/40 bg-emerald-500/[0.03]",
                     deadlineStyling?.borderColor
                   )}
                   onClick={open}
+                  onKeyDown={(event) => {
+                    if (event.target === event.currentTarget && event.key === "Enter") open()
+                  }}
+                  role="link"
+                  tabIndex={0}
+                  aria-label={`Open goal: ${goal.title}`}
                 >
-                  <CardContent className="flex h-full flex-col p-4 sm:p-6">
+                  <CardContent className="flex h-full flex-col p-4 sm:p-5">
                     <div className="flex items-start justify-between gap-2">
                       <GoalIcon
                         goal={goal}
                         icon={goalIcon}
                         onChange={(emoji) => handleIconChange(goal, emoji)}
-                        className="h-12 w-12 rounded-2xl text-2xl sm:h-14 sm:w-14 sm:text-3xl"
+                        className="h-12 w-12 rounded-lg text-2xl sm:h-14 sm:w-14 sm:text-3xl"
                       />
                       {isOwner && (
                         <GoalActions
@@ -480,7 +488,7 @@ export function GoalList({
                     </div>
 
                     <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                      <Badge className="rounded-full bg-primary/10 px-2.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-primary">
+                      <Badge className="rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-medium text-primary">
                         {goal.metadata?.goal_type || "General"}
                       </Badge>
                       <HealthBadge status={health.status} reason={health.reason} />
@@ -497,7 +505,7 @@ export function GoalList({
                             <button
                               type="button"
                               onClick={(e) => handleMarkComplete(goal, e)}
-                              className="animate-pulse rounded-lg bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-emerald-600 ring-1 ring-emerald-500/30 hover:animate-none hover:bg-emerald-500/25 dark:text-emerald-400"
+                              className="min-h-11 rounded-lg bg-emerald-500/15 px-2.5 py-1 text-xs font-semibold text-emerald-600 ring-1 ring-emerald-500/30 hover:bg-emerald-500/25 dark:text-emerald-400"
                             >
                               Mark complete
                             </button>
@@ -516,7 +524,7 @@ export function GoalList({
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between border-t border-border/40 pt-3 text-[11px] font-medium text-muted-foreground">
+                      <div className="flex items-center justify-between border-t border-border/40 pt-3 text-xs font-medium text-muted-foreground">
                         <span className="flex items-center gap-1.5">
                           <ClipboardList size={14} className="text-primary/60" />
                           {done}/{total}

@@ -2,7 +2,8 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
-import { AlertCircle, ChevronLeft, History, MessageCircle, PanelLeft, RotateCcw, ScanText, Wand2 } from "lucide-react"
+import Link from "next/link"
+import { AlertCircle, BrainCircuit, ChevronLeft, History, MessageCircle, PanelLeft, RotateCcw, ScanText, Settings2, Wand2 } from "lucide-react"
 import { motion } from "motion/react"
 
 import { ChatWindow } from "@/components/chat/ChatWindow"
@@ -10,6 +11,7 @@ import { ConversationSidebar } from "@/components/chat/ConversationSidebar"
 import { CorrectionsReview } from "@/components/chat/CorrectionsReview"
 import { MessageAnalyzer } from "@/components/ai/MessageAnalyzer"
 import { MessageGenerator } from "@/components/ai/MessageGenerator"
+import { AskHengoChat } from "@/components/memory/AskHengoChat"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { useConversations } from "@/hooks/useConversations"
@@ -17,13 +19,14 @@ import { useSessionTimer } from "@/hooks/useSessionTimer"
 import { chatApi, scenarioApi } from "@/lib/api"
 import { cn } from "@/lib/utils"
 
-type AiMode = "chat" | "analyze" | "generate" | "corrections"
+type AiMode = "chat" | "analyze" | "generate" | "corrections" | "memory"
 
 const MODES: { id: AiMode; label: string; icon: typeof MessageCircle }[] = [
   { id: "chat", label: "Coach", icon: MessageCircle },
   { id: "analyze", label: "Analyze", icon: ScanText },
   { id: "generate", label: "Write", icon: Wand2 },
   { id: "corrections", label: "Review", icon: RotateCcw },
+  { id: "memory", label: "My Data", icon: BrainCircuit },
 ]
 
 export default function ChatPage() {
@@ -48,7 +51,8 @@ function ChatPageContent() {
   // A ?prompt= deep link is a correction/chat request, so it always lands on Chat.
   const queryMode = searchParams.get("mode")
   const [mode, setMode] = useState<AiMode>(
-    !initialDraft && (queryMode === "analyze" || queryMode === "generate" || queryMode === "corrections")
+    !initialDraft &&
+      (queryMode === "analyze" || queryMode === "generate" || queryMode === "corrections" || queryMode === "memory")
       ? (queryMode as AiMode)
       : "chat"
   )
@@ -231,7 +235,7 @@ function ChatPageContent() {
           size="icon-sm"
           onClick={() => router.push("/home")}
           aria-label="Back to home"
-          className="h-9 w-9 rounded-xl text-muted-foreground active:scale-95"
+          className="h-11 w-11 rounded-lg text-muted-foreground active:scale-95"
         >
           <ChevronLeft size={22} strokeWidth={2.5} />
         </Button>
@@ -245,14 +249,14 @@ function ChatPageContent() {
             onClick={() => toggleSidebar(false)}
             aria-label="Show chat history"
             title="Show history"
-            className="hidden h-9 w-9 rounded-xl text-muted-foreground active:scale-95 md:flex"
+            className="hidden h-11 w-11 rounded-lg text-muted-foreground active:scale-95 md:flex"
           >
             <PanelLeft size={20} strokeWidth={2.5} />
           </Button>
         )}
 
         <div className="flex flex-1 items-center justify-center">
-          <div className="flex items-center gap-0.5 rounded-2xl border border-border/70 bg-muted/35 p-1 shadow-sm">
+          <div className="flex items-center gap-0.5 rounded-lg border border-border/70 bg-muted/35 p-1 shadow-sm">
             {MODES.map(({ id, label, icon: Icon }) => {
               const active = mode === id
               return (
@@ -265,14 +269,14 @@ function ChatPageContent() {
                   aria-current={active ? "true" : undefined}
                   aria-label={label}
                   className={cn(
-                    "relative h-8 items-center gap-1.5 overflow-hidden rounded-xl border-0 px-2.5 text-[12px] font-bold shadow-none transition-all active:scale-95 sm:px-3.5",
+                    "relative min-h-11 min-w-11 items-center gap-1.5 overflow-hidden rounded-lg border-0 px-2.5 text-xs font-semibold shadow-none transition-colors active:scale-95 sm:px-3.5",
                     active ? "bg-transparent text-white hover:bg-transparent hover:text-white" : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
                   )}
                 >
                   {active && (
                     <motion.span
                       layoutId="ai-mode-pill"
-                      className="absolute inset-0 z-0 rounded-xl bg-blue-600 shadow-md shadow-blue-600/25"
+                      className="absolute inset-0 z-0 rounded-lg bg-blue-600 shadow-sm"
                       transition={{ type: "spring", stiffness: 400, damping: 32 }}
                     />
                   )}
@@ -289,7 +293,7 @@ function ChatPageContent() {
         </div>
 
         {/* Mobile chat-history trigger; keeps the segmented control centered. */}
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center">
+        <div className="flex h-11 w-11 shrink-0 items-center justify-center">
           {mode === "chat" && (
             <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
               <SheetTrigger asChild>
@@ -298,7 +302,7 @@ function ChatPageContent() {
                   variant="ghost"
                   size="icon-sm"
                   aria-label="Chat history"
-                  className="h-9 w-9 rounded-xl text-muted-foreground active:scale-95 md:hidden"
+                  className="h-11 w-11 rounded-lg text-muted-foreground active:scale-95 md:hidden"
                 >
                   <History size={20} strokeWidth={2.5} />
                 </Button>
@@ -338,6 +342,27 @@ function ChatPageContent() {
                 embedded
                 scenario={scenarioContext ?? undefined}
               />
+            </div>
+          </div>
+        ) : mode === "memory" ? (
+          <div className="h-full overflow-y-auto overscroll-contain px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-2 sm:px-6 lg:px-8">
+            <div className="mx-auto w-full max-w-2xl space-y-4">
+              <div className="flex items-start justify-between gap-3">
+                <div>
+                  <h1 className="text-xl font-semibold text-foreground">Ask Hengo</h1>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Answers come only from your own notes, journal, goals, and activity — never invented. Every claim
+                    links back to where it came from.
+                  </p>
+                </div>
+                <Button asChild variant="outline" size="sm" className="shrink-0">
+                  <Link href="/ask-hengo/memories">
+                    <Settings2 size={14} />
+                    Memories
+                  </Link>
+                </Button>
+              </div>
+              <AskHengoChat />
             </div>
           </div>
         ) : (

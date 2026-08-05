@@ -21,7 +21,7 @@ export function GoalDetailNav({ items }: { items: GoalNavItem[] }) {
 
   return (
     <nav aria-label="Goal sections" className="no-scrollbar -mx-1 overflow-x-auto px-1">
-      <ul className="inline-flex min-w-full gap-1 rounded-xl bg-foreground/5 p-1">
+      <ul className="inline-flex min-w-full gap-1 rounded-lg bg-foreground/5 p-1">
         {items.map((item) => {
           const active = pathname === item.href
           return (
@@ -30,7 +30,7 @@ export function GoalDetailNav({ items }: { items: GoalNavItem[] }) {
                 href={item.href}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex h-9 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-xs font-semibold transition-colors",
+                  "flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors",
                   active
                     ? "bg-background text-foreground shadow-sm"
                     : "text-muted-foreground hover:text-foreground",

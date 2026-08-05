@@ -119,35 +119,31 @@ export function MessageAnalyzer() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-6 pb-12 sm:space-y-8 sm:pb-16"
+      className="space-y-6 pb-12 sm:space-y-7"
     >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Workplace Analyzer"
           title="Decode Real Korean Messages"
           description="Paste a Slack, KakaoTalk, or meeting message from a coworker. Get the literal and natural meaning, business context, politeness signals, and ready-to-send replies."
-          stats={[
-            { label: "Reads", value: "Honorifics & Tone" },
-            { label: "Output", value: "Phrase Breakdown" },
-            { label: "AI", value: "Workplace Analyst" },
-          ]}
+          variant="compact"
         />
       </motion.div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px] lg:gap-6">
         {/* Main Workspace */}
-        <div className="min-w-0 space-y-6">
+        <div className="min-w-0 space-y-5">
           <motion.div variants={itemVariants}>
-            <Card className="overflow-hidden rounded-[1.8rem] border-border bg-card shadow-xl backdrop-blur-md dark:bg-slate-900/40 sm:rounded-[2.2rem] lg:rounded-3xl">
+            <Card className="overflow-hidden border-border bg-card shadow-sm dark:bg-slate-900/40">
               <CardHeader className="border-b border-border/60 bg-accent/5 px-5 pb-4 pt-5 sm:px-6 sm:pb-6">
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 shadow-sm ring-1 ring-blue-500/20">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600">
                       <ScanText size={18} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <CardTitle className="text-xl font-bold">Message to Analyze</CardTitle>
-                      <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                      <CardTitle className="text-lg font-semibold">Message to analyze</CardTitle>
+                      <p className="text-xs text-muted-foreground">
                         Paste what your coworker wrote
                       </p>
                     </div>
@@ -156,8 +152,9 @@ export function MessageAnalyzer() {
                     variant="ghost"
                     size="icon"
                     onClick={handleClear}
-                    className="h-9 w-9 rounded-xl text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
+                    className="h-11 w-11 rounded-lg text-muted-foreground transition-colors hover:bg-destructive/10 hover:text-destructive"
                     title="Clear text"
+                    aria-label="Clear text"
                   >
                     <Trash2 size={16} strokeWidth={2.5} />
                   </Button>
@@ -174,7 +171,7 @@ export function MessageAnalyzer() {
                         type="button"
                         onClick={() => setSource(active ? null : s)}
                         className={cn(
-                          "rounded-full px-3.5 py-1.5 text-xs font-bold uppercase tracking-wider transition-all active:scale-95",
+                          "min-h-11 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
                           active
                             ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
                             : "border border-border bg-background text-muted-foreground hover:text-foreground"
@@ -187,20 +184,20 @@ export function MessageAnalyzer() {
                 </div>
 
                 <Textarea
-                  className="min-h-[200px] w-full resize-none rounded-none border-0 bg-transparent p-5 text-[15px] font-medium leading-7 text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 sm:min-h-[260px] sm:p-6 sm:text-lg"
+                  className="min-h-[180px] w-full resize-none rounded-none border-0 bg-transparent p-4 text-base leading-7 text-foreground placeholder:text-muted-foreground/60 shadow-none focus-visible:ring-0 sm:min-h-[220px] sm:p-5"
                   placeholder="예: 담당자분께 전달드렸습니다. 확인 후 회신 부탁드립니다."
                   value={text}
                   onChange={(e) => setText(e.target.value)}
                 />
 
                 <div className="flex flex-col items-start gap-3 border-t border-border/60 bg-accent/5 px-5 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-6">
-                  <span className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  <span className="text-xs font-medium text-muted-foreground">
                     {text.trim().length} characters
                   </span>
                   <Button
                     onClick={handleAnalyze}
                     disabled={loading || !text.trim()}
-                    className="h-11 w-full rounded-[1.15rem] bg-blue-600 px-6 text-sm font-bold text-white shadow-lg shadow-blue-600/20 transition-all hover:bg-blue-500 active:scale-95 sm:h-12 sm:w-auto sm:rounded-[1.25rem] sm:px-8"
+                    className="h-11 w-full rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 sm:w-auto"
                   >
                     {loading ? (
                       <><Activity size={18} className="mr-2 animate-pulse" /> Analyzing...</>
@@ -222,38 +219,38 @@ export function MessageAnalyzer() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
-                className="space-y-6"
+                className="space-y-5"
               >
                 {/* Meaning card */}
-                <Card className="overflow-hidden rounded-3xl border-border bg-card shadow-2xl dark:bg-slate-900/60">
+                <Card className="overflow-hidden border-border bg-card shadow-md dark:bg-slate-900/60">
                   <div className="flex items-center justify-between border-b border-border/60 bg-blue-500/5 px-6 py-4">
                     <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
                       <BadgeCheck size={16} strokeWidth={3} />
-                      <p className="text-[11px] font-bold uppercase tracking-wide">Analysis Complete</p>
+                      <p className="text-xs font-semibold">Analysis complete</p>
                     </div>
                     <SpeakButton
                       text={result.originalText}
-                      className="h-9 w-9 rounded-xl bg-background shadow-sm ring-1 ring-border transition-transform active:scale-90"
+                      className="h-11 w-11 rounded-lg bg-background shadow-sm ring-1 ring-border transition-transform active:scale-90"
                     />
                   </div>
 
-                  <div className="p-6 sm:p-8">
-                    <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Original</p>
-                    <p className="mt-2 text-base font-bold leading-relaxed text-foreground sm:text-lg">
+                  <div className="p-4 sm:p-5">
+                    <p className="text-xs font-medium text-muted-foreground">Original</p>
+                    <p className="mt-2 text-base font-semibold leading-relaxed text-foreground sm:text-lg">
                       {result.originalText}
                     </p>
                   </div>
 
                   <div className="grid divide-y divide-border/60 border-t border-border/60 lg:grid-cols-2 lg:divide-x lg:divide-y-0">
-                    <div className="p-6 sm:p-8">
-                      <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Literal Meaning</p>
+                    <div className="p-4 sm:p-5">
+                      <p className="text-xs font-medium text-muted-foreground">Literal meaning</p>
                       <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground/80">
                         {result.literalMeaning}
                       </p>
                     </div>
-                    <div className="bg-blue-500/[0.02] p-6 sm:p-8">
-                      <p className="text-[9px] font-bold uppercase tracking-wide text-blue-600/40">Natural Meaning</p>
-                      <p className="mt-2 text-sm font-bold leading-relaxed text-foreground">
+                    <div className="bg-blue-500/[0.02] p-4 sm:p-5">
+                      <p className="text-xs font-medium text-blue-600/70">Natural meaning</p>
+                      <p className="mt-2 text-sm font-semibold leading-relaxed text-foreground">
                         {result.naturalMeaning}
                       </p>
                     </div>
@@ -261,12 +258,12 @@ export function MessageAnalyzer() {
                 </Card>
 
                 {/* Context + politeness + tone */}
-                <div className="grid gap-6 sm:grid-cols-2">
-                  <Card className="rounded-3xl border border-border bg-card shadow-sm dark:bg-slate-900/40">
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <Card className="border border-border bg-card shadow-sm dark:bg-slate-900/40">
                     <CardHeader className="pb-2">
                       <div className="flex items-center gap-2">
                         <Building2 size={14} className="text-sky-500" strokeWidth={2.5} />
-                        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Business Context</p>
+                        <p className="text-sm font-semibold text-foreground">Business context</p>
                       </div>
                     </CardHeader>
                     <CardContent>
@@ -274,20 +271,20 @@ export function MessageAnalyzer() {
                     </CardContent>
                   </Card>
 
-                  <Card className="rounded-3xl border border-border bg-card shadow-sm dark:bg-slate-900/40">
+                  <Card className="border border-border bg-card shadow-sm dark:bg-slate-900/40">
                     <CardHeader className="pb-2">
                       <div className="flex items-center gap-2">
                         <Languages size={14} className="text-violet-500" strokeWidth={2.5} />
-                        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Politeness & Tone</p>
+                        <p className="text-sm font-semibold text-foreground">Politeness & tone</p>
                       </div>
                     </CardHeader>
                     <CardContent className="space-y-3">
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Politeness</p>
+                        <p className="text-xs font-medium text-muted-foreground">Politeness</p>
                         <p className="mt-1 text-[13px] font-bold text-foreground/80">{result.politenessLevel}</p>
                       </div>
                       <div>
-                        <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Tone</p>
+                        <p className="text-xs font-medium text-muted-foreground">Tone</p>
                         <p className="mt-1 text-[13px] font-bold text-foreground/80">{result.tone}</p>
                       </div>
                     </CardContent>
@@ -297,7 +294,7 @@ export function MessageAnalyzer() {
                 {/* Phrase breakdown */}
                 {result.breakdown && result.breakdown.length > 0 && (
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 px-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <h4 className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground">
                       <ListTree size={14} className="text-muted-foreground/40" /> Phrase Breakdown
                     </h4>
                     <div className="grid gap-3">
@@ -307,7 +304,7 @@ export function MessageAnalyzer() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05 }}
-                          className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-sm transition-all hover:border-blue-500/20 hover:shadow-lg dark:bg-slate-900/40"
+                          className="overflow-hidden rounded-lg border border-border bg-card shadow-sm transition-colors hover:border-blue-500/20 dark:bg-slate-900/40"
                         >
                           <div className="flex flex-wrap items-center gap-3 border-b border-border/60 bg-accent/5 px-5 py-4">
                             <span className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-[13px] font-bold text-blue-600 dark:text-blue-400">
@@ -327,7 +324,7 @@ export function MessageAnalyzer() {
                 {/* Suggested replies */}
                 {result.suggestedReplies && result.suggestedReplies.length > 0 && (
                   <div className="space-y-4">
-                    <h4 className="flex items-center gap-2 px-2 text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                    <h4 className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground">
                       <MessageSquareReply size={14} className="text-muted-foreground/40" /> Suggested Replies
                     </h4>
                     <div className="grid gap-3">
@@ -337,14 +334,14 @@ export function MessageAnalyzer() {
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.05 }}
-                          className="overflow-hidden rounded-[1.75rem] border border-border bg-card shadow-sm dark:bg-slate-900/40"
+                          className="overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40"
                         >
                           <div className="flex items-start justify-between gap-3 p-5">
                             <div className="min-w-0">
                               <p className="text-[15px] font-bold leading-relaxed text-foreground">{reply.korean}</p>
                               <p className="mt-1 text-[13px] font-medium text-muted-foreground">{reply.english}</p>
                               {reply.formality && (
-                                <span className="mt-3 inline-block rounded-full bg-accent/40 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-muted-foreground/70">
+                                <span className="mt-3 inline-block rounded-full bg-accent/40 px-3 py-1 text-xs font-medium text-muted-foreground">
                                   {reply.formality}
                                 </span>
                               )}
@@ -352,14 +349,14 @@ export function MessageAnalyzer() {
                             <div className="flex shrink-0 items-center gap-2">
                               <SpeakButton
                                 text={reply.korean}
-                                className="h-9 w-9 rounded-xl bg-background shadow-sm ring-1 ring-border transition-transform active:scale-90"
+                                className="h-11 w-11 rounded-lg bg-background shadow-sm ring-1 ring-border transition-transform active:scale-90"
                               />
                               <Button
                                 size="icon"
                                 variant="secondary"
                                 onClick={() => copy(reply.korean, i)}
                                 className={cn(
-                                  "h-9 w-9 rounded-xl font-bold transition-all active:scale-95",
+                                  "h-11 w-11 rounded-lg font-semibold transition-colors active:scale-95",
                                   copied === i ? "bg-blue-500 text-white" : "bg-background shadow-sm ring-1 ring-border"
                                 )}
                                 title="Copy reply"
@@ -379,9 +376,9 @@ export function MessageAnalyzer() {
         </div>
 
         {/* Sidebar Guidance */}
-        <div className="space-y-6">
+        <div className="space-y-5">
           <motion.div variants={itemVariants}>
-            <Card className="rounded-3xl border-border bg-card shadow-xl dark:bg-slate-900/40">
+            <Card className="border-border bg-card shadow-sm dark:bg-slate-900/40">
               <CardHeader className="border-b border-border/60 pb-4">
                 <div className="flex items-center gap-3">
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 shadow-sm ring-1 ring-sky-500/20">

@@ -26,7 +26,7 @@ export function TaskColorPicker({ value, onChange, className }: TaskColorPickerP
             aria-label={c.name}
             aria-pressed={selected}
             onClick={() => onChange(c.value)}
-            className="relative flex h-7 w-7 items-center justify-center rounded-full transition-transform hover:scale-110 focus:outline-none"
+            className="relative flex h-11 w-11 items-center justify-center rounded-full transition-transform hover:scale-105 focus:outline-none"
             style={{
               backgroundColor: c.value,
               boxShadow: selected

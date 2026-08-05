@@ -34,7 +34,7 @@ export function AdvancedStep({ form, onPrevStep, onSubmit, isSubmitting, isEdit 
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div className="space-y-2 text-center">
         <h3 className="text-lg font-semibold">AI task generation</h3>
         <p className="text-sm text-muted-foreground">

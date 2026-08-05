@@ -96,7 +96,7 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
           <div className="flex items-center justify-between gap-2 border-b border-border/60 bg-background/90 px-4 py-3 backdrop-blur-xl sm:px-8 md:sticky md:top-0 md:z-20">
             <Link
               href="/notes"
-              className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+              className="flex min-h-11 items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
             >
               <ChevronLeft size={14} />
               All notes
@@ -113,22 +113,22 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
           </div>
 
           {/* Page header */}
-          <div className="px-4 pb-8 pt-12 sm:px-8 md:px-16">
-            <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-2xl border border-border bg-card">
-              <TechIcon name={note.icon} size={36} />
+          <div className="px-4 pb-6 pt-6 sm:px-8 sm:pt-8 md:px-12">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-lg border border-border bg-card">
+              <TechIcon name={note.icon} size={28} />
             </div>
 
-            <h1 className="mb-3 text-3xl font-bold leading-tight tracking-tight text-foreground sm:text-4xl lg:text-5xl">
+            <h1 className="mb-2 text-2xl font-semibold leading-tight tracking-tight text-foreground sm:text-3xl">
               {note.title}
             </h1>
 
             {note.description && (
-              <p className="mb-6 max-w-2xl text-base leading-relaxed text-muted-foreground">
+              <p className="mb-4 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base">
                 {note.description}
               </p>
             )}
 
-            <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-border/60 pt-5 text-sm text-muted-foreground">
+            <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-border/60 pt-4 text-sm text-muted-foreground">
               <div className="flex min-w-[120px] items-center gap-2">
                 <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Type</span>
                 <span className="font-medium capitalize text-foreground/80">
@@ -186,10 +186,10 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
           </div>
 
           {/* Mobile TOC */}
-          <div id="note-toc-mobile" className="mb-6 scroll-mt-16 px-4 sm:px-8 md:px-16 xl:hidden">
+          <div id="note-toc-mobile" className="mb-5 scroll-mt-16 px-4 sm:px-8 md:px-12 xl:hidden">
             <button
               onClick={() => setShowMobileToc((v) => !v)}
-              className="flex w-full items-center justify-between rounded-xl border border-border bg-card px-4 py-3 text-xs font-semibold text-muted-foreground transition-all hover:bg-accent/50"
+              className="flex min-h-11 w-full items-center justify-between rounded-lg border border-border bg-card px-4 py-2.5 text-sm font-semibold text-muted-foreground transition-colors hover:bg-accent/50"
             >
               <span className="flex items-center gap-2">
                 <List size={13} /> Table of Contents
@@ -208,12 +208,12 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
 
           {/* Article content */}
           <article
-            className="prose prose-zinc max-w-none break-words px-4 pb-16 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:px-8 sm:prose-base md:px-16 prose-headings:font-bold prose-headings:tracking-tight prose-a:text-blue-600 prose-pre:max-w-full prose-pre:overflow-x-auto prose-code:rounded prose-code:bg-accent prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400"
+            className="prose prose-zinc max-w-none break-words px-4 pb-12 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:px-8 sm:prose-base md:px-12 prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-blue-600 prose-pre:max-w-full prose-pre:overflow-x-auto prose-code:rounded prose-code:bg-accent prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-sm prose-code:before:content-none prose-code:after:content-none dark:prose-a:text-blue-400"
             dangerouslySetInnerHTML={{ __html: html }}
           />
 
           {/* Footer */}
-          <div className="flex items-center justify-between border-t border-border/60 px-4 pb-16 pt-8 sm:px-8 md:px-16">
+          <div className="flex items-center justify-between border-t border-border/60 px-4 pb-12 pt-6 sm:px-8 md:px-12">
             <Link
               href="/notes"
               className="flex items-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
@@ -226,7 +226,7 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
         </div>
 
         {/* Desktop right TOC panel */}
-        <div className="sticky top-0 hidden h-dvh w-80 shrink-0 flex-col gap-5 overflow-y-auto border-l border-border/60 px-6 py-8 xl:flex">
+        <div className="sticky top-0 hidden h-dvh w-72 shrink-0 flex-col gap-5 overflow-y-auto border-l border-border/60 px-5 py-6 xl:flex">
           <div className="overflow-hidden rounded-xl border border-border/60 bg-card/40">
             <TableOfContents html={html} />
           </div>

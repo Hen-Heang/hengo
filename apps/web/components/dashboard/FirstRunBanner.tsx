@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react"
 import Link from "next/link"
-import { ArrowRight, BookOpen, MessageCircle, Settings, X } from "lucide-react"
+import { BookOpen, MessageCircle, Settings, X } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 
 import { cn } from "@/lib/utils"
@@ -67,53 +67,46 @@ export function FirstRunBanner() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -8, transition: { duration: 0.18 } }}
           transition={{ duration: 0.3, ease: "easeOut" }}
-          className="relative overflow-hidden rounded-2xl border border-blue-500/20 bg-blue-500/5 p-6 shadow-sm"
+          className="relative overflow-hidden rounded-lg border border-blue-500/20 bg-blue-500/5 p-4 shadow-sm sm:p-5"
         >
           {/* Dismiss */}
           <button
             type="button"
             onClick={dismiss}
             aria-label="Dismiss welcome banner"
-            className="absolute right-4 top-4 rounded-lg p-1.5 text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
+            className="absolute right-2 top-2 flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground/60 transition-colors hover:bg-accent hover:text-foreground"
           >
             <X size={15} strokeWidth={2.5} />
           </button>
 
-          <div className="mb-5 pr-8">
-            <p className="text-[11px] font-bold uppercase tracking-wide text-blue-600/70 dark:text-blue-400/70">
+          <div className="mb-4 pr-8">
+            <p className="text-xs font-semibold uppercase tracking-[0.08em] text-blue-600/80 dark:text-blue-400/80">
               Getting started
             </p>
-            <h2 className="mt-1 text-lg font-bold text-foreground">Welcome to Hengo 👋</h2>
-            <p className="mt-1 text-sm font-medium text-muted-foreground">
+            <h2 className="mt-1 text-lg font-semibold text-foreground">Welcome to Hengo 👋</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
               Three steps to get your first session running.
             </p>
           </div>
 
-          <div className="grid gap-3 sm:grid-cols-3">
+          <div className="grid sm:grid-cols-3">
             {STEPS.map(({ num, icon: Icon, title, description, href, color, bg }) => (
               <Link
                 key={num}
                 href={href}
                 onClick={dismiss}
                 className={cn(
-                  "group flex flex-col gap-3 rounded-xl border border-border bg-card p-4 transition-all hover:border-blue-500/30 hover:shadow-sm active:scale-[0.98]"
+                  "group flex min-h-16 items-start gap-3 border-t border-blue-500/10 px-1 py-3 outline-none transition-colors first:border-t-0 hover:bg-blue-500/5 focus-visible:ring-2 focus-visible:ring-blue-500/50 sm:border-l sm:border-t-0 sm:px-3 sm:first:border-l-0"
                 )}
               >
-                <div className="flex items-center gap-3">
-                  <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl", bg, color)}>
-                    <Icon size={18} strokeWidth={2.5} />
-                  </div>
-                  <span className={cn("text-[11px] font-bold uppercase tracking-wide", color)}>
-                    Step {num}
-                  </span>
+                <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", bg, color)}>
+                  <Icon size={18} strokeWidth={2.5} />
                 </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">{title}</p>
-                  <p className="mt-0.5 text-xs font-medium leading-relaxed text-muted-foreground">{description}</p>
-                </div>
-                <div className={cn("mt-auto flex items-center gap-1 text-xs font-bold", color)}>
-                  Go
-                  <ArrowRight size={12} className="transition-transform group-hover:translate-x-0.5" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">
+                    <span className={color}>{num}.</span> {title}
+                  </p>
+                  <p className="mt-0.5 text-sm leading-5 text-muted-foreground">{description}</p>
                 </div>
               </Link>
             ))}
@@ -122,7 +115,7 @@ export function FirstRunBanner() {
           <button
             type="button"
             onClick={dismiss}
-            className="mt-4 text-xs font-bold text-muted-foreground hover:text-muted-foreground transition-colors"
+            className="mt-2 flex min-h-11 items-center text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             I already know what I&apos;m doing — dismiss
           </button>

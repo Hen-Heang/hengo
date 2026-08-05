@@ -39,8 +39,8 @@ export function TaskDetailsPanel({
 }: TaskDetailsPanelProps) {
   if (!selectedTask) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-5 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/60">
           <AlignLeft className="h-6 w-6 text-muted-foreground/40" />
         </div>
         <div>
@@ -60,7 +60,7 @@ export function TaskDetailsPanel({
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-background/40">
-      <div className="flex flex-shrink-0 items-center gap-3 border-b border-border/60 px-6 py-4">
+      <div className="flex flex-shrink-0 items-center gap-3 border-b border-border/60 px-4 py-3 sm:px-5">
         {onClose && (
           <Button
             variant="ghost"
@@ -110,9 +110,9 @@ export function TaskDetailsPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto max-w-3xl space-y-10 px-6 py-10 lg:px-12"
+            className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-8"
           >
-            <div className="flex items-start gap-5">
+            <div className="flex items-start gap-3">
               <div
                 className="mt-1.5 h-9 w-1.5 shrink-0 rounded-full"
                 style={{ backgroundColor: taskColor }}
@@ -120,7 +120,7 @@ export function TaskDetailsPanel({
               <button
                 onClick={() => onToggleTaskCompletion(selectedTask.id)}
                 className={cn(
-                  "mt-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border-2 transition-colors duration-200",
+                  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 transition-colors duration-200",
                   selectedTask.completed
                     ? "border-emerald-500 bg-emerald-500 text-white"
                     : "border-primary/40 bg-background hover:border-primary"
@@ -135,7 +135,7 @@ export function TaskDetailsPanel({
               </button>
               <h1
                 className={cn(
-                  "flex-1 break-words text-2xl font-bold leading-[1.15] tracking-tight text-foreground transition-colors duration-300 lg:text-4xl",
+                  "flex-1 break-words text-2xl font-semibold leading-tight tracking-tight text-foreground transition-colors duration-300 sm:text-[1.75rem]",
                   selectedTask.completed && "line-through opacity-40"
                 )}
               >
@@ -143,7 +143,7 @@ export function TaskDetailsPanel({
               </h1>
             </div>
 
-            <div className="divide-y divide-border/40 overflow-hidden rounded-2xl border border-border/60 bg-card/50">
+            <div className="divide-y divide-border/40 overflow-hidden rounded-lg border border-border/60 bg-card/50">
               <PropertyRow label="Status">
                 <button
                   onClick={() => onToggleTaskCompletion(selectedTask.id)}
@@ -228,7 +228,7 @@ export function TaskDetailsPanel({
             {hasDescription && (
               <div className="space-y-4">
                 <h2 className="px-1 text-xs font-medium text-muted-foreground">Description</h2>
-                <div className="whitespace-pre-wrap rounded-2xl border border-border/60 bg-card/50 px-6 py-6 text-sm leading-relaxed text-foreground/90">
+                <div className="whitespace-pre-wrap rounded-lg border border-border/60 bg-card/50 p-4 text-sm leading-6 text-foreground/90 sm:p-5">
                   {selectedTask.description}
                 </div>
               </div>
@@ -237,11 +237,11 @@ export function TaskDetailsPanel({
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-shrink-0 items-center justify-between border-t border-border/60 px-6 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+      <div className="flex flex-shrink-0 items-center justify-between gap-2 border-t border-border/60 px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
         <button
           onClick={() => onToggleTaskCompletion(selectedTask.id)}
           className={cn(
-            "flex h-12 items-center gap-3 rounded-2xl px-6 text-sm font-semibold transition-colors duration-200",
+            "flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors duration-200",
             selectedTask.completed
               ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:text-emerald-400"
               : "bg-primary text-primary-foreground hover:bg-primary/90"
@@ -252,7 +252,7 @@ export function TaskDetailsPanel({
         </button>
         <Button
           variant="ghost"
-          className="h-12 gap-3 rounded-2xl px-6 text-sm font-medium text-muted-foreground hover:text-foreground"
+          className="h-11 gap-2 rounded-lg px-4 text-sm font-medium text-muted-foreground hover:text-foreground"
           onClick={() => onEditTask(selectedTask)}
         >
           <Pencil className="h-4 w-4" />

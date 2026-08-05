@@ -87,9 +87,9 @@ export default function HabitDetailPage() {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
         <p className="text-sm font-medium text-muted-foreground">{CATEGORY_LABELS[habit.category]}</p>
-        <h1 className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">{habit.label}</h1>
+        <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-[1.75rem]">{habit.label}</h1>
         {habit.identityStatement && (
           <p className="mt-2 text-sm italic text-muted-foreground">&ldquo;{habit.identityStatement}&rdquo;</p>
         )}

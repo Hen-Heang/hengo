@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useMemo, useState } from "react"
-import { motion } from "motion/react"
+import { motion, useReducedMotion } from "motion/react"
 import {
   ArrowLeft,
   ArrowRight,
@@ -33,6 +33,12 @@ function isCorrect(exercise: LessonExercise, answer: number | string | undefined
 
 export function LessonRunner({ lessonId }: { lessonId: string }) {
   const { lesson, loading, error, complete } = useFoundationsLesson(lessonId)
+  // Framer's stagger/slide-in entrance isn't covered by the sitewide
+  // prefers-reduced-motion CSS rule (that only catches CSS transitions), so
+  // it's opted out explicitly here — content just appears, no motion.
+  const reduceMotion = useReducedMotion()
+  const container = reduceMotion ? undefined : containerVariants
+  const item = reduceMotion ? undefined : itemVariants
 
   const [phase, setPhase] = useState<Phase>("teach")
   const [step, setStep] = useState(0)
@@ -115,7 +121,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
     return (
       <div className="space-y-6">
         <ErrorBanner>{error || "Lesson not found."}</ErrorBanner>
-        <Link href="/learn" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400">
+        <Link href="/learn/foundations" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400">
           <ArrowLeft size={16} /> Back to Foundations
         </Link>
       </div>
@@ -123,10 +129,10 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-16">
+    <motion.div initial={reduceMotion ? false : "hidden"} animate="visible" variants={container} className="space-y-6 pb-16">
       {/* Header */}
-      <motion.div variants={itemVariants} className="flex items-center justify-between gap-3">
-        <Link href="/learn" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
+      <motion.div variants={item} className="flex items-center justify-between gap-3">
+        <Link href="/learn/foundations" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
           <ArrowLeft size={16} /> Foundations
         </Link>
         <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -134,7 +140,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
         </span>
       </motion.div>
 
-      <motion.div variants={itemVariants}>
+      <motion.div variants={item}>
         <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">{lesson.title}</h1>
         <p className="mt-1 text-base text-muted-foreground">{lesson.subtitle}</p>
       </motion.div>
@@ -143,17 +149,17 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
       {phase === "teach" && (
         <>
           <motion.div
-            variants={itemVariants}
+            variants={item}
             className="rounded-3xl border border-blue-500/15 bg-blue-500/5 p-5 text-sm leading-relaxed text-foreground"
           >
             {lesson.intro}
           </motion.div>
 
-          <motion.div variants={containerVariants} className="grid gap-4">
+          <motion.div variants={container} className="grid gap-4">
             {lesson.cards.map((card, i) => (
               <motion.div
                 key={i}
-                variants={itemVariants}
+                variants={item}
                 className="flex flex-col gap-3 rounded-3xl border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40 sm:flex-row sm:items-center sm:gap-5"
               >
                 <div className="flex min-w-[96px] flex-col items-center justify-center rounded-2xl bg-accent/60 px-4 py-3 text-center">
@@ -180,7 +186,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
             ))}
           </motion.div>
 
-          <motion.div variants={itemVariants} className="flex justify-end">
+          <motion.div variants={item} className="flex justify-end">
             <Button
               type="button"
               onClick={() => setPhase("practice")}
@@ -198,7 +204,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
       {phase === "practice" && current && (
         <>
           {/* Progress bar */}
-          <motion.div variants={itemVariants} className="space-y-2">
+          <motion.div variants={item} className="space-y-2">
             <div className="flex items-center justify-between text-xs font-bold text-muted-foreground">
               <span>
                 Question {step + 1} of {exercises.length}
@@ -212,7 +218,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
 
           <motion.div
             key={current.id}
-            variants={itemVariants}
+            variants={item}
             className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
           >
             <p className="text-base font-bold text-foreground">{current.prompt}</p>
@@ -318,7 +324,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
 
       {/* ── Result phase ── */}
       {phase === "result" && result && (
-        <motion.div variants={itemVariants} className="space-y-6">
+        <motion.div variants={item} className="space-y-6">
           <div
             className={cn(
               "rounded-3xl border p-8 text-center",
@@ -351,7 +357,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
             >
               <RotateCcw size={16} className="mr-2" /> Practice again
             </Button>
-            <Link href="/learn">
+            <Link href="/learn/foundations">
               <Button
                 type="button"
                 className="h-12 w-full rounded-xl bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-500 active:scale-95"

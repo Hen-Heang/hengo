@@ -22,9 +22,9 @@ import { getApiErrorMessage } from "@/lib/api"
 function JournalLoadingState() {
   return (
     <div className="mx-auto max-w-2xl space-y-3">
-      <Skeleton className="h-64 w-full rounded-2xl" />
-      <Skeleton className="h-32 w-full rounded-2xl" />
-      <Skeleton className="h-32 w-full rounded-2xl" />
+      <Skeleton className="h-64 w-full rounded-lg" />
+      <Skeleton className="h-32 w-full rounded-lg" />
+      <Skeleton className="h-32 w-full rounded-lg" />
     </div>
   )
 }
@@ -65,12 +65,12 @@ export default function JournalPage() {
       <motion.div variants={itemVariants} className="mb-6">
         <div className="mb-4 flex items-start justify-between gap-3">
           <div>
-            <h1 className="mb-1 text-xl font-bold text-foreground">Journal</h1>
+            <h1 className="mb-1 text-xl font-semibold text-foreground">Journal</h1>
             <p className="text-sm text-muted-foreground">
               A daily reflection — what you did, learned, struggled with, and want to do next. Nothing here is required.
             </p>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 rounded-xl border border-border bg-card px-2 py-1.5">
+          <div className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border border-border bg-card px-2 py-1.5">
             <span className="text-xs font-medium text-muted-foreground">Daily reminder</span>
             <ReminderButton entityType="journal_prompt" deepLink="https://hengo.henheang.site/growth/journal" defaultTitle="Time to journal" />
           </div>

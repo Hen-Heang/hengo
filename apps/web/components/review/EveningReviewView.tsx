@@ -18,7 +18,7 @@ export function EveningReviewView({ summary, entries }: { summary: EveningReview
   return (
     <div className="space-y-4">
       <motion.div variants={itemVariants}>
-        <h1 className="text-xl font-bold text-foreground">{summary.dateLabel}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{summary.dateLabel}</h1>
         <p className="mt-1 text-sm text-muted-foreground">How today went.</p>
       </motion.div>
 
@@ -27,23 +27,23 @@ export function EveningReviewView({ summary, entries }: { summary: EveningReview
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.completedCount}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.completedCount}</div>
           <div className="text-xs text-muted-foreground">Completed</div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.hengoMinutes}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.hengoMinutes}</div>
           <div className="text-xs text-muted-foreground">Min in Hengo</div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.manualActivityCount}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.manualActivityCount}</div>
           <div className="text-xs text-muted-foreground">
             <Zap size={11} className="mb-px inline" /> Logged
           </div>
         </div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-sm font-semibold text-foreground">
             {summary.journalDone ? (
@@ -54,7 +54,7 @@ export function EveningReviewView({ summary, entries }: { summary: EveningReview
             Journal entry
           </div>
           {!summary.journalDone && (
-            <Link href="/growth/journal" className="text-xs font-medium text-primary hover:underline">
+            <Link href="/growth/journal" className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
               Write one →
             </Link>
           )}

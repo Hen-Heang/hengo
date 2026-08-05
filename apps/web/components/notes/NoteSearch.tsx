@@ -29,10 +29,8 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
   return (
     <div>
       {/* Search input */}
-      <div className="group relative mb-6">
-        <div className="absolute -inset-1 rounded-2xl bg-linear-to-r from-blue-500/20 to-sky-500/20 opacity-0 blur-sm transition-opacity duration-500 group-focus-within:opacity-100" />
-
-        <div className="relative flex items-center rounded-2xl border border-border bg-card/80 px-4 py-4 shadow-sm backdrop-blur-xl transition-all duration-300 group-focus-within:border-blue-500/40">
+      <div className="group relative mb-4">
+        <div className="relative flex min-h-11 items-center rounded-lg border border-border bg-card/80 px-3 shadow-sm transition-colors group-focus-within:border-blue-500/40">
           <Search
             size={18}
             className="mr-3 text-muted-foreground transition-colors group-focus-within:text-blue-500"
@@ -42,8 +40,8 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
             aria-label="Search notes"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search notes by topic, concept, tag, or content..."
-            className="min-w-0 flex-1 bg-transparent text-base text-foreground placeholder-muted-foreground/60 focus:outline-none sm:text-sm"
+            placeholder="Search notes..."
+            className="h-11 min-w-0 flex-1 bg-transparent text-base text-foreground placeholder-muted-foreground/60 focus:outline-none sm:text-sm"
           />
 
           <AnimatePresence>
@@ -64,7 +62,7 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
         </div>
       </div>
 
-      <div className="mb-10 flex flex-wrap items-center gap-2">
+      <div className="mb-6 flex flex-wrap items-center gap-2">
         <Select value={noteType} onValueChange={(value) => setNoteType(value as NoteType | "all")}>
           <SelectTrigger className="w-36" aria-label="Filter by note type">
             <SelectValue />
@@ -104,7 +102,7 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="flex flex-col items-center justify-center py-20 text-muted-foreground"
+            className="flex flex-col items-center justify-center py-12 text-muted-foreground"
           >
             <Search size={40} className="mb-4 opacity-20" />
             <p className="text-sm">
@@ -121,7 +119,7 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
             )}
           </motion.div>
         ) : (
-          <motion.div key="results" layout className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <motion.div key="results" layout className="grid grid-cols-1 gap-4 md:grid-cols-2">
             {filtered.map((note, i) => (
               <NoteCard
                 key={note.slug}

@@ -46,14 +46,14 @@ export function PageHeader({
 export function BreadcrumbTrail({ items, className }: { items: Breadcrumb[]; className?: string }) {
   return (
     <nav aria-label="Breadcrumb" className={cn("min-w-0", className)}>
-      <ol className="flex min-w-0 items-center gap-1 text-[11px] font-medium text-muted-foreground">
+      <ol className="flex min-w-0 items-center gap-1 text-xs font-medium text-muted-foreground">
         {items.map((crumb, index) => (
           <li key={`${crumb.label}-${index}`} className="flex min-w-0 items-center gap-1">
             {index > 0 && <ChevronRight size={12} aria-hidden className="shrink-0 opacity-60" />}
             {crumb.href ? (
               <Link
                 href={crumb.href}
-                className="truncate rounded outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
+                className="relative block truncate rounded outline-none before:absolute before:-inset-x-2 before:-inset-y-3.5 before:content-[''] hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {crumb.label}
               </Link>

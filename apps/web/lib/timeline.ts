@@ -60,7 +60,7 @@ export function fromTask(task: TimelineTaskSource): TimelineEntry | null {
     occurredAt: task.end_date || task.start_date,
     title: task.title?.trim() || task.description.slice(0, 80) || "Task",
     description: task.title ? task.description : undefined,
-    href: task.goal_id ? `/goals/${task.goal_id}/tasks` : "/dashboard",
+    href: task.goal_id ? `/goals/${task.goal_id}/tasks` : "/goals/tasks",
   }
 }
 

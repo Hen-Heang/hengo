@@ -57,7 +57,7 @@ export function ProfileMenu({
         <>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-foreground">Account</span>
-            <span className="block truncate text-[11px] text-muted-foreground">{email ?? "Signed in"}</span>
+            <span className="block truncate text-xs text-muted-foreground">{email ?? "Signed in"}</span>
           </span>
           <ChevronsUpDown size={14} aria-hidden className="shrink-0 text-muted-foreground" />
         </>

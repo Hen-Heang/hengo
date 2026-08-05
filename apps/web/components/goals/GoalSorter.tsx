@@ -65,7 +65,7 @@ export function GoalSorter({ sortOption, onSortChange }: GoalSorterProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-8 gap-1 px-2 lg:px-3">
+        <Button variant="outline" size="sm" className="h-11 gap-1 px-3">
           {getSortIcon()}
           <span className="hidden sm:inline-block">Sort by: </span>
           {SORT_LABELS[sortOption.field] ?? "Sort By"}

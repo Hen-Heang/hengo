@@ -81,10 +81,10 @@ export function ShadowPractice({ sentences, onClose }: ShadowPracticeProps) {
     >
       <header className="flex shrink-0 items-center justify-between border-b border-border/50 px-4 pt-[max(0.85rem,env(safe-area-inset-top))] pb-3">
         <div className="flex items-center gap-2">
-          <span className="rounded-full bg-blue-500/12 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-300">
+          <span className="rounded-full bg-blue-500/12 px-2.5 py-1 text-xs font-semibold text-blue-700 dark:text-blue-300">
             Repeat & shadow
           </span>
-          <span className="text-[12px] font-semibold text-muted-foreground">
+          <span className="text-xs font-semibold text-muted-foreground">
             {index + 1} / {sentences.length}
           </span>
         </div>
@@ -94,7 +94,7 @@ export function ShadowPractice({ sentences, onClose }: ShadowPracticeProps) {
           size="icon-sm"
           onClick={onClose}
           aria-label="Close shadowing"
-          className="h-9 w-9 rounded-xl text-muted-foreground"
+          className="h-11 w-11 rounded-lg text-muted-foreground"
         >
           <X size={20} />
         </Button>
@@ -102,10 +102,10 @@ export function ShadowPractice({ sentences, onClose }: ShadowPracticeProps) {
 
       <div className="flex min-h-0 flex-1 flex-col items-center overflow-y-auto px-4 py-6">
         <div className="w-full max-w-lg space-y-5">
-          <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{current.sourceLabel}</p>
+          <p className="text-xs font-semibold text-muted-foreground">{current.sourceLabel}</p>
 
           {/* Target sentence — colored by hit/miss once a comparison exists. */}
-          <div className="rounded-3xl border border-border/60 bg-muted/20 px-5 py-6">
+          <div className="rounded-lg border border-border/60 bg-muted/20 p-5">
             <p className="text-[1.35rem] font-bold leading-relaxed tracking-tight text-foreground sm:text-[1.6rem]" lang="ko">
               {comparison
                 ? markedWords.map((mark, i) => (

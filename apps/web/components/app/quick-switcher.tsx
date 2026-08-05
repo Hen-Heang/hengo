@@ -84,7 +84,7 @@ const ACTION_ENTRIES: Entry[] = [
     label: "Add task",
     hint: "Plan today's work",
     icon: ListPlus,
-    href: "/dashboard",
+    href: "/goals/tasks",
     keywords: "add task todo new schedule plan today",
   },
   {

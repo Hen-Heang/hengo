@@ -20,7 +20,7 @@ export function ReviewSummaryCard({
 }) {
   if (loading) {
     return (
-      <div className="space-y-2 rounded-2xl border border-border bg-card p-4">
+      <div className="space-y-2 rounded-lg border border-border bg-card p-4">
         <Skeleton className="h-4 w-2/3" />
         <Skeleton className="h-4 w-1/2" />
       </div>
@@ -34,7 +34,7 @@ export function ReviewSummaryCard({
   if (!summary) return null
 
   return (
-    <div className="space-y-2 rounded-2xl border border-primary/20 bg-primary/5 p-4">
+    <div className="space-y-2 rounded-lg border border-primary/20 bg-primary/5 p-4">
       <div className="flex items-center gap-1.5 text-xs font-semibold text-primary">
         <Sparkles size={13} />
         Hengo

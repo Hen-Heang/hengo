@@ -36,6 +36,8 @@ Seven sections, each with a Korean draft + English translation, memorized in thi
 
 Write and edit this in `/interview/script` — it autosaves locally and syncs to your account. You can also draft answers to the likely Q&A questions there (separate tab).
 
+The shared question bank includes a focused, script-aligned seed at `supabase/seed/kori_interview_questions_cambodia_experience.sql`. Its 15 follow-ups cover the personal details most likely to produce examiner questions: seaside memories, Cambodian New Year, summer drinks, rain and heat-avoidance differences, Han River cycling, Yeongjongdo, and the final lesson about adapting daily life and protecting health. Keep these answers short (two or three sentences) and update this seed whenever the canonical script gains a new concrete fact.
+
 ## Speaking strategy — the 9 rules
 
 1. **Short is best** — 2–3 sentences, stop once your point is clear.

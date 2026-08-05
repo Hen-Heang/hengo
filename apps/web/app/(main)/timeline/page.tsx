@@ -43,7 +43,7 @@ export default function TimelinePage() {
         <PageHero
           eyebrow="Progress"
           title="Timeline"
-          description="Everything you did, in one place — planned tasks you completed, habit check-ins, time spent inside Hengo, journal entries, and activities you logged yourself. Time in Hengo is automatically tracked app usage, not a substitute for real-life activity."
+          description="Review completed tasks, habit check-ins, Hengo time, journal entries, and manually logged activity. Hengo time measures app usage only."
           stats={[{ label: "Entries this period", value: loading ? "…" : String(filtered.length) }]}
           actions={<LogActivityDialog />}
         />
@@ -64,7 +64,7 @@ export default function TimelinePage() {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="space-y-6">
+      <motion.div variants={itemVariants} className="space-y-5">
         {loading ? (
           <div className="space-y-3">
             <Skeleton className="h-6 w-32" />
@@ -74,7 +74,7 @@ export default function TimelinePage() {
         ) : error ? (
           <ErrorBanner>{error}</ErrorBanner>
         ) : days.length === 0 ? (
-          <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+          <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-card/50 px-5 py-12 text-center">
             <p className="text-sm font-semibold text-foreground">Nothing in this period</p>
             <p className="max-w-sm text-sm text-muted-foreground">
               Complete a task, check in a habit, write a journal entry, or log an activity — it&apos;ll show up here.

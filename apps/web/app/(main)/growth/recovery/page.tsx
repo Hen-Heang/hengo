@@ -26,7 +26,7 @@ import { buildRecoveryDashboardSummary } from "@/lib/recovery"
 function RecoveryLoadingState() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
-      <Skeleton className="h-64 w-full rounded-3xl" />
+      <Skeleton className="h-52 w-full rounded-lg" />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-24 rounded-2xl" />)}</div>
       <Skeleton className="h-72 w-full rounded-2xl" />
     </div>

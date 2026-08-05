@@ -83,14 +83,14 @@ export function GoalDetailHeader({
         <Link
           href="/goals"
           aria-label="Back to goals"
-          className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+          className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
         >
           <ArrowLeft size={18} strokeWidth={2} />
         </Link>
 
         <div
           aria-hidden
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-lg font-semibold text-primary"
+          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-lg font-semibold text-primary"
         >
           {icon || (goal.title ? goal.title.charAt(0).toUpperCase() : "G")}
         </div>
@@ -103,7 +103,7 @@ export function GoalDetailHeader({
             {health && <HealthBadge status={health.status} reason={health.reason} />}
             {deadlineInfo && <DeadlineStatusBadge deadlineInfo={deadlineInfo} size="sm" />}
             {goal.target_date && (
-              <span className="text-[11px] font-medium text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground">
                 Target {format(new Date(goal.target_date), "MMM d, yyyy")}
               </span>
             )}
@@ -117,7 +117,7 @@ export function GoalDetailHeader({
             onClick={onToggleStar}
             aria-label={goal.isStarred ? "Unpin goal" : "Pin goal"}
             className={cn(
-              "h-11 w-11 rounded-xl sm:h-9 sm:w-9",
+              "h-11 w-11 rounded-lg",
               goal.isStarred ? "text-amber-500" : "text-muted-foreground/60 hover:text-amber-500",
             )}
           >
@@ -129,7 +129,7 @@ export function GoalDetailHeader({
                 variant="outline"
                 size="icon"
                 aria-label="Goal actions"
-                className="h-11 w-11 rounded-xl sm:h-9 sm:w-9"
+                className="h-11 w-11 rounded-lg"
               >
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
@@ -167,7 +167,7 @@ export function GoalDetailHeader({
 
       {/* Outcome progress — one bar, no gradient, no animation loop. */}
       <div className="space-y-1.5">
-        <div className="flex items-baseline justify-between gap-3 text-[11px] font-medium text-muted-foreground">
+        <div className="flex items-baseline justify-between gap-3 text-xs font-medium text-muted-foreground">
           <span>{progressLabel}</span>
           <span className="text-xs font-semibold tabular-nums text-foreground">{progressValue}%</span>
         </div>
@@ -185,7 +185,7 @@ export function GoalDetailHeader({
           />
         </div>
         {health?.reason && (
-          <p className="text-[11px] font-medium text-muted-foreground">{health.reason}</p>
+          <p className="text-xs font-medium text-muted-foreground">{health.reason}</p>
         )}
       </div>
 

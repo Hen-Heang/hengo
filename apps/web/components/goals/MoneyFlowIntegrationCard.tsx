@@ -21,7 +21,7 @@ export function MoneyFlowIntegrationCard() {
   const moneyFlowUrl = process.env.NEXT_PUBLIC_MONEY_FLOW_URL
 
   return (
-    <Card className="rounded-3xl border-border bg-card/50 p-6 shadow-sm sm:rounded-3xl sm:p-8">
+    <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
         <PiggyBank size={15} strokeWidth={2.5} className="text-primary" />
         <h3 className="text-sm font-semibold text-foreground">Money Flow</h3>

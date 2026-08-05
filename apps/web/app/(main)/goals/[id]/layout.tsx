@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useMemo, useState, type ReactNode } from "react"
+import { useCallback, useMemo, useState, type ReactNode } from "react"
 import Link from "next/link"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Target } from "lucide-react"
@@ -129,8 +129,8 @@ export default function GoalDetailLayout({ children }: { children: ReactNode }) 
 
   if (!goal) {
     return (
-      <div className="flex flex-col items-center justify-center gap-6 py-24 text-center">
-        <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-muted/20 text-muted-foreground/40">
+      <div className="flex flex-col items-center justify-center gap-4 py-16 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-muted/20 text-muted-foreground/40">
           <Target size={40} strokeWidth={1.5} />
         </div>
         <div>

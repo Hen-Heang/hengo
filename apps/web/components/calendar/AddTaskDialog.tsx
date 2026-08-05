@@ -236,8 +236,11 @@ export function AddTaskDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="p-0 gap-0 w-[calc(100vw-2rem)] max-w-[520px] max-h-[90dvh] overflow-hidden flex flex-col rounded-2xl">
-        <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border/60">
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-[520px] flex-col gap-0 overflow-hidden rounded-lg p-0"
+      >
+        <div className="flex flex-shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
               <CalendarClock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" />
@@ -250,7 +253,7 @@ export function AddTaskDialog({
             type="button"
             onClick={handleClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>
@@ -259,7 +262,7 @@ export function AddTaskDialog({
           Create a new task with a title, description, dates, optional time range, and color.
         </DialogDescription>
 
-        <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-6">
+        <div className="no-scrollbar flex-1 overflow-y-auto p-4 sm:px-5">
           <TaskFormFields
             formId="add-task-form"
             onSubmit={handleSubmit}
@@ -293,7 +296,7 @@ export function AddTaskDialog({
           />
         </div>
 
-        <div className="flex-shrink-0 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-border/60">
+        <div className="flex-shrink-0 border-t border-border/60 px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
           <div className="flex gap-3">
             <Button type="button" variant="outline" onClick={handleClose} className="flex-1 h-11">
               Cancel

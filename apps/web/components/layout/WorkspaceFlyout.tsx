@@ -6,7 +6,7 @@ import { NavRow } from "@/components/layout/NavItem"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import {
   isNavigationItemActive,
-  shippedItems,
+  visibleSidebarItems,
   type NavSearchParams,
   type NavSection,
 } from "@/lib/navigation"
@@ -34,7 +34,7 @@ export function WorkspaceFlyout({
   active: boolean
 }) {
   const labelId = useId()
-  const items = shippedItems(section.items)
+  const items = visibleSidebarItems(section)
   const soonItems = section.items.filter((i) => i.soon)
 
   return (
@@ -58,7 +58,7 @@ export function WorkspaceFlyout({
             />
           )}
           <section.icon size={20} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
-          <span className={cn("max-w-full truncate px-1 text-[10px] leading-none", active && "font-semibold")}>
+          <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
             {section.label}
           </span>
         </button>
@@ -69,9 +69,9 @@ export function WorkspaceFlyout({
         align="start"
         sideOffset={8}
         aria-labelledby={labelId}
-        className="w-60 rounded-xl p-1.5"
+        className="w-60 rounded-lg p-1.5"
       >
-        <p id={labelId} className="px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.1em] text-muted-foreground">
+        <p id={labelId} className="px-3 py-1.5 text-sm font-semibold text-muted-foreground">
           {section.label}
         </p>
         <nav aria-label={section.label} className="space-y-0.5">
@@ -86,7 +86,7 @@ export function WorkspaceFlyout({
           ))}
         </nav>
         {soonItems.length > 0 && (
-          <p className="px-3 pb-1 pt-2 text-[11px] text-muted-foreground/60">
+          <p className="px-3 pb-1 pt-2 text-xs text-muted-foreground/60">
             Coming soon: {soonItems.map((i) => i.label).join(", ")}
           </p>
         )}

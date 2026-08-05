@@ -5,6 +5,7 @@ import {
   BrainCircuit,
   CalendarClock,
   CalendarDays,
+  ClipboardList,
   Compass,
   Drama,
   Gauge,
@@ -57,6 +58,13 @@ export type NavMatch = {
   absentQuery?: string[]
   /** Whether nested routes (`/goals/create`) activate this item. Default true. */
   includeChildren?: boolean
+  /**
+   * Active whenever the current route belongs to this section, regardless of
+   * URL prefix. For hub items that represent a whole section (e.g. mobile's
+   * Learn tab) whose child routes (`/practice`, `/korean-coach`, …) don't
+   * share a common path with the hub itself.
+   */
+  sectionId?: NavSectionId
 }
 
 export type NavItem = {
@@ -72,9 +80,19 @@ export type NavItem = {
   keywords?: string[]
   soon?: boolean
   match?: NavMatch
+  /**
+   * Whether this item gets its own row in the sidebar / rail / bottom nav.
+   * Defaults to visible. Set `false` for routes that are still first-class,
+   * reachable, searchable destinations (Quick Switcher, breadcrumbs, page
+   * titles) but shouldn't clutter the nav chrome individually — e.g. the
+   * Learn section's children, which are all reachable from the `/learn` hub
+   * instead. Never remove an item from `navSections` just to hide it; that
+   * would also break route matching, page titles, and the Quick Switcher.
+   */
+  showInSidebar?: boolean
 }
 
-export type NavSectionId = "today" | "learn" | "goals" | "growth" | "progress" | "ai"
+export type NavSectionId = "today" | "learn" | "goals" | "growth" | "review" | "memory" | "ai"
 
 export type NavSection = {
   id: NavSectionId
@@ -114,6 +132,11 @@ export const accountItem: NavItem = {
   keywords: ["profile", "sign out", "subscription"],
 }
 
+// AI Coach and its mode variants are preserved routes (Chat, Analyze,
+// Generate, Corrections all still work), but no longer get their own primary
+// sidebar/rail presence — `showInSidebar: false` keeps them real, searchable,
+// breadcrumb-able destinations without cluttering the simplified nav chrome.
+// The single global AI entry point users see is "Ask Hengo" (see below).
 export const aiCoachItem: NavItem = {
   id: "ai-chat",
   href: "/chat",
@@ -124,16 +147,46 @@ export const aiCoachItem: NavItem = {
   keywords: ["ai", "coach", "chat", "ask", "assistant", "korean", "speaking"],
   // Bare /chat only — the mode variants below own their own active state.
   match: { pathname: "/chat", absentQuery: ["mode"] },
+  showInSidebar: false,
 }
 
+// The one global AI action: "Ask Hengo" answers from the user's own notes,
+// goals, habits, and journal (see components/memory/AskHengoChat). It lives
+// as the "My Data" mode on the merged /chat surface, alongside Coach/
+// Analyze/Generate/Corrections (see the "ai" section below) — /ask-hengo
+// itself is now a legacy redirect stub, same pattern as /mistakes. It's a
+// hidden child of the "memory" section below — reachable from the header
+// button, the Quick Switcher, and the mobile More sheet's pinned card, not
+// from a dedicated sidebar row, per the "doesn't need a large navigation
+// section" requirement. Do not build a second chat surface for this — reuse
+// this route everywhere a global Ask Hengo entry point is needed.
 export const askHengoItem: NavItem = {
-  id: "ai-ask-hengo",
-  href: "/ask-hengo",
+  id: "memory-ask-hengo",
+  href: "/chat?mode=memory",
   label: "Ask Hengo",
-  shortLabel: "Memory",
+  shortLabel: "Ask Hengo",
   icon: BrainCircuit,
   description: "Ask about your notes, goals, habits, and journal",
   keywords: ["memory", "ask", "second brain", "recall", "remember", "search"],
+  match: { pathname: "/chat", query: { mode: "memory" } },
+  showInSidebar: false,
+}
+
+/**
+ * The "Memory" workspace: what Hengo remembers about you, browsable on its
+ * own (distinct from the *action* of asking — see `askHengoItem` above).
+ * Hidden like `learn-hub` — the "memory" section has no other visible
+ * children, so it renders as one flat sidebar/rail/bottom-tab link straight
+ * to this route instead of an expandable group.
+ */
+export const memoryHubItem: NavItem = {
+  id: "memory-hub",
+  href: "/ask-hengo/memories",
+  label: "Memory",
+  icon: BrainCircuit,
+  description: "Facts Hengo remembers from your notes, goals, habits, and journal",
+  keywords: ["memory", "memories", "second brain", "notes", "recall", "context"],
+  showInSidebar: false,
 }
 
 // ─── Sections ─────────────────────────────────────────────────────────────────
@@ -150,7 +203,12 @@ export const navSections: NavSection[] = [
     id: "learn",
     label: "Learn",
     icon: Sparkles,
-    href: "/practice",
+    href: "/learn",
+    // Every child below is a real, reachable, searchable route — just hidden
+    // from the sidebar/rail/bottom-nav (`showInSidebar: false`) in favor of a
+    // single "Learn" entry that lands on `/learn`, the Learning Hub. Keeping
+    // them here (rather than deleting them) is what keeps route matching,
+    // page titles, breadcrumbs, and the Quick Switcher all working unchanged.
     items: [
       {
         id: "learn-practice",
@@ -159,6 +217,7 @@ export const navSections: NavSection[] = [
         icon: Sparkles,
         description: "Today's Korean practice session",
         keywords: ["learn", "korean", "daily", "drill", "speaking"],
+        showInSidebar: false,
       },
       {
         id: "learn-korean-coach",
@@ -168,6 +227,7 @@ export const navSections: NavSection[] = [
         icon: Mic,
         description: "Listening and speaking practice with AI feedback",
         keywords: ["voice", "speaking", "listening", "workplace", "korean", "coach"],
+        showInSidebar: false,
       },
       {
         id: "learn-vocab",
@@ -175,6 +235,7 @@ export const navSections: NavSection[] = [
         label: "Vocabulary",
         icon: BookOpen,
         keywords: ["words", "srs", "review", "flashcards", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-phrasebook",
@@ -183,13 +244,15 @@ export const navSections: NavSection[] = [
         icon: MessagesSquare,
         description: "Workplace and daily-life Q&A practice",
         keywords: ["phrasebook", "questions", "answers", "workplace", "qa", "speaking", "listening", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-foundations",
-        href: "/learn",
+        href: "/learn/foundations",
         label: "Foundations",
         icon: Languages,
         keywords: ["grammar", "hangul", "basics", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-reading",
@@ -197,6 +260,7 @@ export const navSections: NavSection[] = [
         label: "Reading",
         icon: BookOpenText,
         keywords: ["articles", "comprehension", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-listening",
@@ -204,6 +268,7 @@ export const navSections: NavSection[] = [
         label: "Listening",
         icon: Headphones,
         keywords: ["audio", "dictation", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-scenarios",
@@ -211,6 +276,7 @@ export const navSections: NavSection[] = [
         label: "Scenarios",
         icon: Drama,
         keywords: ["roleplay", "workplace", "situations", "korean"],
+        showInSidebar: false,
       },
       {
         id: "learn-interview",
@@ -218,6 +284,16 @@ export const navSections: NavSection[] = [
         label: "Exam Prep",
         icon: GraduationCap,
         keywords: ["topik", "interview", "test", "exam"],
+        showInSidebar: false,
+      },
+      {
+        id: "learn-hub",
+        href: "/learn",
+        label: "Learn",
+        icon: Sparkles,
+        description: "Practice, study, and exam prep — all Korean learning in one hub",
+        keywords: ["learn", "hub", "korean", "overview", "foundations", "practice"],
+        showInSidebar: false,
       },
     ],
   },
@@ -226,13 +302,35 @@ export const navSections: NavSection[] = [
     label: "Goals",
     icon: Target,
     href: "/goals",
+    // Goals answers "what do I want to achieve, and what tasks will get me
+    // there?" — Overview/Tasks are real routes (hidden from the sidebar/rail
+    // like Learn's children above) reached via the Goals hub's own local tab
+    // nav (see components/goals/hub/GoalsHubNav) rather than separate nav
+    // rows. Overview and Tasks are listed before Goals so getActiveNavItem
+    // (first match wins) resolves their more specific title instead of the
+    // parent's — see the navPathnames note below for why they can share the
+    // /goals prefix with the parent without losing bottom-tab/sidebar
+    // highlighting. The old standalone Dashboard route is gone entirely
+    // (folded into Overview) — see app/(main)/dashboard/page.tsx, now a
+    // redirect stub with no nav presence, same pattern as /mistakes etc.
     items: [
       {
-        id: "goals-dashboard",
-        href: "/dashboard",
-        label: "Dashboard",
+        id: "goals-overview",
+        href: "/goals/overview",
+        label: "Overview",
         icon: Gauge,
-        keywords: ["overview", "tasks", "today", "plan"],
+        description: "Snapshot of your active goals, deadlines, and progress",
+        keywords: ["overview", "summary", "snapshot", "dashboard", "progress"],
+        showInSidebar: false,
+      },
+      {
+        id: "goals-tasks",
+        href: "/goals/tasks",
+        label: "Tasks",
+        icon: ClipboardList,
+        description: "Today's tasks across every goal",
+        keywords: ["tasks", "today", "todo", "checklist"],
+        showInSidebar: false,
       },
       {
         id: "goals-goals",
@@ -240,7 +338,9 @@ export const navSections: NavSection[] = [
         label: "Goals",
         icon: Target,
         keywords: ["goal", "objective", "outcome", "plan"],
-        // /goals/calendar is its own item; keep it from also lighting up Goals.
+        // /goals/calendar is its own visible item; keep it from also lighting
+        // up Goals. Overview/Tasks are hidden items, so they no longer shadow
+        // this prefix match — see the navPathnames fix below.
         match: { pathname: "/goals", includeChildren: true },
       },
       {
@@ -255,7 +355,12 @@ export const navSections: NavSection[] = [
         href: "/roadmap",
         label: "Roadmap",
         icon: Map,
-        keywords: ["milestones", "phases", "timeline"],
+        description: "Your long-term, phase-by-phase learning/career plan",
+        keywords: ["milestones", "phases", "timeline", "long-term", "planning"],
+        // No longer a primary nav destination — it's a long-term planning
+        // tool reachable from the Goals Overview tab (RoadmapTeaser) and
+        // search/More sheet. Route and localStorage data are untouched.
+        showInSidebar: false,
       },
       {
         id: "goals-notes",
@@ -308,42 +413,17 @@ export const navSections: NavSection[] = [
     ],
   },
   {
-    id: "progress",
-    label: "Progress",
-    icon: Trophy,
-    href: "/achievements",
+    // Absorbs the old "Progress" workspace — Achievements/Statistics/
+    // History/Timeline are real, visible flyout children here (same pattern
+    // as Goals/Growth) alongside the review-hub itself, which keeps the
+    // section's own href as one of its children (mirrors "goals-goals").
+    id: "review",
+    label: "Review",
+    icon: Sunrise,
+    href: "/review/morning",
     items: [
       {
-        id: "progress-achievements",
-        href: "/achievements",
-        label: "Achievements",
-        icon: Trophy,
-        keywords: ["badges", "xp", "level", "progress"],
-      },
-      {
-        id: "progress-statistics",
-        href: "/statistics",
-        label: "Statistics",
-        icon: BarChart3,
-        keywords: ["stats", "charts", "analytics", "progress"],
-      },
-      {
-        id: "progress-history",
-        href: "/history",
-        label: "History",
-        icon: History,
-        keywords: ["activity", "log", "past", "sessions"],
-      },
-      {
-        id: "progress-timeline",
-        href: "/timeline",
-        label: "Timeline",
-        icon: CalendarClock,
-        description: "Everything you did, day by day",
-        keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
-      },
-      {
-        id: "progress-review",
+        id: "review-hub",
         href: "/review/morning",
         label: "Review",
         icon: Sunrise,
@@ -353,9 +433,51 @@ export const navSections: NavSection[] = [
         // the default one it links to.
         match: { pathname: "/review" },
       },
+      {
+        id: "review-achievements",
+        href: "/achievements",
+        label: "Achievements",
+        icon: Trophy,
+        keywords: ["badges", "xp", "level", "progress"],
+      },
+      {
+        id: "review-statistics",
+        href: "/statistics",
+        label: "Statistics",
+        icon: BarChart3,
+        keywords: ["stats", "charts", "analytics", "progress"],
+      },
+      {
+        id: "review-history",
+        href: "/history",
+        label: "History",
+        icon: History,
+        keywords: ["activity", "log", "past", "sessions"],
+      },
+      {
+        id: "review-timeline",
+        href: "/timeline",
+        label: "Timeline",
+        icon: CalendarClock,
+        description: "Everything you did, day by day",
+        keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
+      },
     ],
   },
   {
+    // "Memory" (browsing what Hengo remembers) is the primary workspace;
+    // "Ask Hengo" (the action of asking it something) is a hidden child here
+    // — it gets its global entry points elsewhere (header, More sheet,
+    // Quick Switcher) rather than a second visible row in this group.
+    id: "memory",
+    label: "Memory",
+    icon: BrainCircuit,
+    href: memoryHubItem.href,
+    items: [memoryHubItem, askHengoItem],
+  },
+  {
+    // Preserved routes, no primary sidebar/rail presence — see the
+    // `showInSidebar: false` note on `aiCoachItem` above.
     id: "ai",
     label: "AI Coach",
     icon: MessageCircle,
@@ -369,6 +491,7 @@ export const navSections: NavSection[] = [
         icon: ScanText,
         keywords: ["ai", "analyze", "breakdown", "explain"],
         match: { pathname: "/chat", query: { mode: "analyze" } },
+        showInSidebar: false,
       },
       {
         id: "ai-generate",
@@ -377,6 +500,7 @@ export const navSections: NavSection[] = [
         icon: Wand2,
         keywords: ["ai", "generate", "create", "draft"],
         match: { pathname: "/chat", query: { mode: "generate" } },
+        showInSidebar: false,
       },
       {
         id: "ai-corrections",
@@ -385,8 +509,11 @@ export const navSections: NavSection[] = [
         icon: RotateCcw,
         keywords: ["ai", "mistakes", "corrections", "fix", "grammar"],
         match: { pathname: "/chat", query: { mode: "corrections" } },
+        showInSidebar: false,
       },
-      askHengoItem,
+      // Not listed here again — `askHengoItem` above (a child of the "memory"
+      // section) already registers `/chat?mode=memory` as a route. Duplicating
+      // it here would register the same id twice.
     ],
   },
 ]
@@ -401,7 +528,15 @@ export const allNavItems: NavItem[] = [
   settingsItem,
 ]
 
-const navPathnames = new Set(allNavItems.map((item) => linkPath(item.href)))
+// Only items that actually get their own sidebar/rail/bottom-nav row can
+// "shadow" a parent's prefix match (see the sibling-wins comment below).
+// Hidden hub children (showInSidebar: false — Learn's practice/vocab/etc.,
+// Goals' overview/tasks/roadmap) have no separate row to hand the highlight
+// to, so excluding them here lets the parent (e.g. the Goals bottom tab)
+// stay lit while browsing them instead of going dark.
+const navPathnames = new Set(
+  allNavItems.filter((item) => item.showInSidebar !== false).map((item) => linkPath(item.href))
+)
 
 /** Look an item up by its stable id. Throws on typos at module-load time. */
 export function navItem(id: string): NavItem {
@@ -413,6 +548,35 @@ export function navItem(id: string): NavItem {
 function section(id: NavSectionId): NavSection {
   return navSections.find((s) => s.id === id)!
 }
+
+// ─── Visible navigation (separate from the route registry above) ─────────────
+//
+// Everything above this line is the full route registry: every real
+// destination, used for active-matching, breadcrumbs, titles, and search.
+// Only the two lists below decide what actually gets a row in the sidebar /
+// tablet rail's primary and secondary areas — Today is rendered on its own by
+// the shell, and Goals/Growth already render their own visible children via
+// `visibleSidebarItems`.
+
+/**
+ * The only sections that get a real primary group in the desktop sidebar and
+ * tablet rail: Today, Goals, Growth, Memory, Review. Order here is display
+ * order. Learn and AI are deliberately excluded — Learn is a secondary
+ * destination (see `secondaryNavItems`) and AI has no chrome presence at all
+ * now that "Ask Hengo" is the single global AI entry point.
+ */
+export const workspaceNavSections: NavSection[] = ["goals", "growth", "memory", "review"].map((id) =>
+  section(id as NavSectionId)
+)
+
+/**
+ * Secondary desktop/tablet destinations, rendered below the primary groups:
+ * Learn's card hub and Settings. "Account" is deliberately not listed here —
+ * the existing `ProfileMenu` component already serves as the sidebar's
+ * Account entry point (avatar + email, labelled "Account"), so adding a
+ * second plain Account row would duplicate it.
+ */
+export const secondaryNavItems: NavItem[] = [navItem("learn-hub"), settingsItem]
 
 // ─── Matching ─────────────────────────────────────────────────────────────────
 
@@ -463,6 +627,14 @@ export function isNavigationItemActive({
   if (item.soon) return false
 
   const match = resolveMatch(item)
+
+  // Section-wide match — used by hub items whose child routes don't share a
+  // URL prefix with the hub (e.g. mobile's Learn tab: `/korean-coach` and
+  // `/reading` aren't under `/learn`, but should still light it up).
+  if (match.sectionId) {
+    return getSectionForPath(pathname, searchParams)?.id === match.sectionId
+  }
+
   const includeChildren = match.includeChildren ?? true
 
   if (match.query) {
@@ -480,12 +652,15 @@ export function isNavigationItemActive({
   if (!includeChildren) return false
   if (!pathname.startsWith(`${match.pathname}/`)) return false
 
-  // Prefix match — but if the current pathname is itself another nav item's
+  // Prefix match — but if the current pathname is itself ANOTHER nav item's
   // exact path (e.g. "/goals/calendar" under "/goals", or
   // "/growth/recovery/log" under "/growth/recovery"), that more specific
   // sibling wins instead of both showing active. Sub-routes that aren't
   // themselves nav items (e.g. "/goals/create", "/goals/[id]") still match.
-  return !navPathnames.has(pathname)
+  // Excludes the item's own href so a deliberately loose match (e.g.
+  // review-hub: href "/review/morning", match.pathname "/review", to also
+  // catch /review/evening and /review/weekly) doesn't shadow itself.
+  return !(navPathnames.has(pathname) && linkPath(item.href) !== pathname)
 }
 
 /** Convenience wrapper used by non-query surfaces (Growth tabs, etc.). */
@@ -514,13 +689,22 @@ export function getActiveNavItem(pathname: string, searchParams?: NavSearchParam
 
 /**
  * Exactly five mobile destinations. The fifth ("More") is a sheet trigger, not
- * a route, so it is not in this list — see `MobileBottomNav`.
+ * a route, so it is not in this list — see `MobileBottomNav`. Learn moved to
+ * the More sheet as a secondary destination; Memory takes its bottom-tab slot.
  */
 export const bottomTabs: NavItem[] = [
   todayItem,
-  { ...navItem("learn-practice"), id: "tab-learn", label: "Learn" },
   { ...navItem("goals-goals"), id: "tab-goals", label: "Goals" },
   { ...navItem("growth-habits"), id: "tab-growth", label: "Growth" },
+  // Lands on the Memory hub, and stays lit for /ask-hengo (Ask Hengo chat)
+  // too via the section-wide match — a hidden child still activates its
+  // parent workspace's tab.
+  {
+    ...navItem("memory-hub"),
+    id: "tab-memory",
+    label: "Memory",
+    match: { pathname: "/ask-hengo/memories", sectionId: "memory" },
+  },
 ]
 
 /**
@@ -547,14 +731,6 @@ export type MoreGroup = {
   items: NavItem[]
 }
 
-const HIDDEN_FROM_MORE = new Set([
-  "today",
-  "learn-practice",
-  "goals-goals",
-  "growth-habits",
-  "ai-chat",
-])
-
 /** Only shipped items — `soon` placeholders are surfaced separately. */
 export function shippedItems(items: NavItem[]): NavItem[] {
   return items.filter((item) => !item.soon)
@@ -565,30 +741,32 @@ export function comingSoonItems(items: NavItem[]): NavItem[] {
 }
 
 /**
- * The More sheet's groups, in display order. The AI Coach card is rendered
- * separately at the top of the sheet, so it is excluded here.
+ * Shipped items that also get their own sidebar/rail/flyout row. A section
+ * where every item opts out (like Learn — see `showInSidebar` on `NavItem`)
+ * renders as a single flat link to `section.href` instead of an expandable
+ * group; see `DesktopSidebar` / `TabletNavigationRail`.
+ */
+export function visibleSidebarItems(section: NavSection): NavItem[] {
+  return shippedItems(section.items).filter((item) => item.showInSidebar !== false)
+}
+
+/**
+ * The More sheet's single flat menu: Review, Learn, Settings, Account.
+ * "Ask Hengo" is rendered separately as a pinned card at the top of the sheet
+ * (the mobile home for the global AI action), so it's excluded here to avoid
+ * listing it twice. Memory, Goals, and Growth aren't repeated here either —
+ * they're already bottom tabs. Goals' and Growth's own sub-pages (Calendar,
+ * Notes, Inbox, Recovery, Journal, …) and Review's Achievements/Statistics/
+ * History/Timeline are real, searchable, breadcrumb-able routes — reachable
+ * via the Quick Switcher and each workspace's own flyout on desktop/tablet —
+ * just not duplicated into this simplified sheet.
  */
 export const moreGroups: MoreGroup[] = [
-  { id: "progress", label: "Progress", items: shippedItems(section("progress").items) },
   {
-    id: "tools",
-    label: "Tools",
-    items: [
-      askHengoItem,
-      ...shippedItems(section("goals").items).filter((i) => !HIDDEN_FROM_MORE.has(i.id)),
-    ],
+    id: "menu",
+    label: "",
+    items: [navItem("review-hub"), navItem("learn-hub"), settingsItem, accountItem],
   },
-  {
-    id: "learn-more",
-    label: "Learn more",
-    items: shippedItems(section("learn").items).filter((i) => !HIDDEN_FROM_MORE.has(i.id)),
-  },
-  {
-    id: "growth-more",
-    label: "Growth",
-    items: shippedItems(section("growth").items).filter((i) => !HIDDEN_FROM_MORE.has(i.id)),
-  },
-  { id: "account", label: "Account", items: [accountItem, settingsItem] },
 ]
 
 /** `soon` placeholders, kept out of the main groups so they don't dominate. */

@@ -62,7 +62,7 @@ export function ShareGoalCard({ goalId, shareCode, onRegenerated }: ShareGoalCar
   }, [goalId, onRegenerated])
 
   return (
-    <Card className="rounded-3xl border-border bg-card/50 p-6 shadow-sm sm:p-8">
+    <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
       <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
         <Link2 size={14} /> Share link
       </h3>

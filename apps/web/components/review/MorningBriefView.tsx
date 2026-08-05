@@ -18,7 +18,7 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
   return (
     <div className="space-y-4">
       <motion.div variants={itemVariants}>
-        <h1 className="text-xl font-bold text-foreground">{brief.dateLabel}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{brief.dateLabel}</h1>
         <div className="mt-2 flex items-center gap-1.5 text-sm text-muted-foreground">
           <Flame size={14} className="text-orange-500" />
           {brief.streakDays} day streak
@@ -29,7 +29,7 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
         <ReviewSummaryCard summary={summary} focusSuggestion={focusSuggestion} loading={loading} error={error} />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
         <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
           <ListChecks size={16} />
           Tasks today
@@ -40,12 +40,12 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
           <Badge variant="outline">{brief.taskCounts.anytimeCount} anytime</Badge>
           <Badge variant="outline">{brief.taskCounts.completedCount} done</Badge>
         </div>
-        <Link href="/dashboard" className="mt-3 inline-block text-xs font-medium text-primary hover:underline">
+        <Link href="/goals/tasks" className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
           Open today&apos;s tasks →
         </Link>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-sm font-semibold text-foreground">Habits</span>
           <span className="text-xs text-muted-foreground">
@@ -63,13 +63,13 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
         ) : brief.habitsTotalCount > 0 ? (
           <p className="text-xs text-muted-foreground">All caught up.</p>
         ) : null}
-        <Link href="/growth/habits" className="mt-3 inline-block text-xs font-medium text-primary hover:underline">
+        <Link href="/growth/habits" className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
           Open Habits →
         </Link>
       </motion.div>
 
       {brief.remindersToday.length > 0 && (
-        <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+        <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
             <Bell size={16} />
             Due today
@@ -86,7 +86,7 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
       )}
 
       {brief.goalsAtRisk.length > 0 && (
-        <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+        <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
             <AlertTriangle size={16} className="text-amber-500" />
             Goals needing attention

@@ -66,7 +66,7 @@ export function NavRow({
       >
         <Icon size={iconSize} strokeWidth={2} className="shrink-0" />
         <span className="min-w-0 flex-1 truncate">{item.label}</span>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide">
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold">
           Soon
         </span>
       </div>
@@ -130,7 +130,7 @@ export function NavIconRow({
           {active && <ActiveIndicator />}
           <Icon size={20} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
           {showLabel && (
-            <span className={cn("max-w-full truncate px-1 text-[10px] leading-none", active && "font-semibold")}>
+            <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
               {name}
             </span>
           )}

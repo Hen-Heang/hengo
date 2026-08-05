@@ -8,7 +8,10 @@ import type { Task } from "@/lib/tasks"
 import { getTaskColor, hexWithAlpha } from "@/lib/tasks"
 import { getAllDayTasks, layoutDayTasks, MINUTES_IN_DAY, formatTaskTimeRange } from "@/lib/calendar"
 
-const HOUR_HEIGHT = 52 // px per hour row
+// Two 44px half-hour targets per row keep the day grid touch-safe. The grid
+// scrolls inside its own viewport, so the larger interaction rows do not add
+// blank page space.
+const HOUR_HEIGHT = 88
 const TOTAL_HEIGHT = HOUR_HEIGHT * 24
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const SLOT_MINUTES = 30
@@ -177,7 +180,7 @@ function AllDayStrip({ days, getTasksForDate, onTaskClick, colWidth }: AllDayStr
                 onClick={() => onTaskClick(task)}
                 title={task.title || task.description || "Untitled"}
                 className={cn(
-                  "w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors",
+                  "min-h-11 w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors",
                   task.completed && "line-through opacity-60"
                 )}
                 style={{ backgroundColor: hexWithAlpha(color, 0.16), borderLeftColor: color }}

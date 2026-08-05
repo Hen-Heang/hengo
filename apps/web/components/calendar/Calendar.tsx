@@ -402,7 +402,7 @@ export function Calendar({
 
   return (
     <motion.div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-background/50"
+      className="relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background/50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}

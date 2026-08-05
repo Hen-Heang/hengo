@@ -125,7 +125,7 @@ export function QuickCaptureDialog() {
 
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent className="max-w-lg gap-0 overflow-hidden rounded-2xl p-0">
+      <DialogContent className="max-w-lg gap-0 overflow-hidden rounded-lg p-0">
         <form onSubmit={handleSubmit} className="flex max-h-[calc(100dvh-2rem)] flex-col">
           <DialogHeader className="border-b border-border px-5 pb-4 pt-5">
             <DialogTitle>Quick capture</DialogTitle>

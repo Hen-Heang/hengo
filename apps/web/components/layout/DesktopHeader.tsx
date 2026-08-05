@@ -1,11 +1,13 @@
 "use client"
 
-import { Zap } from "lucide-react"
+import Link from "next/link"
+import { BrainCircuit, Zap } from "lucide-react"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { Button } from "@/components/ui/button"
 import {
+  askHengoItem,
   getActiveNavItem,
   getSectionForPath,
   type NavSearchParams,
@@ -56,6 +58,15 @@ export function DesktopHeader({
         >
           <Zap size={15} />
           Capture
+        </Button>
+        {/* The one global AI entry point — see the note on `askHengoItem` in
+            lib/navigation.ts. Lands on /chat's "My Data" mode; no new chat
+            surface. */}
+        <Button asChild variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg px-3">
+          <Link href={askHengoItem.href}>
+            <BrainCircuit size={15} />
+            Ask Hengo
+          </Link>
         </Button>
         <QuickSwitcher />
         <NotificationBell />

@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge"
 import { SpeakButton } from "@/components/ui/SpeakButton"
 import { Button } from "@/components/ui/button"
 import { interviewApi } from "@/lib/api"
-import type { ScriptVersion } from "@/lib/api/interview"
+import type { InterviewScript, ScriptVersion } from "@/lib/api/interview"
 import {
   buildQADocument,
   buildScriptDocument,
@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils"
 
 const topic = INTERVIEW_TOPICS[0]
 const STORAGE_KEY = `koriai-interview-script:${topic.id}`
+const STORAGE_UPDATED_AT_KEY = `${STORAGE_KEY}:updated-at`
 // Custom (user-added) section definitions live separately from the section text
 // so the existing per-topic text payload keeps syncing to the backend unchanged.
 const CUSTOM_KEY = `koriai-interview-script-custom:${topic.id}`
@@ -80,6 +81,22 @@ function saveJSON(key: string, value: unknown) {
   } catch {
     // Ignore quota / private-mode failures.
   }
+}
+
+function loadLocalUpdatedAt(): number {
+  if (typeof window === "undefined") return 0
+  try {
+    const value = window.localStorage.getItem(STORAGE_UPDATED_AT_KEY)
+    const timestamp = value ? Date.parse(value) : Number.NaN
+    return Number.isFinite(timestamp) ? timestamp : 0
+  } catch {
+    return 0
+  }
+}
+
+function saveScriptLocally(value: Record<string, string>, updatedAt = new Date()) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  window.localStorage.setItem(STORAGE_UPDATED_AT_KEY, updatedAt.toISOString())
 }
 
 const loadInitialQA = (): CustomQA[] => loadJSON<CustomQA[]>(QA_CUSTOM_KEY, [])
@@ -228,37 +245,50 @@ export default function InterviewScriptPage() {
   }
 
   // Best-effort hydrate from the account, then fill any still-empty sections
-  // from the drafted script. Local edits win — the remote copy is adopted only
-  // when nothing meaningful (non-blank text, not just empty keys) has been
-  // written on this device.
+  // from the drafted script. Compare timestamps so a newer account copy (for
+  // example, a mentor-updated final draft) can replace a stale browser cache,
+  // while genuinely newer local edits still win. Legacy caches have no
+  // timestamp and therefore yield to the account copy once.
   useEffect(() => {
     let active = true
     const hasText = (map: Record<string, string>) =>
       Object.values(map).some((v) => (v ?? "").trim().length > 0)
 
-    const hydrate = (remote: Record<string, string> | null) => {
+    const hydrate = (remote: InterviewScript | null) => {
       if (!active) return
       setValues((prev) => {
-        const base = !hasText(prev) && remote && hasText(remote) ? remote : prev
+        const remoteUpdatedAt = remote ? Date.parse(remote.updatedAt) : Number.NaN
+        const useRemote = Boolean(
+          remote &&
+            hasText(remote.sections) &&
+            Number.isFinite(remoteUpdatedAt) &&
+            remoteUpdatedAt >= loadLocalUpdatedAt()
+        )
+        const base = useRemote && remote ? remote.sections : prev
         const next = withSeedDefaults(base)
         if (next === prev) {
           if (remote) setSynced(true)
           return prev
         }
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-          setSavedAt(new Date())
+          const localSavedAt = useRemote ? new Date(remoteUpdatedAt) : new Date()
+          saveScriptLocally(next, localSavedAt)
+          setSavedAt(localSavedAt)
         } catch {
           // ignore
         }
-        scheduleSync(next)
+        if (useRemote && next === base) {
+          setSynced(true)
+        } else {
+          scheduleSync(next)
+        }
         return next
       })
     }
 
     interviewApi
       .getScript(topic.id)
-      .then((remote) => hydrate(remote?.sections ?? null))
+      .then(hydrate)
       // Offline or endpoint not live yet — the local copy (plus seed) stands.
       .catch(() => hydrate(null))
     return () => {
@@ -291,7 +321,7 @@ export default function InterviewScriptPage() {
           }
           if (!changed) return prev
           try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+            saveScriptLocally(next)
             setSavedAt(new Date())
           } catch {
             // ignore
@@ -366,7 +396,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // Ignore quota / private-mode failures.
@@ -418,7 +448,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -451,7 +481,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -541,7 +571,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -562,6 +592,7 @@ export default function InterviewScriptPage() {
     setSynced(false)
     try {
       window.localStorage.removeItem(STORAGE_KEY)
+      window.localStorage.removeItem(STORAGE_UPDATED_AT_KEY)
       setSavedAt(new Date())
     } catch {
       // ignore

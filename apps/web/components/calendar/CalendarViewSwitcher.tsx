@@ -45,7 +45,7 @@ export function CalendarViewSwitcher({
           <Button
             variant="outline"
             size="sm"
-            className="h-8 shrink-0 rounded-lg px-2.5 text-xs font-medium"
+            className="h-11 shrink-0 rounded-lg px-3 text-sm font-medium"
             onClick={() => onNavigate("today")}
           >
             Today
@@ -54,7 +54,7 @@ export function CalendarViewSwitcher({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-lg"
+              className="h-11 w-11 rounded-lg"
               onClick={() => onNavigate("prev")}
               aria-label="Previous"
             >
@@ -63,7 +63,7 @@ export function CalendarViewSwitcher({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-lg"
+              className="h-11 w-11 rounded-lg"
               onClick={() => onNavigate("next")}
               aria-label="Next"
             >
@@ -85,7 +85,7 @@ export function CalendarViewSwitcher({
             type="button"
             onClick={() => onViewChange(v)}
             className={cn(
-              "rounded-md px-2.5 py-1 text-xs font-medium capitalize transition-colors sm:px-3",
+              "min-h-11 min-w-11 rounded-md px-2.5 py-1 text-sm font-medium capitalize transition-colors sm:px-3",
               view === v
                 ? "bg-background text-foreground shadow-sm"
                 : "text-muted-foreground hover:text-foreground"

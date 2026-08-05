@@ -86,12 +86,12 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
     <Dialog open onOpenChange={(open) => !open && onDone()}>
       <DialogContent
         showCloseButton={false}
-        className="max-w-md gap-0 overflow-hidden rounded-3xl border-none p-0 sm:max-w-md"
+        className="max-w-md gap-0 overflow-hidden rounded-lg border-none p-0 sm:max-w-md"
       >
         <DialogTitle className="sr-only">Welcome to Hengo</DialogTitle>
 
         {/* Step progress */}
-        <div className="flex items-center gap-1.5 px-6 pt-6">
+        <div className="flex items-center gap-1.5 px-5 pt-5">
           {steps.map((_, i) => (
             <div
               key={i}
@@ -103,15 +103,15 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
           ))}
         </div>
 
-        <div className="px-6 pt-5 pb-2">
-          <div className="mb-4 flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+        <div className="px-5 pt-4 pb-2">
+          <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
             <current.icon size={22} strokeWidth={2.5} />
           </div>
-          <h2 className="text-xl font-extrabold tracking-tight text-foreground">{current.title}</h2>
-          <p className="mt-1 text-sm font-medium text-muted-foreground">{current.subtitle}</p>
+          <h2 className="text-lg font-semibold tracking-tight text-foreground">{current.title}</h2>
+          <p className="mt-1 text-sm text-muted-foreground">{current.subtitle}</p>
         </div>
 
-        <div className="px-6 py-4">
+        <div className="px-5 py-4">
           <div className="space-y-2.5">
             {step === 0 &&
               LEVEL_OPTIONS.map((opt) => (
@@ -122,8 +122,8 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
                 >
                   <span className="text-2xl">{opt.emoji}</span>
                   <span className="min-w-0 flex-1 text-left">
-                    <span className="block text-sm font-bold text-foreground">{opt.label}</span>
-                    <span className="block text-xs font-medium text-muted-foreground">{opt.desc}</span>
+                    <span className="block text-sm font-semibold text-foreground">{opt.label}</span>
+                    <span className="block text-xs text-muted-foreground">{opt.desc}</span>
                   </span>
                 </OptionCard>
               ))}
@@ -131,7 +131,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
             {step === 1 &&
               GOAL_OPTIONS.map((g) => (
                 <OptionCard key={g} selected={goal === g} onClick={() => setGoal(g)}>
-                  <span className="min-w-0 flex-1 text-left text-sm font-bold text-foreground">{g}</span>
+                  <span className="min-w-0 flex-1 text-left text-sm font-semibold text-foreground">{g}</span>
                 </OptionCard>
               ))}
 
@@ -143,8 +143,8 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
                   onClick={() => setTarget(opt.minutes)}
                 >
                   <span className="min-w-0 flex-1 text-left">
-                    <span className="block text-sm font-bold text-foreground">{opt.label}</span>
-                    <span className="block text-xs font-medium text-muted-foreground">{opt.desc}</span>
+                    <span className="block text-sm font-semibold text-foreground">{opt.label}</span>
+                    <span className="block text-xs text-muted-foreground">{opt.desc}</span>
                   </span>
                 </OptionCard>
               ))}
@@ -153,11 +153,11 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
           {error && <p className="mt-3 text-xs font-bold text-destructive">{error}</p>}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-border/60 bg-accent/5 px-6 py-4">
+        <div className="flex items-center justify-between gap-3 border-t border-border/60 bg-accent/5 px-5 py-3">
           <button
             type="button"
             onClick={onDone}
-            className="text-xs font-bold text-muted-foreground transition-colors hover:text-foreground"
+            className="min-h-11 px-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             Skip for now
           </button>
@@ -168,7 +168,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
                 type="button"
                 variant="outline"
                 onClick={() => setStep((s) => s - 1)}
-                className="h-10 rounded-xl px-4 text-xs font-bold active:scale-95"
+                className="h-11 rounded-lg px-4 text-sm font-semibold"
               >
                 Back
               </Button>
@@ -178,7 +178,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
                 type="button"
                 onClick={handleFinish}
                 disabled={!current.valid || saving}
-                className="h-10 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white hover:bg-blue-500 active:scale-95"
+                className="h-11 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500"
               >
                 {saving ? (
                   "Saving..."
@@ -194,7 +194,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
                 type="button"
                 onClick={() => setStep((s) => s + 1)}
                 disabled={!current.valid}
-                className="h-10 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white hover:bg-blue-500 active:scale-95"
+                className="h-11 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500"
               >
                 Next
                 <ArrowRight size={14} className="ml-1.5" />
@@ -221,7 +221,7 @@ function OptionCard({
       type="button"
       onClick={onClick}
       className={cn(
-        "flex w-full items-center gap-3 rounded-2xl border-2 px-4 py-3 text-left transition-all active:scale-[0.98]",
+        "flex min-h-11 w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
         selected
           ? "border-blue-500/60 bg-blue-500/10"
           : "border-border bg-card hover:border-blue-500/30 dark:bg-slate-900/40"

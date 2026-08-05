@@ -38,7 +38,7 @@ export function CreateHabitForm({
     <motion.form
       variants={itemVariants}
       onSubmit={handleSubmit}
-      className="mx-auto max-w-md space-y-5 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"
+      className="mx-auto max-w-md space-y-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="inline-flex rounded-xl bg-emerald-500/10 p-3 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">

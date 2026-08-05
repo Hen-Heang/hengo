@@ -110,7 +110,7 @@ export function KeyResultsCard({
   }
 
   return (
-    <Card className="rounded-3xl border-border bg-card/50 p-6 shadow-sm sm:rounded-3xl sm:p-8">
+    <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
       <div className="flex items-center gap-2">
         <Target size={15} strokeWidth={2.5} className="text-primary" />
         <h3 className="text-sm font-semibold text-foreground">Key results</h3>

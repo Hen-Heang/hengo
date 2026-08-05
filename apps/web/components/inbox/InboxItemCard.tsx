@@ -80,7 +80,7 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
   return (
     <div
       className={cn(
-        "rounded-2xl border border-border bg-card p-4 shadow-sm transition-opacity",
+        "rounded-lg border border-border bg-card p-4 shadow-sm transition-opacity",
         item.status !== "inbox" && "opacity-70",
         busy && "pointer-events-none opacity-60"
       )}
