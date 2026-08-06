@@ -2,7 +2,7 @@
 
 import { useId, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
-import { ChevronDown, FolderOpen, Plus, X } from "lucide-react"
+import { BrainCircuit, ChevronDown, FolderOpen, Plus, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
@@ -31,6 +31,8 @@ type VocabDeckProps = {
     meaning: string
     example?: string
   }) => Promise<unknown>
+  /** When provided, the open deck offers a button that launches Memory Lab scoped to this category. */
+  onReviewDeck?: (category: string) => void
 }
 
 function DeckAddForm({ category, onAdd }: { category: string; onAdd: NonNullable<VocabDeckProps["onAdd"]> }) {
@@ -142,7 +144,7 @@ function masteryColor(mastery: number) {
   return "bg-red-500/10 text-red-500 dark:text-red-400"
 }
 
-export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false, viewMode = "list", onUpdate, onDelete, onAdd }: VocabDeckProps) {
+export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false, viewMode = "list", onUpdate, onDelete, onAdd, onReviewDeck }: VocabDeckProps) {
   const contentId = useId()
   const [open, setOpen] = useState(defaultOpen)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -264,6 +266,19 @@ export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false,
             transition={{ duration: 0.25, ease: "easeOut" }}
             className="overflow-hidden"
           >
+            {onReviewDeck && items.length > 0 && (
+              <div className="border-t border-border/60 bg-accent/[0.03] p-3 sm:p-4">
+                <button
+                  type="button"
+                  onClick={() => onReviewDeck(name)}
+                  className="flex h-14 w-full items-center justify-center gap-2.5 rounded-2xl border-b-4 border-emerald-700 bg-emerald-600 text-sm font-bold uppercase tracking-wide text-white shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500 active:translate-y-[3px] active:border-b-0"
+                >
+                  <BrainCircuit size={16} strokeWidth={2.5} />
+                  {dueCount > 0 ? `Review ${dueCount} due` : `Practice this deck (${items.length})`}
+                </button>
+              </div>
+            )}
+
             <div className="divide-y divide-border/40 border-t border-border/60">
               {items.map((item) => {
                 const isExpanded = expandedId === item.id
