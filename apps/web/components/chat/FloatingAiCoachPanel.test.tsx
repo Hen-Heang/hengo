@@ -75,7 +75,7 @@ describe("FloatingAiCoachPanel", () => {
 
     render(<FloatingAiCoachPanel active />)
 
-    expect(await screen.findByText("AI Coach is unavailable")).toBeTruthy()
+    expect(await screen.findByText("Hengo Coach is unavailable")).toBeTruthy()
     expect(screen.getByRole("button", { name: "Retry" })).toBeTruthy()
     expect(screen.getByRole("link", { name: "Open full coach" }).getAttribute("href")).toBe("/chat")
   })

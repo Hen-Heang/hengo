@@ -3,14 +3,12 @@
 import Link from "next/link"
 import { useMemo } from "react"
 import { motion, type Variants } from "motion/react"
-import { BrainCircuit, Sparkles, Target, TreeDeciduous, Zap } from "lucide-react"
+import { BrainCircuit, Sparkles, Target, TreeDeciduous } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
 import { TodayTasksCard } from "@/components/home/TodayTasksCard"
 import { useGoals } from "@/hooks/useGoals"
-import { askHengoItem } from "@/lib/navigation"
-import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { calculateGoalDeadlineInfo } from "@/lib/goals"
 import { getLastVisited } from "@/lib/last-visited"
 import { cn } from "@/lib/utils"
@@ -107,13 +105,13 @@ export default function HomePage() {
 
   const shortcuts: Shortcut[] = [
     {
-      href: getLastVisited("goals", "/goals"),
+      href: getLastVisited("plan", "/goals"),
       label: "Goals",
       icon: Target,
       badge: goalsBadge?.text,
       badgeTone: goalsBadge?.tone,
     },
-    { href: getLastVisited("growth", "/growth/recovery"), label: "Growth", icon: TreeDeciduous },
+    { href: getLastVisited("grow", "/growth/recovery"), label: "Grow", icon: TreeDeciduous },
     { href: getLastVisited("memory", "/ask-hengo/memories"), label: "Memory", icon: BrainCircuit },
     { href: getLastVisited("learn", "/learn"), label: "Learn", icon: Sparkles },
   ]
@@ -138,30 +136,6 @@ export default function HomePage() {
           </motion.span>
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">{getTodayLabel()}</p>
-      </motion.div>
-
-      {/* ── Quick actions ── */}
-      <motion.div variants={fadeUp} className="grid grid-cols-2 gap-3">
-        <motion.button
-          type="button"
-          onClick={() => openQuickCapture()}
-          whileHover={{ y: -2 }}
-          whileTap={{ scale: 0.97 }}
-          transition={{ type: "spring", stiffness: 400, damping: 22 }}
-          className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition-[background-color,box-shadow] hover:bg-accent/40 hover:shadow-md dark:bg-slate-900/40"
-        >
-          <Zap size={16} className="text-primary" aria-hidden="true" />
-          Quick Capture
-        </motion.button>
-        <motion.div whileHover={{ y: -2 }} whileTap={{ scale: 0.97 }} transition={{ type: "spring", stiffness: 400, damping: 22 }}>
-          <Link
-            href={askHengoItem.href}
-            className="flex min-h-11 items-center justify-center gap-2 rounded-lg border border-border bg-card px-4 py-3 text-sm font-semibold text-foreground shadow-sm transition-[background-color,box-shadow] hover:bg-accent/40 hover:shadow-md dark:bg-slate-900/40"
-          >
-            <BrainCircuit size={16} className="text-primary" aria-hidden="true" />
-            Ask Hengo
-          </Link>
-        </motion.div>
       </motion.div>
 
       {/* ── Today's tasks + habits ── */}

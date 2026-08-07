@@ -22,8 +22,8 @@ import { cn } from "@/lib/utils"
 import { ProfileMenu } from "./ProfileMenu"
 import { WorkspaceFlyout } from "./WorkspaceFlyout"
 
-export const SIDEBAR_EXPANDED_WIDTH = 272
-export const SIDEBAR_COLLAPSED_WIDTH = 76
+export const SIDEBAR_EXPANDED_WIDTH = 232
+export const SIDEBAR_COLLAPSED_WIDTH = 72
 
 const sidebarSections = workspaceNavSections
 
@@ -45,7 +45,7 @@ export function DesktopSidebar({
   // can never be collapsed out from under the selected route, and no effect is
   // needed to reopen it on navigation.
   const [closedSections, setClosedSections] = useState<string[]>(() =>
-    sidebarSections.filter((s) => s.id !== (activeSectionId ?? "goals")).map((s) => s.id)
+    sidebarSections.filter((s) => s.id !== (activeSectionId ?? "plan")).map((s) => s.id)
   )
   const isSectionOpen = (id: string) => id === activeSectionId || !closedSections.includes(id)
 

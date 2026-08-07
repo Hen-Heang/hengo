@@ -10,9 +10,12 @@ const TAB =
   "relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
 
 /**
- * Five mobile destinations: Today, Goals, Growth, Memory, More. A stable
+ * Five mobile destinations: Today, Learn, Goals, Progress, More. A stable
  * elevated bottom surface — one border, one shadow, no glass container, no
- * sliding pill, no per-icon scaling.
+ * sliding pill, no per-icon scaling. Hengo Coach has no tab of its own — the
+ * floating launcher (components/chat/FloatingAiCoach) covers it without
+ * spending a tab slot, which is also what keeps Grow/Memory/Settings/History
+ * reachable through More instead of needing a second nav surface.
  *
  * When the soft keyboard is open the whole element is unmounted by `AppShell`
  * rather than hidden, so nothing inside stays in the tab order.

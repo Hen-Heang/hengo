@@ -38,7 +38,7 @@ export function FloatingAiCoachPanel({ active }: { active: boolean }) {
         void refresh()
       })
       .catch((cause) => {
-        setError(getApiErrorMessage(cause, "Could not start AI Coach. Please try again."))
+        setError(getApiErrorMessage(cause, "Could not start Hengo Coach. Please try again."))
       })
   }, [active, bootstrapAttempt, conversationId, conversations, conversationsLoading, refresh])
 
@@ -68,7 +68,7 @@ export function FloatingAiCoachPanel({ active }: { active: boolean }) {
           <AlertCircle className="size-5" aria-hidden="true" />
         </span>
         <div>
-          <p className="text-sm font-semibold text-foreground">AI Coach is unavailable</p>
+          <p className="text-sm font-semibold text-foreground">Hengo Coach is unavailable</p>
           <p className="mt-1 text-xs leading-5 text-muted-foreground">{error}</p>
         </div>
         <div className="flex items-center gap-2">

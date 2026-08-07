@@ -7,6 +7,7 @@ import Link from "next/link"
 import { LoaderCircle, Maximize2, Sparkles, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { HENGO_COACH_OPEN_EVENT } from "@/lib/hengo-coach-bus"
 import { cn } from "@/lib/utils"
 
 const PANEL_ID = "floating-ai-coach"
@@ -52,13 +53,27 @@ export function FloatingAiCoach({
 
   const closeCoach = useCallback(() => {
     setOpen(false)
-    window.setTimeout(() => launcherRef.current?.focus(), 0)
+    // On mobile this is the floating launcher; on desktop there is no
+    // launcher here (see the header-driven trigger below), so fall back to
+    // the header's own button by id.
+    window.setTimeout(() => {
+      const fallback = document.getElementById("hengo-coach-header-trigger")
+      ;(launcherRef.current ?? fallback)?.focus()
+    }, 0)
   }, [])
 
-  function openCoach() {
+  const openCoach = useCallback(() => {
     setHasOpened(true)
     setOpen(true)
-  }
+  }, [])
+
+  // The desktop header's "Hengo Coach" button has no launcher of its own — it
+  // dispatches this event and this (already-mounted) panel opens itself, so
+  // there is exactly one Hengo Coach surface across the whole app.
+  useEffect(() => {
+    window.addEventListener(HENGO_COACH_OPEN_EVENT, openCoach)
+    return () => window.removeEventListener(HENGO_COACH_OPEN_EVENT, openCoach)
+  }, [openCoach])
 
   useEffect(() => {
     if (!open) return
@@ -103,7 +118,7 @@ export function FloatingAiCoach({
                   id={`${PANEL_ID}-title`}
                   className="truncate text-sm font-semibold text-foreground"
                 >
-                  Ask AI Coach
+                  Hengo Coach
                 </h2>
                 <p className="truncate text-xs text-muted-foreground">
                   Quick help, right here
@@ -113,8 +128,8 @@ export function FloatingAiCoach({
                 <Link
                   href="/chat"
                   onClick={closeCoach}
-                  aria-label="Open full AI Coach"
-                  title="Open full AI Coach"
+                  aria-label="Open full Hengo Coach"
+                  title="Open full Hengo Coach"
                 >
                   <Maximize2 className="size-4" aria-hidden="true" />
                 </Link>
@@ -125,7 +140,7 @@ export function FloatingAiCoach({
                 variant="ghost"
                 size="icon-sm"
                 onClick={closeCoach}
-                aria-label="Close AI Coach"
+                aria-label="Close Hengo Coach"
               >
                 <X className="size-4" aria-hidden="true" />
               </Button>
@@ -138,27 +153,27 @@ export function FloatingAiCoach({
         </section>
       )}
 
-      {!open && !keyboardOpen && (
+      {/* Desktop has its own "Hengo Coach" trigger in the top header (see
+          DesktopHeader), which dispatches HENGO_COACH_OPEN_EVENT instead of
+          rendering a second launcher here — so this floating button is
+          mobile-only, per the "one Hengo Coach entry point on desktop" rule. */}
+      {mobile && !open && !keyboardOpen && (
         <Button
           ref={launcherRef}
           type="button"
-          size={mobile ? "icon" : "default"}
+          size="icon"
           onClick={openCoach}
-          aria-label="Open Ask AI Coach"
+          aria-label="Open Hengo Coach"
           aria-controls={PANEL_ID}
           aria-expanded={false}
           className={cn(
-            "fixed z-40 rounded-full shadow-lg shadow-primary/30",
-            mobile
-              ? "right-4 size-14"
-              : "bottom-5 right-5 h-12 gap-2.5 px-4",
-            mobile && bottomNavVisible
+            "fixed right-4 z-40 size-14 rounded-full shadow-lg shadow-primary/30",
+            bottomNavVisible
               ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))]"
-              : mobile && "bottom-[max(0.75rem,env(safe-area-inset-bottom))]"
+              : "bottom-[max(0.75rem,env(safe-area-inset-bottom))]"
           )}
         >
           <Sparkles data-icon="inline-start" className="size-5" aria-hidden="true" />
-          {!mobile && <span>Ask AI Coach</span>}
         </Button>
       )}
     </>

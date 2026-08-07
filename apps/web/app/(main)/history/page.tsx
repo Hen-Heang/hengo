@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useMemo, useCallback } from "react"
+import Link from "next/link"
 import {
   ArrowRight,
   Brain,
@@ -578,6 +579,14 @@ export default function HistoryPage() {
           eyebrow="Progress Lab"
           title="Your Study History"
           description="Track past corrections, spot recurring grammar patterns, and keep your streak alive."
+          actions={
+            <Button asChild variant="outline" size="sm" className="gap-1.5 rounded-lg">
+              <Link href="/timeline">
+                Day-by-day timeline
+                <ArrowRight size={14} aria-hidden="true" />
+              </Link>
+            </Button>
+          }
           stats={[
             { label: "Corrections", value: String(corrections.length) },
             { label: "Patterns Found", value: String(grammarPatterns.length) },

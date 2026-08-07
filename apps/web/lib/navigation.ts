@@ -8,7 +8,6 @@ import {
   ClipboardList,
   Compass,
   Drama,
-  Gauge,
   GraduationCap,
   Headphones,
   History,
@@ -92,7 +91,7 @@ export type NavItem = {
   showInSidebar?: boolean
 }
 
-export type NavSectionId = "today" | "learn" | "goals" | "growth" | "review" | "memory" | "ai"
+export type NavSectionId = "today" | "learn" | "plan" | "grow" | "history" | "memory" | "ai"
 
 export type NavSection = {
   id: NavSectionId
@@ -118,9 +117,9 @@ export const todayItem: NavItem = {
 
 // `/account` is a legacy alias for this same page (`app/(main)/account/page.tsx`
 // re-exports the Settings component) — kept working for old links/bookmarks,
-// but deliberately has no nav item of its own. It used to (see git history),
-// which put "Settings" and "Account" side by side in the sidebar, the mobile
-// More sheet, and the header menus, all pointing at identical content.
+// but deliberately has no nav item of its own. Settings itself has no sidebar
+// row either — it's reached through the ProfileMenu ("Account" trigger) on
+// every surface, so it never sits redundantly next to that same menu.
 export const settingsItem: NavItem = {
   id: "settings",
   href: "/settings",
@@ -131,32 +130,28 @@ export const settingsItem: NavItem = {
 
 // AI Coach and its mode variants are preserved routes (Chat, Analyze,
 // Generate, Corrections all still work), but no longer get their own primary
-// sidebar/rail presence — `showInSidebar: false` keeps them real, searchable,
-// breadcrumb-able destinations without cluttering the simplified nav chrome.
-// The single global AI entry point users see is "Ask Hengo" (see below).
+// sidebar/rail presence. "Hengo Coach" is the one AI identity used everywhere
+// (desktop header button, mobile floating launcher) — this item's `label` is
+// what those surfaces render, so renaming the assistant only ever happens
+// here.
 export const aiCoachItem: NavItem = {
   id: "ai-chat",
   href: "/chat",
-  label: "AI Coach",
-  shortLabel: "AI",
+  label: "Hengo Coach",
+  shortLabel: "Coach",
   icon: MessageCircle,
   description: "Practice, analyze, plan, or get support",
-  keywords: ["ai", "coach", "chat", "ask", "assistant", "korean", "speaking"],
+  keywords: ["ai", "coach", "hengo", "chat", "ask", "assistant", "korean", "speaking"],
   // Bare /chat only — the mode variants below own their own active state.
   match: { pathname: "/chat", absentQuery: ["mode"] },
   showInSidebar: false,
 }
 
-// The one global AI action: "Ask Hengo" answers from the user's own notes,
-// goals, habits, and journal (see components/memory/AskHengoChat). It lives
-// as the "My Data" mode on the merged /chat surface, alongside Coach/
-// Analyze/Generate/Corrections (see the "ai" section below) — /ask-hengo
-// itself is now a legacy redirect stub, same pattern as /mistakes. It's a
-// hidden child of the "memory" section below — reachable from the header
-// button, the Quick Switcher, and the mobile More sheet's pinned card, not
-// from a dedicated sidebar row, per the "doesn't need a large navigation
-// section" requirement. Do not build a second chat surface for this — reuse
-// this route everywhere a global Ask Hengo entry point is needed.
+// A distinct *mode* of Hengo Coach ("My Data") that answers from the user's
+// own notes, goals, habits, and journal — not a second competing assistant
+// identity. Kept as its own destination (searchable, linkable) rather than
+// folded into the generic coach entry point because it answers a different
+// question ("what do I know") than the coach's general help.
 export const askHengoItem: NavItem = {
   id: "memory-ask-hengo",
   href: "/chat?mode=memory",
@@ -171,10 +166,11 @@ export const askHengoItem: NavItem = {
 
 /**
  * The "Memory" workspace: what Hengo remembers about you, browsable on its
- * own (distinct from the *action* of asking — see `askHengoItem` above).
- * Labelled "Memories" (not "Memory") so it reads as one of three sibling
- * rows — Inbox, Notes, Memories — inside the "memory" section rather than
- * repeating the section's own label.
+ * own (distinct from the *action* of asking — see `askHengoItem` above). A
+ * real, searchable, deep-linkable route — just with no dedicated row in any
+ * nav chrome (sidebar, rail, bottom bar) since the whole "memory" section has
+ * none. Reachable via Quick Switcher (desktop) and the More sheet's Memory
+ * group (mobile).
  */
 export const memoryHubItem: NavItem = {
   id: "memory-hub",
@@ -183,15 +179,16 @@ export const memoryHubItem: NavItem = {
   icon: BrainCircuit,
   description: "Facts Hengo remembers from your notes, goals, habits, and journal",
   keywords: ["memory", "memories", "second brain", "notes", "recall", "context"],
+  showInSidebar: false,
 }
 
 /**
- * Quick capture for ideas, tasks, and phrases — owned by the "memory"
- * section (see the ownership note below `notesItem`). Route and data
- * untouched by this move: still `/inbox`, same `lib/api/inbox.ts` backing.
+ * Quick capture for ideas, tasks, and phrases. Lives under "Plan" — it's
+ * where a stray idea becomes a goal or task, not a Memory browsing surface.
+ * Route and data untouched: still `/inbox`, same `lib/api/inbox.ts` backing.
  */
 export const inboxItem: NavItem = {
-  id: "memory-inbox",
+  id: "plan-inbox",
   href: "/inbox",
   label: "Inbox",
   icon: Inbox,
@@ -200,10 +197,10 @@ export const inboxItem: NavItem = {
 }
 
 /**
- * Freeform notes — owned by the "memory" section, not "goals". Notes and
- * Inbox are what Hengo *remembers*, not goal-tracking tools, so they moved
- * out of Goals to sit alongside the Memories hub instead. Route and data
- * untouched: still `/notes`.
+ * Freeform notes. No sidebar/rail/bottom-nav row of its own — Hengo is not a
+ * general notes app, so Notes is a real, preserved, searchable route reached
+ * via Quick Switcher or the More sheet's Memory group, not a primary nav
+ * destination. Data and route untouched: still `/notes`.
  */
 export const notesItem: NavItem = {
   id: "memory-notes",
@@ -211,6 +208,51 @@ export const notesItem: NavItem = {
   label: "Notes",
   icon: NotebookPen,
   keywords: ["note", "scratchpad", "ideas"],
+  showInSidebar: false,
+}
+
+/**
+ * Single merged destination for what used to be four separate sidebar rows
+ * (Review, Achievements, Statistics — History merged separately, see
+ * `historyItem`). Lives under "Grow" as `grow-progress`; its own landing page
+ * is a small hub (`/progress`) linking out to the three routes below, which
+ * stay real and unchanged.
+ */
+export const progressHubItem: NavItem = {
+  id: "grow-progress",
+  href: "/progress",
+  label: "Progress",
+  icon: BarChart3,
+  description: "Morning/evening/weekly review, achievements, and stats",
+  // Deliberately no "statistics"/"stats" keyword — Statistics itself already
+  // carries those, and duplicating them here would make it rank behind this
+  // hub for a search that should go straight to the page.
+  keywords: ["progress", "review", "achievements", "badges", "xp", "level"],
+}
+
+/**
+ * Standalone top-level destination (peer of Today, not nested in a group) —
+ * merges the old separate Timeline entry (see `timelineItem`) under one row.
+ * Both routes are preserved and unchanged; History is just the one a reader
+ * lands on first, with Timeline reachable from inside it.
+ */
+export const historyItem: NavItem = {
+  id: "history-hub",
+  href: "/history",
+  label: "History",
+  icon: History,
+  description: "Corrections, patterns, and streaks over time",
+  keywords: ["history", "activity", "log", "past", "sessions"],
+}
+
+const timelineItem: NavItem = {
+  id: "review-timeline",
+  href: "/timeline",
+  label: "Timeline",
+  icon: CalendarClock,
+  description: "Everything you did, day by day",
+  keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
+  showInSidebar: false,
 }
 
 // ─── Sections ─────────────────────────────────────────────────────────────────
@@ -336,11 +378,7 @@ export const navSections: NavSection[] = [
     ],
   },
   {
-    id: "goals",
-    label: "Goals",
-    icon: Target,
-    href: "/goals",
-    // Goals answers "what do I want to achieve, and what tasks will get me
+    // "Plan" answers "what do I want to achieve, and what tasks will get me
     // there?" — Overview/Tasks are real routes (hidden from the sidebar/rail
     // like Learn's children above) reached via the Goals hub's own local tab
     // nav (see components/goals/hub/GoalsHubNav) rather than separate nav
@@ -348,15 +386,18 @@ export const navSections: NavSection[] = [
     // (first match wins) resolves their more specific title instead of the
     // parent's — see the navPathnames note below for why they can share the
     // /goals prefix with the parent without losing bottom-tab/sidebar
-    // highlighting. The old standalone Dashboard route is gone entirely
-    // (folded into Overview) — see app/(main)/dashboard/page.tsx, now a
-    // redirect stub with no nav presence, same pattern as /mistakes etc.
+    // highlighting. Inbox lives here too (not a "Memory" browsing tool — it's
+    // where a stray idea becomes a goal or task).
+    id: "plan",
+    label: "Plan",
+    icon: ClipboardList,
+    href: "/goals",
     items: [
       {
         id: "goals-overview",
         href: "/goals/overview",
         label: "Overview",
-        icon: Gauge,
+        icon: BarChart3,
         description: "Snapshot of your active goals, deadlines, and progress",
         keywords: ["overview", "summary", "snapshot", "dashboard", "progress"],
         showInSidebar: false,
@@ -388,6 +429,7 @@ export const navSections: NavSection[] = [
         icon: CalendarDays,
         keywords: ["schedule", "week", "month", "task", "deadline"],
       },
+      inboxItem,
       {
         id: "goals-roadmap",
         href: "/roadmap",
@@ -395,26 +437,25 @@ export const navSections: NavSection[] = [
         icon: Map,
         description: "Your long-term, phase-by-phase learning/career plan",
         keywords: ["milestones", "phases", "timeline", "long-term", "planning"],
-        // No longer a primary nav destination — it's a long-term planning
-        // tool reachable from the Goals Overview tab (RoadmapTeaser) and
+        // Not a primary nav destination — it's a long-term planning tool
+        // reachable from the Goals Overview tab (RoadmapTeaser) and
         // search/More sheet. Route and localStorage data are untouched.
         showInSidebar: false,
       },
-      // Notes and Inbox live in the "memory" section now — see `notesItem` /
-      // `inboxItem` below. They're what Hengo *remembers*, not goal-tracking
-      // tools, so Goals no longer owns them (route/data unchanged).
     ],
   },
   {
-    // Recovery is Growth's single entry point now — its dashboard embeds a
-    // "Today's habits" card (see components/home/TodayHabitCheckins, reused
-    // as-is), so simple check-off habits are visible and actionable there
-    // without a second sidebar row. Habits stays a real, hidden
-    // (`showInSidebar: false`) route at its original URL with its own data
-    // untouched — same pattern as Goals' Overview/Tasks — reachable via the
-    // "View all" link in that card, the Quick Switcher, and breadcrumbs.
-    id: "growth",
-    label: "Growth",
+    // "Grow" absorbs the old "Progress" workspace (Review/Achievements/
+    // Statistics, merged into one `progressHubItem` row — see the comment on
+    // that item) alongside Recovery/Habits/Journal. Recovery's dashboard
+    // already embeds a "Today's habits" card (components/home/
+    // TodayHabitCheckins, reused as-is), so simple check-off habits stay
+    // visible and actionable without a second sidebar row. Habits and the
+    // three merged Progress routes stay real, hidden (`showInSidebar: false`)
+    // routes at their original URLs with their own data untouched — same
+    // pattern as Plan's Overview/Tasks.
+    id: "grow",
+    label: "Grow",
     icon: TreeDeciduous,
     href: "/growth/recovery",
     items: [
@@ -436,26 +477,12 @@ export const navSections: NavSection[] = [
       {
         id: "growth-journal",
         href: "/growth/journal",
-        label: "Journal",
+        label: "Reflections",
         icon: NotebookPen,
         description: "Daily reflection — mood, wins, lessons",
         keywords: ["journal", "reflection", "mood", "energy", "gratitude", "diary"],
       },
-      { id: "growth-deep-work", href: "/growth/focus", label: "Deep Work", icon: Zap, soon: true },
-      { id: "growth-mood", href: "/growth/mood", label: "Mood", icon: Smile, soon: true },
-      { id: "growth-rewards", href: "/growth/rewards", label: "Rewards", icon: Trophy, soon: true },
-    ],
-  },
-  {
-    // Absorbs the old "Progress" workspace — Achievements/Statistics/
-    // History/Timeline are real, visible flyout children here (same pattern
-    // as Goals/Growth) alongside the review-hub itself, which keeps the
-    // section's own href as one of its children (mirrors "goals-goals").
-    id: "review",
-    label: "Review",
-    icon: Sunrise,
-    href: "/review/morning",
-    items: [
+      progressHubItem,
       {
         id: "review-hub",
         href: "/review/morning",
@@ -466,6 +493,7 @@ export const navSections: NavSection[] = [
         // Any of the three review pages should light this item up, not just
         // the default one it links to.
         match: { pathname: "/review" },
+        showInSidebar: false,
       },
       {
         id: "review-achievements",
@@ -473,6 +501,7 @@ export const navSections: NavSection[] = [
         label: "Achievements",
         icon: Trophy,
         keywords: ["badges", "xp", "level", "progress"],
+        showInSidebar: false,
       },
       {
         id: "review-statistics",
@@ -480,42 +509,45 @@ export const navSections: NavSection[] = [
         label: "Statistics",
         icon: BarChart3,
         keywords: ["stats", "charts", "analytics", "progress"],
+        showInSidebar: false,
       },
-      {
-        id: "review-history",
-        href: "/history",
-        label: "History",
-        icon: History,
-        keywords: ["activity", "log", "past", "sessions"],
-      },
-      {
-        id: "review-timeline",
-        href: "/timeline",
-        label: "Timeline",
-        icon: CalendarClock,
-        description: "Everything you did, day by day",
-        keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
-      },
+      { id: "growth-deep-work", href: "/growth/focus", label: "Deep Work", icon: Zap, soon: true },
+      { id: "growth-mood", href: "/growth/mood", label: "Mood", icon: Smile, soon: true },
+      { id: "growth-rewards", href: "/growth/rewards", label: "Rewards", icon: Trophy, soon: true },
     ],
   },
   {
-    // "Memory" owns everything Hengo remembers about you: quick-captured
-    // Inbox items, freeform Notes, and the Memories hub that surfaces facts
-    // extracted from both (plus goals/habits/journal). "Ask Hengo" (the
-    // *action* of asking it something) is a hidden child here — it gets its
-    // global entry points elsewhere (header, More sheet, Quick Switcher)
-    // rather than a second visible row in this group.
+    // Standalone top-level destination, not a collapsible group — rendered
+    // via `secondaryNavItems`, same as Learn. Merges the old separate
+    // Timeline entry (`timelineItem`) under one row — Timeline stays a real,
+    // hidden, searchable route (surfaced from inside the History page), but
+    // visiting it directly does not light up the History row (a minor,
+    // accepted gap — same as Roadmap not lighting up Plan).
+    id: "history",
+    label: "History",
+    icon: History,
+    href: "/history",
+    items: [historyItem, timelineItem],
+  },
+  {
+    // "Memory" owns everything Hengo remembers about you: freeform Notes and
+    // the Memories hub that surfaces facts extracted from notes/goals/
+    // habits/journal, plus the "Ask Hengo" action. No dedicated sidebar/rail/
+    // bottom-nav presence at all now (Inbox moved to Plan) — every item here
+    // is `showInSidebar: false`, reachable via Quick Switcher (desktop) and
+    // the More sheet's Memory group (mobile). Same zero-chrome pattern the
+    // "ai" section below already used.
     id: "memory",
     label: "Memory",
     icon: BrainCircuit,
     href: memoryHubItem.href,
-    items: [inboxItem, notesItem, memoryHubItem, askHengoItem],
+    items: [notesItem, memoryHubItem, askHengoItem],
   },
   {
     // Preserved routes, no primary sidebar/rail presence — see the
     // `showInSidebar: false` note on `aiCoachItem` above.
     id: "ai",
-    label: "AI Coach",
+    label: "Hengo Coach",
     icon: MessageCircle,
     href: aiCoachItem.href,
     items: [
@@ -566,9 +598,10 @@ export const allNavItems: NavItem[] = [
 // Only items that actually get their own sidebar/rail/bottom-nav row can
 // "shadow" a parent's prefix match (see the sibling-wins comment below).
 // Hidden hub children (showInSidebar: false — Learn's practice/vocab/etc.,
-// Goals' overview/tasks/roadmap) have no separate row to hand the highlight
-// to, so excluding them here lets the parent (e.g. the Goals bottom tab)
-// stay lit while browsing them instead of going dark.
+// Plan's overview/tasks/roadmap, Grow's review/achievements/statistics)
+// have no separate row to hand the highlight to, so excluding them here lets
+// the parent (e.g. the Goals bottom tab) stay lit while browsing them instead
+// of going dark.
 const navPathnames = new Set(
   allNavItems.filter((item) => item.showInSidebar !== false).map((item) => linkPath(item.href))
 )
@@ -590,29 +623,26 @@ function section(id: NavSectionId): NavSection {
 // destination, used for active-matching, breadcrumbs, titles, and search.
 // Only the two lists below decide what actually gets a row in the sidebar /
 // tablet rail's primary and secondary areas — Today is rendered on its own by
-// the shell, and Goals/Growth already render their own visible children via
-// `visibleSidebarItems`.
+// the shell.
 
 /**
- * The only sections that get a real primary group in the desktop sidebar and
- * tablet rail: Today, Goals, Growth, Memory, Review. Order here is display
- * order. Learn and AI are deliberately excluded — Learn is a secondary
- * destination (see `secondaryNavItems`) and AI has no chrome presence at all
- * now that "Ask Hengo" is the single global AI entry point.
+ * The only sections that render as a real, expandable primary group in the
+ * desktop sidebar and tablet rail: Plan and Grow. Order here is display
+ * order. Learn and History are secondary flat destinations (see
+ * `secondaryNavItems`); Memory and AI have no chrome presence at all — every
+ * item they hold is `showInSidebar: false`.
  */
-export const workspaceNavSections: NavSection[] = ["goals", "growth", "memory", "review"].map((id) =>
-  section(id as NavSectionId)
-)
+export const workspaceNavSections: NavSection[] = ["plan", "grow"].map((id) => section(id as NavSectionId))
 
 /**
  * Secondary desktop/tablet destinations, rendered below the primary groups:
- * just Learn's card hub. Neither "Account" nor "Settings" gets its own row
- * here — the existing `ProfileMenu` component already serves as the
- * sidebar's Account entry point (avatar + email, labelled "Account") and
- * its dropdown's first item is Settings, so a standalone Settings row would
+ * Learn's card hub and History. Neither "Account" nor "Settings" gets its own
+ * row here — the existing `ProfileMenu` component already serves as the
+ * sidebar's Account entry point (avatar + email, labelled "Account") and its
+ * dropdown's first item is Settings, so a standalone Settings row would
  * duplicate that same destination right above it.
  */
-export const secondaryNavItems: NavItem[] = [navItem("learn-hub")]
+export const secondaryNavItems: NavItem[] = [navItem("learn-hub"), navItem("history-hub")]
 
 // ─── Matching ─────────────────────────────────────────────────────────────────
 
@@ -724,33 +754,27 @@ export function getActiveNavItem(pathname: string, searchParams?: NavSearchParam
 // ─── Mobile bottom bar ────────────────────────────────────────────────────────
 
 /**
- * Exactly five mobile destinations. The fifth ("More") is a sheet trigger, not
- * a route, so it is not in this list — see `MobileBottomNav`. Learn moved to
- * the More sheet as a secondary destination; Memory takes its bottom-tab slot.
+ * Four routed mobile destinations. The fifth slot ("More") is a sheet
+ * trigger, not a route, so it is not in this list — see `MobileBottomNav`.
+ * Hengo Coach deliberately has no bottom tab of its own: the floating
+ * launcher (`components/chat/FloatingAiCoach`) already gives it one-tap
+ * mobile access without spending a tab slot, which is also the only way
+ * Grow/Memory/Settings/History stay reachable without a "More" trigger.
  */
 export const bottomTabs: NavItem[] = [
   todayItem,
+  { ...navItem("learn-hub"), id: "tab-learn", label: "Learn", match: { pathname: "/learn", sectionId: "learn" } },
   { ...navItem("goals-goals"), id: "tab-goals", label: "Goals" },
-  // Recovery, not Habits, anchors the Growth tab now — see the note on the
-  // "growth" section above. /growth/habits and /growth/journal fall through
-  // to More, same as /goals/calendar does for Goals.
-  { ...navItem("growth-recovery"), id: "tab-growth", label: "Growth" },
-  // Lands on the Memories hub, and stays lit for the section's other
-  // routes too — /inbox, /notes (and its children), and the Ask Hengo
-  // action (/chat?mode=memory) — via the section-wide match, since all four
-  // now belong to the "memory" section.
-  {
-    ...navItem("memory-hub"),
-    id: "tab-memory",
-    label: "Memory",
-    match: { pathname: "/ask-hengo/memories", sectionId: "memory" },
-  },
+  // No sectionId match: "grow" also holds Recovery/Journal, which stay
+  // reachable through More rather than lighting up this tab. Only /progress
+  // itself (and its children, via the default pathname match) does.
+  { ...navItem("grow-progress"), id: "tab-progress", label: "Progress" },
 ]
 
 /**
  * Whether the current route lives behind the "More" sheet rather than one of
- * the four direct tabs. Anything no tab owns counts — so /vocab, /statistics,
- * /chat and /settings all light up "More".
+ * the four direct tabs. Anything no tab owns counts — so /growth/recovery,
+ * /vocab, /chat and /settings all light up "More".
  */
 export function isMoreRoute(pathname: string, searchParams?: NavSearchParams): boolean {
   return !bottomTabs.some((item) => isNavigationItemActive({ pathname, searchParams, item }))
@@ -791,22 +815,24 @@ export function visibleSidebarItems(section: NavSection): NavItem[] {
 }
 
 /**
- * The More sheet's single flat menu: Review, Learn, Settings. "Ask Hengo" is
- * rendered separately as a pinned card at the top of the sheet (the mobile
- * home for the global AI action), so it's excluded here to avoid listing it
- * twice. Memory, Goals, and Growth aren't repeated here either — they're
- * already bottom tabs. Goals' and Growth's own sub-pages (Calendar, Notes,
- * Inbox, Recovery, Journal, …) and Review's Achievements/Statistics/History/
- * Timeline are real, searchable, breadcrumb-able routes — reachable via the
- * Quick Switcher and each workspace's own flyout on desktop/tablet — just not
- * duplicated into this simplified sheet. No separate "Account" row — that
- * used to sit right next to Settings here pointing at the identical page.
+ * The More sheet's menu, grouped: Recovery/History/Settings as a flat menu,
+ * plus a labelled "Memory" group for Notes and Memories (Inbox is a Plan
+ * item now, reachable from the Goals tab). "Ask Hengo" is rendered
+ * separately as a pinned card at the top of the sheet (the mobile home for
+ * that action), so it's excluded here to avoid listing it twice. Today,
+ * Learn, Goals and Progress aren't repeated here either — they're already
+ * bottom tabs.
  */
 export const moreGroups: MoreGroup[] = [
   {
+    id: "memory",
+    label: "Memory",
+    items: [notesItem, memoryHubItem],
+  },
+  {
     id: "menu",
     label: "",
-    items: [navItem("review-hub"), navItem("learn-hub"), settingsItem],
+    items: [navItem("growth-recovery"), historyItem, settingsItem],
   },
 ]
 

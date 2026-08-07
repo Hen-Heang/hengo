@@ -104,7 +104,7 @@ describe("MobileBottomNav", () => {
     setup("/home")
     const nav = screen.getByRole("navigation", { name: "Primary" })
     expect(within(nav).getAllByRole("listitem")).toHaveLength(5)
-    for (const label of ["Today", "Goals", "Growth", "Memory", "More"]) {
+    for (const label of ["Today", "Learn", "Goals", "Progress", "More"]) {
       expect(within(nav).getByText(label)).toBeTruthy()
     }
   })
@@ -137,32 +137,35 @@ describe("MobileBottomNav", () => {
     expect(first.getAttribute("aria-current")).toBe("page")
   })
 
-  it("points the Memory tab at /ask-hengo/memories and keeps it current for Inbox, Notes and the Ask Hengo action too", () => {
-    for (const [pathname, searchParams] of [
-      ["/ask-hengo/memories", undefined],
-      ["/chat", "mode=memory"],
-      ["/inbox", undefined],
-      ["/notes", undefined],
-      ["/notes/abc-123", undefined],
-    ] as const) {
-      setup(pathname, vi.fn(), searchParams)
-      const memoryLink = screen.getByRole("link", { name: "Memory" })
-      expect(memoryLink.getAttribute("href")).toBe("/ask-hengo/memories")
-      expect(memoryLink.getAttribute("aria-current")).toBe("page")
+  it("points the Learn tab at /learn and keeps it current for the hidden Korean routes too", () => {
+    for (const pathname of ["/learn", "/practice", "/korean-coach", "/phrasebook", "/interview"]) {
+      setup(pathname)
+      const learnLink = screen.getByRole("link", { name: "Learn" })
+      expect(learnLink.getAttribute("href")).toBe("/learn")
+      expect(learnLink.getAttribute("aria-current")).toBe("page")
       cleanup()
     }
   })
 
-  it("no longer has a Learn tab — Learn moved to the More sheet", () => {
-    setup("/learn")
-    expect(screen.queryByRole("link", { name: "Learn" })).toBeNull()
+  it("points the Progress tab at /progress only — Grow's other routes fall to More", () => {
+    setup("/progress")
+    expect(screen.getByRole("link", { name: "Progress" }).getAttribute("aria-current")).toBe("page")
+    cleanup()
+    setup("/growth/recovery")
+    expect(screen.queryByRole("link", { name: "Progress" })?.getAttribute("aria-current")).not.toBe("page")
+  })
+
+  it("no longer has a Growth or Memory tab — Grow and Memory moved to the More sheet", () => {
+    setup("/growth/recovery")
+    expect(screen.queryByRole("link", { name: "Growth" })).toBeNull()
+    expect(screen.queryByRole("link", { name: "Memory" })).toBeNull()
   })
 })
 
 // ─── More sheet ───────────────────────────────────────────────────────────────
 
 describe("MoreNavigationSheet", () => {
-  function setup(open: boolean, onOpenChange = vi.fn(), pathname = "/review/morning") {
+  function setup(open: boolean, onOpenChange = vi.fn(), pathname = "/growth/recovery") {
     render(
       <MoreNavigationSheet
         open={open}
@@ -188,19 +191,21 @@ describe("MoreNavigationSheet", () => {
     expect(aiLink.getAttribute("href")).toBe("/chat?mode=memory")
   })
 
-  it("lists exactly Review, Learn, Settings below the Ask Hengo card — no group headings, no separate Account row", () => {
+  it("lists a labelled Memory group (Notes, Memories) plus a flat menu (Recovery, History, Settings)", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
-    expect(within(dialog).queryAllByRole("heading", { level: 3 })).toHaveLength(0)
+    expect(within(dialog).getByRole("heading", { level: 3, name: "Memory" })).toBeTruthy()
+    const memoryGroup = within(dialog).getByRole("navigation", { name: "Memory" })
+    expect(within(memoryGroup).getAllByRole("link").map((el) => el.textContent)).toEqual(["Notes", "Memories"])
     const menu = within(dialog).getByRole("navigation", { name: "More" })
     expect(within(menu).getAllByRole("link").map((el) => el.textContent)).toEqual([
-      "Review",
-      "Learn",
+      "Recovery",
+      "History",
       "Settings",
     ])
   })
 
-  it("does not duplicate any Korean/Learn function, Goals/Growth/Memory sub-page, or Ask Hengo in the flat menu", () => {
+  it("does not duplicate any Korean/Learn function, Goals sub-page, Progress route, or Ask Hengo in the menus", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     for (const label of [
@@ -214,14 +219,16 @@ describe("MoreNavigationSheet", () => {
       "Scenarios",
       "Exam Prep",
       "Calendar",
-      "Notes",
       "Inbox",
-      "Recovery",
       "Journal",
+      "Reflections",
+      "Review",
       "Achievements",
       "Statistics",
-      "History",
       "Timeline",
+      "Progress",
+      "Goals",
+      "Learn",
     ]) {
       expect(within(dialog).queryByRole("link", { name: label })).toBeNull()
     }
@@ -230,10 +237,10 @@ describe("MoreNavigationSheet", () => {
   })
 
   it("marks the current route with aria-current and closes on navigation", () => {
-    const onOpenChange = setup(true)
-    const review = screen.getByRole("link", { name: "Review" })
-    expect(review.getAttribute("aria-current")).toBe("page")
-    fireEvent.click(review)
+    const onOpenChange = setup(true, vi.fn(), "/growth/recovery")
+    const recovery = screen.getByRole("link", { name: "Recovery" })
+    expect(recovery.getAttribute("aria-current")).toBe("page")
+    fireEvent.click(recovery)
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
@@ -343,72 +350,74 @@ describe("DesktopSidebar", () => {
     return onToggle
   }
 
-  it("shows a flat Learn link plus labelled groups for Goals/Growth/Memory/Review", () => {
+  it("shows Learn and History as flat links plus labelled groups for Plan/Grow", () => {
     setup("/practice", false)
     expect(screen.getByRole("link", { name: "Learn" })).toBeTruthy()
-    for (const label of ["Goals", "Growth", "Memory", "Review"]) {
+    expect(screen.getByRole("link", { name: "History" })).toBeTruthy()
+    for (const label of ["Plan", "Grow"]) {
       expect(screen.getByRole("button", { name: new RegExp(label, "i") })).toBeTruthy()
     }
   })
 
-  it("has no children to expand — Learn (secondary) is a flat link straight to /learn", () => {
+  it("has no children to expand — Learn and History are flat links to their hubs", () => {
     setup("/practice", false)
     const learnLink = screen.getByRole("link", { name: "Learn" })
     expect(learnLink.getAttribute("href")).toBe("/learn")
     expect(learnLink.getAttribute("aria-current")).toBe("page")
     expect(screen.queryByRole("link", { name: "Practice" })).toBeNull()
     expect(screen.queryByRole("link", { name: "Korean Coach" })).toBeNull()
-    expect(screen.queryByRole("button", { name: /learn navigation/i })).toBeNull()
+    expect(screen.getByRole("link", { name: "History" }).getAttribute("href")).toBe("/history")
   })
 
-  it("shows Memory's Inbox/Notes/Memories as real flyout children when active — no Ask Hengo row inside", () => {
-    setup("/notes", false)
-    for (const label of ["Inbox", "Notes", "Memories"]) {
+  it("shows Plan's Goals/Calendar/Inbox as real flyout children when active — no Notes row inside", () => {
+    setup("/inbox", false)
+    for (const label of ["Goals", "Calendar", "Inbox"]) {
       expect(screen.getByRole("link", { name: label })).toBeTruthy()
     }
-    expect(screen.getByRole("link", { name: "Notes" }).getAttribute("aria-current")).toBe("page")
+    expect(screen.getByRole("link", { name: "Inbox" }).getAttribute("aria-current")).toBe("page")
+    expect(screen.queryByRole("link", { name: "Notes" })).toBeNull()
+  })
+
+  it("never renders Notes, Memories or Ask Hengo — Memory has no sidebar presence", () => {
+    setup("/notes", false)
+    expect(screen.queryByRole("link", { name: "Notes" })).toBeNull()
+    expect(screen.queryByRole("link", { name: "Memories" })).toBeNull()
     expect(screen.queryByRole("link", { name: "Ask Hengo" })).toBeNull()
   })
 
-  it("no longer shows Notes or Inbox under the Goals group", () => {
-    setup("/goals", false)
-    expect(screen.queryByRole("link", { name: "Notes" })).toBeNull()
-    expect(screen.queryByRole("link", { name: "Inbox" })).toBeNull()
-  })
-
-  it("never renders AI Coach or any of its mode variants — Ask Hengo is the only AI entry point now", () => {
+  it("never renders Hengo Coach or any of its mode variants in the sidebar", () => {
     setup("/chat", false)
-    expect(screen.queryByRole("link", { name: /ai coach/i })).toBeNull()
+    expect(screen.queryByRole("link", { name: /hengo coach/i })).toBeNull()
     for (const label of ["Analyze", "Generate", "Corrections"]) {
       expect(screen.queryByRole("link", { name: label })).toBeNull()
     }
-    expect(screen.queryByRole("link", { name: "Ask Hengo" })).toBeNull()
   })
 
   it("collapses non-active groups by default so only one is open", () => {
     setup("/practice", false)
-    expect(screen.queryByRole("link", { name: "Statistics" })).toBeNull()
+    expect(screen.queryByRole("link", { name: "Reflections" })).toBeNull()
   })
 
-  it("shows Review's Achievements/Statistics/History/Timeline as real flyout children when active", () => {
+  it("shows Grow's Recovery/Reflections/Progress as real flyout children when active", () => {
     setup("/statistics", false)
-    for (const label of ["Review", "Achievements", "Statistics", "History", "Timeline"]) {
+    for (const label of ["Recovery", "Reflections", "Progress"]) {
       expect(screen.getByRole("link", { name: label })).toBeTruthy()
     }
-    expect(screen.getByRole("link", { name: "Statistics" }).getAttribute("aria-current")).toBe("page")
+    // Statistics itself is a hidden child, reached via the Progress hub —
+    // the sidebar row that lights up is the section, not a "Statistics" row.
+    expect(screen.queryByRole("link", { name: "Statistics" })).toBeNull()
   })
 
   it("gives every collapsed icon an accessible name", () => {
     setup("/practice", true)
-    // Today and Learn are direct links — neither has children left to hide
-    // behind a flyout. Goals/Growth/Memory/Review all have visible children
-    // now, so they collapse into flyout triggers instead (the children need
-    // the panel open to render, same as the tablet rail). Settings has no
-    // row of its own — it's the first item in the Account dropdown.
-    for (const name of ["Today", "Learn"]) {
+    // Today, Learn and History are direct links — none has children left to
+    // hide behind a flyout. Plan/Grow both have visible children, so they
+    // collapse into flyout triggers instead. Settings has no row of its own —
+    // it's the first item in the Account dropdown.
+    for (const name of ["Today", "Learn", "History"]) {
       expect(screen.getByRole("link", { name })).toBeTruthy()
     }
-    for (const name of ["Goals navigation", "Growth navigation", "Memory navigation", "Review navigation"]) {
+    for (const name of ["Plan navigation", "Grow navigation"]) {
       expect(screen.getByRole("button", { name })).toBeTruthy()
     }
   })
@@ -437,14 +446,14 @@ describe("DesktopSidebar", () => {
 describe("WorkspaceFlyout", () => {
   // Learn no longer reaches this component in production (DesktopSidebar /
   // TabletNavigationRail render it as a flat link instead — see below), so
-  // general flyout mechanics are covered here with Goals, which still has
+  // general flyout mechanics are covered here with Plan, which still has
   // visible children.
-  const goals = navSections.find((s) => s.id === "goals")!
+  const plan = navSections.find((s) => s.id === "plan")!
 
   function setup(open: boolean, onOpenChange = vi.fn()) {
     renderWithTooltips(
       <WorkspaceFlyout
-        section={goals}
+        section={plan}
         pathname="/goals/calendar"
         searchParams={undefined}
         open={open}
@@ -457,18 +466,18 @@ describe("WorkspaceFlyout", () => {
 
   it("labels the trigger and reports its expanded state", () => {
     setup(false)
-    const trigger = screen.getByRole("button", { name: "Goals navigation" })
+    const trigger = screen.getByRole("button", { name: "Plan navigation" })
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
   })
 
-  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead; Notes/Inbox moved to Memory", () => {
+  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead", () => {
     setup(true)
-    const panel = screen.getByRole("navigation", { name: "Goals" })
+    const panel = screen.getByRole("navigation", { name: "Plan" })
     expect(
       within(panel)
         .getAllByRole("link")
         .map((el) => el.textContent)
-    ).toEqual(["Goals", "Calendar"])
+    ).toEqual(["Goals", "Calendar", "Inbox"])
   })
 
   it("marks the current child route", () => {
@@ -488,10 +497,10 @@ describe("WorkspaceFlyout", () => {
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
-  it("does not render Coming Soon items as links, and no longer lists Habits — it's reachable from inside Recovery now", () => {
+  it("does not render Coming Soon items as links, and lists Recovery/Reflections/Progress for Grow", () => {
     renderWithTooltips(
       <WorkspaceFlyout
-        section={navSections.find((s) => s.id === "growth")!}
+        section={navSections.find((s) => s.id === "grow")!}
         pathname="/growth/recovery"
         searchParams={undefined}
         open
@@ -499,8 +508,12 @@ describe("WorkspaceFlyout", () => {
         active
       />
     )
-    const panel = screen.getByRole("navigation", { name: "Growth" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Recovery", "Journal"])
+    const panel = screen.getByRole("navigation", { name: "Grow" })
+    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual([
+      "Recovery",
+      "Reflections",
+      "Progress",
+    ])
     expect(screen.getByText(/Coming soon:/)).toBeTruthy()
   })
 
@@ -520,7 +533,7 @@ describe("WorkspaceFlyout", () => {
     expect(within(panel).queryAllByRole("link")).toHaveLength(0)
   })
 
-  it("lists Memory's Inbox, Notes and Memories — Ask Hengo stays a hidden global action, not a fourth row", () => {
+  it("renders nothing for Memory either — every item in that section is hidden now", () => {
     const memory = navSections.find((s) => s.id === "memory")!
     renderWithTooltips(
       <WorkspaceFlyout
@@ -533,30 +546,7 @@ describe("WorkspaceFlyout", () => {
       />
     )
     const panel = screen.getByRole("navigation", { name: "Memory" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Inbox", "Notes", "Memories"])
-    expect(screen.getByRole("link", { name: "Memories" }).getAttribute("aria-current")).toBe("page")
-  })
-
-  it("lists Review's five children — the old Progress workspace, absorbed and still fully visible", () => {
-    renderWithTooltips(
-      <WorkspaceFlyout
-        section={navSections.find((s) => s.id === "review")!}
-        pathname="/statistics"
-        searchParams={undefined}
-        open
-        onOpenChange={vi.fn()}
-        active
-      />
-    )
-    const panel = screen.getByRole("navigation", { name: "Review" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual([
-      "Review",
-      "Achievements",
-      "Statistics",
-      "History",
-      "Timeline",
-    ])
-    expect(screen.getByRole("link", { name: "Statistics" }).getAttribute("aria-current")).toBe("page")
+    expect(within(panel).queryAllByRole("link")).toHaveLength(0)
   })
 })
 
@@ -610,7 +600,7 @@ describe("QuickSwitcher", () => {
     expect(screen.getByRole("option", { name: /vocabulary/i })).toBeTruthy()
   })
 
-  it("finds Ask Hengo as a searchable page — the command-menu entry point for the global AI action", async () => {
+  it("finds Ask Hengo as a searchable page — the command-menu entry point for that action", async () => {
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
@@ -619,7 +609,7 @@ describe("QuickSwitcher", () => {
     expect(screen.getByRole("option", { name: /ask hengo/i })).toBeTruthy()
   })
 
-  it("still finds AI Coach and its mode variants by search, even though they're hidden from the sidebar", async () => {
+  it("still finds Hengo Coach and its mode variants by search, even though they're hidden from the sidebar", async () => {
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())

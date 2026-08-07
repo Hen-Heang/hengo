@@ -6,13 +6,15 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { isLinkActive, navSections, visibleSidebarItems } from "@/lib/navigation"
 
-const growthLinks = visibleSidebarItems(navSections.find((s) => s.id === "growth")!)
+const growthLinks = visibleSidebarItems(navSections.find((s) => s.id === "grow")!)
 
-// Segmented switcher between the Growth workspace's visible features
-// (Recovery / Journal — Habits is reachable from inside Recovery's dashboard
-// now, see the "growth" section note in lib/navigation.ts). Rendered at the
-// top of each feature's root page so the mobile "Growth" bottom tab reaches
-// all of Growth; desktop already has the sidebar, so it's hidden there.
+// Segmented switcher between the Grow workspace's visible features
+// (Recovery / Reflections / Progress — Habits is reachable from inside
+// Recovery's dashboard, see the "grow" section note in lib/navigation.ts).
+// Rendered at the top of each feature's root page. Grow has no bottom tab of
+// its own now (reached via the mobile More sheet instead), so this is the
+// only way to move between its features without going back through More;
+// desktop already has the sidebar, so it's hidden there.
 export function GrowthTabs() {
   const pathname = usePathname()
 
