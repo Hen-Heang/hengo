@@ -28,11 +28,19 @@ export interface McpAuthConfig {
    */
   expectedAudience: string
   /**
-   * The single OAuth client permitted to call this endpoint. Tokens carrying
-   * any other `client_id` are rejected — Supabase cannot express custom
-   * scopes, so client identity is the authorization granularity (docs §4.2).
+   * The OAuth clients permitted to call this endpoint (e.g. one id for
+   * Claude, one for ChatGPT). Tokens carrying any other `client_id` are
+   * rejected — Supabase cannot express custom scopes, so client identity is
+   * the authorization granularity (docs §4.2). Always non-empty: an empty
+   * allowlist is a configuration error, not "allow everyone".
    */
-  allowedClientId: string
+  allowedClientIds: Set<string>
+  /**
+   * Whether the write tools (§8) register at all. Defaults to `false` — an
+   * unset or unparseable value never falls open. Flip explicitly per
+   * deployment once the read tools have been verified end to end.
+   */
+  writeEnabled: boolean
 }
 
 export class McpConfigError extends Error {}
@@ -45,6 +53,30 @@ function required(name: string): string {
     )
   }
   return value
+}
+
+/**
+ * Parses a comma-separated client allowlist. Fails closed: an empty result
+ * (unset, blank, or only commas/whitespace) is a configuration error — it
+ * must never be read as "no restriction".
+ */
+function parseAllowedClientIds(name: string): Set<string> {
+  const raw = required(name)
+  const ids = new Set(
+    raw
+      .split(",")
+      .map((id) => id.trim())
+      .filter(Boolean),
+  )
+  if (ids.size === 0) {
+    throw new McpConfigError(`${name} must contain at least one non-empty client id.`)
+  }
+  return ids
+}
+
+/** `MCP_WRITE_ENABLED` defaults to `false` on missing or unparseable input — never to `true`. */
+function parseWriteEnabled(value: string | undefined): boolean {
+  return (value?.trim().toLowerCase() ?? "") === "true"
 }
 
 function parseUrl(name: string, value: string): URL {
@@ -86,7 +118,8 @@ export function loadMcpAuthConfig(): McpAuthConfig {
     // mint this value via a Custom Access Token Hook; until it is, no token
     // validates — which is the intended fail-closed behaviour.
     expectedAudience: resourceUrl.toString(),
-    allowedClientId: required("MCP_ALLOWED_CLIENT_ID"),
+    allowedClientIds: parseAllowedClientIds("MCP_ALLOWED_CLIENT_IDS"),
+    writeEnabled: parseWriteEnabled(process.env.MCP_WRITE_ENABLED),
   }
 }
 

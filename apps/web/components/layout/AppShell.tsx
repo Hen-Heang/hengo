@@ -141,16 +141,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // full-screen overlay. Both are listed so no navigation is ever drawn over
   // the pause timer, whichever URL the user arrives on.
   const isPauseRoute = pathname === "/growth/recovery/pause" || pathname === "/growth/recovery/urge"
-  const fullBleed = isChatRoute || isPauseRoute
+  // The OAuth consent screen (app/(main)/oauth/consent) is a standalone
+  // decision page, not a Hengo feature — it must never show the app's own
+  // nav chrome, same treatment as the pause timer.
+  const isConsentRoute = pathname === "/oauth/consent"
+  const isChromeless = isPauseRoute || isConsentRoute
+  const fullBleed = isChatRoute || isChromeless
 
   // Chat renders its own compact top bar (mode switcher + a "Back to home"
   // button), so the shell header would be a second one — but the escape route
   // is still always visible, which is what matters.
-  const showMobileHeader = isMobile && !isPauseRoute && !isChatRoute
+  const showMobileHeader = isMobile && !isChromeless && !isChatRoute
   // Unmounted (not just hidden) when the keyboard is up, so nothing inside
   // stays focusable behind the keyboard.
-  const showBottomNav = isMobile && !isPauseRoute && !isChatRoute && !isKeyboardOpen
-  const showFloatingCoach = !isPauseRoute && !isChatRoute
+  const showBottomNav = isMobile && !isChromeless && !isChatRoute && !isKeyboardOpen
+  const showFloatingCoach = !isChromeless && !isChatRoute
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -167,7 +172,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </NavSuspense>
 
         <div className="flex min-h-[100dvh] bg-background">
-          {mode === "desktop" && !isPauseRoute && (
+          {mode === "desktop" && !isChromeless && (
             <NavSuspense
               fallback={
                 <div
@@ -181,7 +186,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavSuspense>
           )}
 
-          {mode === "tablet" && !isPauseRoute && (
+          {mode === "tablet" && !isChromeless && (
             <NavSuspense
               fallback={
                 <div
@@ -196,7 +201,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           )}
 
           <div className="flex min-w-0 flex-1 flex-col">
-            {!isMobile && !isPauseRoute && (
+            {!isMobile && !isChromeless && (
               <NavSuspense fallback={<div aria-hidden className="h-[57px] border-b border-border" />}>
                 <DesktopHeaderChrome />
               </NavSuspense>

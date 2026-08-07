@@ -10,6 +10,7 @@ import {
   type OAuthTokenVerifier,
 } from "@modelcontextprotocol/server"
 import { createHengoMcpServer } from "./server"
+import { buildMcpContext } from "./context"
 import { protectedResourceMetadataUrl } from "./metadata"
 import type { McpAuthConfig } from "./config"
 
@@ -31,7 +32,11 @@ export function createAuthenticatedMcpHandler(
   config: McpAuthConfig,
   verifier: OAuthTokenVerifier,
 ): AuthenticatedMcpHandler {
-  const handler = createMcpHandler(() => createHengoMcpServer())
+  // The factory runs once per request (route.ts's docblock), so building the
+  // per-request McpContext here — rather than inside a tool callback — is
+  // still exactly one Supabase client per request, just built one layer
+  // earlier so every tool registered below can close over the same one.
+  const handler = createMcpHandler((ctx) => createHengoMcpServer(buildMcpContext(ctx, config.writeEnabled) ?? undefined))
 
   // On failure this produces the RFC 9728 challenge:
   //   401 + WWW-Authenticate: Bearer ..., resource_metadata="<url>"

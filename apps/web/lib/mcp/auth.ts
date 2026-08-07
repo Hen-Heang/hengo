@@ -91,7 +91,7 @@ export class SupabaseMcpTokenVerifier implements OAuthTokenVerifier {
     // Supabase cannot express custom scopes, so the client_id claim is the
     // only authorization granularity available (docs §4.2).
     const clientId = typeof payload.client_id === "string" ? payload.client_id : ""
-    if (!clientId || clientId !== this.config.allowedClientId) {
+    if (!clientId || !this.config.allowedClientIds.has(clientId)) {
       throw invalidToken("The access token was not issued to a permitted client.")
     }
 

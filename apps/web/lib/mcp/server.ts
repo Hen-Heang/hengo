@@ -1,22 +1,17 @@
-// Hengo MCP server — foundation only.
+// Hengo MCP server.
 //
-// This is step 1 of the plan in docs/chatgpt-mcp-integration.md: a reachable,
-// well-formed MCP server with a single harmless read-only tool, so the
-// transport, the handshake and the deployment target can all be verified
-// before any authentication or Supabase access exists.
+// Authentication (handler.ts) and the per-request context (context.ts) are
+// both in place; this file still holds only the one foundation tool
+// (`get_hengo_server_info`) plus the wiring domain tools register into.
 //
-// Deliberately absent for now (each has its own step in the doc):
-//   - authentication (§3) — every request is currently unauthenticated
-//   - Supabase access of any kind (§4) — this file imports no Supabase client
-//   - personal data — the only tool returns static server metadata and a clock
-//   - write tools (§8)
-//
-// Server-only. Nothing here may import @/lib/api/* or @/lib/auth-store: those
-// modules are browser-bound (they read the Supabase singleton's localStorage
-// session) and fail *silently* on the server rather than throwing. See
-// docs/chatgpt-mcp-integration.md §5.
+// Server-only. Nothing here — nor anything under lib/mcp/tools/ — may import
+// @/lib/api/* or @/lib/auth-store: those modules are browser-bound (they read
+// the Supabase singleton's localStorage session) and fail *silently* on the
+// server rather than throwing. See docs/chatgpt-mcp-integration.md §5.
 import { McpServer } from "@modelcontextprotocol/server"
 import { z } from "zod"
+import type { McpContext } from "./context"
+import { registerReadTools, registerWriteTools } from "./tools"
 
 /**
  * Stable identity of the MCP server. Clients key stored connections and
@@ -91,8 +86,15 @@ export function formatServerInfo(info: ServerInfo): string {
  * request, so the instance must stay cheap and must never be hoisted into
  * module scope — a shared instance would become a cross-request seam the
  * moment per-user state (an authenticated Supabase client) is added.
+ *
+ * `mcpContext` is the verified per-request context from context.ts (`db`,
+ * `userId`, `writeEnabled`, ...) — absent only for `initialize`/probe calls
+ * the SDK may make without auth (see buildMcpContext's doc comment).
+ * `get_hengo_server_info` needs none of it and stays registered either way;
+ * domain read/write tools (added in later steps) require it and are skipped
+ * entirely when it's missing, same as they're skipped when writes are off.
  */
-export function createHengoMcpServer(): McpServer {
+export function createHengoMcpServer(mcpContext?: McpContext): McpServer {
   const server = new McpServer(
     {
       name: MCP_SERVER_NAME,
@@ -126,6 +128,16 @@ export function createHengoMcpServer(): McpServer {
       }
     },
   )
+
+  // Absent only for auth-less probe calls (see buildMcpContext's doc
+  // comment) — no domain tool needs a Supabase client badly enough to be
+  // worth a public no-context path.
+  if (mcpContext) {
+    registerReadTools(server, mcpContext)
+    // Absent entirely from tools/list when writes are off — not present and
+    // erroring. A client that never sees create_task never plans around it.
+    if (mcpContext.writeEnabled) registerWriteTools(server, mcpContext)
+  }
 
   return server
 }

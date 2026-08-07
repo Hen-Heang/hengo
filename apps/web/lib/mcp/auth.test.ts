@@ -1,5 +1,19 @@
-import { beforeAll, describe, expect, it } from "vitest"
+import { beforeAll, describe, expect, it, vi } from "vitest"
 import { SignJWT, createLocalJWKSet, exportJWK, generateKeyPair, type CryptoKey, type JWK } from "jose"
+
+// The end-to-end tests below drive the real pipeline through buildMcpContext,
+// which builds a genuine SupabaseClient (auth.ts's createUserSupabaseClient)
+// from these env vars at module-evaluation time — unlike Next's dev/build,
+// Vitest does not load .env.local. `vi.hoisted` runs this before "./auth" and
+// "./handler" (and, transitively, @/lib/supabase) are imported below; setting
+// it any later would be too late, since those modules read process.env once
+// at import time. No test here issues a query, so a syntactically valid but
+// inert pair is enough.
+vi.hoisted(() => {
+  process.env.NEXT_PUBLIC_SUPABASE_URL ??= "https://test-project.supabase.co"
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ??= "test-publishable-key"
+})
+
 import { SupabaseMcpTokenVerifier, principalFromAuthInfo } from "./auth"
 import { createAuthenticatedMcpHandler } from "./handler"
 import type { McpAuthConfig } from "./config"
@@ -21,7 +35,8 @@ const config: McpAuthConfig = {
   authorizationEndpoint: `${ISSUER}/oauth/authorize`,
   tokenEndpoint: `${ISSUER}/oauth/token`,
   expectedAudience: RESOURCE,
-  allowedClientId: CLIENT_ID,
+  allowedClientIds: new Set([CLIENT_ID, "another-allowed-client-id"]),
+  writeEnabled: false,
 }
 
 let privateKey: CryptoKey
@@ -121,6 +136,13 @@ describe("SupabaseMcpTokenVerifier", () => {
     await expect(
       verifier().verifyAccessToken(await mintToken({ clientId: "some-other-client" })),
     ).rejects.toThrow()
+  })
+
+  it("accepts a token issued to any client on the allowlist, not just the first", async () => {
+    // Simulates two registered connectors (e.g. Claude and ChatGPT) sharing
+    // one endpoint — both ids in config.allowedClientIds must work.
+    const authInfo = await verifier().verifyAccessToken(await mintToken({ clientId: "another-allowed-client-id" }))
+    expect(authInfo.clientId).toBe("another-allowed-client-id")
   })
 
   it("rejects a token with no client_id claim", async () => {

@@ -9,14 +9,16 @@ import {
   formatServerInfo,
   serverInfoSchema,
 } from "./server"
+import { fakeContext, fakeDb } from "./tools/test-support"
+import type { McpContext } from "./context"
 
 // ── JSON-RPC helper ──────────────────────────────────────────────────────────
 // Drives the real Streamable HTTP handler the /mcp route uses, so these tests
 // cover the transport wiring and not just the server object. Responses may come
 // back as a single JSON body or as an SSE stream depending on the exchange.
 
-function makeHandler() {
-  return createMcpHandler(() => createHengoMcpServer())
+function makeHandler(mcpContext?: McpContext) {
+  return createMcpHandler(() => createHengoMcpServer(mcpContext))
 }
 
 async function readBody(res: Response): Promise<Record<string, unknown>> {
@@ -166,26 +168,73 @@ describe("initialize handshake", () => {
 
 // ── Tool surface ─────────────────────────────────────────────────────────────
 
+async function listToolNames(handler: ReturnType<typeof makeHandler>): Promise<string[]> {
+  await rpc(handler, INIT)
+  const body = await rpc(handler, { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, PROTOCOL_HEADER)
+  return (body.result as { tools: { name: string }[] }).tools.map((t) => t.name)
+}
+
 describe("tools/list", () => {
-  it("exposes exactly one read-only tool at this stage", async () => {
+  it("exposes only the foundation tool when built without a verified McpContext", async () => {
+    // Unreachable in production (requireBearerAuth gates first — see
+    // handler.ts), but the factory must degrade to no domain tools rather
+    // than throw if it is ever called without one.
     const handler = makeHandler()
+    try {
+      const names = await listToolNames(handler)
+      expect(names).toEqual(["get_hengo_server_info"])
+    } finally {
+      await handler.close()
+    }
+  })
+
+  it("exposes the foundation tool plus all read tools, and no write tools, when writes are disabled", async () => {
+    const handler = makeHandler(fakeContext(fakeDb({}), { writeEnabled: false }))
+    try {
+      const names = await listToolNames(handler)
+      expect(names).toContain("get_hengo_server_info")
+      expect(names).toContain("list_goals")
+      expect(names).not.toContain("create_task")
+      expect(names).toHaveLength(8) // 1 foundation + 7 read tools
+    } finally {
+      await handler.close()
+    }
+  })
+
+  it("also exposes every write tool when MCP_WRITE_ENABLED is true — absent, not erroring, otherwise", async () => {
+    const handler = makeHandler(fakeContext(fakeDb({}), { writeEnabled: true }))
+    try {
+      const names = await listToolNames(handler)
+      expect(names).toContain("create_task")
+      expect(names).toContain("capture_reflection")
+      expect(names).toHaveLength(15) // 1 foundation + 7 read + 7 write
+    } finally {
+      await handler.close()
+    }
+  })
+})
+
+describe("tools/call input validation", () => {
+  it("rejects a malformed goalId before the handler ever runs, through the real transport", async () => {
+    const handler = makeHandler(fakeContext(fakeDb({}), { writeEnabled: false }))
     try {
       await rpc(handler, INIT)
       const body = await rpc(
         handler,
-        { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
+        {
+          jsonrpc: "2.0",
+          id: 2,
+          method: "tools/call",
+          params: { name: "get_goal", arguments: { goalId: "not-a-uuid" } },
+        },
         PROTOCOL_HEADER,
       )
-      const tools = (body.result as { tools: { name: string; annotations?: Record<string, unknown> }[] }).tools
-
-      // The foundation build must not grow tools by accident: no write tools,
-      // no Supabase-backed reads until their own step lands.
-      expect(tools.map((t) => t.name)).toEqual(["get_hengo_server_info"])
-      expect(tools[0].annotations).toMatchObject({
-        readOnlyHint: true,
-        destructiveHint: false,
-        openWorldHint: false,
-      })
+      // Zod's inputSchema validation happens at the protocol layer, ahead of
+      // the tool's own logic — either a JSON-RPC error or an isError result
+      // is an acceptable shape for that, but a normal success is not.
+      const result = body.result as { isError?: boolean } | undefined
+      const failed = Boolean(body.error) || result?.isError === true
+      expect(failed).toBe(true)
     } finally {
       await handler.close()
     }

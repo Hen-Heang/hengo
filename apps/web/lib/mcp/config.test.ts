@@ -4,12 +4,17 @@ import { McpConfigError, loadMcpAuthConfig, tryLoadMcpAuthConfig } from "./confi
 // The endpoint must fail closed: any missing or malformed setting makes it
 // refuse traffic rather than serve it unverified.
 
-const KEYS = ["MCP_RESOURCE_URL", "SUPABASE_OAUTH_ISSUER", "MCP_ALLOWED_CLIENT_ID"] as const
+const KEYS = [
+  "MCP_RESOURCE_URL",
+  "SUPABASE_OAUTH_ISSUER",
+  "MCP_ALLOWED_CLIENT_IDS",
+  "MCP_WRITE_ENABLED",
+] as const
 
 const VALID = {
   MCP_RESOURCE_URL: "https://hengo.example.com/mcp",
   SUPABASE_OAUTH_ISSUER: "https://project.supabase.co/auth/v1",
-  MCP_ALLOWED_CLIENT_ID: "client-abc",
+  MCP_ALLOWED_CLIENT_IDS: "client-abc",
 }
 
 function setEnv(values: Partial<Record<(typeof KEYS)[number], string>>) {
@@ -41,11 +46,39 @@ describe("loadMcpAuthConfig", () => {
     expect(loadMcpAuthConfig().expectedAudience).toBe("https://hengo.example.com/mcp")
   })
 
-  it.each(KEYS)("throws when %s is missing", (missing) => {
+  it.each(Object.keys(VALID) as (keyof typeof VALID)[])("throws when %s is missing", (missing) => {
     const env = { ...VALID }
     delete (env as Record<string, string>)[missing]
     setEnv(env)
     expect(() => loadMcpAuthConfig()).toThrow(McpConfigError)
+  })
+
+  it("parses a comma-separated client allowlist, trimming whitespace", () => {
+    setEnv({ ...VALID, MCP_ALLOWED_CLIENT_IDS: " claude-id , chatgpt-id ,,  " })
+    expect(loadMcpAuthConfig().allowedClientIds).toEqual(new Set(["claude-id", "chatgpt-id"]))
+  })
+
+  it("rejects an allowlist that is present but empty after trimming", () => {
+    setEnv({ ...VALID, MCP_ALLOWED_CLIENT_IDS: " , , " })
+    expect(() => loadMcpAuthConfig()).toThrow(McpConfigError)
+  })
+
+  it("defaults MCP_WRITE_ENABLED to false when unset", () => {
+    setEnv(VALID)
+    expect(loadMcpAuthConfig().writeEnabled).toBe(false)
+  })
+
+  it.each(["", "false", "1", "yes", "nonsense"])(
+    'treats MCP_WRITE_ENABLED=%j as false — it never falls open on an unrecognised value',
+    (value) => {
+      setEnv({ ...VALID, MCP_WRITE_ENABLED: value })
+      expect(loadMcpAuthConfig().writeEnabled).toBe(false)
+    },
+  )
+
+  it.each(["true", "TRUE", " True "])('enables writes for %j (case/whitespace-insensitive "true")', (value) => {
+    setEnv({ ...VALID, MCP_WRITE_ENABLED: value })
+    expect(loadMcpAuthConfig().writeEnabled).toBe(true)
   })
 
   it("rejects a non-https resource URL outside localhost", () => {
