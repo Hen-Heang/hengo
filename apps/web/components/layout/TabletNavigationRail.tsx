@@ -50,7 +50,7 @@ export function TabletNavigationRail({
           aria-label="Hengo home"
           className="flex size-11 items-center justify-center overflow-hidden rounded-lg outline-none ring-1 ring-border focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <Image src="/hengo-icon.svg" alt="" width={44} height={44} className="size-full" />
+          <Image src="/hengo-icon.png" alt="" width={44} height={44} className="size-full" />
         </Link>
       </div>
 

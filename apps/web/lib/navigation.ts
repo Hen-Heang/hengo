@@ -493,16 +493,16 @@ export const navSections: NavSection[] = [
   {
     // "Grow" absorbs the old "Progress" workspace (Review/Achievements/
     // Statistics, merged into one `progressHubItem` row — see the comment on
-    // that item) alongside Recovery/Habits/Journal. Recovery's dashboard
-    // already embeds a "Today's habits" card (components/home/
-    // TodayHabitCheckins, reused as-is), so simple check-off habits stay
-    // visible and actionable without a second sidebar row. Habits and the
-    // three merged Progress routes stay real, hidden (`showInSidebar: false`)
-    // routes at their original URLs with their own data untouched — same
-    // pattern as Plan's Overview/Tasks.
+    // that item) alongside Recovery/Habits/Journal. Progress is the only one
+    // of these that keeps its own sidebar/rail row; Recovery and Journal are
+    // unused day-to-day and stay hidden (`showInSidebar: false`) like Habits
+    // and the three merged Progress routes — all real routes at their
+    // original URLs with their own data untouched, same pattern as Plan's
+    // Overview/Tasks.
     id: "grow",
     label: "Grow",
     icon: TreeDeciduous,
+    color: "text-emerald-500",
     href: "/growth/recovery",
     items: [
       {
@@ -521,6 +521,7 @@ export const navSections: NavSection[] = [
         icon: Compass,
         color: "text-cyan-600",
         keywords: ["recovery", "urge", "trigger", "pause", "plan", "habit", "streak", "check-in"],
+        showInSidebar: false,
       },
       {
         id: "growth-journal",
@@ -530,6 +531,7 @@ export const navSections: NavSection[] = [
         color: "text-amber-500",
         description: "Daily reflection — mood, wins, lessons",
         keywords: ["journal", "reflection", "mood", "energy", "gratitude", "diary"],
+        showInSidebar: false,
       },
       progressHubItem,
       {
@@ -832,9 +834,10 @@ export const bottomTabs: NavItem[] = [
   todayItem,
   { ...navItem("learn-hub"), id: "tab-learn", label: "Learn", match: { pathname: "/learn", sectionId: "learn" } },
   { ...navItem("goals-goals"), id: "tab-goals", label: "Goals" },
-  // No sectionId match: "grow" also holds Recovery/Journal, which stay
-  // reachable through More rather than lighting up this tab. Only /progress
-  // itself (and its children, via the default pathname match) does.
+  // No sectionId match: "grow" also holds Recovery/Journal, which have no
+  // chrome row at all now (reachable via Quick Switcher / deep link) and
+  // shouldn't light up this tab. Only /progress itself (and its children,
+  // via the default pathname match) does.
   { ...navItem("grow-progress"), id: "tab-progress", label: "Progress" },
 ]
 
@@ -887,15 +890,17 @@ export function visibleSidebarItems(section: NavSection): NavItem[] {
 }
 
 /**
- * The More sheet's menu, grouped: Calendar/Recovery/History/Settings as a
- * flat menu, plus a labelled "Memory" group for Notes and Memories (Inbox is
- * a Plan item now, reachable from the Goals tab). Calendar leads the flat
- * menu — mobile's mirror of the desktop promotion into `secondaryNavItems` —
- * so it's one tap from "More" instead of two taps via the Goals hub's local
- * tab nav. "Ask Hengo" is rendered separately as a pinned card at the top of
- * the sheet (the mobile home for that action), so it's excluded here to
- * avoid listing it twice. Today, Learn, Goals and Progress aren't repeated
- * here either — they're already bottom tabs.
+ * The More sheet's menu, grouped: Calendar/History/Settings as a flat menu,
+ * plus a labelled "Memory" group for Notes and Memories (Inbox is a Plan
+ * item now, reachable from the Goals tab). Calendar leads the flat menu —
+ * mobile's mirror of the desktop promotion into `secondaryNavItems` — so
+ * it's one tap from "More" instead of two taps via the Goals hub's local tab
+ * nav. Recovery and Journal are unused day-to-day (see the "grow" section
+ * comment above) and stay real, hidden routes reachable via Quick Switcher
+ * rather than a row here. "Ask Hengo" is rendered separately as a pinned
+ * card at the top of the sheet (the mobile home for that action), so it's
+ * excluded here to avoid listing it twice. Today, Learn, Goals and Progress
+ * aren't repeated here either — they're already bottom tabs.
  */
 export const moreGroups: MoreGroup[] = [
   {
@@ -906,7 +911,7 @@ export const moreGroups: MoreGroup[] = [
   {
     id: "menu",
     label: "",
-    items: [navItem("goals-calendar"), navItem("growth-recovery"), historyItem, settingsItem],
+    items: [navItem("goals-calendar"), historyItem, settingsItem],
   },
 ]
 

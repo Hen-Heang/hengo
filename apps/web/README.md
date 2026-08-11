@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/hengo-icon.svg" alt="Hengo logo" width="88" height="88" />
+<img src="public/hengo-icon.png" alt="Hengo logo" width="88" height="88" />
 
 # Hengo
 
@@ -408,8 +408,8 @@ lib/
   recovery.ts  habits.ts   pure logic for the Growth workspace (framework-free, tested)
   interview.ts  interview-modes.ts  interview-unexpected.ts
   interview-history.ts  exam-strategy.ts  ...
-public/            hengo-icon.svg (mark), new-app-logo.png (full lockup — source of
-                   the app icons), sw.js (web push service worker), static assets
+public/            hengo-icon.png (mark + full lockup, source of the app icons),
+                   sw.js (web push service worker), static assets
 ```
 
 ### Responsibilities and design principles
@@ -618,7 +618,7 @@ The UI follows one calm, consistent visual language — keep new screens on the 
 
 - `components/ui/*` are generic, owned primitives (shadcn model: copy in, then own).
 - Feature components live in `components/<feature>/` and may compose primitives but stay out of other features' folders.
-- Brand: product name **Hengo**; logo at `public/hengo-icon.svg` (used for the AI Coach avatar and auth/landing marks).
+- Brand: product name **Hengo**; logo at `public/hengo-icon.png` (used for the AI Coach avatar and auth/landing marks).
 
 ---
 

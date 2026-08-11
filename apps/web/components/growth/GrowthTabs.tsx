@@ -8,15 +8,18 @@ import { isLinkActive, navSections, visibleSidebarItems } from "@/lib/navigation
 
 const growthLinks = visibleSidebarItems(navSections.find((s) => s.id === "grow")!)
 
-// Segmented switcher between the Grow workspace's visible features
-// (Recovery / Reflections / Progress — Habits is reachable from inside
-// Recovery's dashboard, see the "grow" section note in lib/navigation.ts).
-// Rendered at the top of each feature's root page. Grow has no bottom tab of
-// its own now (reached via the mobile More sheet instead), so this is the
-// only way to move between its features without going back through More;
-// desktop already has the sidebar, so it's hidden there.
+// Segmented switcher between the Grow workspace's visible features. Recovery
+// and Journal are hidden from nav now (see the "grow" section note in
+// lib/navigation.ts), same as Habits, so this only has something to switch
+// between once more than one Grow route is visible. Rendered at the top of
+// each feature's root page. Grow has no bottom tab of its own now (reached
+// via the mobile More sheet instead), so this is the only way to move
+// between its features without going back through More; desktop already has
+// the sidebar, so it's hidden there.
 export function GrowthTabs() {
   const pathname = usePathname()
+
+  if (growthLinks.length < 2) return null
 
   return (
     <div className="mb-4 flex gap-1 rounded-lg border border-border bg-card p-1 lg:hidden">

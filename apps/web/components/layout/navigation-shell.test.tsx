@@ -191,7 +191,7 @@ describe("MoreNavigationSheet", () => {
     expect(aiLink.getAttribute("href")).toBe("/chat?mode=memory")
   })
 
-  it("lists a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, Recovery, History, Settings)", () => {
+  it("lists a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, History, Settings)", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     expect(within(dialog).getByRole("heading", { level: 3, name: "Memory" })).toBeTruthy()
@@ -200,7 +200,6 @@ describe("MoreNavigationSheet", () => {
     const menu = within(dialog).getByRole("navigation", { name: "More" })
     expect(within(menu).getAllByRole("link").map((el) => el.textContent)).toEqual([
       "Calendar",
-      "Recovery",
       "History",
       "Settings",
     ])
@@ -237,10 +236,10 @@ describe("MoreNavigationSheet", () => {
   })
 
   it("marks the current route with aria-current and closes on navigation", () => {
-    const onOpenChange = setup(true, vi.fn(), "/growth/recovery")
-    const recovery = screen.getByRole("link", { name: "Recovery" })
-    expect(recovery.getAttribute("aria-current")).toBe("page")
-    fireEvent.click(recovery)
+    const onOpenChange = setup(true, vi.fn(), "/history")
+    const history = screen.getByRole("link", { name: "History" })
+    expect(history.getAttribute("aria-current")).toBe("page")
+    fireEvent.click(history)
     expect(onOpenChange).toHaveBeenCalledWith(false)
   })
 
@@ -402,10 +401,11 @@ describe("DesktopSidebar", () => {
     expect(screen.queryByRole("link", { name: "Reflections" })).toBeNull()
   })
 
-  it("shows Grow's Recovery/Reflections/Progress as real flyout children when active", () => {
+  it("shows Grow's Progress as the only real flyout child when active — Recovery/Reflections are hidden, unused routes", () => {
     setup("/statistics", false)
-    for (const label of ["Recovery", "Reflections", "Progress"]) {
-      expect(screen.getByRole("link", { name: label })).toBeTruthy()
+    expect(screen.getByRole("link", { name: "Progress" })).toBeTruthy()
+    for (const label of ["Recovery", "Reflections"]) {
+      expect(screen.queryByRole("link", { name: label })).toBeNull()
     }
     // Statistics itself is a hidden child, reached via the Progress hub —
     // the sidebar row that lights up is the section, not a "Statistics" row.
@@ -501,7 +501,7 @@ describe("WorkspaceFlyout", () => {
     await waitFor(() => expect(onOpenChange).toHaveBeenCalledWith(false))
   })
 
-  it("does not render Coming Soon items as links, and lists Recovery/Reflections/Progress for Grow", () => {
+  it("does not render Coming Soon items as links, and lists only Progress for Grow (Recovery/Reflections are hidden)", () => {
     renderWithTooltips(
       <WorkspaceFlyout
         section={navSections.find((s) => s.id === "grow")!}
@@ -513,11 +513,7 @@ describe("WorkspaceFlyout", () => {
       />
     )
     const panel = screen.getByRole("navigation", { name: "Grow" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual([
-      "Recovery",
-      "Reflections",
-      "Progress",
-    ])
+    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Progress"])
     expect(screen.getByText(/Coming soon:/)).toBeTruthy()
   })
 

@@ -283,7 +283,14 @@ describe("Simplified AI + Memory/Progress navigation", () => {
     const grow = navSections.find((s) => s.id === "grow")!
     const hidden = grow.items.filter((i) => i.showInSidebar === false && !i.soon)
     expect(hidden.map((i) => i.id).sort()).toEqual(
-      ["growth-habits", "review-achievements", "review-hub", "review-statistics"].sort()
+      [
+        "growth-habits",
+        "growth-recovery",
+        "growth-journal",
+        "review-achievements",
+        "review-hub",
+        "review-statistics",
+      ].sort()
     )
     for (const route of ["/review/morning", "/achievements", "/statistics"]) {
       expect(getSectionForPath(route)?.id).toBe("grow")
@@ -472,16 +479,11 @@ describe("More-route detection", () => {
 })
 
 describe("More sheet grouping", () => {
-  it("has a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, Recovery, History, Settings)", () => {
+  it("has a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, History, Settings)", () => {
     expect(moreGroups).toHaveLength(2)
     expect(moreGroups[0]).toMatchObject({ label: "Memory" })
     expect(moreGroups[0].items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub"])
-    expect(moreGroups[1].items.map((i) => i.id)).toEqual([
-      "goals-calendar",
-      "growth-recovery",
-      "history-hub",
-      "settings",
-    ])
+    expect(moreGroups[1].items.map((i) => i.id)).toEqual(["goals-calendar", "history-hub", "settings"])
   })
 
   it("omits destinations already reachable from a bottom tab, and Ask Hengo (it's the pinned card instead)", () => {
@@ -498,6 +500,7 @@ describe("More sheet grouping", () => {
     for (const id of [
       "plan-inbox",
       "growth-journal",
+      "growth-recovery",
       "review-hub",
       "review-achievements",
       "review-statistics",
@@ -508,7 +511,14 @@ describe("More sheet grouping", () => {
   })
 
   it("keeps those routes real and searchable even though the More sheet no longer lists them", () => {
-    for (const route of ["/goals/calendar", "/inbox", "/growth/journal", "/achievements", "/statistics"]) {
+    for (const route of [
+      "/goals/calendar",
+      "/inbox",
+      "/growth/journal",
+      "/growth/recovery",
+      "/achievements",
+      "/statistics",
+    ]) {
       expect(getActiveNavItem(route)).toBeDefined()
     }
   })

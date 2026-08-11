@@ -111,7 +111,7 @@ export function FloatingAiCoach({
           <div className="flex min-w-0 flex-1 flex-col">
             <div className="flex h-14 shrink-0 items-center gap-3 border-b border-border/70 bg-card px-3.5">
               <div className="flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-background ring-1 ring-border/70">
-                <Image src="/hengo-icon.svg" alt="" width={32} height={32} />
+                <Image src="/hengo-icon.png" alt="" width={32} height={32} />
               </div>
               <div className="min-w-0 flex-1">
                 <h2

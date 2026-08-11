@@ -157,7 +157,7 @@ const HengoWelcome: FC = () => {
         <div className="relative mx-auto mb-5 w-fit">
           <span className="absolute inset-0 scale-150 rounded-full bg-blue-500/10 blur-xl" />
           <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-[1.35rem] bg-background shadow-xl shadow-blue-600/15 ring-1 ring-blue-500/20 sm:h-[4.5rem] sm:w-[4.5rem]">
-            <Image src="/hengo-icon.svg" alt="" width={72} height={72} className="h-full w-full" />
+            <Image src="/hengo-icon.png" alt="" width={72} height={72} className="h-full w-full" />
           </div>
           <span className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full border-[3px] border-background bg-emerald-500">
             <span className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -637,7 +637,7 @@ export function ChatWindow({
 
               <div className="relative shrink-0">
                 <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-blue-500/15">
-                  <Image src="/hengo-icon.svg" alt="" width={40} height={40} className="h-full w-full" />
+                  <Image src="/hengo-icon.png" alt="" width={40} height={40} className="h-full w-full" />
                 </div>
                 <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
               </div>

@@ -62,6 +62,15 @@ export default function GoalsPage() {
     [filteredGoals, currentPage, itemsPerPage]
   )
 
+  const emptyState =
+    allGoals.length === 0
+      ? { title: "No goals yet", description: "Create your first goal and turn it into a clear plan." }
+      : goalFilter === "active"
+        ? { title: "No active goals", description: "Completed goals can be found under Completed." }
+        : goalFilter === "completed"
+          ? { title: "Nothing completed yet.", description: "Finish a goal and it'll show up here." }
+          : undefined
+
   const handleEditGoal = useCallback((goal: Goal, event: React.MouseEvent) => {
     event.stopPropagation()
     setEditingGoal(goal)
@@ -126,6 +135,7 @@ export default function GoalsPage() {
           onEditGoal={handleEditGoal}
           onToggleStar={toggleStar}
           onToggleComplete={toggleComplete}
+          emptyState={emptyState}
         />
 
         {filteredTotalPages > 1 && (

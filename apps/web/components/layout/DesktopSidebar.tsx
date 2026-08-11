@@ -72,7 +72,7 @@ export function DesktopSidebar({
           className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <span className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-lg ring-1 ring-border">
-            <Image src="/hengo-icon.svg" alt="" width={36} height={36} className="size-full" />
+            <Image src="/hengo-icon.png" alt="" width={36} height={36} className="size-full" />
           </span>
           {!collapsed && (
             <span className="min-w-0">

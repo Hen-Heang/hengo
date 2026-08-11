@@ -329,7 +329,7 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
                 phase === "error" ? "border-red-400/40" : "border-blue-300/30",
               )}
             >
-              <Image src="/hengo-icon.svg" alt="" width={96} height={96} className="h-full w-full" priority />
+              <Image src="/hengo-icon.png" alt="" width={96} height={96} className="h-full w-full" priority />
             </div>
             <span
               className={cn(
