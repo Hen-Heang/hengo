@@ -46,3 +46,4 @@ Project-specific documentation remains with each application:
 - [Web README](apps/web/README.md)
 - [API README](apps/api/README.md)
 - [Migration notes](docs/MONOREPO_MIGRATION.md)
+- [Notion MCP workflow](docs/NOTION_MCP.md)

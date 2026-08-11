@@ -1,0 +1,8 @@
+# Project-scoped Notion MCP connection for Hengo.
+# OAuth credentials are stored by Codex outside this repository.
+[mcp_servers.notion]
+url = "https://mcp.notion.com/mcp"
+oauth_resource = "https://mcp.notion.com"
+enabled = true
+required = false
+default_tools_approval_mode = "writes"
