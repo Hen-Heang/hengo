@@ -54,6 +54,10 @@ export default function PrivacyPage() {
             <strong>Device information</strong> — a push-notification token if you opt in to
             notifications.
           </li>
+          <li>
+            <strong>Google Calendar events</strong> — if you connect Google Calendar from Settings,
+            we read your event titles and times (read-only) to display them in Hengo.
+          </li>
         </ul>
 
         <h2>How it&apos;s used</h2>
@@ -76,8 +80,19 @@ export default function PrivacyPage() {
             that request.
           </li>
           <li>
-            <strong>Google</strong> is used only if you choose &quot;Sign in with Google,&quot; to verify your
-            identity.
+            <strong>Google</strong> is used if you choose &quot;Sign in with Google,&quot; to verify your
+            identity. If you connect Google Calendar from Settings, we request read-only access
+            (<code>calendar.readonly</code>) to your calendar events so we can show them in Hengo; we
+            don&apos;t modify or delete your Google Calendar data. You can disconnect this access at
+            any time from Settings or from your{" "}
+            <a
+              href="https://myaccount.google.com/permissions"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Google Account permissions
+            </a>
+            .
           </li>
         </ul>
 
