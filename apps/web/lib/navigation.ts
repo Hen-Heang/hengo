@@ -423,11 +423,19 @@ export const navSections: NavSection[] = [
         match: { pathname: "/goals", includeChildren: true },
       },
       {
+        // Data-model home stays here (route registry, GoalsHubNav's local
+        // tab, last-visited tracking for Plan's shortcut tile), but it's
+        // promoted OUT of Plan's nested sidebar group and into a top-level
+        // row — see `secondaryNavItems` and `visibleSidebarItems` below —
+        // since Calendar is a primary daily surface, not a Goals sub-page.
+        // `showInSidebar` deliberately stays unset (true): flipping it would
+        // drop this href out of `navPathnames`, breaking the sibling-wins
+        // exclusion `goals-goals` relies on above.
         id: "goals-calendar",
         href: "/goals/calendar",
         label: "Calendar",
         icon: CalendarDays,
-        keywords: ["schedule", "week", "month", "task", "deadline"],
+        keywords: ["schedule", "week", "month", "task", "deadline", "project"],
       },
       inboxItem,
       {
@@ -636,13 +644,22 @@ export const workspaceNavSections: NavSection[] = ["plan", "grow"].map((id) => s
 
 /**
  * Secondary desktop/tablet destinations, rendered below the primary groups:
- * Learn's card hub and History. Neither "Account" nor "Settings" gets its own
- * row here — the existing `ProfileMenu` component already serves as the
- * sidebar's Account entry point (avatar + email, labelled "Account") and its
- * dropdown's first item is Settings, so a standalone Settings row would
- * duplicate that same destination right above it.
+ * Learn's card hub, Calendar, and History. Calendar's `NavItem` still lives
+ * inside the "plan" section's `items` (see the comment there) purely for
+ * route registry / GoalsHubNav / last-visited purposes — listing it here too
+ * is what actually promotes it to a top-level row; `visibleSidebarItems`
+ * below excludes it from Plan's nested group so it isn't rendered twice.
+ * Neither "Account" nor "Settings" gets its own row here — the existing
+ * `ProfileMenu` component already serves as the sidebar's Account entry
+ * point (avatar + email, labelled "Account") and its dropdown's first item
+ * is Settings, so a standalone Settings row would duplicate that same
+ * destination right above it.
  */
-export const secondaryNavItems: NavItem[] = [navItem("learn-hub"), navItem("history-hub")]
+export const secondaryNavItems: NavItem[] = [
+  navItem("learn-hub"),
+  navItem("goals-calendar"),
+  navItem("history-hub"),
+]
 
 // ─── Matching ─────────────────────────────────────────────────────────────────
 
@@ -808,20 +825,27 @@ export function comingSoonItems(items: NavItem[]): NavItem[] {
  * Shipped items that also get their own sidebar/rail/flyout row. A section
  * where every item opts out (like Learn — see `showInSidebar` on `NavItem`)
  * renders as a single flat link to `section.href` instead of an expandable
- * group; see `DesktopSidebar` / `TabletNavigationRail`.
+ * group; see `DesktopSidebar` / `TabletNavigationRail`. Items promoted into
+ * `secondaryNavItems` (currently just Calendar) are excluded here too, so a
+ * promoted item gets its one top-level row instead of also appearing nested
+ * in its data-model section's group.
  */
 export function visibleSidebarItems(section: NavSection): NavItem[] {
-  return shippedItems(section.items).filter((item) => item.showInSidebar !== false)
+  return shippedItems(section.items).filter(
+    (item) => item.showInSidebar !== false && !secondaryNavItems.includes(item)
+  )
 }
 
 /**
- * The More sheet's menu, grouped: Recovery/History/Settings as a flat menu,
- * plus a labelled "Memory" group for Notes and Memories (Inbox is a Plan
- * item now, reachable from the Goals tab). "Ask Hengo" is rendered
- * separately as a pinned card at the top of the sheet (the mobile home for
- * that action), so it's excluded here to avoid listing it twice. Today,
- * Learn, Goals and Progress aren't repeated here either — they're already
- * bottom tabs.
+ * The More sheet's menu, grouped: Calendar/Recovery/History/Settings as a
+ * flat menu, plus a labelled "Memory" group for Notes and Memories (Inbox is
+ * a Plan item now, reachable from the Goals tab). Calendar leads the flat
+ * menu — mobile's mirror of the desktop promotion into `secondaryNavItems` —
+ * so it's one tap from "More" instead of two taps via the Goals hub's local
+ * tab nav. "Ask Hengo" is rendered separately as a pinned card at the top of
+ * the sheet (the mobile home for that action), so it's excluded here to
+ * avoid listing it twice. Today, Learn, Goals and Progress aren't repeated
+ * here either — they're already bottom tabs.
  */
 export const moreGroups: MoreGroup[] = [
   {
@@ -832,7 +856,7 @@ export const moreGroups: MoreGroup[] = [
   {
     id: "menu",
     label: "",
-    items: [navItem("growth-recovery"), historyItem, settingsItem],
+    items: [navItem("goals-calendar"), navItem("growth-recovery"), historyItem, settingsItem],
   },
 ]
 

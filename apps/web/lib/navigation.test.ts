@@ -21,6 +21,7 @@ import {
   sectionRoutePrefixes,
   shippedItems,
   todayItem,
+  visibleSidebarItems,
   workspaceNavSections,
 } from "./navigation"
 
@@ -231,8 +232,13 @@ describe("Simplified AI + Memory/Progress navigation", () => {
     expect(workspaceNavSections.map((s) => s.id)).toEqual(["plan", "grow"])
   })
 
-  it("lists Learn and History as the secondary destinations — Settings lives in the account menu", () => {
-    expect(secondaryNavItems.map((i) => i.id)).toEqual(["learn-hub", "history-hub"])
+  it("lists Learn, Calendar, and History as the secondary destinations — Settings lives in the account menu", () => {
+    expect(secondaryNavItems.map((i) => i.id)).toEqual(["learn-hub", "goals-calendar", "history-hub"])
+  })
+
+  it("promotes Calendar out of Plan's nested sidebar group now that it's a secondary top-level item", () => {
+    const plan = navSections.find((s) => s.id === "plan")!
+    expect(visibleSidebarItems(plan).map((i) => i.id)).not.toContain("goals-calendar")
   })
 
   it("keeps Chat, Analyze, Generate and Corrections as real, hidden-from-chrome routes", () => {
@@ -466,11 +472,16 @@ describe("More-route detection", () => {
 })
 
 describe("More sheet grouping", () => {
-  it("has a labelled Memory group (Notes, Memories) plus a flat menu (Recovery, History, Settings)", () => {
+  it("has a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, Recovery, History, Settings)", () => {
     expect(moreGroups).toHaveLength(2)
     expect(moreGroups[0]).toMatchObject({ label: "Memory" })
     expect(moreGroups[0].items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub"])
-    expect(moreGroups[1].items.map((i) => i.id)).toEqual(["growth-recovery", "history-hub", "settings"])
+    expect(moreGroups[1].items.map((i) => i.id)).toEqual([
+      "goals-calendar",
+      "growth-recovery",
+      "history-hub",
+      "settings",
+    ])
   })
 
   it("omits destinations already reachable from a bottom tab, and Ask Hengo (it's the pinned card instead)", () => {
@@ -485,7 +496,6 @@ describe("More sheet grouping", () => {
   it("does not duplicate Goals/Grow sub-pages or the hidden Progress routes", () => {
     const ids = moreGroups.flatMap((g) => g.items.map((i) => i.id))
     for (const id of [
-      "goals-calendar",
       "plan-inbox",
       "growth-journal",
       "review-hub",

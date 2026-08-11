@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button"
 import { DEFAULT_TASK_COLOR } from "@/lib/tasks"
 import { bumpEndAfterStart } from "@/lib/calendar"
-import { TaskFormFields, calcDurationMinutes } from "./TaskFormFields"
+import { NO_GOAL, TaskFormFields, calcDurationMinutes, type TaskFormGoalOption } from "./TaskFormFields"
 
 export interface TaskRangePayload {
   title?: string
@@ -19,6 +19,7 @@ export interface TaskRangePayload {
   duration_minutes?: number | null
   completed?: boolean
   color?: string | null
+  goal_id?: string | null
 }
 
 interface AddTaskDialogProps {
@@ -34,6 +35,8 @@ interface AddTaskDialogProps {
   defaultTime?: string | null
   goalStartDate?: Date
   goalTargetDate?: Date
+  /** Goal options for the "Goal" field. Omit to hide it (embedded-in-goal calendars). */
+  goals?: TaskFormGoalOption[]
 }
 
 export function AddTaskDialog({
@@ -44,6 +47,7 @@ export function AddTaskDialog({
   defaultTime,
   goalStartDate,
   goalTargetDate,
+  goals,
 }: AddTaskDialogProps) {
   const defaultDate = useMemo(
     () => propDefaultDate ?? new Date(),
@@ -63,6 +67,7 @@ export function AddTaskDialog({
   const [isAnytime, setIsAnytime] = useState(false)
   const [completed, setCompleted] = useState(false)
   const [color, setColor] = useState<string>(DEFAULT_TASK_COLOR)
+  const [goalId, setGoalId] = useState<string>(NO_GOAL)
   const [timeError, setTimeError] = useState<string | null>(null)
 
   const clampToGoalRange = useCallback(
@@ -134,6 +139,7 @@ export function AddTaskDialog({
     setCompleted(false)
     setIsAnytime(false)
     setColor(DEFAULT_TASK_COLOR)
+    setGoalId(NO_GOAL)
     setTimeError(null)
     setSubmitAttempted(false)
     setStartDate(defaultDate)
@@ -204,6 +210,7 @@ export function AddTaskDialog({
           duration_minutes: durationMinutes,
           completed,
           color,
+          goal_id: goals ? (goalId === NO_GOAL ? null : goalId) : undefined,
         })
         resetForm()
         onClose()
@@ -226,6 +233,8 @@ export function AddTaskDialog({
       endDate,
       completed,
       color,
+      goalId,
+      goals,
       onAddTask,
       resetForm,
       onClose,
@@ -272,6 +281,9 @@ export function AddTaskDialog({
             showTitleRequired={submitAttempted}
             description={taskDescription}
             onDescriptionChange={setTaskDescription}
+            goals={goals}
+            goalId={goalId}
+            onGoalIdChange={setGoalId}
             startDate={startDate}
             endDate={endDate}
             onStartDateChange={handleStartDateChange}

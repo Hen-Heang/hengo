@@ -191,7 +191,7 @@ describe("MoreNavigationSheet", () => {
     expect(aiLink.getAttribute("href")).toBe("/chat?mode=memory")
   })
 
-  it("lists a labelled Memory group (Notes, Memories) plus a flat menu (Recovery, History, Settings)", () => {
+  it("lists a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, Recovery, History, Settings)", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     expect(within(dialog).getByRole("heading", { level: 3, name: "Memory" })).toBeTruthy()
@@ -199,6 +199,7 @@ describe("MoreNavigationSheet", () => {
     expect(within(memoryGroup).getAllByRole("link").map((el) => el.textContent)).toEqual(["Notes", "Memories"])
     const menu = within(dialog).getByRole("navigation", { name: "More" })
     expect(within(menu).getAllByRole("link").map((el) => el.textContent)).toEqual([
+      "Calendar",
       "Recovery",
       "History",
       "Settings",
@@ -218,7 +219,6 @@ describe("MoreNavigationSheet", () => {
       "Listening",
       "Scenarios",
       "Exam Prep",
-      "Calendar",
       "Inbox",
       "Journal",
       "Reflections",
@@ -350,32 +350,36 @@ describe("DesktopSidebar", () => {
     return onToggle
   }
 
-  it("shows Learn and History as flat links plus labelled groups for Plan/Grow", () => {
+  it("shows Learn, Calendar and History as flat links plus labelled groups for Plan/Grow", () => {
     setup("/practice", false)
     expect(screen.getByRole("link", { name: "Learn" })).toBeTruthy()
+    expect(screen.getByRole("link", { name: "Calendar" })).toBeTruthy()
     expect(screen.getByRole("link", { name: "History" })).toBeTruthy()
     for (const label of ["Plan", "Grow"]) {
       expect(screen.getByRole("button", { name: new RegExp(label, "i") })).toBeTruthy()
     }
   })
 
-  it("has no children to expand — Learn and History are flat links to their hubs", () => {
+  it("has no children to expand — Learn, Calendar and History are flat links to their destinations", () => {
     setup("/practice", false)
     const learnLink = screen.getByRole("link", { name: "Learn" })
     expect(learnLink.getAttribute("href")).toBe("/learn")
     expect(learnLink.getAttribute("aria-current")).toBe("page")
     expect(screen.queryByRole("link", { name: "Practice" })).toBeNull()
     expect(screen.queryByRole("link", { name: "Korean Coach" })).toBeNull()
+    expect(screen.getByRole("link", { name: "Calendar" }).getAttribute("href")).toBe("/goals/calendar")
     expect(screen.getByRole("link", { name: "History" }).getAttribute("href")).toBe("/history")
   })
 
-  it("shows Plan's Goals/Calendar/Inbox as real flyout children when active — no Notes row inside", () => {
+  it("shows Plan's Goals/Inbox as real flyout children when active — Calendar is promoted out (its own top-level link), no Notes row inside", () => {
     setup("/inbox", false)
-    for (const label of ["Goals", "Calendar", "Inbox"]) {
+    for (const label of ["Goals", "Inbox"]) {
       expect(screen.getByRole("link", { name: label })).toBeTruthy()
     }
     expect(screen.getByRole("link", { name: "Inbox" }).getAttribute("aria-current")).toBe("page")
     expect(screen.queryByRole("link", { name: "Notes" })).toBeNull()
+    // Calendar still renders, but as the secondary top-level link, not inside Plan's flyout.
+    expect(screen.getByRole("link", { name: "Calendar" }).getAttribute("href")).toBe("/goals/calendar")
   })
 
   it("never renders Notes, Memories or Ask Hengo — Memory has no sidebar presence", () => {
@@ -454,7 +458,7 @@ describe("WorkspaceFlyout", () => {
     renderWithTooltips(
       <WorkspaceFlyout
         section={plan}
-        pathname="/goals/calendar"
+        pathname="/inbox"
         searchParams={undefined}
         open={open}
         onOpenChange={onOpenChange}
@@ -470,19 +474,19 @@ describe("WorkspaceFlyout", () => {
     expect(trigger.getAttribute("aria-expanded")).toBe("false")
   })
 
-  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead", () => {
+  it("lists the section's child routes when open — Overview/Tasks/Roadmap are hidden hub children, reachable from the Goals hub's own tab nav instead, and Calendar is promoted out to its own top-level link", () => {
     setup(true)
     const panel = screen.getByRole("navigation", { name: "Plan" })
     expect(
       within(panel)
         .getAllByRole("link")
         .map((el) => el.textContent)
-    ).toEqual(["Goals", "Calendar", "Inbox"])
+    ).toEqual(["Goals", "Inbox"])
   })
 
   it("marks the current child route", () => {
     setup(true)
-    expect(screen.getByRole("link", { name: "Calendar" }).getAttribute("aria-current")).toBe("page")
+    expect(screen.getByRole("link", { name: "Inbox" }).getAttribute("aria-current")).toBe("page")
   })
 
   it("closes after navigating to a child route", () => {

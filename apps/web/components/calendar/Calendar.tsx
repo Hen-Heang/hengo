@@ -7,12 +7,16 @@ import { AlertCircle, ChevronLeft, ChevronRight, CloudOff, LoaderCircle, Plus } 
 import { motion, AnimatePresence } from "motion/react"
 import { toast } from "sonner"
 
+import { useQuery } from "@tanstack/react-query"
+
 import { useIsMobile } from "@/hooks/useMobile"
 import { useCalendarTasks } from "@/hooks/useCalendarTasks"
 import { useGoogleCalendarIntegration } from "@/hooks/useGoogleCalendarIntegration"
 import { useGoogleCalendarEvents } from "@/hooks/useGoogleCalendarEvents"
 import { useAvailableFocusWindows } from "@/hooks/useAvailableFocusWindows"
-import { getApiErrorMessage } from "@/lib/api"
+import { goalsQueryKey } from "@/hooks/useGoals"
+import { getApiErrorMessage, goalsApi } from "@/lib/api"
+import { getUserId } from "@/lib/auth-store"
 import { isExternalTask, type Task } from "@/lib/tasks"
 import { toCalendarTask } from "@/lib/external-calendar"
 import { filterTasksByDate, getTaskAnchorDate } from "@/lib/calendar"
@@ -86,6 +90,26 @@ export function Calendar({
 }: CalendarProps) {
   const isMobile = useIsMobile()
   const { tasks, isLoading, error: tasksError, create, update, remove } = useCalendarTasks(goalId)
+
+  // Goal options for the "Goal" field on task create/edit — only relevant to
+  // the unscoped, top-level calendar (embedded-in-goal calendars already
+  // imply their one goal, so `goals` stays undefined there and the field
+  // hides itself — see TaskFormFields). Shares its cache with useGoals /
+  // useTodaysTasks via the same query key.
+  const userId = getUserId()
+  const { data: allGoals = [] } = useQuery({
+    queryKey: goalsQueryKey(userId),
+    queryFn: () => goalsApi.list(),
+    enabled: !goalId && userId != null,
+  })
+  const availableGoals = useMemo(() => allGoals.map((g) => ({ id: g.id, title: g.title })), [allGoals])
+  const goalTitleById = useMemo(() => {
+    const map: Record<string, string> = {}
+    availableGoals.forEach((g) => {
+      map[g.id] = g.title
+    })
+    return map
+  }, [availableGoals])
 
   const [view, setView] = useState<CalendarView>(getInitialCalendarView)
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
@@ -289,6 +313,7 @@ export function Calendar({
         duration_minutes: range?.duration_minutes ?? null,
         color: range?.color ?? null,
         completed: range?.completed ?? false,
+        goal_id: range?.goal_id ?? null,
       })
       toast.success("Task created")
     } catch (err) {
@@ -316,6 +341,7 @@ export function Calendar({
         duration_minutes: range?.duration_minutes,
         color: range?.color,
         completed: range?.completed,
+        goal_id: range?.goal_id,
       })
       if (selectedTask?.id === taskId) setSelectedTask(updated)
       toast.success("Task updated")
@@ -378,6 +404,7 @@ export function Calendar({
                 color: deleted.color ?? null,
                 completed: deleted.completed,
                 tags: deleted.tags,
+                goal_id: deleted.goal_id ?? null,
               })
               toast.success("Task restored")
             } catch (err) {
@@ -391,7 +418,19 @@ export function Calendar({
     }
   }
 
-  const scopeTitle = goalTitle || "Personal tasks"
+  // Unscoped now mixes personal tasks with every goal's tasks (see
+  // useCalendarTasks), so the header can no longer claim "Personal tasks" —
+  // that label survives only per-task, in `taskScopeLabel` below.
+  const scopeTitle = goalTitle || (goalId ? "Goal tasks" : "Calendar")
+
+  // Per-task label for the details panel/sheet: which goal (if any) a given
+  // task belongs to. Embedded-in-goal calendars keep the single static
+  // `scopeTitle` — every task there is that one goal's, so there's nothing
+  // to disambiguate.
+  const taskScopeLabel = (t: Task | null): string => {
+    if (!t || goalId) return scopeTitle
+    return t.goal_id ? goalTitleById[t.goal_id] ?? "Goal task" : "Personal task"
+  }
 
   // ── Sidebar (desktop) ─────────────────────────────────────────────────────
   const sidebar = (
@@ -584,7 +623,7 @@ export function Calendar({
                     onToggleTaskCompletion={handleToggleTaskCompletion}
                     onEditTask={handleEditTask}
                     onDeleteTask={handleDeleteTask}
-                    goalTitle={scopeTitle}
+                    goalTitle={taskScopeLabel(selectedTask)}
                     onClose={() => setSelectedTask(null)}
                   />
                 </motion.div>
@@ -613,6 +652,7 @@ export function Calendar({
         defaultTime={slotTime}
         goalStartDate={goalStartDate}
         goalTargetDate={goalTargetDate}
+        goals={goalId ? undefined : availableGoals}
       />
 
       <EditTaskDialog
@@ -621,6 +661,7 @@ export function Calendar({
         onUpdateTask={handleUpdateTask}
         onDeleteTask={handleDeleteTask}
         task={editingTask}
+        goals={goalId ? undefined : availableGoals}
       />
 
       {isMobile && (
@@ -631,7 +672,7 @@ export function Calendar({
           onToggleTaskCompletion={handleToggleTaskCompletion}
           onEditTask={handleEditTask}
           onDeleteTask={handleDeleteTask}
-          goalTitle={scopeTitle}
+          goalTitle={taskScopeLabel(selectedTask)}
         />
       )}
 

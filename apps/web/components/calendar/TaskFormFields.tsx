@@ -6,11 +6,20 @@ import { Clock, Calendar, AlertTriangle } from "lucide-react"
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { hhmmToMinutes } from "@/lib/calendar"
 import { AutoResizingDescription } from "./AutoResizingDescription"
 import { TaskColorPicker } from "./TaskColorPicker"
+
+/** Sentinel `Select` value for "no goal" — same convention as QuickCaptureDialog. */
+export const NO_GOAL = "none"
+
+export interface TaskFormGoalOption {
+  id: string
+  title: string
+}
 
 /**
  * Live duration in minutes for the selected window, spanning multiple days
@@ -76,6 +85,16 @@ interface TaskFormFieldsProps {
   descriptionPlaceholder?: string
   descriptionMinRows?: number
 
+  /**
+   * The goal this task belongs to, and the goals it could belong to.
+   * Omit `goals` entirely to hide the field — used when the calendar is
+   * already scoped to one goal (embedded in that goal's own page), where the
+   * task's goal is implicit and shouldn't be re-chosen here.
+   */
+  goals?: TaskFormGoalOption[]
+  goalId?: string
+  onGoalIdChange?: (v: string) => void
+
   startDate: Date
   endDate: Date
   onStartDateChange: (d: Date) => void
@@ -116,6 +135,9 @@ export function TaskFormFields({
   onDescriptionChange,
   descriptionPlaceholder = "Add details...",
   descriptionMinRows,
+  goals,
+  goalId,
+  onGoalIdChange,
   startDate,
   endDate,
   onStartDateChange,
@@ -192,6 +214,26 @@ export function TaskFormFields({
           className="bg-background/80 border-border min-h-[100px] text-base"
         />
       </div>
+
+      {/* Goal — hidden when the calendar is already scoped to one goal */}
+      {goals && (
+        <div className="space-y-2">
+          <Label className="text-sm font-medium text-muted-foreground">Goal</Label>
+          <Select value={goalId ?? NO_GOAL} onValueChange={(v) => onGoalIdChange?.(v)}>
+            <SelectTrigger className="w-full" aria-label="Goal">
+              <SelectValue placeholder="No goal (personal task)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={NO_GOAL}>No goal (personal task)</SelectItem>
+              {goals.map((goal) => (
+                <SelectItem key={goal.id} value={goal.id}>
+                  {goal.title}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      )}
 
       {/* Dates */}
       <div className="grid grid-cols-2 gap-3" onClick={(e) => e.stopPropagation()}>

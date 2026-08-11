@@ -21,7 +21,7 @@ import { useIsMobile } from "@/hooks/useMobile"
 import type { Task } from "@/lib/tasks"
 import { DEFAULT_TASK_COLOR } from "@/lib/tasks"
 import { bumpEndAfterStart, hhmmToMinutes } from "@/lib/calendar"
-import { TaskFormFields, calcDurationMinutes } from "./TaskFormFields"
+import { NO_GOAL, TaskFormFields, calcDurationMinutes, type TaskFormGoalOption } from "./TaskFormFields"
 import type { TaskRangePayload } from "./AddTaskDialog"
 
 interface EditTaskDialogProps {
@@ -36,6 +36,8 @@ interface EditTaskDialogProps {
   ) => void | Promise<void>
   onDeleteTask: (taskId: string) => void
   task: Task | null
+  /** Goal options for the "Goal" field. Omit to hide it (embedded-in-goal calendars). */
+  goals?: TaskFormGoalOption[]
 }
 
 export function EditTaskDialog({
@@ -44,6 +46,7 @@ export function EditTaskDialog({
   onUpdateTask,
   onDeleteTask,
   task,
+  goals,
 }: EditTaskDialogProps) {
   const [title, setTitle] = useState("")
   const [taskDescription, setTaskDescription] = useState("")
@@ -56,6 +59,7 @@ export function EditTaskDialog({
   const [isAnytime, setIsAnytime] = useState<boolean>(false)
   const [completed, setCompleted] = useState<boolean>(false)
   const [color, setColor] = useState<string>(DEFAULT_TASK_COLOR)
+  const [goalId, setGoalId] = useState<string>(NO_GOAL)
   const [timeError, setTimeError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitAttempted, setSubmitAttempted] = useState(false)
@@ -123,6 +127,7 @@ export function EditTaskDialog({
       setTimeError(null)
       setCompleted(!!task.completed)
       setColor(task.color || DEFAULT_TASK_COLOR)
+      setGoalId(task.goal_id || NO_GOAL)
       setSubmitAttempted(false)
     }
   }, [task])
@@ -153,6 +158,7 @@ export function EditTaskDialog({
       duration_minutes: durationMinutes,
       completed,
       color,
+      goal_id: goals ? (goalId === NO_GOAL ? null : goalId) : undefined,
     }
 
     setIsSubmitting(true)
@@ -208,6 +214,9 @@ export function EditTaskDialog({
                 onDescriptionChange={setTaskDescription}
                 descriptionPlaceholder="Enter task description"
                 descriptionMinRows={isMobile ? 3 : 5}
+                goals={goals}
+                goalId={goalId}
+                onGoalIdChange={setGoalId}
                 startDate={startDate}
                 endDate={endDate}
                 onStartDateChange={handleStartDateChange}
