@@ -58,6 +58,7 @@ export function MonthView({
 }: MonthViewProps) {
   const days = getDaysInMonth(currentMonth)
   const rowCount = days.length / 7
+  const maxVisibleTasks = rowCount >= 6 ? 1 : rowCount === 5 ? 2 : 3
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-card/20">
@@ -78,7 +79,7 @@ export function MonthView({
         </div>
 
         <div
-          className="grid flex-1 grid-cols-7"
+          className="grid min-h-0 flex-1 grid-cols-7 overflow-hidden"
           style={{ gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))` }}
         >
           {days.map((date, index) => {
@@ -90,37 +91,31 @@ export function MonthView({
             return (
               <div
                 key={date.toISOString()}
-                onClick={isCurrentMonth ? () => onDateChange(date) : undefined}
-                onKeyDown={isCurrentMonth ? (event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault()
-                    onDateChange(date)
-                  }
-                } : undefined}
-                role={isCurrentMonth ? "button" : undefined}
-                tabIndex={isCurrentMonth ? 0 : undefined}
-                aria-pressed={isCurrentMonth ? isSelected : undefined}
-                aria-label={isCurrentMonth ? format(date, "MMMM d") : undefined}
                 className={cn(
-                  "relative flex min-h-10 flex-col gap-1 border-b border-r border-border/50 p-1.5 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 sm:min-h-[96px]",
+                  "relative flex min-h-10 flex-col gap-1 overflow-hidden border-b border-r border-border/50 p-1.5 transition-colors sm:min-h-0",
                   index % 7 === 0 && "border-l",
                   Math.floor(index / 7) === 0 && "border-t",
-                  !isCurrentMonth && "cursor-default bg-muted/10 opacity-30",
-                  isCurrentMonth && "cursor-pointer hover:bg-muted/20",
+                  !isCurrentMonth && "bg-muted/10 opacity-30",
+                  isCurrentMonth && "hover:bg-muted/20",
                   isSelected && "bg-primary/5"
                 )}
               >
                 <div className="mb-0.5 flex justify-center">
-                  <span
+                  <button
+                    type="button"
+                    disabled={!isCurrentMonth}
+                    onClick={() => onDateChange(date)}
+                    aria-label={isCurrentMonth ? format(date, "MMMM d") : undefined}
+                    aria-pressed={isCurrentMonth ? isSelected : undefined}
                     className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold transition-all",
+                      "flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
                       today && !isSelected && "bg-primary text-primary-foreground shadow",
                       isSelected && "scale-110 bg-primary/90 text-primary-foreground shadow",
                       !today && !isSelected && "text-muted-foreground"
                     )}
                   >
                     {date.getDate()}
-                  </span>
+                  </button>
                 </div>
 
                 {isCurrentMonth && (
@@ -140,7 +135,7 @@ export function MonthView({
                     </div>
                     {/* Desktop: chips */}
                     <div className="hidden flex-col gap-0.5 overflow-hidden sm:flex">
-                      {dayTasks.slice(0, 3).map((task) => {
+                      {dayTasks.slice(0, maxVisibleTasks).map((task) => {
                         const color = getTaskColor(task)
                         return (
                           <button
@@ -173,9 +168,9 @@ export function MonthView({
                           </button>
                         )
                       })}
-                      {dayTasks.length > 3 && (
+                      {dayTasks.length > maxVisibleTasks && (
                         <div className="text-center text-[9px] font-medium text-muted-foreground">
-                          +{dayTasks.length - 3} more
+                          +{dayTasks.length - maxVisibleTasks} more
                         </div>
                       )}
                     </div>
