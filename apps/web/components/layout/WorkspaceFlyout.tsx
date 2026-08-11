@@ -57,7 +57,11 @@ export function WorkspaceFlyout({
               className="absolute left-0 top-1/2 h-5 w-[3px] -translate-y-1/2 rounded-r-full bg-primary"
             />
           )}
-          <section.icon size={20} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
+          <section.icon
+            size={20}
+            strokeWidth={active ? 2.4 : 2}
+            className={cn("shrink-0", section.color, !(active || open) && "opacity-70")}
+          />
           <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
             {section.label}
           </span>

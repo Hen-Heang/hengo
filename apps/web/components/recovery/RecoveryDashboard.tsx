@@ -92,22 +92,22 @@ export function RecoveryDashboard({
   ].filter((item, index, list) => list.findIndex((candidate) => candidate.label === item.label) === index).slice(0, 3)
 
   const metrics = [
-    { label: "Current streak", value: `${summary.currentStreak}d`, icon: Activity },
-    { label: "Best streak", value: `${summary.bestStreak}d`, icon: History },
-    { label: "Recovery days", value: String(summary.recoveryDaysThisMonth), icon: CalendarCheck2 },
-    { label: "Urges managed", value: String(summary.urgesManaged), icon: Waves },
-    { label: "Healthy actions", value: String(summary.healthyActionsCompleted), icon: CheckCircle2 },
-    { label: "Check-in consistency", value: `${summary.checkInConsistency}%`, icon: ClipboardCheck },
+    { label: "Current streak", value: `${summary.currentStreak}d`, icon: Activity, color: "text-orange-500" },
+    { label: "Best streak", value: `${summary.bestStreak}d`, icon: History, color: "text-amber-500" },
+    { label: "Recovery days", value: String(summary.recoveryDaysThisMonth), icon: CalendarCheck2, color: "text-emerald-500" },
+    { label: "Urges managed", value: String(summary.urgesManaged), icon: Waves, color: "text-cyan-500" },
+    { label: "Healthy actions", value: String(summary.healthyActionsCompleted), icon: CheckCircle2, color: "text-green-500" },
+    { label: "Check-in consistency", value: `${summary.checkInConsistency}%`, icon: ClipboardCheck, color: "text-sky-500" },
   ]
 
   const sections = [
-    { href: "/growth/recovery/check-in", label: "Today", description: "Morning or evening check-in", icon: CalendarCheck2 },
-    { href: "/growth/recovery/urge", label: "Urge Rescue", description: "Pause, ground, and choose a next action", icon: Waves },
-    { href: "/growth/recovery/plan", label: "Recovery Plan", description: "When–Then plans and environment protection", icon: ListChecks },
-    { href: "/growth/recovery/triggers", label: "Trigger Map", description: "Edit tags and understand patterns", icon: Waypoints },
-    { href: "/growth/recovery/insights", label: "Progress & Insights", description: "Transparent, deterministic trends", icon: BarChart3 },
-    { href: "/growth/recovery/review", label: "Weekly Review", description: "Learn, adjust, and choose one experiment", icon: Lightbulb },
-    { href: "/growth/recovery/settings", label: "Privacy Settings", description: "Lock, notifications, export, and delete", icon: Settings2 },
+    { href: "/growth/recovery/check-in", label: "Today", description: "Morning or evening check-in", icon: CalendarCheck2, color: "bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400" },
+    { href: "/growth/recovery/urge", label: "Urge Rescue", description: "Pause, ground, and choose a next action", icon: Waves, color: "bg-cyan-500/10 text-cyan-600 dark:bg-cyan-400/10 dark:text-cyan-400" },
+    { href: "/growth/recovery/plan", label: "Recovery Plan", description: "When–Then plans and environment protection", icon: ListChecks, color: "bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400" },
+    { href: "/growth/recovery/triggers", label: "Trigger Map", description: "Edit tags and understand patterns", icon: Waypoints, color: "bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400" },
+    { href: "/growth/recovery/insights", label: "Progress & Insights", description: "Transparent, deterministic trends", icon: BarChart3, color: "bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-400" },
+    { href: "/growth/recovery/review", label: "Weekly Review", description: "Learn, adjust, and choose one experiment", icon: Lightbulb, color: "bg-yellow-500/10 text-yellow-600 dark:bg-yellow-400/10 dark:text-yellow-400" },
+    { href: "/growth/recovery/settings", label: "Privacy Settings", description: "Lock, notifications, export, and delete", icon: Settings2, color: "bg-slate-500/10 text-slate-600 dark:bg-slate-400/10 dark:text-slate-400" },
   ]
 
   return (
@@ -149,7 +149,7 @@ export function RecoveryDashboard({
         {targets.length > 1 && <div className="mt-3 flex gap-2 overflow-x-auto pb-1" aria-label="Recovery targets">{targets.map((item) => <button key={item.id} type="button" aria-pressed={item.id === target.id} onClick={() => onSelectTarget(item.id)} className={`min-h-10 shrink-0 rounded-full border px-3 text-xs font-medium ${item.id === target.id ? "border-primary/40 bg-primary/10 text-primary" : "border-border bg-card text-muted-foreground"}`}>{item.label}</button>)}</div>}
         <div className="mt-4 overflow-hidden rounded-lg border border-border/70 bg-card shadow-sm">
           <dl className="grid grid-cols-2 sm:grid-cols-3">
-            {metrics.map(({ label, value, icon: Icon }, index) => (
+            {metrics.map(({ label, value, icon: Icon, color }, index) => (
               <div
                 key={label}
                 className={`flex items-start justify-between gap-2 px-3 py-3 sm:px-4 ${
@@ -160,7 +160,7 @@ export function RecoveryDashboard({
                   <dd className="font-mono text-xl font-semibold tracking-tight">{value}</dd>
                   <dt className="mt-0.5 text-xs leading-4 text-muted-foreground">{label}</dt>
                 </div>
-                <Icon size={16} className="mt-0.5 text-primary/70" aria-hidden="true" />
+                <Icon size={16} className={`mt-0.5 ${color}`} aria-hidden="true" />
               </div>
             ))}
           </dl>
@@ -221,9 +221,9 @@ export function RecoveryDashboard({
       <section aria-labelledby="recovery-tools-title">
         <p className="app-kicker">Recovery tools</p><h2 id="recovery-tools-title" className="mt-1 text-xl font-semibold">Use the right tool for the moment</h2>
         <div className="mt-4 grid gap-3 sm:grid-cols-2">
-          {sections.map(({ href, label, description, icon: Icon }) => (
+          {sections.map(({ href, label, description, icon: Icon, color }) => (
             <Link key={href} href={href} className="group flex min-h-20 items-center gap-3 rounded-lg border border-border/70 bg-card p-4 shadow-sm transition-all hover:-translate-y-0.5 hover:border-primary/20 hover:shadow-md focus-visible:ring-2 focus-visible:ring-ring">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Icon size={18} aria-hidden="true" /></span>
+              <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg ${color}`}><Icon size={18} aria-hidden="true" /></span>
               <div className="min-w-0 flex-1"><p className="font-semibold">{label}</p><p className="mt-1 text-sm leading-5 text-muted-foreground">{description}</p></div>
               <ArrowRight size={16} className="text-muted-foreground transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
             </Link>

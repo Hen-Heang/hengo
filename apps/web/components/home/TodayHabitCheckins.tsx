@@ -4,7 +4,7 @@ import Link from "next/link"
 import { AnimatePresence, motion } from "motion/react"
 import { AlertTriangle, CheckCircle2, Circle, Flame, TreeDeciduous } from "lucide-react"
 
-import { CATEGORY_ICONS } from "@/components/habits/categoryMeta"
+import { CATEGORY_COLORS, CATEGORY_ICONS } from "@/components/habits/categoryMeta"
 import { Skeleton } from "@/components/ui/skeleton"
 import { toCheckinDate, useHabitCheckins, useHabits } from "@/hooks/useHabits"
 import type { Habit } from "@/lib/types"
@@ -29,7 +29,9 @@ function HabitCheckinRow({ habit }: { habit: Habit }) {
         doneToday ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-background/40"
       )}
     >
-      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
+      <div
+        className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", CATEGORY_COLORS[habit.category])}
+      >
         <Icon size={16} strokeWidth={2} />
       </div>
       <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{habit.label}</span>
@@ -90,7 +92,7 @@ export function TodayHabitCheckins() {
     <div className="rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-sm font-semibold text-foreground">
-          <TreeDeciduous size={14} strokeWidth={2.5} />
+          <TreeDeciduous size={14} strokeWidth={2.5} className="text-emerald-500" />
           Today&apos;s habits
         </h3>
         <Link

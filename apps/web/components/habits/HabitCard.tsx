@@ -8,7 +8,7 @@ import { ReminderButton } from "@/components/reminders/ReminderButton"
 import { itemVariants } from "@/lib/motion"
 import { useHabitCheckins } from "@/hooks/useHabits"
 import type { Habit } from "@/lib/types"
-import { CATEGORY_ICONS, CATEGORY_LABELS } from "./categoryMeta"
+import { CATEGORY_COLORS, CATEGORY_ICONS, CATEGORY_LABELS } from "./categoryMeta"
 import { MilestoneBadge } from "./MilestoneBadge"
 
 export function HabitCard({ habit }: { habit: Habit }) {
@@ -22,7 +22,9 @@ export function HabitCard({ habit }: { habit: Habit }) {
             so it stays clickable without being nested inside an <a>. */}
         <Link href={`/growth/habits/${habit.id}`} className="absolute inset-0" aria-label={habit.label} />
 
-        <div className="pointer-events-none flex size-11 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
+        <div
+          className={`pointer-events-none flex size-11 shrink-0 items-center justify-center rounded-xl ${CATEGORY_COLORS[habit.category]}`}
+        >
           <Icon size={20} strokeWidth={2} />
         </div>
 

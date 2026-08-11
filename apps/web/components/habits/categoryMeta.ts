@@ -40,6 +40,26 @@ export const CATEGORY_ICONS: Record<HabitCategory, LucideIcon> = {
   custom: Sparkles,
 }
 
+/**
+ * Per-category icon tint, literal Tailwind classes matching the app's
+ * `bg-{color}-500/10 text-{color}-600 dark:bg-{color}-400/10 dark:text-{color}-400`
+ * convention (never construct these dynamically — Tailwind's scanner needs
+ * the literal string). Distinguishes the category at a glance instead of
+ * every habit sharing one emerald box regardless of what it tracks.
+ */
+export const CATEGORY_COLORS: Record<HabitCategory, string> = {
+  exercise: "bg-orange-500/10 text-orange-600 dark:bg-orange-400/10 dark:text-orange-400",
+  reading: "bg-blue-500/10 text-blue-600 dark:bg-blue-400/10 dark:text-blue-400",
+  meditation: "bg-violet-500/10 text-violet-600 dark:bg-violet-400/10 dark:text-violet-400",
+  sleep: "bg-indigo-500/10 text-indigo-600 dark:bg-indigo-400/10 dark:text-indigo-400",
+  water: "bg-sky-500/10 text-sky-600 dark:bg-sky-400/10 dark:text-sky-400",
+  study: "bg-amber-500/10 text-amber-600 dark:bg-amber-400/10 dark:text-amber-400",
+  coding: "bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400",
+  deep_work: "bg-purple-500/10 text-purple-600 dark:bg-purple-400/10 dark:text-purple-400",
+  walking: "bg-green-500/10 text-green-600 dark:bg-green-400/10 dark:text-green-400",
+  custom: "bg-pink-500/10 text-pink-600 dark:bg-pink-400/10 dark:text-pink-400",
+}
+
 export const CATEGORY_ORDER: HabitCategory[] = [
   "exercise",
   "reading",

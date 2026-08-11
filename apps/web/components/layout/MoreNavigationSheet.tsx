@@ -66,7 +66,7 @@ export function MoreNavigationSheet({
             }
             className="flex min-h-14 items-center gap-3 rounded-lg border border-border bg-accent/40 px-4 py-3.5 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
           >
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
               <BrainCircuit size={20} strokeWidth={2.2} />
             </span>
             <span className="min-w-0 flex-1">

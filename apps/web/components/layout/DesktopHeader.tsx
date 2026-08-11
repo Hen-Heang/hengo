@@ -52,7 +52,7 @@ export function DesktopHeader({
           onClick={() => openQuickCapture()}
           className="h-9 gap-1.5 rounded-lg px-3"
         >
-          <Zap data-icon="inline-start" className="size-4" aria-hidden="true" />
+          <Zap data-icon="inline-start" className="size-4 text-amber-500" aria-hidden="true" />
           Quick capture
         </Button>
         <Button
@@ -63,7 +63,7 @@ export function DesktopHeader({
           onClick={() => openHengoCoach()}
           className="h-9 gap-1.5 rounded-lg px-3"
         >
-          <Sparkles data-icon="inline-start" className="size-4" aria-hidden="true" />
+          <Sparkles data-icon="inline-start" className="size-4 text-teal-500" aria-hidden="true" />
           Hengo Coach
         </Button>
         <QuickSwitcher />

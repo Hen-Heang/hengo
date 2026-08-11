@@ -7,6 +7,7 @@ import { motion, useReducedMotion } from "motion/react"
 import { GrowthTabs } from "@/components/growth/GrowthTabs"
 import { navItem } from "@/lib/navigation"
 import { containerVariants, itemVariants } from "@/lib/motion"
+import { cn } from "@/lib/utils"
 
 // The single "Progress" destination Grow links to — replaces four separate
 // sidebar rows (Review, Achievements, Statistics; History merged separately,
@@ -54,7 +55,10 @@ export default function ProgressPage() {
             >
               <div
                 aria-hidden
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"
+                className={cn(
+                  "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10",
+                  card.color ?? "text-primary"
+                )}
               >
                 <Icon size={20} strokeWidth={2.25} />
               </div>

@@ -82,7 +82,11 @@ export function NavRow({
       {...rest}
     >
       {active && <ActiveIndicator />}
-      <Icon size={iconSize} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
+      <Icon
+        size={iconSize}
+        strokeWidth={active ? 2.4 : 2}
+        className={cn("shrink-0", item.color, !active && "opacity-70")}
+      />
       <span className="min-w-0 flex-1 truncate">{item.label}</span>
       {trailing}
     </Link>
@@ -128,7 +132,11 @@ export function NavIconRow({
           )}
         >
           {active && <ActiveIndicator />}
-          <Icon size={20} strokeWidth={active ? 2.4 : 2} className="shrink-0" />
+          <Icon
+            size={20}
+            strokeWidth={active ? 2.4 : 2}
+            className={cn("shrink-0", item.color, !active && "opacity-70")}
+          />
           {showLabel && (
             <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
               {name}

@@ -74,6 +74,15 @@ export type NavItem = {
   /** Tighter label for the mobile bottom bar / tablet rail. */
   shortLabel?: string
   icon: React.ElementType
+  /**
+   * Tailwind text-color utility applied to the icon only (never the label),
+   * so each destination reads as its own purpose at a glance instead of one
+   * flat neutral tone. Full literal classes only (e.g. "text-sky-500") —
+   * never construct these dynamically, Tailwind's scanner needs the literal
+   * string. Omit for utility items (Settings, `soon` placeholders) that
+   * should stay neutral.
+   */
+  color?: string
   description?: string
   /** Extra search terms for the Quick Switcher. */
   keywords?: string[]
@@ -97,6 +106,8 @@ export type NavSection = {
   id: NavSectionId
   label: string
   icon: React.ElementType
+  /** Tailwind text-color utility for the section's own icon — see `NavItem.color`. */
+  color: string
   /** Where the rail / switcher lands when the section itself is clicked. */
   href: string
   items: NavItem[]
@@ -109,6 +120,7 @@ export const todayItem: NavItem = {
   href: "/home",
   label: "Today",
   icon: Home,
+  color: "text-blue-500",
   description: "Your daily overview",
   keywords: ["home", "dashboard", "start", "overview"],
   // /home has no children; keep the match tight so nothing else lights it up.
@@ -140,6 +152,7 @@ export const aiCoachItem: NavItem = {
   label: "Hengo Coach",
   shortLabel: "Coach",
   icon: MessageCircle,
+  color: "text-teal-500",
   description: "Practice, analyze, plan, or get support",
   keywords: ["ai", "coach", "hengo", "chat", "ask", "assistant", "korean", "speaking"],
   // Bare /chat only — the mode variants below own their own active state.
@@ -158,6 +171,7 @@ export const askHengoItem: NavItem = {
   label: "Ask Hengo",
   shortLabel: "Ask Hengo",
   icon: BrainCircuit,
+  color: "text-sky-500",
   description: "Ask about your notes, goals, habits, and journal",
   keywords: ["memory", "ask", "second brain", "recall", "remember", "search"],
   match: { pathname: "/chat", query: { mode: "memory" } },
@@ -177,6 +191,7 @@ export const memoryHubItem: NavItem = {
   href: "/ask-hengo/memories",
   label: "Memories",
   icon: BrainCircuit,
+  color: "text-indigo-500",
   description: "Facts Hengo remembers from your notes, goals, habits, and journal",
   keywords: ["memory", "memories", "second brain", "notes", "recall", "context"],
   showInSidebar: false,
@@ -192,6 +207,7 @@ export const inboxItem: NavItem = {
   href: "/inbox",
   label: "Inbox",
   icon: Inbox,
+  color: "text-fuchsia-500",
   description: "Quick capture for ideas, tasks, and phrases",
   keywords: ["capture", "quick capture", "idea", "second brain", "triage"],
 }
@@ -207,6 +223,7 @@ export const notesItem: NavItem = {
   href: "/notes",
   label: "Notes",
   icon: NotebookPen,
+  color: "text-violet-400",
   keywords: ["note", "scratchpad", "ideas"],
   showInSidebar: false,
 }
@@ -223,6 +240,7 @@ export const progressHubItem: NavItem = {
   href: "/progress",
   label: "Progress",
   icon: BarChart3,
+  color: "text-sky-500",
   description: "Morning/evening/weekly review, achievements, and stats",
   // Deliberately no "statistics"/"stats" keyword — Statistics itself already
   // carries those, and duplicating them here would make it rank behind this
@@ -241,6 +259,7 @@ export const historyItem: NavItem = {
   href: "/history",
   label: "History",
   icon: History,
+  color: "text-amber-500",
   description: "Corrections, patterns, and streaks over time",
   keywords: ["history", "activity", "log", "past", "sessions"],
 }
@@ -250,6 +269,7 @@ const timelineItem: NavItem = {
   href: "/timeline",
   label: "Timeline",
   icon: CalendarClock,
+  color: "text-orange-500",
   description: "Everything you did, day by day",
   keywords: ["timeline", "activity", "journal", "habits", "tasks", "day", "week", "month"],
   showInSidebar: false,
@@ -262,6 +282,7 @@ export const navSections: NavSection[] = [
     id: "today",
     label: "Today",
     icon: Home,
+    color: "text-blue-500",
     href: todayItem.href,
     items: [todayItem],
   },
@@ -269,6 +290,7 @@ export const navSections: NavSection[] = [
     id: "learn",
     label: "Learn",
     icon: Sparkles,
+    color: "text-violet-500",
     href: "/learn",
     // Every child below is a real, reachable, searchable route — just hidden
     // from the sidebar/rail/bottom-nav (`showInSidebar: false`) in favor of a
@@ -281,6 +303,7 @@ export const navSections: NavSection[] = [
         href: "/practice",
         label: "Practice",
         icon: Sparkles,
+        color: "text-violet-500",
         description: "Today's Korean practice session",
         keywords: ["learn", "korean", "daily", "drill", "speaking"],
         showInSidebar: false,
@@ -291,6 +314,7 @@ export const navSections: NavSection[] = [
         label: "Korean Coach",
         shortLabel: "Coach",
         icon: Mic,
+        color: "text-rose-500",
         description: "Listening and speaking practice with AI feedback",
         keywords: ["voice", "speaking", "listening", "workplace", "korean", "coach"],
         showInSidebar: false,
@@ -300,6 +324,7 @@ export const navSections: NavSection[] = [
         href: "/vocab",
         label: "Vocabulary",
         icon: BookOpen,
+        color: "text-amber-500",
         keywords: ["words", "srs", "review", "flashcards", "korean"],
         showInSidebar: false,
       },
@@ -308,6 +333,7 @@ export const navSections: NavSection[] = [
         href: "/phrasebook",
         label: "Phrasebook",
         icon: MessagesSquare,
+        color: "text-sky-500",
         description: "Workplace and daily-life Q&A practice",
         keywords: ["phrasebook", "questions", "answers", "workplace", "qa", "speaking", "listening", "korean"],
         // Bare /phrasebook only — the "Reading" mode below owns its own
@@ -325,6 +351,7 @@ export const navSections: NavSection[] = [
         href: "/phrasebook?mode=foundations",
         label: "Foundations",
         icon: Languages,
+        color: "text-indigo-500",
         keywords: ["grammar", "hangul", "basics", "korean"],
         match: { pathname: "/phrasebook", query: { mode: "foundations" } },
         showInSidebar: false,
@@ -338,6 +365,7 @@ export const navSections: NavSection[] = [
         href: "/phrasebook?mode=reading",
         label: "Reading",
         icon: BookOpenText,
+        color: "text-teal-500",
         keywords: ["articles", "comprehension", "korean"],
         match: { pathname: "/phrasebook", query: { mode: "reading" } },
         showInSidebar: false,
@@ -347,6 +375,7 @@ export const navSections: NavSection[] = [
         href: "/listening",
         label: "Listening",
         icon: Headphones,
+        color: "text-cyan-500",
         keywords: ["audio", "dictation", "korean"],
         showInSidebar: false,
       },
@@ -355,6 +384,7 @@ export const navSections: NavSection[] = [
         href: "/scenarios",
         label: "Scenarios",
         icon: Drama,
+        color: "text-pink-500",
         keywords: ["roleplay", "workplace", "situations", "korean"],
         showInSidebar: false,
       },
@@ -363,6 +393,7 @@ export const navSections: NavSection[] = [
         href: "/interview",
         label: "Exam Prep",
         icon: GraduationCap,
+        color: "text-orange-500",
         keywords: ["topik", "interview", "test", "exam"],
         showInSidebar: false,
       },
@@ -371,6 +402,7 @@ export const navSections: NavSection[] = [
         href: "/learn",
         label: "Learn",
         icon: Sparkles,
+        color: "text-violet-500",
         description: "Practice, study, and exam prep — all Korean learning in one hub",
         keywords: ["learn", "hub", "korean", "overview", "foundations", "practice"],
         showInSidebar: false,
@@ -391,6 +423,7 @@ export const navSections: NavSection[] = [
     id: "plan",
     label: "Plan",
     icon: ClipboardList,
+    color: "text-sky-500",
     href: "/goals",
     items: [
       {
@@ -398,6 +431,7 @@ export const navSections: NavSection[] = [
         href: "/goals/overview",
         label: "Overview",
         icon: BarChart3,
+        color: "text-sky-500",
         description: "Snapshot of your active goals, deadlines, and progress",
         keywords: ["overview", "summary", "snapshot", "dashboard", "progress"],
         showInSidebar: false,
@@ -407,6 +441,7 @@ export const navSections: NavSection[] = [
         href: "/goals/tasks",
         label: "Tasks",
         icon: ClipboardList,
+        color: "text-blue-500",
         description: "Today's tasks across every goal",
         keywords: ["tasks", "today", "todo", "checklist"],
         showInSidebar: false,
@@ -416,6 +451,7 @@ export const navSections: NavSection[] = [
         href: "/goals",
         label: "Goals",
         icon: Target,
+        color: "text-emerald-600",
         keywords: ["goal", "objective", "outcome", "plan"],
         // /goals/calendar is its own visible item; keep it from also lighting
         // up Goals. Overview/Tasks are hidden items, so they no longer shadow
@@ -435,6 +471,7 @@ export const navSections: NavSection[] = [
         href: "/goals/calendar",
         label: "Calendar",
         icon: CalendarDays,
+        color: "text-cyan-500",
         keywords: ["schedule", "week", "month", "task", "deadline", "project"],
       },
       inboxItem,
@@ -443,6 +480,7 @@ export const navSections: NavSection[] = [
         href: "/roadmap",
         label: "Roadmap",
         icon: Map,
+        color: "text-lime-500",
         description: "Your long-term, phase-by-phase learning/career plan",
         keywords: ["milestones", "phases", "timeline", "long-term", "planning"],
         // Not a primary nav destination — it's a long-term planning tool
@@ -472,6 +510,7 @@ export const navSections: NavSection[] = [
         href: "/growth/habits",
         label: "Habits",
         icon: ListChecks,
+        color: "text-emerald-500",
         keywords: ["habit", "streak", "routine", "check-in"],
         showInSidebar: false,
       },
@@ -480,6 +519,7 @@ export const navSections: NavSection[] = [
         href: "/growth/recovery",
         label: "Recovery",
         icon: Compass,
+        color: "text-cyan-600",
         keywords: ["recovery", "urge", "trigger", "pause", "plan", "habit", "streak", "check-in"],
       },
       {
@@ -487,6 +527,7 @@ export const navSections: NavSection[] = [
         href: "/growth/journal",
         label: "Reflections",
         icon: NotebookPen,
+        color: "text-amber-500",
         description: "Daily reflection — mood, wins, lessons",
         keywords: ["journal", "reflection", "mood", "energy", "gratitude", "diary"],
       },
@@ -496,6 +537,7 @@ export const navSections: NavSection[] = [
         href: "/review/morning",
         label: "Review",
         icon: Sunrise,
+        color: "text-orange-500",
         description: "Morning brief, evening review, weekly review",
         keywords: ["review", "morning", "evening", "weekly", "brief", "reflection", "summary"],
         // Any of the three review pages should light this item up, not just
@@ -508,6 +550,7 @@ export const navSections: NavSection[] = [
         href: "/achievements",
         label: "Achievements",
         icon: Trophy,
+        color: "text-yellow-500",
         keywords: ["badges", "xp", "level", "progress"],
         showInSidebar: false,
       },
@@ -516,6 +559,7 @@ export const navSections: NavSection[] = [
         href: "/statistics",
         label: "Statistics",
         icon: BarChart3,
+        color: "text-indigo-500",
         keywords: ["stats", "charts", "analytics", "progress"],
         showInSidebar: false,
       },
@@ -534,6 +578,7 @@ export const navSections: NavSection[] = [
     id: "history",
     label: "History",
     icon: History,
+    color: "text-amber-500",
     href: "/history",
     items: [historyItem, timelineItem],
   },
@@ -548,6 +593,7 @@ export const navSections: NavSection[] = [
     id: "memory",
     label: "Memory",
     icon: BrainCircuit,
+    color: "text-indigo-500",
     href: memoryHubItem.href,
     items: [notesItem, memoryHubItem, askHengoItem],
   },
@@ -557,6 +603,7 @@ export const navSections: NavSection[] = [
     id: "ai",
     label: "Hengo Coach",
     icon: MessageCircle,
+    color: "text-teal-500",
     href: aiCoachItem.href,
     items: [
       aiCoachItem,
@@ -565,6 +612,7 @@ export const navSections: NavSection[] = [
         href: "/chat?mode=analyze",
         label: "Analyze",
         icon: ScanText,
+        color: "text-blue-500",
         keywords: ["ai", "analyze", "breakdown", "explain"],
         match: { pathname: "/chat", query: { mode: "analyze" } },
         showInSidebar: false,
@@ -574,6 +622,7 @@ export const navSections: NavSection[] = [
         href: "/chat?mode=generate",
         label: "Generate",
         icon: Wand2,
+        color: "text-violet-500",
         keywords: ["ai", "generate", "create", "draft"],
         match: { pathname: "/chat", query: { mode: "generate" } },
         showInSidebar: false,
@@ -583,6 +632,7 @@ export const navSections: NavSection[] = [
         href: "/chat?mode=corrections",
         label: "Corrections",
         icon: RotateCcw,
+        color: "text-amber-500",
         keywords: ["ai", "mistakes", "corrections", "fix", "grammar"],
         match: { pathname: "/chat", query: { mode: "corrections" } },
         showInSidebar: false,

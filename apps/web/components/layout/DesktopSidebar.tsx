@@ -130,6 +130,7 @@ export function DesktopSidebar({
               href: section.href,
               label: section.label,
               icon: section.icon,
+              color: section.color,
             }
             return collapsed ? (
               <NavIconRow key={section.id} item={flatItem} active={sectionActive} />
@@ -176,7 +177,11 @@ export function DesktopSidebar({
                   sectionActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <section.icon size={13} strokeWidth={2.4} className="shrink-0" />
+                <section.icon
+                  size={13}
+                  strokeWidth={2.4}
+                  className={cn("shrink-0", section.color, !sectionActive && "opacity-70")}
+                />
                 <span className="flex-1 text-left">{section.label}</span>
                 <ChevronDown
                   size={14}

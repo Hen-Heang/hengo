@@ -191,9 +191,9 @@ export default function LoginPage() {
 }
 
 const FEATURES = [
-  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean." },
-  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms." },
-  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback." },
+  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean.", color: "text-sky-300" },
+  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms.", color: "text-amber-300" },
+  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback.", color: "text-violet-300" },
 ]
 
 function BrandPanel() {
@@ -232,7 +232,7 @@ function BrandPanel() {
           {FEATURES.map((f) => (
             <li key={f.title} className="flex gap-3.5">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
-                <f.icon size={17} className="text-sky-200" />
+                <f.icon size={17} className={f.color} />
               </span>
               <div className="space-y-0.5">
                 <p className="text-sm font-medium text-white">{f.title}</p>

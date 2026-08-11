@@ -49,7 +49,12 @@ export function MobileBottomNav({
                 aria-current={active ? "page" : undefined}
                 className={cn(TAB, active ? "text-primary" : "text-muted-foreground")}
               >
-                <Icon size={21} strokeWidth={active ? 2.4 : 2} aria-hidden className="shrink-0" />
+                <Icon
+                  size={21}
+                  strokeWidth={active ? 2.4 : 2}
+                  aria-hidden
+                  className={cn("shrink-0", item.color, !active && "opacity-70")}
+                />
                 <span
                   className={cn(
                     "w-full truncate px-0.5 text-center text-xs leading-none",

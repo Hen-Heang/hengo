@@ -148,19 +148,19 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
                   className="rounded-lg"
                   onClick={() => run(() => convertToNote.mutateAsync(item), "Converted to a note")}
                 >
-                  <NotebookPen size={14} /> Convert to note
+                  <NotebookPen size={14} className="text-indigo-500" /> Convert to note
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-lg"
                   onClick={() => run(() => convertToTask.mutateAsync({ item, date: todayYmd() }), "Added as today's task")}
                 >
-                  <ListChecks size={14} /> Convert to task (today)
+                  <ListChecks size={14} className="text-blue-500" /> Convert to task (today)
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-lg"
                   onClick={() => run(() => convertToJournal.mutateAsync(item), "Added to your journal")}
                 >
-                  <Sparkles size={14} /> Convert to journal entry
+                  <Sparkles size={14} className="text-amber-500" /> Convert to journal entry
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

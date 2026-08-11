@@ -77,6 +77,7 @@ export function TabletNavigationRail({
               href: section.href,
               label: section.label,
               icon: section.icon,
+              color: section.color,
             }
             return <NavIconRow key={section.id} item={flatItem} showLabel active={sectionActive} />
           }

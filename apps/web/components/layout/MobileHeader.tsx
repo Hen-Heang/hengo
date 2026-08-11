@@ -81,7 +81,7 @@ export function MobileHeader({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-48 rounded-xl">
             <DropdownMenuItem onClick={() => openQuickCapture()} className="rounded-lg">
-              <Zap size={16} /> Quick capture
+              <Zap size={16} className="text-amber-500" /> Quick capture
             </DropdownMenuItem>
             <DropdownMenuItem onClick={onOpenSearch} className="rounded-lg">
               <Search size={16} /> Search
@@ -101,7 +101,7 @@ export function MobileHeader({
             aria-label="Quick capture"
             className={ACTION_BUTTON}
           >
-            <Zap size={20} />
+            <Zap size={20} className="text-amber-500" />
           </button>
           <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
             <Search size={20} />
