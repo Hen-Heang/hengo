@@ -20,6 +20,7 @@ import { getUserId } from "@/lib/auth-store"
 import { isExternalTask, type Task } from "@/lib/tasks"
 import { toCalendarTask } from "@/lib/external-calendar"
 import { filterTasksByDate, getTaskAnchorDate } from "@/lib/calendar"
+import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { CompletionCelebration } from "@/components/ui/completion-celebration"
 import { DeleteConfirmDialog } from "@/components/goals/DeleteConfirmDialog"
@@ -27,6 +28,7 @@ import { AvailableFocusWindows } from "./AvailableFocusWindows"
 
 import { CalendarViewSwitcher, type CalendarView } from "./CalendarViewSwitcher"
 import { CalendarSourceFilter, type CalendarSource } from "./CalendarSourceFilter"
+import { HolidayDetailsDialog } from "./HolidayDetailsDialog"
 import { WeekTimeGrid } from "./WeekTimeGrid"
 import { MonthView } from "./MonthView"
 import { TaskList } from "./TaskList"
@@ -44,6 +46,8 @@ interface CalendarProps {
   goalTargetDate?: Date
   /** Deep-link: when set, auto-open this task once the list has loaded (?task=). */
   initialTaskId?: string | null
+  /** Fill the route workspace; embedded goal calendars keep their card frame. */
+  fullBleed?: boolean
 }
 
 const toIso = (d?: Date | null): string | undefined =>
@@ -87,6 +91,7 @@ export function Calendar({
   goalStartDate,
   goalTargetDate,
   initialTaskId,
+  fullBleed = false,
 }: CalendarProps) {
   const isMobile = useIsMobile()
   const { tasks, isLoading, error: tasksError, create, update, remove } = useCalendarTasks(goalId)
@@ -116,6 +121,7 @@ export function Calendar({
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false) // mobile sheet
+  const [holidayDetailsDate, setHolidayDetailsDate] = useState<Date | null>(null)
 
   const [isAddOpen, setIsAddOpen] = useState(false)
   const [slotTime, setSlotTime] = useState<string | null>(null)
@@ -280,6 +286,18 @@ export function Calendar({
     handleViewChange("day")
   }
 
+  const handleJumpToDate = (date: Date) => {
+    setSelectedTask(null)
+    setSelectedDate(date)
+  }
+
+  const handleMonthQuickAdd = (day: Date) => {
+    setSelectedTask(null)
+    setSelectedDate(day)
+    setSlotTime(null)
+    setIsAddOpen(true)
+  }
+
   const openAddDialog = () => {
     setSlotTime(null)
     setIsAddOpen(true)
@@ -435,12 +453,36 @@ export function Calendar({
   // ── Sidebar (desktop) ─────────────────────────────────────────────────────
   const sidebar = (
     <div className="flex h-full flex-col border-r border-border/60 bg-card/40">
-      <div className="flex items-center justify-between border-b border-border/60 px-4 py-3">
-        <span title={scopeTitle} className="truncate text-sm font-semibold text-foreground">{scopeTitle}</span>
-        <Button size="sm" className="h-8 gap-1.5 rounded-lg px-2.5 text-xs" onClick={openAddDialog}>
-          <Plus className="h-3.5 w-3.5" />
-          Add
-        </Button>
+      <div
+        className={cn(
+          "flex items-center border-b border-border/60 px-4 py-3",
+          fullBleed ? "min-h-16 justify-start" : "justify-between",
+        )}
+      >
+        {fullBleed ? (
+          <Button
+            size="sm"
+            className="h-10 gap-2 rounded-xl px-4 text-sm"
+            onClick={openAddDialog}
+          >
+            <Plus className="h-4 w-4" />
+            Create task
+          </Button>
+        ) : (
+          <>
+            <span title={scopeTitle} className="truncate text-sm font-semibold text-foreground">
+              {scopeTitle}
+            </span>
+            <Button
+              size="sm"
+              className="h-8 gap-1.5 rounded-lg px-2.5 text-xs"
+              onClick={openAddDialog}
+            >
+              <Plus className="h-3.5 w-3.5" />
+              Add
+            </Button>
+          </>
+        )}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
         <TaskList
@@ -506,6 +548,7 @@ export function Calendar({
           onViewChange={handleViewChange}
           selectedDate={selectedDate}
           onNavigate={handleCalendarNavigate}
+          onJumpToDate={handleJumpToDate}
           views={isMobile ? ["day", "month"] : ["day", "week", "month"]}
           toolbarEnd={sourceToolbar}
         />
@@ -550,6 +593,8 @@ export function Calendar({
                 }}
                 getTasksForDate={getTasksForDate}
                 onTaskClick={handleOpenTaskDetails}
+                onHolidayClick={setHolidayDetailsDate}
+                onQuickAdd={handleMonthQuickAdd}
               />
             </div>
             {isMobile && (
@@ -573,6 +618,8 @@ export function Calendar({
             onTaskClick={handleOpenTaskDetails}
             onSlotClick={handleSlotClick}
             onDateSelect={handleGridDateSelect}
+            onHolidayClick={setHolidayDetailsDate}
+            hourHeight={isMobile ? 88 : 64}
           />
         )}
       </div>
@@ -581,7 +628,12 @@ export function Calendar({
 
   return (
     <motion.div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border/60 bg-background/50"
+      className={cn(
+        "relative flex h-full w-full flex-col overflow-hidden",
+        fullBleed
+          ? "bg-background"
+          : "rounded-xl border border-border/60 bg-background/50",
+      )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}
@@ -604,7 +656,11 @@ export function Calendar({
       ) : (
         <div
           className="grid h-full min-h-0"
-          style={{ gridTemplateColumns: "clamp(260px, 22vw, 320px) 1fr" }}
+          style={{
+            gridTemplateColumns: fullBleed
+              ? "clamp(260px, 20vw, 300px) minmax(0, 1fr)"
+              : "clamp(260px, 22vw, 320px) minmax(0, 1fr)",
+          }}
         >
           {sidebar}
           <div className="relative h-full min-h-0 overflow-hidden">
@@ -662,6 +718,12 @@ export function Calendar({
         onDeleteTask={handleDeleteTask}
         task={editingTask}
         goals={goalId ? undefined : availableGoals}
+      />
+
+      <HolidayDetailsDialog
+        date={holidayDetailsDate}
+        isOpen={holidayDetailsDate !== null}
+        onClose={() => setHolidayDetailsDate(null)}
       />
 
       {isMobile && (

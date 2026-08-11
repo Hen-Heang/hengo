@@ -150,6 +150,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const isGoogleCalendarCallbackRoute = pathname === "/integrations/google-calendar/callback"
   const isChromeless = isPauseRoute || isConsentRoute || isGoogleCalendarCallbackRoute
   const fullBleed = isChatRoute || isChromeless
+  // Calendar is a primary planning workspace rather than a document page. It
+  // keeps the normal Hengo navigation chrome but owns every remaining pixel,
+  // like a desktop calendar app, instead of inheriting the centered page frame.
+  const isCalendarRoute = pathname === "/goals/calendar"
+  const contentFullBleed = fullBleed || isCalendarRoute
 
   // Chat renders its own compact top bar (mode switcher + a "Back to home"
   // button), so the shell header would be a second one — but the escape route
@@ -174,7 +179,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <RecentTracker />
         </NavSuspense>
 
-        <div className="flex min-h-[100dvh] bg-background">
+        <div
+          className={cn(
+            "flex bg-background",
+            isCalendarRoute ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]",
+          )}
+        >
           {mode === "desktop" && !isChromeless && (
             <NavSuspense
               fallback={
@@ -203,7 +213,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavSuspense>
           )}
 
-          <div className="flex min-w-0 flex-1 flex-col">
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {!isMobile && !isChromeless && (
               <NavSuspense fallback={<div aria-hidden className="h-[57px] border-b border-border" />}>
                 <DesktopHeaderChrome />
@@ -220,15 +230,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               id="main-content"
               tabIndex={-1}
               className={cn(
-                "flex-1 overflow-x-hidden outline-none",
-                fullBleed ? "p-0" : "px-4 pt-5 sm:px-6 lg:px-8",
-                !fullBleed &&
+                "min-h-0 flex-1 overflow-x-hidden outline-none",
+                contentFullBleed ? "p-0" : "px-4 pt-5 sm:px-6 lg:px-8",
+                isCalendarRoute && "overflow-y-hidden",
+                isCalendarRoute && showBottomNav
+                  ? "pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
+                  : !fullBleed && !isCalendarRoute &&
                   (showBottomNav
                     ? "pb-[calc(9rem+env(safe-area-inset-bottom))]"
                     : "pb-10")
               )}
             >
-              <div className={cn("mx-auto w-full", fullBleed ? "h-full max-w-none" : "max-w-6xl")}>
+              <div
+                className={cn(
+                  "mx-auto w-full",
+                  contentFullBleed ? "h-full max-w-none" : "max-w-6xl",
+                )}
+              >
                 {children}
               </div>
             </main>

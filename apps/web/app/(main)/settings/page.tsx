@@ -17,6 +17,7 @@ import {
   Bell,
   Send,
   AlarmClock,
+  CloudRain,
   Check,
   Target,
   Type,
@@ -134,6 +135,10 @@ export default function SettingsPage() {
   const [studyRemindersEnabled, setStudyRemindersEnabled] = useState(true)
   const [studyReminderHour, setStudyReminderHour] = useState(20)
   const [savingReminders, setSavingReminders] = useState(false)
+  const [weatherAlertsEnabled, setWeatherAlertsEnabled] = useState(false)
+  const [savingWeatherAlerts, setSavingWeatherAlerts] = useState(false)
+  const [holidayAlertsEnabled, setHolidayAlertsEnabled] = useState(false)
+  const [savingHolidayAlerts, setSavingHolidayAlerts] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const savedSnapshotRef = useRef<string | null>(null)
 
@@ -156,6 +161,8 @@ export default function SettingsPage() {
         if (!models.some((m) => m.value === model)) setCustomModel(model)
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
+        setWeatherAlertsEnabled(data.weatherAlertsEnabled ?? false)
+        setHolidayAlertsEnabled(data.holidayAlertsEnabled ?? false)
         if (data.hasProfileImage) {
           userApi.getProfileImageUrl(userId).then(setAvatarUrl).catch(() => {})
         }
@@ -189,6 +196,36 @@ export default function SettingsPage() {
       toast.error("Could not save study reminders", { description: "Please try again." })
     } finally {
       setSavingReminders(false)
+    }
+  }
+
+  async function saveWeatherAlerts(enabled: boolean) {
+    const userId = getUserId()
+    if (!userId) return
+    setWeatherAlertsEnabled(enabled)
+    setSavingWeatherAlerts(true)
+    try {
+      await userApi.updateWeatherAlerts(userId, enabled)
+    } catch {
+      setWeatherAlertsEnabled(!enabled)
+      toast.error("Could not save weather alerts", { description: "Please try again." })
+    } finally {
+      setSavingWeatherAlerts(false)
+    }
+  }
+
+  async function saveHolidayAlerts(enabled: boolean) {
+    const userId = getUserId()
+    if (!userId) return
+    setHolidayAlertsEnabled(enabled)
+    setSavingHolidayAlerts(true)
+    try {
+      await userApi.updateHolidayAlerts(userId, enabled)
+    } catch {
+      setHolidayAlertsEnabled(!enabled)
+      toast.error("Could not save holiday alerts", { description: "Please try again." })
+    } finally {
+      setSavingHolidayAlerts(false)
     }
   }
 
@@ -685,6 +722,52 @@ export default function SettingsPage() {
                 </select>
               </div>
             )}
+          </SectionRow>
+
+          {/* Weather alerts */}
+          <SectionRow>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
+                  <CloudRain size={14} strokeWidth={2} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">Weather alerts</p>
+                  <p className="text-xs text-muted-foreground">
+                    Rain, heat, cold, or storms in Yeongdeungpo-gu, Seoul
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={weatherAlertsEnabled}
+                disabled={savingWeatherAlerts}
+                onCheckedChange={(v) => saveWeatherAlerts(v)}
+                aria-label="Toggle weather alerts"
+              />
+            </div>
+          </SectionRow>
+
+          {/* Holiday alerts */}
+          <SectionRow>
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-rose-500/10 text-rose-500">
+                  <CalendarDays size={14} strokeWidth={2} />
+                </div>
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground">Holiday alerts</p>
+                  <p className="text-xs text-muted-foreground">
+                    6 PM the evening before any Korea or Cambodia holiday
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={holidayAlertsEnabled}
+                disabled={savingHolidayAlerts}
+                onCheckedChange={(v) => saveHolidayAlerts(v)}
+                aria-label="Toggle holiday alerts"
+              />
+            </div>
           </SectionRow>
 
           <SectionRow last>
