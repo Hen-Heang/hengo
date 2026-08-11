@@ -11,6 +11,7 @@ import {
   ChevronRight,
   ShieldCheck,
   Globe,
+  CalendarDays,
   Camera,
   Loader2,
   Bell,
@@ -451,6 +452,29 @@ export default function SettingsPage() {
               title="Romanization & Korean Coach"
               description="Romanization, speech speed, and correction strictness"
               color="text-teal-500"
+            />
+            <ChevronRight
+              size={14}
+              strokeWidth={2}
+              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+            />
+          </button>
+        </SectionCard>
+      </motion.div>
+
+      {/* Integrations */}
+      <motion.div variants={itemVariants}>
+        <SectionCard>
+          <button
+            type="button"
+            onClick={() => router.push("/settings/integrations")}
+            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+          >
+            <SectionHeader
+              icon={CalendarDays}
+              title="Integrations"
+              description="Connect Google Calendar and other services"
+              color="text-blue-500"
             />
             <ChevronRight
               size={14}

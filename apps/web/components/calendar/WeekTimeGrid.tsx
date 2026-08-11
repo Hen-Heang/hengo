@@ -5,7 +5,7 @@ import { addDays, format, isSameDay, isToday, startOfWeek } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import type { Task } from "@/lib/tasks"
-import { getTaskColor, hexWithAlpha } from "@/lib/tasks"
+import { getTaskColor, hexWithAlpha, isExternalTask } from "@/lib/tasks"
 import { getAllDayTasks, layoutDayTasks, MINUTES_IN_DAY, formatTaskTimeRange } from "@/lib/calendar"
 
 // Two 44px half-hour targets per row keep the day grid touch-safe. The grid
@@ -54,6 +54,13 @@ export function WeekTimeGrid({
     return Array.from({ length: 7 }, (_, i) => addDays(start, i))
   }, [mode, selectedDate])
 
+  const timeZoneLabel = useMemo(() => {
+    const part = new Intl.DateTimeFormat(undefined, { timeZoneName: "short" })
+      .formatToParts(selectedDate)
+      .find((candidate) => candidate.type === "timeZoneName")
+    return part?.value ?? "Local"
+  }, [selectedDate])
+
   // Auto-scroll so the current time is in view on mount / view change.
   useEffect(() => {
     if (!scrollRef.current) return
@@ -69,7 +76,12 @@ export function WeekTimeGrid({
     <div className="flex h-full flex-col overflow-hidden">
       {/* Sticky day-header row */}
       <div className="flex border-b border-border/60 bg-card/60 backdrop-blur-md">
-        <div className="w-14 shrink-0 sm:w-16" aria-hidden />
+        <div
+          className="flex w-14 shrink-0 items-end justify-end pb-2 pr-1.5 text-[9px] font-medium text-muted-foreground sm:w-16"
+          title="Times use your local time zone"
+        >
+          {timeZoneLabel}
+        </div>
         {days.map((day) => {
           const today = isToday(day)
           const selected = isSameDay(day, selectedDate)
@@ -78,6 +90,9 @@ export function WeekTimeGrid({
               key={day.toISOString()}
               type="button"
               onClick={() => onDateSelect?.(day)}
+              aria-label={format(day, "EEEE, MMMM d")}
+              aria-current={today ? "date" : undefined}
+              aria-pressed={selected}
               className={cn(
                 "flex-1 px-1 py-2 text-center transition-colors",
                 onDateSelect && "hover:bg-primary/5"
@@ -179,9 +194,11 @@ function AllDayStrip({ days, getTasksForDate, onTaskClick, colWidth }: AllDayStr
                 type="button"
                 onClick={() => onTaskClick(task)}
                 title={task.title || task.description || "Untitled"}
+                aria-label={`${task.title || task.description || "Untitled"}${isExternalTask(task) ? ", Google Calendar, read-only" : ""}`}
                 className={cn(
                   "min-h-11 w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors",
-                  task.completed && "line-through opacity-60"
+                  task.completed && "line-through opacity-60",
+                  isExternalTask(task) && "border-dashed"
                 )}
                 style={{ backgroundColor: hexWithAlpha(color, 0.16), borderLeftColor: color }}
               >
@@ -229,6 +246,7 @@ function DayColumn({
             key={minutes}
             type="button"
             disabled={!onSlotClick}
+            tabIndex={-1}
             onClick={() => onSlotClick?.(day, `${hh}:${mm}`)}
             aria-label={`Add task at ${hh}:${mm} on ${format(day, "EEEE, MMMM d")}`}
             className={cn(
@@ -265,16 +283,22 @@ function DayColumn({
               onTaskClick(p.task)
             }}
             title={p.task.title || p.task.description || "Untitled"}
+            aria-label={`${p.task.title || p.task.description || "Untitled"}, ${formatTaskTimeRange(
+              p.task.daily_start_time,
+              p.task.daily_end_time,
+              p.task.is_anytime,
+            )}${isExternalTask(p.task) ? ", Google Calendar, read-only" : ""}`}
             className={cn(
-              "absolute z-10 overflow-hidden rounded-lg border border-l-[3px] px-1.5 py-1 text-left text-foreground shadow-sm transition-shadow duration-150 hover:z-30 hover:shadow-md",
-              p.task.completed && "opacity-60"
+              "absolute z-10 overflow-hidden rounded-lg border border-l-[3px] px-1.5 py-1 text-left text-foreground shadow-sm transition-shadow duration-150 hover:z-30 hover:shadow-md focus-visible:z-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
+              p.task.completed && "opacity-60",
+              isExternalTask(p.task) && "border-dashed"
             )}
             style={{
               top,
               height: Math.max(height - 2, 18),
               left: `calc(${p.lane * widthPct}% + 2px)`,
               width: `calc(${p.span * widthPct}% - 4px)`,
-              backgroundColor: hexWithAlpha(color, 0.16),
+              backgroundColor: hexWithAlpha(color, 0.2),
               borderColor: hexWithAlpha(color, 0.4),
               borderLeftColor: color,
             }}

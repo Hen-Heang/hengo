@@ -2,7 +2,6 @@
 
 import dynamic from "next/dynamic"
 
-import { GoalsHubHeader } from "@/components/goals/hub/GoalsHubHeader"
 import { GoalsHubNav } from "@/components/goals/hub/GoalsHubNav"
 
 // The calendar is heavy (date-grid + recharts-free but large). Load it on the
@@ -21,10 +20,9 @@ const Calendar = dynamic(
 // The Calendar tab of the Goals hub — see GoalsHubNav.
 export default function CalendarPage() {
   return (
-    <div className="space-y-5 pb-12 sm:space-y-6">
-      <GoalsHubHeader description="See every task and deadline laid out by day, week, or month." />
+    <div className="space-y-3 pb-2 sm:space-y-4">
       <GoalsHubNav />
-      <div className="h-[calc(100dvh-12rem)] min-h-[420px]">
+      <div className="h-[calc(100dvh-13.5rem)] min-h-[520px] sm:h-[calc(100dvh-11rem)]">
         <Calendar />
       </div>
     </div>

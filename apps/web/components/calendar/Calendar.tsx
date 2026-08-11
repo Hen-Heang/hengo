@@ -1,21 +1,28 @@
 "use client"
 
+import Link from "next/link"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { addDays, addMonths } from "date-fns"
-import { ChevronLeft, ChevronRight, Plus } from "lucide-react"
+import { addDays, addMonths, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from "date-fns"
+import { AlertCircle, ChevronLeft, ChevronRight, CloudOff, LoaderCircle, Plus } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { toast } from "sonner"
 
 import { useIsMobile } from "@/hooks/useMobile"
 import { useCalendarTasks } from "@/hooks/useCalendarTasks"
+import { useGoogleCalendarIntegration } from "@/hooks/useGoogleCalendarIntegration"
+import { useGoogleCalendarEvents } from "@/hooks/useGoogleCalendarEvents"
+import { useAvailableFocusWindows } from "@/hooks/useAvailableFocusWindows"
 import { getApiErrorMessage } from "@/lib/api"
-import type { Task } from "@/lib/tasks"
+import { isExternalTask, type Task } from "@/lib/tasks"
+import { toCalendarTask } from "@/lib/external-calendar"
 import { filterTasksByDate, getTaskAnchorDate } from "@/lib/calendar"
 import { Button } from "@/components/ui/button"
 import { CompletionCelebration } from "@/components/ui/completion-celebration"
 import { DeleteConfirmDialog } from "@/components/goals/DeleteConfirmDialog"
+import { AvailableFocusWindows } from "./AvailableFocusWindows"
 
 import { CalendarViewSwitcher, type CalendarView } from "./CalendarViewSwitcher"
+import { CalendarSourceFilter, type CalendarSource } from "./CalendarSourceFilter"
 import { WeekTimeGrid } from "./WeekTimeGrid"
 import { MonthView } from "./MonthView"
 import { TaskList } from "./TaskList"
@@ -38,6 +45,38 @@ interface CalendarProps {
 const toIso = (d?: Date | null): string | undefined =>
   d && !isNaN(d.getTime()) ? d.toISOString() : undefined
 
+const CALENDAR_VIEW_STORAGE_KEY = "hengo:calendar-view"
+
+function getInitialCalendarView(): CalendarView {
+  if (typeof window === "undefined") return "week"
+  let stored: string | null = null
+  try {
+    stored = window.localStorage.getItem(CALENDAR_VIEW_STORAGE_KEY)
+  } catch {
+    // Use the responsive default when storage is unavailable.
+  }
+  const saved = stored === "day" || stored === "week" || stored === "month" ? stored : null
+  if (window.innerWidth < 1024) return saved === "month" ? "month" : "day"
+  return saved ?? "week"
+}
+
+// Bounded fetch window for Google events, matching what's actually visible —
+// never the whole calendar history. Month covers the full rendered grid
+// (leading/trailing days from adjacent months), same as MonthView's own cells.
+function getGoogleEventRange(view: CalendarView, date: Date): { timeMin: string; timeMax: string } {
+  if (view === "day") {
+    const start = startOfDay(date)
+    return { timeMin: start.toISOString(), timeMax: addDays(start, 1).toISOString() }
+  }
+  if (view === "week") {
+    const start = startOfWeek(date, { weekStartsOn: 0 })
+    return { timeMin: start.toISOString(), timeMax: addDays(start, 7).toISOString() }
+  }
+  const start = startOfWeek(startOfMonth(date), { weekStartsOn: 0 })
+  const end = endOfWeek(endOfMonth(date), { weekStartsOn: 0 })
+  return { timeMin: start.toISOString(), timeMax: addDays(end, 1).toISOString() }
+}
+
 export function Calendar({
   goalId,
   goalTitle,
@@ -46,11 +85,9 @@ export function Calendar({
   initialTaskId,
 }: CalendarProps) {
   const isMobile = useIsMobile()
-  const { tasks, isLoading, create, update, remove } = useCalendarTasks(goalId)
+  const { tasks, isLoading, error: tasksError, create, update, remove } = useCalendarTasks(goalId)
 
-  const [view, setView] = useState<CalendarView>(() =>
-    typeof window !== "undefined" && window.innerWidth < 1024 ? "day" : "week"
-  )
+  const [view, setView] = useState<CalendarView>(getInitialCalendarView)
   const [selectedDate, setSelectedDate] = useState<Date>(() => new Date())
   const [selectedTask, setSelectedTask] = useState<Task | null>(null)
   const [selectedTaskIndex, setSelectedTaskIndex] = useState(0)
@@ -64,10 +101,43 @@ export function Calendar({
   const [taskToDelete, setTaskToDelete] = useState<Task | null>(null)
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false)
   const [celebrate, setCelebrate] = useState(false)
+  const [sourceFilter, setSourceFilter] = useState<CalendarSource>("all")
+
+  // Week view is desktop-only; derive a phone-safe view without an effect so a
+  // desktop→mobile resize that left `view` on "week" falls back to "day".
+  const effectiveView: CalendarView = isMobile && view === "week" ? "day" : view
+
+  // ── Google Calendar (Settings > Integrations) — personal calendar only,
+  // never for a goal-scoped board. Hengo tasks remain usable when Google is
+  // disconnected or temporarily unavailable.
+  const {
+    connected: googleConnected,
+    error: googleIntegrationError,
+  } = useGoogleCalendarIntegration()
+  const googleRange = useMemo(
+    () => getGoogleEventRange(effectiveView, selectedDate),
+    [effectiveView, selectedDate]
+  )
+  const {
+    events: googleEvents,
+    error: googleEventsError,
+    isFetching: isGoogleEventsFetching,
+  } = useGoogleCalendarEvents({
+    enabled: !goalId && googleConnected,
+    timeMin: googleRange.timeMin,
+    timeMax: googleRange.timeMax,
+  })
+  const googleTasks = useMemo(() => googleEvents.map(toCalendarTask), [googleEvents])
+  const effectiveSourceFilter = googleConnected ? sourceFilter : "all"
+  const mergedTasks = useMemo(() => {
+    if (goalId || effectiveSourceFilter === "hengo") return tasks
+    if (effectiveSourceFilter === "google") return googleTasks
+    return [...tasks, ...googleTasks]
+  }, [effectiveSourceFilter, goalId, googleTasks, tasks])
 
   const getTasksForDate = useCallback(
-    (date: Date) => filterTasksByDate(tasks, date),
-    [tasks]
+    (date: Date) => filterTasksByDate(mergedTasks, date),
+    [mergedTasks]
   )
 
   const currentDateTasks = useMemo(
@@ -75,11 +145,28 @@ export function Calendar({
     [getTasksForDate, selectedDate]
   )
 
-  // Week view is desktop-only; derive a phone-safe view without an effect so a
-  // desktop→mobile resize that left `view` on "week" falls back to "day".
-  const effectiveView: CalendarView = isMobile && view === "week" ? "day" : view
+  // ── Free time (Phase 8) — always the raw Hengo tasks for the day, never
+  // mergedTasks/googleTasks, which would double-count Google busy time.
+  const hengoTasksForSelectedDate = useMemo(
+    () => filterTasksByDate(tasks, selectedDate),
+    [tasks, selectedDate]
+  )
+  const focusWindows = useAvailableFocusWindows({
+    date: selectedDate,
+    tasks: hengoTasksForSelectedDate,
+    enabled: !goalId && googleConnected,
+  })
 
   // ── Navigation ──────────────────────────────────────────────────────────
+  const handleViewChange = (nextView: CalendarView) => {
+    setView(nextView)
+    try {
+      window.localStorage.setItem(CALENDAR_VIEW_STORAGE_KEY, nextView)
+    } catch {
+      // A blocked storage API should not make the calendar unusable.
+    }
+  }
+
   const handleCalendarNavigate = (dir: "prev" | "next" | "today") => {
     const base = selectedDate
     let next: Date
@@ -166,7 +253,7 @@ export function Calendar({
   const handleGridDateSelect = (day: Date) => {
     setSelectedTask(null)
     setSelectedDate(day)
-    setView("day")
+    handleViewChange("day")
   }
 
   const openAddDialog = () => {
@@ -175,6 +262,10 @@ export function Calendar({
   }
 
   const handleEditTask = (task: Task) => {
+    if (isExternalTask(task)) {
+      toast.error("Google Calendar events are read-only in Hengo")
+      return
+    }
     setEditingTask(task)
     setIsEditOpen(true)
   }
@@ -237,6 +328,10 @@ export function Calendar({
   const handleToggleTaskCompletion = async (taskId: string) => {
     const task = tasks.find((t) => t.id === taskId) ?? (selectedTask?.id === taskId ? selectedTask : null)
     if (!task) return
+    if (isExternalTask(task)) {
+      toast.error("Google Calendar events are read-only in Hengo")
+      return
+    }
     const nextCompleted = !task.completed
     // Confetti when completing; stay quiet when re-opening a task.
     if (nextCompleted) setCelebrate(true)
@@ -346,22 +441,67 @@ export function Calendar({
     </div>
   )
 
+  const sourceToolbar = !goalId && googleConnected ? (
+    <div className="flex min-w-0 items-center gap-1.5">
+      {isGoogleEventsFetching && (
+        <span
+          className="flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground"
+          aria-label="Refreshing Google Calendar"
+        >
+          <LoaderCircle className="h-4 w-4 animate-spin" />
+        </span>
+      )}
+      <CalendarSourceFilter value={effectiveSourceFilter} onChange={setSourceFilter} />
+    </div>
+  ) : undefined
+
+  const googleUnavailable = Boolean(
+    !goalId && (googleIntegrationError || (googleConnected && googleEventsError)),
+  )
+
   const viewBody = (
     <>
       <div className="shrink-0 border-b border-border/60 bg-card/40">
         <CalendarViewSwitcher
           view={effectiveView}
-          onViewChange={setView}
+          onViewChange={handleViewChange}
           selectedDate={selectedDate}
           onNavigate={handleCalendarNavigate}
           views={isMobile ? ["day", "month"] : ["day", "week", "month"]}
-          showNav={effectiveView !== "month" || !isMobile}
+          toolbarEnd={sourceToolbar}
         />
       </div>
+      {tasksError && (
+        <div
+          role="alert"
+          className="flex items-center gap-2 border-b border-destructive/20 bg-destructive/5 px-3 py-2 text-xs text-destructive sm:px-4"
+        >
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          <span>Hengo tasks could not be loaded. Refresh to try again.</span>
+        </div>
+      )}
+      {googleUnavailable && (
+        <div
+          role="status"
+          className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-100 sm:px-4"
+        >
+          <CloudOff className="h-3.5 w-3.5 shrink-0" />
+          <span className="min-w-0 flex-1 truncate">Google Calendar could not refresh.</span>
+          <Link
+            href="/settings/integrations"
+            className="shrink-0 font-semibold underline-offset-4 hover:underline"
+          >
+            Review connection
+          </Link>
+        </div>
+      )}
+      {!goalId && !tasksError && !googleUnavailable && (
+        <AvailableFocusWindows date={selectedDate} windows={focusWindows} />
+      )}
       <div className="min-h-0 flex-1">
         {effectiveView === "month" ? (
           <div className="flex h-full flex-col">
-            <div className="min-h-0 flex-1 overflow-y-auto no-scrollbar">
+            <div className="min-h-0 flex-[3] overflow-hidden">
               <MonthView
                 currentMonth={selectedDate}
                 selectedDate={selectedDate}
@@ -374,7 +514,7 @@ export function Calendar({
               />
             </div>
             {isMobile && (
-              <div className="shrink-0 border-t border-border/60">
+              <div className="min-h-0 flex-1 overflow-y-auto border-t border-border/60 no-scrollbar">
                 <TaskList
                   selectedDate={selectedDate}
                   tasks={currentDateTasks}
@@ -402,7 +542,7 @@ export function Calendar({
 
   return (
     <motion.div
-      className="relative flex h-full w-full flex-col overflow-hidden rounded-lg border border-border/60 bg-background/50"
+      className="relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-border/60 bg-background/50"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.4 }}

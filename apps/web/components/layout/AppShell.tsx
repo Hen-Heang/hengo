@@ -145,7 +145,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   // decision page, not a Hengo feature — it must never show the app's own
   // nav chrome, same treatment as the pause timer.
   const isConsentRoute = pathname === "/oauth/consent"
-  const isChromeless = isPauseRoute || isConsentRoute
+  // Same treatment for the Google Calendar OAuth callback — a transient
+  // processing screen, not a place to show nav chrome.
+  const isGoogleCalendarCallbackRoute = pathname === "/integrations/google-calendar/callback"
+  const isChromeless = isPauseRoute || isConsentRoute || isGoogleCalendarCallbackRoute
   const fullBleed = isChatRoute || isChromeless
 
   // Chat renders its own compact top bar (mode switcher + a "Back to home"
