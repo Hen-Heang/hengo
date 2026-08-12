@@ -1,8 +1,10 @@
 "use client"
 
+import { useState } from "react"
 import { differenceInCalendarDays } from "date-fns"
-import { Clock, Calendar, AlertTriangle } from "lucide-react"
+import { AlertTriangle, Calendar, ChevronDown, Clock } from "lucide-react"
 
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -47,7 +49,6 @@ const formatDuration = (mins: number) => {
   return parts.join(" ")
 }
 
-// Native time input mirroring the AriaTimePicker prop shape ("HH:MM" value/onChange).
 function TimeField({
   value,
   onChange,
@@ -73,6 +74,8 @@ interface TaskFormFieldsProps {
   onSubmit: (e: React.FormEvent) => void
   preventEnterSubmit?: boolean
   className?: string
+  /** New-task mode: show only the fields needed to schedule quickly. */
+  compact?: boolean
 
   title: string
   onTitleChange: (v: string) => void
@@ -85,12 +88,6 @@ interface TaskFormFieldsProps {
   descriptionPlaceholder?: string
   descriptionMinRows?: number
 
-  /**
-   * The goal this task belongs to, and the goals it could belong to.
-   * Omit `goals` entirely to hide the field — used when the calendar is
-   * already scoped to one goal (embedded in that goal's own page), where the
-   * task's goal is implicit and shouldn't be re-chosen here.
-   */
   goals?: TaskFormGoalOption[]
   goalId?: string
   onGoalIdChange?: (v: string) => void
@@ -126,6 +123,7 @@ export function TaskFormFields({
   onSubmit,
   preventEnterSubmit,
   className,
+  compact = false,
   title,
   onTitleChange,
   titlePlaceholder = "What needs to be done?",
@@ -161,7 +159,128 @@ export function TaskFormFields({
   color,
   onColorChange,
 }: TaskFormFieldsProps) {
+  const [moreOpen, setMoreOpen] = useState(false)
   const spanDays = Math.max(0, differenceInCalendarDays(endDate, startDate))
+
+  const descriptionField = (
+    <div className="space-y-2">
+      <Label htmlFor={`${formId}-description`} className="text-sm font-medium text-muted-foreground">
+        Description <span className="font-normal">(optional)</span>
+      </Label>
+      <AutoResizingDescription
+        id={`${formId}-description`}
+        value={description}
+        onChange={onDescriptionChange}
+        placeholder={descriptionPlaceholder}
+        minRows={descriptionMinRows}
+        className="min-h-[88px] border-border bg-background/80 text-base"
+      />
+    </div>
+  )
+
+  const goalField = goals ? (
+    <div className="space-y-2">
+      <Label className="text-sm font-medium text-muted-foreground">Goal</Label>
+      <Select value={goalId ?? NO_GOAL} onValueChange={(v) => onGoalIdChange?.(v)}>
+        <SelectTrigger className="w-full" aria-label="Goal">
+          <SelectValue placeholder="No goal (personal task)" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value={NO_GOAL}>No goal (personal task)</SelectItem>
+          {goals.map((goal) => (
+            <SelectItem key={goal.id} value={goal.id}>
+              {goal.title}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  ) : null
+
+  const startDateField = (
+    <div className="space-y-2">
+      <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+        <Calendar className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+        Date
+      </Label>
+      <DateTimePicker
+        granularity="day"
+        value={startDate}
+        min={startDateMin}
+        max={startDateMax}
+        onChange={(d) => d && onStartDateChange(d)}
+      />
+    </div>
+  )
+
+  const anytimeField = (
+    <div className="flex min-h-11 items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2.5">
+      <div>
+        <Label className="text-sm font-medium text-foreground">Anytime</Label>
+        {compact && <p className="mt-0.5 text-xs text-muted-foreground">No fixed clock time</p>}
+      </div>
+      <Switch checked={isAnytime} onCheckedChange={onAnytimeChange} />
+    </div>
+  )
+
+  const startTimeField = !isAnytime ? (
+    <div className="space-y-2">
+      <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+        <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+        Start Time
+      </Label>
+      <TimeField ariaLabel="Start time" value={dailyStart} onChange={onStartTimeChange} />
+    </div>
+  ) : null
+
+  const advancedFields = (
+    <div className="space-y-5">
+      {descriptionField}
+
+      <div className="space-y-2">
+        <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+          <Calendar className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+          End Date
+        </Label>
+        <DateTimePicker
+          granularity="day"
+          value={endDate}
+          min={endDateMin}
+          max={endDateMax}
+          onChange={(d) => d && onEndDateChange(d)}
+        />
+      </div>
+
+      {!isAnytime && (
+        <div className="space-y-2">
+          <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+            <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+            End Time
+          </Label>
+          <TimeField ariaLabel="End time" value={dailyEnd} onChange={onEndTimeChange} />
+        </div>
+      )}
+
+      {showDuration && !isAnytime && (
+        <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2">
+          <span className="text-xs font-medium text-muted-foreground">Duration</span>
+          <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+            {formatDuration(calcDurationMinutes(startDate, endDate, dailyStart, dailyEnd))}
+          </span>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-2.5">
+        <Label className="text-sm font-medium text-muted-foreground">Completed</Label>
+        <Switch checked={completed} onCheckedChange={onCompletedChange} />
+      </div>
+
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-muted-foreground">Color</Label>
+        <TaskColorPicker value={color} onChange={onColorChange} />
+      </div>
+    </div>
+  )
 
   return (
     <form
@@ -176,10 +295,9 @@ export function TaskFormFields({
       }
       className={cn("space-y-5", className)}
     >
-      {/* Title */}
       <div className="space-y-2">
         <Label htmlFor={`${formId}-title`} className="text-sm font-medium text-muted-foreground">
-          Title
+          Task
         </Label>
         <Input
           id={`${formId}-title`}
@@ -187,7 +305,7 @@ export function TaskFormFields({
           onChange={(e) => onTitleChange(e.target.value)}
           placeholder={titlePlaceholder}
           autoFocus={autoFocusTitle}
-          className="bg-background/80 border-border h-11 text-base"
+          className="h-11 border-border bg-background/80 text-base"
         />
         {showTitleRequired && !title.trim() && (
           <p className="flex items-center gap-1.5 text-xs text-destructive">
@@ -197,112 +315,104 @@ export function TaskFormFields({
         )}
       </div>
 
-      {/* Description */}
-      <div className="space-y-2">
-        <Label
-          htmlFor={`${formId}-description`}
-          className="text-sm font-medium text-muted-foreground"
-        >
-          Description
-        </Label>
-        <AutoResizingDescription
-          id={`${formId}-description`}
-          value={description}
-          onChange={onDescriptionChange}
-          placeholder={descriptionPlaceholder}
-          minRows={descriptionMinRows}
-          className="bg-background/80 border-border min-h-[100px] text-base"
-        />
-      </div>
+      {compact ? (
+        <>
+          {goalField}
 
-      {/* Goal — hidden when the calendar is already scoped to one goal */}
-      {goals && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground">Goal</Label>
-          <Select value={goalId ?? NO_GOAL} onValueChange={(v) => onGoalIdChange?.(v)}>
-            <SelectTrigger className="w-full" aria-label="Goal">
-              <SelectValue placeholder="No goal (personal task)" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value={NO_GOAL}>No goal (personal task)</SelectItem>
-              {goals.map((goal) => (
-                <SelectItem key={goal.id} value={goal.id}>
-                  {goal.title}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-      )}
+          <div className="grid gap-3 sm:grid-cols-2" onClick={(e) => e.stopPropagation()}>
+            {startDateField}
+            {startTimeField ?? anytimeField}
+          </div>
 
-      {/* Dates */}
-      <div className="grid grid-cols-2 gap-3" onClick={(e) => e.stopPropagation()}>
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-            Start Date
-          </Label>
-          <DateTimePicker
-            granularity="day"
-            value={startDate}
-            min={startDateMin}
-            max={startDateMax}
-            onChange={(d) => d && onStartDateChange(d)}
-          />
-        </div>
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-            <Calendar className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-            End Date
-          </Label>
-          <DateTimePicker
-            granularity="day"
-            value={endDate}
-            min={endDateMin}
-            max={endDateMax}
-            onChange={(d) => d && onEndDateChange(d)}
-          />
-        </div>
-      </div>
+          {startTimeField && anytimeField}
 
-      {rangeHint && (
-        <p
-          className={cn(
-            "flex items-center gap-1.5 text-xs -mt-2",
-            rangeHintIsError ? "text-destructive" : "text-muted-foreground"
+          {rangeHint && (
+            <p
+              className={cn(
+                "flex items-center gap-1.5 text-xs",
+                rangeHintIsError ? "text-destructive" : "text-muted-foreground"
+              )}
+            >
+              <Calendar className="h-3.5 w-3.5 shrink-0" />
+              {rangeHint}
+            </p>
           )}
-        >
-          <Calendar className="h-3.5 w-3.5 shrink-0" />
-          {rangeHint}
-        </p>
-      )}
 
-      {/* Times */}
-      {!isAnytime && (
-        <div className="space-y-2">
-          <div className="grid grid-cols-2 gap-3">
+          {timeError && (
+            <p className="flex items-center gap-1.5 text-xs text-destructive">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0" />
+              {timeError}
+            </p>
+          )}
+
+          <Collapsible open={moreOpen} onOpenChange={setMoreOpen}>
+            <CollapsibleTrigger asChild>
+              <button
+                type="button"
+                className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+                More options
+              </button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-2">{advancedFields}</CollapsibleContent>
+          </Collapsible>
+        </>
+      ) : (
+        <>
+          {descriptionField}
+          {goalField}
+
+          <div className="grid grid-cols-2 gap-3" onClick={(e) => e.stopPropagation()}>
+            {startDateField}
             <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-                Start Time
+              <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+                End Date
               </Label>
-              <TimeField ariaLabel="Start time" value={dailyStart} onChange={onStartTimeChange} />
-            </div>
-            <div className="space-y-2">
-              <Label className="text-sm font-medium text-muted-foreground flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-                End Time
-              </Label>
-              <TimeField ariaLabel="End time" value={dailyEnd} onChange={onEndTimeChange} />
+              <DateTimePicker
+                granularity="day"
+                value={endDate}
+                min={endDateMin}
+                max={endDateMax}
+                onChange={(d) => d && onEndDateChange(d)}
+              />
             </div>
           </div>
 
-          {showDuration && (
-            <div className="flex items-center justify-between bg-muted/40 border border-border px-3 py-2 rounded-lg">
-              <span className="text-xs font-medium text-muted-foreground">Duration</span>
-              <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
-                {formatDuration(calcDurationMinutes(startDate, endDate, dailyStart, dailyEnd))}
-              </span>
+          {rangeHint && (
+            <p
+              className={cn(
+                "flex items-center gap-1.5 text-xs -mt-2",
+                rangeHintIsError ? "text-destructive" : "text-muted-foreground"
+              )}
+            >
+              <Calendar className="h-3.5 w-3.5 shrink-0" />
+              {rangeHint}
+            </p>
+          )}
+
+          {!isAnytime && (
+            <div className="space-y-2">
+              <div className="grid grid-cols-2 gap-3">
+                {startTimeField}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-1.5 text-sm font-medium text-muted-foreground">
+                    <Clock className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
+                    End Time
+                  </Label>
+                  <TimeField ariaLabel="End time" value={dailyEnd} onChange={onEndTimeChange} />
+                </div>
+              </div>
+
+              {showDuration && (
+                <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2">
+                  <span className="text-xs font-medium text-muted-foreground">Duration</span>
+                  <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">
+                    {formatDuration(calcDurationMinutes(startDate, endDate, dailyStart, dailyEnd))}
+                  </span>
+                </div>
+              )}
             </div>
           )}
 
@@ -312,28 +422,23 @@ export function TaskFormFields({
               {timeError}
             </p>
           )}
-        </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            {anytimeField}
+            <div className="flex items-center justify-between rounded-lg border border-border bg-muted/40 px-3 py-2.5">
+              <Label className="text-sm font-medium text-muted-foreground">Completed</Label>
+              <Switch checked={completed} onCheckedChange={onCompletedChange} />
+            </div>
+          </div>
+
+          {spanDays > 0 && <p className="text-xs text-muted-foreground">Spans {spanDays + 1} days</p>}
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium text-muted-foreground">Color</Label>
+            <TaskColorPicker value={color} onChange={onColorChange} />
+          </div>
+        </>
       )}
-
-      {spanDays > 0 && <p className="text-xs text-muted-foreground">Spans {spanDays + 1} days</p>}
-
-      {/* Anytime & Completed */}
-      <div className="grid grid-cols-2 gap-3">
-        <div className="flex items-center justify-between bg-muted/40 border border-border px-3 py-2.5 rounded-lg">
-          <Label className="text-sm font-medium text-muted-foreground">Anytime</Label>
-          <Switch checked={isAnytime} onCheckedChange={onAnytimeChange} />
-        </div>
-        <div className="flex items-center justify-between bg-muted/40 border border-border px-3 py-2.5 rounded-lg">
-          <Label className="text-sm font-medium text-muted-foreground">Completed</Label>
-          <Switch checked={completed} onCheckedChange={onCompletedChange} />
-        </div>
-      </div>
-
-      {/* Color */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-muted-foreground">Color</Label>
-        <TaskColorPicker value={color} onChange={onColorChange} />
-      </div>
     </form>
   )
 }
