@@ -11,9 +11,8 @@
 import { getUserId } from "@/lib/auth-store"
 import { supabase } from "@/lib/supabase"
 import type { ExternalCalendarEvent } from "@/lib/external-calendar"
+import type { InboxItemType } from "@/lib/inbox"
 
-const GOOGLE_CALENDAR_SCOPE = "https://www.googleapis.com/auth/calendar.readonly"
-const GOOGLE_OAUTH_AUTHORIZE_ENDPOINT = "https://accounts.google.com/o/oauth2/v2/auth"
 const OAUTH_STATE_STORAGE_KEY = "hengo:gcal-oauth-state"
 
 export interface GoogleCalendarIntegrationStatus {
@@ -27,15 +26,22 @@ export interface GoogleCalendarEventsResult {
   events: ExternalCalendarEvent[]
 }
 
+export interface NotionCaptureInput {
+  title: string | null
+  content: string
+  tags: string[]
+  itemType: InboxItemType
+}
+
 function generateOAuthState(): string {
   const random = crypto.getRandomValues(new Uint8Array(24))
   return Array.from(random, (b) => b.toString(16).padStart(2, "0")).join("")
 }
 
-// Every route under app/api/integrations/google-calendar/* is a normal
-// requireUser route (like the AI routes), so it needs the caller's Supabase
-// access token as a bearer header — supabase-js doesn't attach this to
-// same-origin fetches on its own the way it does to its own PostgREST calls.
+// Every route under app/api/integrations/* is a normal requireUser route (like
+// the AI routes), so it needs the caller's Supabase access token as a bearer
+// header — supabase-js doesn't attach this to same-origin fetches on its own
+// the way it does to its own PostgREST calls.
 async function authedFetch(path: string, init?: RequestInit): Promise<Response | null> {
   const { data } = await supabase.auth.getSession()
   const accessToken = data.session?.access_token
@@ -44,6 +50,11 @@ async function authedFetch(path: string, init?: RequestInit): Promise<Response |
     ...init,
     headers: { ...init?.headers, Authorization: `Bearer ${accessToken}` },
   })
+}
+
+async function responseError(res: Response, fallback: string): Promise<Error> {
+  const json = await res.json().catch(() => null)
+  return new Error(typeof json?.error === "string" ? json.error : fallback)
 }
 
 export const integrationsApi = {
@@ -83,9 +94,9 @@ export const integrationsApi = {
     return res.json()
   },
 
-  // Raw Google busy blocks for the Phase 8 free-time widget — see
-  // lib/free-time.ts for how these combine with Hengo tasks. Same
-  // fail-open behavior as getGoogleCalendarEvents.
+  // Raw Google busy blocks for the free-time widget — see lib/free-time.ts for
+  // how these combine with Hengo tasks. Same fail-open behavior as
+  // getGoogleCalendarEvents.
   getGoogleCalendarFreeBusy: async (
     timeMin: string,
     timeMax: string
@@ -97,27 +108,36 @@ export const integrationsApi = {
     return json.busy ?? []
   },
 
-  // Redirects the browser to Google's consent screen.
-  connectGoogleCalendar: () => {
-    const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
-    if (!clientId) {
-      throw new Error("Google Calendar is not configured (missing NEXT_PUBLIC_GOOGLE_CLIENT_ID).")
-    }
+  // Starts OAuth from a trusted server route instead of reading the Google
+  // client id from the browser bundle. The browser still owns the random
+  // anti-CSRF state because the existing callback page validates it before
+  // handing the short-lived authorization code to the server.
+  connectGoogleCalendar: async (): Promise<void> => {
     if (!getUserId()) throw new Error("Not signed in.")
 
     const state = generateOAuthState()
     sessionStorage.setItem(OAUTH_STATE_STORAGE_KEY, state)
 
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: `${window.location.origin}/integrations/google-calendar/callback`,
-      response_type: "code",
-      scope: GOOGLE_CALENDAR_SCOPE,
-      access_type: "offline",
-      prompt: "consent",
-      state,
+    const res = await authedFetch("/api/integrations/google-calendar/connect", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ state }),
     })
-    window.location.assign(`${GOOGLE_OAUTH_AUTHORIZE_ENDPOINT}?${params.toString()}`)
+    if (!res) {
+      sessionStorage.removeItem(OAUTH_STATE_STORAGE_KEY)
+      throw new Error("Google Calendar requires an active Hengo session.")
+    }
+    if (!res.ok) {
+      sessionStorage.removeItem(OAUTH_STATE_STORAGE_KEY)
+      throw await responseError(res, "Could not start Google Calendar connection.")
+    }
+
+    const json = (await res.json()) as { authorizationUrl?: string }
+    if (!json.authorizationUrl) {
+      sessionStorage.removeItem(OAUTH_STATE_STORAGE_KEY)
+      throw new Error("Google Calendar returned an invalid authorization URL.")
+    }
+    window.location.assign(json.authorizationUrl)
   },
 
   // Revokes the grant at Google and deletes Hengo's stored credentials.
@@ -126,5 +146,21 @@ export const integrationsApi = {
     const res = await authedFetch("/api/integrations/google-calendar/disconnect", { method: "POST" })
     if (!res) throw new Error("Not signed in.")
     if (!res.ok) throw new Error("Could not disconnect Google Calendar.")
+  },
+
+  // Optional one-way export for Quick Capture. Hengo remains the source of
+  // truth; Notion is a secondary copy only when the personal integration is
+  // explicitly enabled in deployment settings.
+  notionCaptureEnabled: process.env.NEXT_PUBLIC_NOTION_CAPTURE_ENABLED === "true",
+
+  syncCaptureToNotion: async (input: NotionCaptureInput): Promise<{ url: string | null }> => {
+    const res = await authedFetch("/api/integrations/notion/capture", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(input),
+    })
+    if (!res) throw new Error("Notion sync requires an active Hengo session.")
+    if (!res.ok) throw await responseError(res, "Could not sync this capture to Notion.")
+    return res.json()
   },
 }

@@ -16,13 +16,17 @@ export function GoogleCalendarIntegrationCard() {
   const [connecting, setConnecting] = useState(false)
   const [disconnecting, setDisconnecting] = useState(false)
 
-  function handleConnect() {
+  async function handleConnect() {
     setConnecting(true)
     try {
-      connect()
+      await connect()
+      // Successful connect navigates to Google, so this component normally
+      // unmounts before the state needs to be reset.
     } catch (e) {
       setConnecting(false)
-      toast.error(getApiErrorMessage(e, "Could not start Google Calendar connection"))
+      toast.error(getApiErrorMessage(e, "Could not start Google Calendar connection"), {
+        description: "Check the Google OAuth configuration in Vercel and try again.",
+      })
     }
   }
 
@@ -48,7 +52,7 @@ export function GoogleCalendarIntegrationCard() {
           <div>
             <p className="text-sm font-semibold text-foreground">Google Calendar</p>
             <p className="text-sm text-muted-foreground">
-              Use your calendar to find free time and improve your weekly planning.
+              Show your real calendar beside Hengo tasks so you can plan around existing commitments.
             </p>
           </div>
         </div>
@@ -70,7 +74,7 @@ export function GoogleCalendarIntegrationCard() {
             <p className="px-1 text-xs text-muted-foreground">
               {lastSyncedAt
                 ? `Last synced ${format(new Date(lastSyncedAt), "MMM d, h:mm a")}`
-                : "Not synced yet"}
+                : "Connected. Open Calendar to load your events."}
             </p>
             <Button type="button" variant="outline" size="sm" onClick={handleDisconnect} disabled={disconnecting}>
               {disconnecting ? (
@@ -83,15 +87,20 @@ export function GoogleCalendarIntegrationCard() {
             </Button>
           </div>
         ) : (
-          <Button type="button" size="sm" onClick={handleConnect} disabled={connecting}>
-            {connecting ? (
-              <>
-                <Loader2 size={14} className="mr-2 animate-spin" /> Redirecting…
-              </>
-            ) : (
-              "Connect Google Calendar"
-            )}
-          </Button>
+          <div className="space-y-2">
+            <Button type="button" size="sm" onClick={() => void handleConnect()} disabled={connecting}>
+              {connecting ? (
+                <>
+                  <Loader2 size={14} className="mr-2 animate-spin" /> Connecting…
+                </>
+              ) : (
+                "Connect Google Calendar"
+              )}
+            </Button>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Hengo requests read-only Calendar access. Your Google events stay external and cannot be edited from Hengo.
+            </p>
+          </div>
         )}
       </div>
     </div>
