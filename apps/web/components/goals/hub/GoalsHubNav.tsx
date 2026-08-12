@@ -6,16 +6,17 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 
 const TABS = [
-  { href: "/goals/overview", label: "Overview" },
-  { href: "/goals", label: "Goals" },
-  { href: "/goals/tasks", label: "Tasks" },
   { href: "/goals/calendar", label: "Calendar" },
+  { href: "/goals/tasks", label: "Tasks" },
+  { href: "/goals", label: "Goals" },
+  { href: "/goals/overview", label: "Overview" },
 ] as const
 
 /**
- * Local tab nav for the Goals hub's four routes. Real links, not tab
- * triggers — same reasoning as GoalDetailNav: back button, middle-click and
- * a pasted URL all behave, and each tab is its own bookmarkable page.
+ * Local tab nav for the Goals hub's four routes. The order mirrors the daily
+ * workflow: schedule time first, manage the task list, then adjust goals and
+ * review the broader overview. Real links keep back button, middle-click and
+ * pasted URLs working normally.
  */
 export function GoalsHubNav() {
   const pathname = usePathname()
@@ -34,7 +35,7 @@ export function GoalsHubNav() {
                   "flex min-h-11 items-center justify-center whitespace-nowrap rounded-lg px-3 text-sm font-semibold transition-colors",
                   active
                     ? "bg-background text-foreground shadow-sm"
-                    : "text-muted-foreground hover:text-foreground",
+                    : "text-muted-foreground hover:text-foreground"
                 )}
               >
                 {tab.label}
