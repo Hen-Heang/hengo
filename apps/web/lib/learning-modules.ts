@@ -26,21 +26,37 @@ export type LearningModule = {
   /** Whether this module should also get its own sidebar/nav entry. */
   showInSidebar?: boolean
   statusLabel?: string
+  /** Featured modules get stronger visual hierarchy on the Learn hub. */
+  featured?: boolean
 }
 
+// Exam prep is intentionally first while the Aug 29 K-Specialist interview is
+// the learner's highest-priority Korean goal.
 export const LEARNING_MODULE_CATEGORIES: LearningModuleCategory[] = [
+  "exam-prep",
   "practice",
   "study",
-  "exam-prep",
 ]
 
 export const LEARNING_MODULE_CATEGORY_LABELS: Record<LearningModuleCategory, string> = {
-  practice: "Practice",
-  study: "Study",
-  "exam-prep": "Exam preparation",
+  practice: "Daily practice",
+  study: "Build your Korean",
+  "exam-prep": "Exam focus",
 }
 
 export const learningModules: LearningModule[] = [
+  {
+    id: "exam-prep",
+    title: "K-Specialist Exam Prep",
+    description: "Practice your Aug 29 Korean Q&A with your real Korea–Cambodia summer story, listening keywords, and short formal answers.",
+    href: "/interview",
+    icon: GraduationCap,
+    category: "exam-prep",
+    badge: "Korean",
+    showInSidebar: true,
+    statusLabel: "Priority · Aug 29 interview",
+    featured: true,
+  },
   {
     id: "practice-today",
     title: "Today's Practice",
@@ -105,16 +121,6 @@ export const learningModules: LearningModule[] = [
     href: "/listening",
     icon: Headphones,
     category: "study",
-    badge: "Korean",
-    showInSidebar: true,
-  },
-  {
-    id: "exam-prep",
-    title: "Exam Preparation",
-    description: "TOPIK-style mock interviews and script practice.",
-    href: "/interview",
-    icon: GraduationCap,
-    category: "exam-prep",
     badge: "Korean",
     showInSidebar: true,
   },
