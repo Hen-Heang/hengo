@@ -13,6 +13,17 @@ export interface GoogleTokenExchangeResult {
   scope: string
 }
 
+/**
+ * Calendar OAuth now prefers a server-only client id. The public id remains a
+ * compatibility fallback because older deployments also use it for Google
+ * sign-in. Keeping Calendar authorization server-driven means the connect
+ * button no longer fails just because NEXT_PUBLIC_GOOGLE_CLIENT_ID was omitted
+ * from a production build.
+ */
+export function getGoogleOAuthClientId(): string | null {
+  return process.env.GOOGLE_CLIENT_ID ?? process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID ?? null
+}
+
 // Thrown when Google rejects a refresh_token grant (revoked/expired) —
 // distinct from a transient failure, since the fix is "the user reconnects",
 // not "retry the request".
@@ -27,7 +38,7 @@ export async function exchangeGoogleAuthCode(
   code: string,
   redirectUri: string
 ): Promise<GoogleTokenExchangeResult> {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+  const clientId = getGoogleOAuthClientId()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
   if (!clientId || !clientSecret) {
     throw new Error("Google Calendar is not configured on the server.")
@@ -77,7 +88,7 @@ export interface GoogleTokenRefreshResult {
 export async function refreshGoogleAccessToken(
   refreshToken: string
 ): Promise<GoogleTokenRefreshResult> {
-  const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID
+  const clientId = getGoogleOAuthClientId()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
   if (!clientId || !clientSecret) {
     throw new Error("Google Calendar is not configured on the server.")
