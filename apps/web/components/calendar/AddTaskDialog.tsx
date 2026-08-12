@@ -247,16 +247,17 @@ export function AddTaskDialog({
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
       <DialogContent
         showCloseButton={false}
-        className="flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-[520px] flex-col gap-0 overflow-hidden rounded-lg p-0"
+        className="flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-[500px] flex-col gap-0 overflow-hidden rounded-lg p-0"
       >
         <div className="flex flex-shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-              <CalendarClock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" />
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-2">
+              <CalendarClock className="h-4 w-4 text-blue-500 dark:text-blue-400 sm:h-5 sm:w-5" />
             </div>
-            <DialogTitle className="text-base sm:text-lg font-semibold text-foreground">
-              Add New Task
-            </DialogTitle>
+            <div>
+              <DialogTitle className="text-base font-semibold text-foreground sm:text-lg">Add task</DialogTitle>
+              <p className="text-xs text-muted-foreground">Name it, choose when, and continue your day.</p>
+            </div>
           </div>
           <button
             type="button"
@@ -268,13 +269,14 @@ export function AddTaskDialog({
           </button>
         </div>
         <DialogDescription className="sr-only">
-          Create a new task with a title, description, dates, optional time range, and color.
+          Quickly create a task. Description, end time, status and color are available under More options.
         </DialogDescription>
 
         <div className="no-scrollbar flex-1 overflow-y-auto p-4 sm:px-5">
           <TaskFormFields
             formId="add-task-form"
             onSubmit={handleSubmit}
+            compact
             title={title}
             onTitleChange={setTitle}
             autoFocusTitle
@@ -310,23 +312,23 @@ export function AddTaskDialog({
 
         <div className="flex-shrink-0 border-t border-border/60 px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={handleClose} className="flex-1 h-11">
+            <Button type="button" variant="outline" onClick={handleClose} className="h-11 flex-1">
               Cancel
             </Button>
             <Button
               type="submit"
               form="add-task-form"
               disabled={isSubmitDisabled}
-              className="flex-[2] h-11"
+              className="h-11 flex-[2]"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Adding...
                 </>
               ) : (
                 <>
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="mr-2 h-4 w-4" />
                   Create Task
                 </>
               )}
