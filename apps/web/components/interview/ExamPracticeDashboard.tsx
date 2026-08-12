@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { ArrowRight, CalendarDays, ListFilter, RefreshCw, Sparkles, Target } from "lucide-react"
 
+import { PersonalExamReviewCard } from "@/components/interview/PersonalExamReviewCard"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -92,11 +93,13 @@ export function ExamPracticeDashboard({
         </CardContent>
       </Card>
 
+      <PersonalExamReviewCard />
+
       <Card className="rounded-2xl border-border bg-card shadow-sm">
         <CardContent className="p-5 sm:p-6">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-                <h2 className="font-semibold text-foreground">Choose today&apos;s level</h2>
+              <h2 className="font-semibold text-foreground">Choose today&apos;s level</h2>
               <p className="mt-1 text-sm text-muted-foreground">
                 Recommended now: <span className="font-medium text-foreground">{difficultyRecommendationLabel(recommended)}</span>. You can override it.
               </p>
@@ -131,7 +134,7 @@ export function ExamPracticeDashboard({
           <CardContent className="p-5 sm:p-6">
             <div className="flex items-center gap-2">
               <Target className="size-5 text-blue-600" aria-hidden="true" />
-                <h2 className="font-semibold text-foreground">Today&apos;s 5</h2>
+              <h2 className="font-semibold text-foreground">Today&apos;s 5</h2>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
               Uses stable database questions and tracks progress. Must-practise, new, and low-scoring questions come first.
