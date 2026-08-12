@@ -155,6 +155,8 @@ export function AddTaskDialog({
 
   const handleStartDateChange = useCallback((d: Date) => {
     setStartDate(d)
+    // A later start automatically carries the one-day task forward instead
+    // of forcing the user to edit End Date first.
     setEndDate((prev) => (d > prev ? d : prev))
     setSelectedDate(d)
     setTimeError(null)
@@ -166,11 +168,6 @@ export function AddTaskDialog({
       setTimeError(null)
     },
     [startDate]
-  )
-
-  const startDateMax = useMemo(
-    () => (goalTargetDate ? (endDate < goalTargetDate ? endDate : goalTargetDate) : endDate),
-    [goalTargetDate, endDate]
   )
 
   const endDateMin = useMemo(
@@ -291,7 +288,7 @@ export function AddTaskDialog({
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
             startDateMin={goalStartDate}
-            startDateMax={startDateMax}
+            startDateMax={goalTargetDate}
             endDateMin={endDateMin}
             endDateMax={goalTargetDate}
             rangeHint={rangeHint}
