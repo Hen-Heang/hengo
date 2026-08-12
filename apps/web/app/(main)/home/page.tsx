@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useMemo } from "react"
 import { motion, type Variants } from "motion/react"
-import { BrainCircuit, Sparkles, Target, TreeDeciduous } from "lucide-react"
+import { CalendarDays, ListChecks, Sparkles, Target } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
 import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
@@ -46,10 +46,10 @@ type Shortcut = {
   badgeTone?: "default" | "warning"
 }
 
-// Small "continue where you left off" tiles into the other workspaces — not
-// a data section of their own, so no dedicated loading state; the Goals
-// badge below reuses useGoals' already-cached list (shares its query key
-// with useTodaysTasks, so this never triggers a second goals fetch).
+// Daily shortcuts deliberately favor action over storage. Calendar plans time,
+// Goals sets direction, Habits handles repeated actions, and Learn continues
+// the current Korean focus. Memory/Notes remain reachable through navigation
+// and the Quick Switcher without competing for the first screen.
 function WorkspaceShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
   return (
     <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -104,6 +104,7 @@ export default function HomePage() {
   }, [sortedGoals])
 
   const shortcuts: Shortcut[] = [
+    { href: "/goals/calendar", label: "Calendar", icon: CalendarDays },
     {
       href: getLastVisited("plan", "/goals"),
       label: "Goals",
@@ -111,8 +112,7 @@ export default function HomePage() {
       badge: goalsBadge?.text,
       badgeTone: goalsBadge?.tone,
     },
-    { href: getLastVisited("grow", "/growth/recovery"), label: "Grow", icon: TreeDeciduous },
-    { href: getLastVisited("memory", "/ask-hengo/memories"), label: "Memory", icon: BrainCircuit },
+    { href: "/growth/habits", label: "Habits", icon: ListChecks },
     { href: getLastVisited("learn", "/learn"), label: "Learn", icon: Sparkles },
   ]
 
@@ -144,7 +144,7 @@ export default function HomePage() {
         <TodayHabitCheckins />
       </motion.div>
 
-      {/* ── Workspace shortcuts ── */}
+      {/* ── Daily workspaces ── */}
       <motion.div variants={fadeUp}>
         <WorkspaceShortcuts shortcuts={shortcuts} />
       </motion.div>
