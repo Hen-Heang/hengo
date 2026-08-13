@@ -51,7 +51,7 @@ export default function LoginPage() {
         <div className="flex items-center justify-between lg:hidden">
           <Link href="/" className="group flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">
-              <Image src="/hengo-icon.svg" alt="" width={36} height={36} className="h-full w-full" />
+              <Image src="/hengo-icon.png" alt="" width={36} height={36} className="h-full w-full" />
             </span>
             <span className="text-lg font-semibold tracking-tight text-foreground">Hengo</span>
           </Link>
@@ -191,9 +191,9 @@ export default function LoginPage() {
 }
 
 const FEATURES = [
-  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean." },
-  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms." },
-  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback." },
+  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean.", color: "text-sky-300" },
+  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms.", color: "text-amber-300" },
+  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback.", color: "text-violet-300" },
 ]
 
 function BrandPanel() {
@@ -213,7 +213,7 @@ function BrandPanel() {
 
       <div className="relative z-10 flex items-center gap-3">
         <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-xl bg-white/10 ring-1 ring-white/20 backdrop-blur">
-          <Image src="/hengo-icon.svg" alt="" width={40} height={40} className="h-full w-full" />
+          <Image src="/hengo-icon.png" alt="" width={40} height={40} className="h-full w-full" />
         </span>
         <span className="text-xl font-semibold tracking-tight">Hengo</span>
       </div>
@@ -232,7 +232,7 @@ function BrandPanel() {
           {FEATURES.map((f) => (
             <li key={f.title} className="flex gap-3.5">
               <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
-                <f.icon size={17} className="text-sky-200" />
+                <f.icon size={17} className={f.color} />
               </span>
               <div className="space-y-0.5">
                 <p className="text-sm font-medium text-white">{f.title}</p>

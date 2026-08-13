@@ -197,9 +197,9 @@ export function GoalFormContainer({
         })}
       </div>
 
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
         <Form {...form}>
-          <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
             {step === "basics" ? (
               <BasicInfoStep
                 form={form}

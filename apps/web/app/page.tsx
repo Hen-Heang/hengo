@@ -195,7 +195,7 @@ export default function Home() {
             <Link href="/" className="group flex items-center gap-3">
               <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-2xl shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
                 <Image
-                  src="/hengo-icon.svg"
+                  src="/hengo-icon.png"
                   alt=""
                   width={36}
                   height={36}
@@ -614,16 +614,51 @@ export default function Home() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
-                className="relative aspect-video overflow-hidden rounded-3xl border border-border shadow-2xl"
+                className="relative aspect-video overflow-hidden rounded-3xl border border-border bg-card shadow-2xl dark:bg-slate-900/40"
               >
-                <div className="absolute inset-0 bg-blue-600/5 backdrop-blur-sm flex items-center justify-center">
-                   <div className="text-center p-8">
-                      <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-xl mb-4 text-blue-600">
-                        <Zap size={32} fill="currentColor" />
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-emerald-500/10" />
+                <div className="relative flex h-full flex-col justify-between p-6 sm:p-8">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">This week</p>
+                      <p className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">Daily goal: 87%</p>
+                    </div>
+                    <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1.5">
+                      <span className="text-sm">🔥</span>
+                      <span className="text-sm font-bold text-amber-600">12-day streak</span>
+                    </div>
+                  </div>
+
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-accent/50">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: "87%" }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, ease: "easeOut", delay: 0.2 }}
+                      className="h-2 rounded-full bg-gradient-to-r from-blue-500 to-emerald-500"
+                    />
+                  </div>
+
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { term: "배포", gloss: "deployment", done: true },
+                      { term: "회의록", gloss: "meeting notes", done: true },
+                      { term: "마감일", gloss: "deadline", done: false },
+                    ].map((vocab) => (
+                      <div
+                        key={vocab.term}
+                        className={`flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-medium ${
+                          vocab.done
+                            ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400"
+                            : "border-border bg-background/60 text-muted-foreground"
+                        }`}
+                      >
+                        {vocab.done && <CheckCircle2 size={12} strokeWidth={3} />}
+                        <span className="font-bold">{vocab.term}</span>
+                        <span className="opacity-70">{vocab.gloss}</span>
                       </div>
-                      <p className="text-lg font-bold text-foreground">Interactive Demo Coming Soon</p>
-                      <p className="mt-2 text-sm text-muted-foreground">Join developers learning the Korean they need for work every day.</p>
-                   </div>
+                    ))}
+                  </div>
                 </div>
               </motion.div>
             </div>
@@ -678,7 +713,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl shadow-md">
-                  <Image src="/hengo-icon.svg" alt="" width={32} height={32} className="h-full w-full" />
+                  <Image src="/hengo-icon.png" alt="" width={32} height={32} className="h-full w-full" />
                 </div>
                 <span className="text-sm font-bold tracking-tight text-foreground">
                   Hengo

@@ -151,36 +151,38 @@ const WEATHER_SCRIPT_OUTLINE: ScriptSection[] = [
 // The candidate's own drafted script, transcribed into the outline sections above.
 const WEATHER_SCRIPT_SEED: Record<string, string> = {
   intro:
-    "안녕하세요. 오늘은 한국과 캄보디아의 여름이 어떻게 다른지, 그리고 그 날씨가 우리 생활과 건강에 주는 영향을 제 경험과 함께 이야기해 보겠습니다.",
+    "안녕하세요. 저는 캄보디아에서 온 히엉입니다.\n\n캄보디아 사람인 저에게 더운 날씨는 익숙합니다. 하지만 한국에서 처음 여름을 보내면서 두 나라의 더위가 많이 다르다는 것을 느꼈습니다.\n\n오늘은 한국과 캄보디아의 여름 날씨가 어떻게 다른지, 그리고 그 날씨가 생활과 건강에 어떤 영향을 주는지 제 경험과 함께 이야기해 보겠습니다.",
   "korea-summer":
-    "한국의 여름은 보통 6월부터 8월까지입니다. 기온은 보통 30도 정도이지만, 더운 날에는 35도가 넘을 때도 있습니다. 장마철에는 비가 많이 오고 습도도 높아서 실제 기온보다 더 덥게 느껴집니다. 그래서 사람들은 우산을 가지고 다니고, 에어컨이 있는 실내에서 많은 시간을 보냅니다.",
+    "한국의 여름은 6월부터 8월까지입니다. 더운 날에는 기온이 30도를 넘고 습도도 높습니다. 장마철에는 비가 며칠 동안 계속 오기도 합니다. 그래서 기온이 캄보디아보다 낮아도 더 답답하고 덥게 느껴질 때가 있습니다.\n\n한국 사람들은 우산을 가지고 다니고, 에어컨이 있는 곳에서 시간을 보냅니다. 수영장이나 바다에 가기도 하고, 삼계탕을 먹으면서 힘을 내기도 합니다.\n\n저는 한국에서 더운 날에 수박 주스를 마시는 것을 좋아합니다. 수박 주스는 시원하고 달아서 마시면 기분이 좋아집니다.",
   compare:
-    "캄보디아는 한국과 조금 다릅니다. 캄보디아는 일 년 내내 덥고, 건기와 우기 두 계절이 있습니다. 가장 더운 시기는 3월부터 5월까지이고, 기온이 40도 가까이 올라갈 때도 있습니다. 낮에는 너무 더워서 밖에 잘 나가지 않고, 저녁에 날씨가 조금 시원해지면 친구들과 밖에 나가곤 했습니다.\n\n가장 더운 시기에는 가끔 친구들과 캄폿이나 시아누크빌, 즉 껌뽕솜 같은 바닷가에 갔습니다. 바다에서 수영하고 시원한 바람을 느끼면서 더위를 식혔습니다. 친구들과 함께 즐거운 시간을 보내서 좋은 추억이 되었습니다.\n\n한국도 비슷한 점이 있습니다. 날씨가 더울 때 사람들은 수영장이나 바다에 가고, 에어컨이 있는 카페나 쇼핑몰에서 시간을 보냅니다. 하지만 한국은 캄보디아보다 습도가 높아서 실제 기온이 더 낮아도 더 덥고 답답하게 느껴질 때가 있습니다.",
+    "캄보디아에는 한국처럼 봄, 여름, 가을, 겨울이 없습니다. 대신 건기와 우기, 두 계절이 있습니다. 3월부터 5월까지는 매우 덥고, 특히 4월이 가장 덥습니다. 기온이 40도 가까이 올라갈 때도 있습니다.\n\n4월에는 캄보디아 새해가 있습니다. 날씨는 아주 덥지만, 많은 사람들이 가족과 시간을 보내거나 여행을 갑니다.\n\n저도 더운 계절에는 친구들과 캄폿이나 시아누크빌에 가곤 했습니다. 낮에는 너무 더워서 주로 실내에서 쉬었습니다. 저녁에는 조금 시원해져서 친구들과 밖에 나갔습니다.\n\n캄보디아에서는 더운 날에 코코넛 커피를 자주 마셨습니다. 코코넛 커피는 달고 시원해서 더운 날씨와 잘 어울립니다. 한국에서는 수박 주스를 마시고, 캄보디아에서는 코코넛 커피를 마신다는 점도 재미있는 차이입니다.\n\n비가 오는 모습도 다릅니다. 한국에서는 장마철에 비가 오랫동안 내립니다. 하지만 캄보디아에서는 비가 갑자기 많이 내렸다가 빨리 그칠 때가 많습니다.\n\n그래서 한국에서는 우산이 중요하지만, 캄보디아에서는 그늘을 찾는 것이 더 중요하다고 생각합니다.",
   "daily-life":
-    "날씨가 다르니까 생활 방식도 조금 달라집니다. 밖에 다니는 시간도 바꾸게 되고, 낮에는 활동을 줄이게 됩니다.",
+    "날씨가 다르면 생활하는 방법도 달라집니다. 날씨가 너무 더우면 낮에 밖에서 활동하는 시간이 줄어듭니다. 그리고 에어컨이나 선풍기를 더 많이 사용하게 됩니다.",
   health:
-    "건강에도 영향을 많이 줍니다. 더우면 쉽게 피곤해지고, 심하면 더위를 먹을 수도 있어서 조심해야 합니다.\n그래서 저는 이 날씨에 적응하기 위해 물을 많이 마시려고 노력합니다.",
+    "더운 날씨는 건강에도 영향을 줍니다. 한국에서는 습도가 높아서 땀이 많이 나고, 밤에도 더워서 잠을 잘 못 잘 때가 있습니다. 캄보디아에서는 햇빛이 매우 강해서 밖에 오래 있으면 쉽게 피곤해집니다.\n\n그래서 저는 물을 자주 마시고, 가장 더운 시간에는 밖에 오래 있지 않으려고 합니다.",
   reflection:
-    "이번 여름에는 한국에서 새로운 경험도 많이 했습니다. 친구와 함께 여의도 한강 수영장에 갔는데, 한국에서 여름에 수영한 것은 이번이 처음이었습니다. 사람이 정말 많았지만 정말 즐거웠고, 좋은 추억이 되었습니다.\n또 친구와 함께 선유도공원에도 갔습니다. 공원을 걸으면서 조금 힘들었지만, 자연을 보며 산책해서 기분이 정말 좋았습니다. 저녁까지 공원에 있었는데, 밤에 보는 풍경이 정말 아름다웠습니다. 서울의 야경을 구경하고 사진도 많이 찍었습니다. 이런 경험을 통해 한국의 여름을 더 즐길 수 있었고, 지금은 조금씩 한국 여름에 적응하고 있습니다.\n이번 여름은 한국에서 보내는 첫 여름이라 아직 익숙하지 않습니다. 날씨가 많이 덥고 습해서 가끔 잠을 잘 못 잘 때도 있습니다. 그래도 조금씩 적응하고 있습니다.\n나중에 기회가 된다면 여름에 바다나 산에도 한번 가보고 싶습니다.",
-  conclusion: "감사합니다.",
+    "이번 한국 여름에는 새로운 경험도 많이 했습니다.\n\n먼저 친구와 함께 여의도 한강 수영장에 갔습니다. 한국의 여름에 수영한 것은 이번이 처음이었습니다. 사람이 정말 많았지만 분위기가 즐거웠고, 좋은 추억이 되었습니다.\n\n또 친구와 함께 선유도공원에도 갔습니다. 공원을 오래 걸어서 조금 피곤했지만, 나무와 강을 보니 기분이 좋았습니다. 저녁까지 공원에 있으면서 서울의 아름다운 야경을 구경하고 사진도 많이 찍었습니다.\n\n제가 한국 여름에 꼭 해 보고 싶은 일도 있습니다. 저는 자전거 타는 것을 정말 좋아합니다. 그래서 저녁에 한강에서 자전거를 타고 싶습니다.\n\n자전거를 타면서 시원한 바람을 느끼고, 푸른 나무와 강 풍경도 보고 싶습니다. 운동도 하고 서울의 여름 풍경도 즐길 수 있어서 좋을 것 같습니다.\n\n그리고 기회가 된다면 영종도 바다에도 가 보고 싶습니다. 바닷가를 걸으면서 시원한 바람을 느끼고 한국의 여름을 즐기고 싶습니다.\n\n처음에는 한국 여름이 덥고 습해서 힘들었습니다. 하지만 물을 자주 마시고, 날씨를 미리 확인하고, 시원한 곳에서 쉬면서 조금씩 익숙해지고 있습니다.",
+  conclusion:
+    "두 나라 모두 날씨가 덥지만, 사람들이 더위를 피하는 방법은 조금 다릅니다.\n\n이번 경험을 통해 날씨에 맞게 생활하고 건강을 관리하는 것이 중요하다는 것을 알게 되었습니다. 앞으로도 건강을 잘 관리하면서 한국의 여름을 즐기고 싶습니다.\n\n감사합니다.",
 }
 
 // The candidate's own English translation of the script (from the same prep
 // doc), section by section, mirroring WEATHER_SCRIPT_SEED's paragraphing.
 const WEATHER_SCRIPT_SEED_EN: Record<string, string> = {
   intro:
-    "Hello. Today, I would like to talk about the differences between summer in Korea and Cambodia, and how the weather affects our daily life and health based on my own experience.",
+    "Hello. My name is Heang, and I am from Cambodia.\n\nAs a Cambodian, I am familiar with hot weather. However, while spending my first summer in Korea, I realized that the heat in the two countries is very different.\n\nToday, I would like to talk about the differences between summer weather in Korea and Cambodia. I will also explain how the weather affects daily life and health based on my own experience.",
   "korea-summer":
-    "Summer in Korea is usually from June to August. The temperature is normally around 30°C, but it can rise above 35°C on very hot days. During the rainy season, it rains a lot and the humidity is high, so it feels hotter than the actual temperature. Therefore, people carry umbrellas and spend a lot of time indoors with air conditioning.",
+    "Summer in Korea is from June to August. On hot days, the temperature rises above 30 degrees, and the humidity is also high. During the rainy season, it can rain continuously for several days. Therefore, even when the temperature is lower than in Cambodia, it sometimes feels more uncomfortable and hotter.\n\nKorean people carry umbrellas and spend time in places with air conditioning. They also go to swimming pools or the beach, and some people eat samgyetang to regain their energy.\n\nIn Korea, I like drinking watermelon juice on hot days. Watermelon juice is cool and sweet, so it makes me feel good.",
   compare:
-    "Cambodia is a little different from Korea. It is hot throughout the year and has two seasons: the dry season and the rainy season. The hottest period is from March to May, and the temperature can sometimes rise to nearly 40°C. During the day, it is often too hot to go outside. When the weather becomes cooler in the evening, I used to go out with my friends.\n\nDuring the hottest period, I sometimes went to seaside areas such as Kampot or Sihanoukville, also known as Kampong Som, with my friends. We swam in the sea and enjoyed the cool breeze to escape the heat. Spending time there with my friends became a good memory.\n\nKorea is similar in some ways. When the weather is hot, people visit swimming pools or beaches and spend time in air-conditioned cafés or shopping malls. However, Korea has higher humidity, so it can sometimes feel hotter and more uncomfortable even when the actual temperature is lower than in Cambodia.",
+    "Cambodia does not have spring, summer, autumn, and winter like Korea. Instead, it has two seasons: the dry season and the rainy season. The period from March to May is very hot, and April is especially hot. Sometimes, the temperature rises to nearly 40 degrees.\n\nCambodian New Year is also in April. Although the weather is very hot, many people spend time with their families or travel.\n\nDuring the hot season, I often went to Kampot or Sihanoukville with my friends. During the daytime, it was too hot, so I usually rested indoors. In the evening, the weather became a little cooler, so I went outside with my friends.\n\nIn Cambodia, I often drank coconut coffee on hot days. Coconut coffee is sweet and cool, so it is a good drink for hot weather. It is also an interesting difference that I drink watermelon juice in Korea and coconut coffee in Cambodia.\n\nThe rain is also different. In Korea, rain continues for a long time during the rainy season. However, in Cambodia, it often rains heavily and suddenly and then stops quickly.\n\nTherefore, I think an umbrella is important in Korea, but finding shade is more important in Cambodia.",
   "daily-life":
-    "Because the weather is different, our lifestyle also changes. We change the time we go outside and reduce outdoor activities during the daytime.",
+    "When the weather is different, the way people live also changes. When the weather is too hot, people spend less time doing outdoor activities during the daytime. They also use air conditioners and fans more often.",
   health:
-    "The weather also affects our health. When it is very hot, people get tired easily, and in serious cases, they may suffer from heat-related illnesses.\nThat is why I try to drink a lot of water to adapt to this weather.",
+    "Hot weather also affects our health. In Korea, the high humidity makes me sweat a lot. Sometimes, it is difficult to sleep because the nights are hot. In Cambodia, the sunlight is very strong, so people can become tired easily when they stay outside for a long time.\n\nTherefore, I drink water frequently and try not to stay outside for too long during the hottest part of the day.",
   reflection:
-    "This summer, I also had many new experiences in Korea. I went to the Yeouido Hangang Swimming Pool with my friend. It was my first time swimming in Korea during the summer. There were so many people, but I had a great time, and it became a wonderful memory.\nI also visited Seonyudo Park with my friend. While walking around the park, I felt a little tired, but being surrounded by nature made me feel refreshed and relaxed. I stayed there until the evening, and the night view was truly beautiful. I enjoyed the Seoul city skyline and took many photos. Through these experiences, I was able to enjoy the Korean summer more, and now I am gradually getting used to it.\nThis is my first summer in Korea, so I am still not completely used to it. It is hot and humid, and sometimes I cannot sleep well. However, I am gradually adapting.\nIf I have the chance in the future, I would also like to visit the beach or the mountains during the summer.",
-  conclusion: "Thank you.",
+    "This summer, I also had many new experiences in Korea.\n\nFirst, I went to the Yeouido Hangang Swimming Pool with my friend. It was my first time swimming during the summer in Korea. There were many people, but the atmosphere was enjoyable, and it became a good memory.\n\nI also visited Seonyudo Park with my friend. I felt a little tired because we walked around the park for a long time, but seeing the trees and the river made me feel good. We stayed at the park until the evening, enjoyed the beautiful night view of Seoul, and took many photos.\n\nThere is also something I really want to do during the Korean summer. I really like riding a bicycle, so I want to ride one along the Han River in the evening.\n\nWhile riding, I want to feel the cool breeze and enjoy the green trees and river view. I think it will be great because I can exercise and enjoy the summer scenery of Seoul at the same time.\n\nI would also like to visit the beach in Yeongjongdo if I have the chance. I want to walk near the sea, feel the cool breeze, and enjoy the Korean summer.\n\nAt first, the Korean summer was difficult for me because it was hot and humid. However, I am gradually getting used to it by drinking water frequently, checking the weather in advance, and resting in cool places.",
+  conclusion:
+    "The weather is hot in both countries, but the ways people avoid the heat are a little different.\n\nThrough this experience, I learned that it is important to adjust our daily lives to the weather and take care of our health. In the future, I want to continue taking good care of my health while enjoying the Korean summer.\n\nThank you.",
 }
 
 // A pass-first layer over the larger topic dictionary. Core words get a short
@@ -311,6 +313,99 @@ const WEATHER_CORE_ANSWERS: Record<
     keywords: ["건기", "우기", "5월부터 10월"],
   },
 }
+
+const WEATHER_SCRIPT_FOLLOW_UPS: PracticeQuestion[] = [
+  {
+    ko: "캄보디아 새해는 언제이고, 사람들은 보통 무엇을 합니까?",
+    en: "When is Cambodian New Year, and what do people usually do?",
+    answerKo:
+      "캄보디아 새해는 4월에 있습니다. 날씨는 아주 덥지만, 많은 사람들이 가족과 시간을 보내거나 여행을 갑니다.",
+    answerEn:
+      "Cambodian New Year is in April. Although the weather is very hot, many people spend time with their families or travel.",
+    keywords: ["캄보디아 새해", "4월", "가족"],
+  },
+  {
+    ko: "한국에서 더운 날에 어떤 음료를 좋아합니까?",
+    en: "What drink do you like on hot days in Korea?",
+    answerKo:
+      "저는 한국에서 더운 날에 수박 주스를 마시는 것을 좋아합니다. 시원하고 달아서 마시면 기분이 좋아집니다.",
+    answerEn:
+      "I like drinking watermelon juice on hot days in Korea. It is cool and sweet, so it makes me feel good.",
+    keywords: ["수박 주스", "음료", "시원하다"],
+  },
+  {
+    ko: "캄보디아에서 더운 날에 어떤 음료를 자주 마셨습니까?",
+    en: "What drink did you often have on hot days in Cambodia?",
+    answerKo:
+      "캄보디아에서는 더운 날에 코코넛 커피를 자주 마셨습니다. 달고 시원해서 더운 날씨와 잘 어울립니다.",
+    answerEn:
+      "In Cambodia, I often drank coconut coffee on hot days. It is sweet and cool, so it goes well with hot weather.",
+    keywords: ["코코넛 커피", "음료", "더운 날"],
+  },
+  {
+    ko: "한국과 캄보디아에서 마시는 여름 음료는 어떻게 다릅니까?",
+    en: "How are the summer drinks you have in Korea and Cambodia different?",
+    answerKo:
+      "한국에서는 수박 주스를 마시고, 캄보디아에서는 코코넛 커피를 마십니다. 두 음료 모두 달고 시원하지만 맛과 재료가 다릅니다.",
+    answerEn:
+      "In Korea, I drink watermelon juice, while in Cambodia, I drink coconut coffee. Both drinks are sweet and cool, but their flavors and ingredients are different.",
+    keywords: ["수박 주스", "코코넛 커피", "비교"],
+  },
+  {
+    ko: "한국과 캄보디아에서는 비가 오는 모습이 어떻게 다릅니까?",
+    en: "How is the rain different in Korea and Cambodia?",
+    answerKo:
+      "한국에서는 장마철에 비가 오랫동안 내립니다. 하지만 캄보디아에서는 비가 갑자기 많이 내렸다가 빨리 그칠 때가 많습니다.",
+    answerEn:
+      "In Korea, rain continues for a long time during the rainy season. However, in Cambodia, it often rains heavily and suddenly and then stops quickly.",
+    keywords: ["장마철", "갑자기", "비교"],
+  },
+  {
+    ko: "왜 한국에서는 우산이 중요하고 캄보디아에서는 그늘이 중요하다고 생각합니까?",
+    en: "Why do you think umbrellas are important in Korea and shade is important in Cambodia?",
+    answerKo:
+      "한국에서는 장마철에 비가 오래 내리기 때문에 우산이 중요합니다. 캄보디아에서는 햇빛이 매우 강하고 더워서 그늘을 찾는 것이 더 중요합니다.",
+    answerEn:
+      "In Korea, umbrellas are important because rain can continue for a long time during the rainy season. In Cambodia, finding shade is more important because the sunlight is very strong and the weather is hot.",
+    keywords: ["우산", "그늘", "햇빛"],
+  },
+  {
+    ko: "한국 여름에 꼭 해 보고 싶은 일은 무엇입니까?",
+    en: "What is something you really want to do during the Korean summer?",
+    answerKo:
+      "저는 저녁에 한강에서 자전거를 타고 싶습니다. 자전거를 타면서 시원한 바람과 여름 풍경을 즐기고 싶습니다.",
+    answerEn:
+      "I want to ride a bicycle along the Han River in the evening. I want to enjoy the cool breeze and the summer scenery while riding.",
+    keywords: ["한강", "자전거", "저녁"],
+  },
+  {
+    ko: "왜 저녁에 한강에서 자전거를 타고 싶습니까?",
+    en: "Why do you want to ride a bicycle along the Han River in the evening?",
+    answerKo:
+      "저녁에는 날씨가 조금 시원해서 자전거를 타기 좋습니다. 운동도 하고 푸른 나무와 강 풍경도 볼 수 있기 때문입니다.",
+    answerEn:
+      "I want to ride in the evening because the weather is cooler. I can exercise and also enjoy the green trees and river view.",
+    keywords: ["한강", "자전거", "풍경"],
+  },
+  {
+    ko: "영종도에 가면 무엇을 하고 싶습니까?",
+    en: "What would you like to do if you visit Yeongjongdo?",
+    answerKo:
+      "영종도 바닷가를 걸으면서 시원한 바람을 느끼고 싶습니다. 한국의 여름 바다도 즐기고 싶습니다.",
+    answerEn:
+      "I want to walk near the beach in Yeongjongdo and feel the cool breeze. I also want to enjoy the Korean summer by the sea.",
+    keywords: ["영종도", "바닷가", "바람"],
+  },
+  {
+    ko: "두 나라의 여름을 경험하면서 무엇을 배웠습니까?",
+    en: "What did you learn from experiencing summer in both countries?",
+    answerKo:
+      "날씨에 맞게 생활하고 건강을 관리하는 것이 중요하다는 것을 배웠습니다. 앞으로도 물을 자주 마시고 더운 시간에는 충분히 쉬려고 합니다.",
+    answerEn:
+      "I learned that it is important to adjust the way I live to the weather and take care of my health. I will continue to drink water often and rest enough during the hottest hours.",
+    keywords: ["경험", "건강 관리", "적응"],
+  },
+]
 
 // Curated study material for the chosen exam topic. Drilled daily, this is the
 // 15–20 words and the handful of phrases that cover most of the Q&A.
@@ -534,6 +629,7 @@ const WEATHER_PREP: InterviewPrep = {
     { ko: "한국 여름에 가장 힘들었던 건강 문제는 무엇이었어요?", en: "What was the most difficult health issue you faced during Korean summer?" },
     { ko: "캄보디아에서는 더운 날씨에 어떻게 대처했어요?", en: "How did you cope with the hot weather in Cambodia?" },
     { ko: "습도가 높을 때 일상생활에 어떤 변화가 생겼어요?", en: "What changes happened in your daily life when humidity was high?" },
+    ...WEATHER_SCRIPT_FOLLOW_UPS,
     // Follow-up territory the examiner can reach from the topic: tropical
     // nights, the KDCA heat rules, and Korean summer food culture. Each model
     // answer is 2–3 short sentences in the exam's answer-first, show-growth
@@ -738,8 +834,8 @@ const WORKPLACE_QA_PREP: InterviewPrep = {
 export const INTERVIEW_TOPICS: InterviewTopic[] = [
   {
     id: "weather",
-    label: "Korea vs Cambodia summer weather",
-    labelKo: "한국 여름 날씨 vs 캄보디아 날씨 (생활·건강 영향)",
+    label: "Differences between Korean summer weather and Cambodian weather, and their effects on daily life and health",
+    labelKo: "한국 여름 날씨와 캄보디아 날씨의 차이와 생활·건강에 미치는 영향",
     description:
       "Compare summer weather in Korea and Cambodia and how it affects daily life and health.",
     difficulty: "Easy–Medium",

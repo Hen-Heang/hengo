@@ -5,11 +5,16 @@ import { addDays, format, isSameDay, isToday, startOfWeek } from "date-fns"
 
 import { cn } from "@/lib/utils"
 import type { Task } from "@/lib/tasks"
-import { getTaskColor, hexWithAlpha } from "@/lib/tasks"
+import { getTaskColor, hexWithAlpha, isExternalTask } from "@/lib/tasks"
 import { getAllDayTasks, layoutDayTasks, MINUTES_IN_DAY, formatTaskTimeRange } from "@/lib/calendar"
+import { getHolidaysForDate } from "@/lib/holidays"
+import { HolidayMarker } from "./HolidayMarker"
+import { useWeatherForecast } from "@/hooks/useWeatherForecast"
+import { WeatherBadge } from "./WeatherBadge"
 
-const HOUR_HEIGHT = 52 // px per hour row
-const TOTAL_HEIGHT = HOUR_HEIGHT * 24
+// Mobile keeps two 44px half-hour targets per hour. Calendar passes a denser
+// desktop value so a full workday fits in the expanded workspace.
+const DEFAULT_HOUR_HEIGHT = 88
 const HOURS = Array.from({ length: 24 }, (_, i) => i)
 const SLOT_MINUTES = 30
 const SLOTS = Array.from({ length: (24 * 60) / SLOT_MINUTES }, (_, i) => i * SLOT_MINUTES)
@@ -21,6 +26,8 @@ interface WeekTimeGridProps {
   onTaskClick: (task: Task) => void
   onSlotClick?: (date: Date, time: string) => void
   onDateSelect?: (date: Date) => void
+  onHolidayClick: (date: Date) => void
+  hourHeight?: number
 }
 
 const formatHourLabel = (hour: number) => {
@@ -36,9 +43,12 @@ export function WeekTimeGrid({
   onTaskClick,
   onSlotClick,
   onDateSelect,
+  onHolidayClick,
+  hourHeight = DEFAULT_HOUR_HEIGHT,
 }: WeekTimeGridProps) {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [now, setNow] = useState(() => new Date())
+  const { getWeatherForDate } = useWeatherForecast()
 
   useEffect(() => {
     const id = setInterval(() => setNow(new Date()), 60_000)
@@ -51,50 +61,90 @@ export function WeekTimeGrid({
     return Array.from({ length: 7 }, (_, i) => addDays(start, i))
   }, [mode, selectedDate])
 
+  const timeZoneLabel = useMemo(() => {
+    const part = new Intl.DateTimeFormat(undefined, { timeZoneName: "short" })
+      .formatToParts(selectedDate)
+      .find((candidate) => candidate.type === "timeZoneName")
+    return part?.value ?? "Local"
+  }, [selectedDate])
+
   // Auto-scroll so the current time is in view on mount / view change.
   useEffect(() => {
     if (!scrollRef.current) return
     const nowMin = new Date().getHours() * 60 + new Date().getMinutes()
     const focusMin = Math.max(0, Math.min(nowMin, MINUTES_IN_DAY) - 90)
-    scrollRef.current.scrollTop = (focusMin / 60) * HOUR_HEIGHT
-  }, [mode])
+    scrollRef.current.scrollTop = (focusMin / 60) * hourHeight
+  }, [hourHeight, mode])
 
   const nowMinutes = now.getHours() * 60 + now.getMinutes()
   const colWidth = `${100 / days.length}%`
+  const totalHeight = hourHeight * 24
 
   return (
     <div className="flex h-full flex-col overflow-hidden">
       {/* Sticky day-header row */}
       <div className="flex border-b border-border/60 bg-card/60 backdrop-blur-md">
-        <div className="w-14 shrink-0 sm:w-16" aria-hidden />
+        <div
+          className="flex w-14 shrink-0 items-end justify-end pb-2 pr-1.5 text-[9px] font-medium text-muted-foreground sm:w-16"
+          title="Times use your local time zone"
+        >
+          {timeZoneLabel}
+        </div>
         {days.map((day) => {
           const today = isToday(day)
           const selected = isSameDay(day, selectedDate)
+          const holidays = getHolidaysForDate(day)
+          const isHoliday = holidays.length > 0
+          const weather = getWeatherForDate(day)
           return (
-            <button
+            <div
               key={day.toISOString()}
-              type="button"
-              onClick={() => onDateSelect?.(day)}
-              className={cn(
-                "flex-1 px-1 py-2 text-center transition-colors",
-                onDateSelect && "hover:bg-primary/5"
-              )}
+              className="flex min-w-0 flex-1 flex-col text-center"
               style={{ width: colWidth }}
             >
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
-                {format(day, "EEE")}
-              </div>
-              <div
+              <button
+                type="button"
+                onClick={() => onDateSelect?.(day)}
+                aria-label={format(day, "EEEE, MMMM d")}
+                aria-current={today ? "date" : undefined}
+                aria-pressed={selected}
                 className={cn(
-                  "mx-auto mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold tabular-nums sm:h-8 sm:w-8 sm:text-base",
-                  today && "bg-primary text-primary-foreground",
-                  !today && selected && "bg-primary/15 text-primary",
-                  !today && !selected && "text-foreground"
+                  "w-full px-1 py-2 text-center transition-colors",
+                  onDateSelect && "hover:bg-primary/5",
                 )}
               >
-                {format(day, "d")}
+                <div
+                  className={cn(
+                    "text-[11px] font-semibold uppercase tracking-wider sm:text-xs",
+                    isHoliday ? "text-rose-600 dark:text-rose-400" : "text-muted-foreground",
+                  )}
+                >
+                  {format(day, "EEE")}
+                </div>
+                <div
+                  className={cn(
+                    "mx-auto mt-0.5 flex h-7 w-7 items-center justify-center rounded-full text-sm font-bold tabular-nums sm:h-8 sm:w-8 sm:text-base",
+                    today && "bg-primary text-primary-foreground",
+                    !today && selected && "bg-primary/15 text-primary",
+                    !today && !selected && isHoliday && "text-rose-600 dark:text-rose-400",
+                    !today && !selected && !isHoliday && "text-foreground",
+                  )}
+                >
+                  {format(day, "d")}
+                </div>
+              </button>
+              <div className="flex min-h-7 flex-col items-center gap-0.5 px-0.5">
+                {isHoliday && (
+                  <HolidayMarker
+                    date={day}
+                    holidays={holidays}
+                    onClick={onHolidayClick}
+                    variant="time-grid"
+                  />
+                )}
+                {weather && <WeatherBadge weather={weather} variant="time-grid" />}
               </div>
-            </button>
+            </div>
           )
         })}
       </div>
@@ -108,13 +158,13 @@ export function WeekTimeGrid({
 
       {/* Scrollable hour grid */}
       <div ref={scrollRef} className="relative flex-1 overflow-y-auto no-scrollbar">
-        <div className="flex" style={{ height: TOTAL_HEIGHT }}>
+        <div className="flex" style={{ height: totalHeight }}>
           <div className="w-14 shrink-0 sm:w-16">
             {HOURS.map((hour) => (
               <div
                 key={hour}
                 className="relative border-r border-border/40"
-                style={{ height: HOUR_HEIGHT }}
+                style={{ height: hourHeight }}
               >
                 {hour > 0 && (
                   <span className="absolute -top-2 right-1.5 text-[11px] font-medium text-muted-foreground sm:text-xs">
@@ -135,6 +185,7 @@ export function WeekTimeGrid({
               showNowLine={isToday(day)}
               nowMinutes={nowMinutes}
               colWidth={colWidth}
+              hourHeight={hourHeight}
             />
           ))}
         </div>
@@ -176,9 +227,11 @@ function AllDayStrip({ days, getTasksForDate, onTaskClick, colWidth }: AllDayStr
                 type="button"
                 onClick={() => onTaskClick(task)}
                 title={task.title || task.description || "Untitled"}
+                aria-label={`${task.title || task.description || "Untitled"}${isExternalTask(task) ? ", Google Calendar, read-only" : ""}`}
                 className={cn(
-                  "w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors",
-                  task.completed && "line-through opacity-60"
+                  "min-h-11 w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors lg:min-h-7",
+                  task.completed && "line-through opacity-60",
+                  isExternalTask(task) && "border-dashed"
                 )}
                 style={{ backgroundColor: hexWithAlpha(color, 0.16), borderLeftColor: color }}
               >
@@ -200,6 +253,7 @@ interface DayColumnProps {
   showNowLine: boolean
   nowMinutes: number
   colWidth: string
+  hourHeight: number
 }
 
 function DayColumn({
@@ -210,6 +264,7 @@ function DayColumn({
   showNowLine,
   nowMinutes,
   colWidth,
+  hourHeight,
 }: DayColumnProps) {
   const positioned = useMemo(() => layoutDayTasks(tasks), [tasks])
 
@@ -226,6 +281,7 @@ function DayColumn({
             key={minutes}
             type="button"
             disabled={!onSlotClick}
+            tabIndex={-1}
             onClick={() => onSlotClick?.(day, `${hh}:${mm}`)}
             aria-label={`Add task at ${hh}:${mm} on ${format(day, "EEEE, MMMM d")}`}
             className={cn(
@@ -233,7 +289,7 @@ function DayColumn({
               onSlotClick && "hover:bg-accent/10",
               minutes % 60 === 0 && "border-b border-border/40"
             )}
-            style={{ top: (minutes / 60) * HOUR_HEIGHT, height: HOUR_HEIGHT / 2 }}
+            style={{ top: (minutes / 60) * hourHeight, height: hourHeight / 2 }}
           />
         )
       })}
@@ -241,7 +297,7 @@ function DayColumn({
       {showNowLine && (
         <div
           className="pointer-events-none absolute left-0 right-0 z-20 flex items-center"
-          style={{ top: (nowMinutes / 60) * HOUR_HEIGHT }}
+          style={{ top: (nowMinutes / 60) * hourHeight }}
         >
           <div className="h-2 w-2 -ml-1 rounded-full bg-red-500" />
           <div className="h-px flex-1 bg-red-500" />
@@ -249,8 +305,8 @@ function DayColumn({
       )}
 
       {positioned.map((p) => {
-        const top = (p.startMin / 60) * HOUR_HEIGHT
-        const height = ((p.endMin - p.startMin) / 60) * HOUR_HEIGHT
+        const top = (p.startMin / 60) * hourHeight
+        const height = ((p.endMin - p.startMin) / 60) * hourHeight
         const widthPct = 100 / p.lanes
         const color = getTaskColor(p.task)
         return (
@@ -262,16 +318,22 @@ function DayColumn({
               onTaskClick(p.task)
             }}
             title={p.task.title || p.task.description || "Untitled"}
+            aria-label={`${p.task.title || p.task.description || "Untitled"}, ${formatTaskTimeRange(
+              p.task.daily_start_time,
+              p.task.daily_end_time,
+              p.task.is_anytime,
+            )}${isExternalTask(p.task) ? ", Google Calendar, read-only" : ""}`}
             className={cn(
-              "absolute z-10 overflow-hidden rounded-lg border border-l-[3px] px-1.5 py-1 text-left text-foreground shadow-sm transition-shadow duration-150 hover:z-30 hover:shadow-md",
-              p.task.completed && "opacity-60"
+              "absolute z-10 overflow-hidden rounded-lg border border-l-[3px] px-1.5 py-1 text-left text-foreground shadow-sm transition-shadow duration-150 hover:z-30 hover:shadow-md focus-visible:z-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
+              p.task.completed && "opacity-60",
+              isExternalTask(p.task) && "border-dashed"
             )}
             style={{
               top,
               height: Math.max(height - 2, 18),
               left: `calc(${p.lane * widthPct}% + 2px)`,
               width: `calc(${p.span * widthPct}% - 4px)`,
-              backgroundColor: hexWithAlpha(color, 0.16),
+              backgroundColor: hexWithAlpha(color, 0.2),
               borderColor: hexWithAlpha(color, 0.4),
               borderLeftColor: color,
             }}

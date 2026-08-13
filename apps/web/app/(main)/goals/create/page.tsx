@@ -63,13 +63,21 @@ export default function CreateGoalPage() {
   const renderTemplateCard = (template: GoalTemplate) => (
     <motion.div key={template.id} variants={itemVariants}>
       <Card
-        className="group relative flex h-full cursor-pointer flex-col rounded-2xl transition-colors hover:border-primary/30"
+        role="link"
+        tabIndex={0}
+        className="group relative flex h-full cursor-pointer flex-col transition-colors hover:border-primary/30 focus-visible:ring-2 focus-visible:ring-ring"
         onClick={() => handleSelectTemplate(template)}
+        onKeyDown={(event) => {
+          if (event.key === "Enter" || event.key === " ") {
+            event.preventDefault()
+            handleSelectTemplate(template)
+          }
+        }}
       >
-        <CardHeader className="p-6 sm:p-7">
+        <CardHeader className="p-5">
           <div className="flex items-start justify-between gap-4">
             <div
-              className="mb-1 flex h-16 w-16 items-center justify-center rounded-2xl text-3xl shadow-sm ring-1 ring-white/20 dark:ring-white/5"
+              className="mb-1 flex h-12 w-12 items-center justify-center rounded-lg text-2xl shadow-sm"
               style={{ background: template.color }}
             >
               {template.icon}
@@ -82,20 +90,20 @@ export default function CreateGoalPage() {
               <ArrowRight className="h-5 w-5 text-primary" />
             </Button>
           </div>
-          <CardTitle className="mt-4 text-xl font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
+          <CardTitle className="mt-3 text-lg font-semibold leading-tight tracking-tight transition-colors group-hover:text-primary">
             {template.name}
           </CardTitle>
           <CardDescription className="mt-1 line-clamp-2 text-sm font-medium leading-relaxed">
             {template.description}
           </CardDescription>
         </CardHeader>
-        <CardContent className="mt-auto p-6 pt-0 sm:p-7 sm:pt-0">
-          <div className="mb-4">
-            <span className="rounded-lg border border-primary/10 bg-primary/10 px-3 py-1 text-[11px] font-medium text-primary">
+        <CardContent className="mt-auto p-5 pt-0">
+          <div className="mb-3">
+            <span className="rounded-md border border-primary/10 bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary">
               {template.category}
             </span>
           </div>
-          <div className="flex items-center gap-4 border-t border-foreground/[0.05] pt-4 text-xs font-medium text-muted-foreground">
+          <div className="flex items-center gap-4 border-t border-foreground/[0.05] pt-3 text-xs font-medium text-muted-foreground">
             <span className="flex items-center gap-1.5">
               <Sparkles size={12} className="text-primary/60" />
               {template.sections.length} sections
@@ -142,12 +150,13 @@ export default function CreateGoalPage() {
       <PageHero
         eyebrow="Planner"
         title="New goal"
+        variant="compact"
         description="Start from a template or launch a blank goal — then schedule the work."
       />
 
-      <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-3">
         {/* Left: Quick launch + filters + custom link */}
-        <div className="space-y-6 lg:sticky lg:top-6">
+        <div className="space-y-5 lg:sticky lg:top-6">
           <Card>
             <CardHeader>
               <div className="mb-1 flex items-center gap-3">
@@ -158,7 +167,7 @@ export default function CreateGoalPage() {
               </div>
               <CardDescription>Enter a title to instantly create a new goal.</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-5">
+            <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label
                   htmlFor="quick-goal-title"
@@ -171,7 +180,7 @@ export default function CreateGoalPage() {
                     <button
                       type="button"
                       aria-label="Pick goal icon"
-                      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-xl transition-all hover:border-primary/40 hover:bg-primary/20"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-primary/20 bg-primary/10 text-xl transition-colors hover:border-primary/40 hover:bg-primary/20"
                     >
                       {quickIcon ?? (
                         <span className="text-sm font-semibold text-primary">
@@ -195,10 +204,10 @@ export default function CreateGoalPage() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-between rounded-2xl border border-border bg-muted/30 px-4 py-3">
+              <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-3">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold">Infinite duration</span>
-                  <span className="text-[11px] font-medium text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     No specific deadline
                   </span>
                 </div>
@@ -252,15 +261,23 @@ export default function CreateGoalPage() {
           </div>
 
           <Card
-            className="cursor-pointer border-dashed transition-colors hover:border-primary/40"
+            role="link"
+            tabIndex={0}
+            className="cursor-pointer border-dashed transition-colors hover:border-primary/40 focus-visible:ring-2 focus-visible:ring-ring"
             onClick={() => router.push("/goals/create/custom")}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault()
+                router.push("/goals/create/custom")
+              }
+            }}
           >
-            <CardContent className="flex flex-col items-center justify-center py-8 text-center">
-              <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+            <CardContent className="flex flex-col items-center justify-center py-6 text-center">
+              <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Sparkles className="h-6 w-6" />
               </div>
               <h3 className="mb-1 text-base font-semibold">Custom Goal</h3>
-              <p className="px-4 text-xs font-medium text-muted-foreground">
+              <p className="px-4 text-sm text-muted-foreground">
                 Build a unique goal with full manual control.
               </p>
             </CardContent>
@@ -269,7 +286,7 @@ export default function CreateGoalPage() {
 
         {/* Right: template grid */}
         <div className="lg:col-span-2">
-          <div className="relative mb-6">
+          <div className="relative mb-5">
             <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input
               type="text"
@@ -285,12 +302,12 @@ export default function CreateGoalPage() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-20 text-center"
+                className="flex flex-col items-center justify-center py-12 text-center"
               >
-                <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+                <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-muted">
                   <Search className="h-8 w-8 text-muted-foreground opacity-30" />
                 </div>
-                <h3 className="mb-2 text-xl font-semibold tracking-tight">No templates found</h3>
+                <h3 className="mb-2 text-lg font-semibold tracking-tight">No templates found</h3>
                 <p className="max-w-xs text-sm font-medium text-muted-foreground">
                   No templates match your search.
                 </p>
@@ -300,13 +317,13 @@ export default function CreateGoalPage() {
                     setSearchQuery("")
                     setActiveCategory(null)
                   }}
-                  className="mt-6 text-primary"
+                  className="mt-4 text-primary"
                 >
                   Clear filters
                 </Button>
               </motion.div>
             ) : (
-              <div className="space-y-10">
+              <div className="space-y-6">
                 {primaryTemplates.length > 0 && (
                   <motion.div variants={containerVariants} initial="hidden" animate="visible">
                     <CardGrid minCardWidth={280}>
@@ -319,11 +336,11 @@ export default function CreateGoalPage() {
                   <div>
                     <div className="mb-4 flex items-center gap-2">
                       <h2 className="text-sm font-semibold text-foreground">Life Goals</h2>
-                      <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide text-muted-foreground">
+                      <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">
                         Beta
                       </span>
                     </div>
-                    <p className="mb-4 text-xs font-medium text-muted-foreground">
+                    <p className="mb-4 text-sm text-muted-foreground">
                       General habit and life-goal templates — not Korean-study specific.
                     </p>
                     <motion.div variants={containerVariants} initial="hidden" animate="visible">

@@ -21,9 +21,9 @@ export default function AskHengoMemoriesPage() {
     <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl space-y-6 pb-16">
       <motion.div variants={itemVariants}>
         <BackLink href="/ask-hengo" label="Ask Hengo" />
-        <div className="mt-2 flex items-start justify-between gap-3">
+        <div className="mt-2 flex flex-col items-start justify-between gap-3 min-[360px]:flex-row">
           <div>
-            <h1 className="text-xl font-bold text-foreground">Memories</h1>
+            <h1 className="text-2xl font-semibold text-foreground">Memories</h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Facts Hengo has noticed or you&apos;ve told it directly. Only approved memories are ever used to answer
               future questions.
@@ -37,8 +37,8 @@ export default function AskHengoMemoriesPage() {
 
       {loading ? (
         <motion.div variants={itemVariants} className="space-y-3">
-          <Skeleton className="h-24 w-full rounded-2xl" />
-          <Skeleton className="h-24 w-full rounded-2xl" />
+          <Skeleton className="h-24 w-full rounded-lg" />
+          <Skeleton className="h-24 w-full rounded-lg" />
         </motion.div>
       ) : error ? (
         <motion.div variants={itemVariants}>
@@ -47,7 +47,7 @@ export default function AskHengoMemoriesPage() {
       ) : candidates.length === 0 ? (
         <motion.div
           variants={itemVariants}
-          className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center"
+          className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-card/50 px-5 py-12 text-center"
         >
           <p className="text-sm font-semibold text-foreground">No memories yet</p>
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -58,7 +58,7 @@ export default function AskHengoMemoriesPage() {
         <>
           {proposed.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <h2 className="text-sm font-semibold text-muted-foreground">
                 Waiting for your review
               </h2>
               {proposed.map((c) => (
@@ -68,7 +68,7 @@ export default function AskHengoMemoriesPage() {
           )}
           {approved.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Known context</h2>
+              <h2 className="text-sm font-semibold text-muted-foreground">Known context</h2>
               {approved.map((c) => (
                 <MemoryCandidateCard key={c.id} candidate={c} />
               ))}
@@ -76,7 +76,7 @@ export default function AskHengoMemoriesPage() {
           )}
           {dismissed.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              <h2 className="text-sm font-semibold text-muted-foreground">
                 Rejected / archived
               </h2>
               {dismissed.map((c) => (

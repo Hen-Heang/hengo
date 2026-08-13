@@ -53,8 +53,8 @@ export function ConversationSidebar({
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex shrink-0 items-center justify-between px-3 py-3">
         <div>
-          <h2 className="text-sm font-bold tracking-tight text-foreground">Conversations</h2>
-          <p className="mt-0.5 text-[10px] font-medium text-muted-foreground">Continue where you left off</p>
+          <h2 className="text-sm font-semibold tracking-tight text-foreground">Conversations</h2>
+          <p className="mt-0.5 text-xs text-muted-foreground">Continue where you left off</p>
         </div>
         <div className="flex items-center gap-1">
           <Button
@@ -63,7 +63,7 @@ export function ConversationSidebar({
             onClick={onNew}
             disabled={isStartingNew}
             title="New chat"
-            className="h-8 gap-1 rounded-full border-border/70 bg-background px-2.5 text-[11px] text-foreground"
+            className="h-11 gap-1 rounded-lg border-border/70 bg-background px-3 text-xs text-foreground"
           >
             <Plus size={14} strokeWidth={2.5} />
             New
@@ -74,7 +74,8 @@ export function ConversationSidebar({
               variant="ghost"
               onClick={onCollapse}
               title="Hide history"
-              className="h-8 w-8 rounded-lg text-muted-foreground/60 hover:bg-accent hover:text-foreground"
+              aria-label="Hide chat history"
+              className="h-11 w-11 rounded-lg text-muted-foreground/60 hover:bg-accent hover:text-foreground"
             >
               <PanelLeftClose size={16} strokeWidth={2.5} />
             </Button>
@@ -85,17 +86,17 @@ export function ConversationSidebar({
       <div className="min-h-0 flex-1 space-y-1 overflow-y-auto px-2 pb-3">
         {isLoading ? (
           <div className="space-y-2 px-1 pt-1">
-            <Skeleton className="h-10 w-full rounded-xl" />
-            <Skeleton className="h-10 w-full rounded-xl" />
-            <Skeleton className="h-10 w-full rounded-xl" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+            <Skeleton className="h-10 w-full rounded-lg" />
           </div>
         ) : conversations.length === 0 ? (
-          <div className="mx-1 flex flex-col items-center rounded-2xl border border-dashed border-border px-4 py-8 text-center">
-            <span className="mb-3 flex h-9 w-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+          <div className="mx-1 flex flex-col items-center rounded-lg border border-dashed border-border px-4 py-6 text-center">
+            <span className="mb-3 flex h-10 w-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <MessageSquare size={17} />
             </span>
             <p className="text-xs font-semibold text-foreground">No conversations yet</p>
-            <p className="mt-1 text-[11px] font-medium text-muted-foreground">Start one with Hengo.</p>
+            <p className="mt-1 text-xs text-muted-foreground">Start one with Hengo.</p>
           </div>
         ) : (
           conversations.map((c) => {

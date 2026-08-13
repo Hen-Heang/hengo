@@ -32,7 +32,7 @@ import { Badge } from "@/components/ui/badge"
 import { SpeakButton } from "@/components/ui/SpeakButton"
 import { Button } from "@/components/ui/button"
 import { interviewApi } from "@/lib/api"
-import type { ScriptVersion } from "@/lib/api/interview"
+import type { InterviewScript, ScriptVersion } from "@/lib/api/interview"
 import {
   buildQADocument,
   buildScriptDocument,
@@ -48,6 +48,7 @@ import { cn } from "@/lib/utils"
 
 const topic = INTERVIEW_TOPICS[0]
 const STORAGE_KEY = `koriai-interview-script:${topic.id}`
+const STORAGE_UPDATED_AT_KEY = `${STORAGE_KEY}:updated-at`
 // Custom (user-added) section definitions live separately from the section text
 // so the existing per-topic text payload keeps syncing to the backend unchanged.
 const CUSTOM_KEY = `koriai-interview-script-custom:${topic.id}`
@@ -80,6 +81,22 @@ function saveJSON(key: string, value: unknown) {
   } catch {
     // Ignore quota / private-mode failures.
   }
+}
+
+function loadLocalUpdatedAt(): number {
+  if (typeof window === "undefined") return 0
+  try {
+    const value = window.localStorage.getItem(STORAGE_UPDATED_AT_KEY)
+    const timestamp = value ? Date.parse(value) : Number.NaN
+    return Number.isFinite(timestamp) ? timestamp : 0
+  } catch {
+    return 0
+  }
+}
+
+function saveScriptLocally(value: Record<string, string>, updatedAt = new Date()) {
+  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+  window.localStorage.setItem(STORAGE_UPDATED_AT_KEY, updatedAt.toISOString())
 }
 
 const loadInitialQA = (): CustomQA[] => loadJSON<CustomQA[]>(QA_CUSTOM_KEY, [])
@@ -175,13 +192,20 @@ export default function InterviewScriptPage() {
   const [activeSection, setActiveSection] = useState<string>("")
   const [customSections, setCustomSections] = useState<CustomSection[]>(loadInitialCustom)
   const [mode, setMode] = useState<"script" | "qa" | "read">("script")
-  // Show/hide the editable English translation under each fixed section.
+  // Show/hide English support in both the Script and Q&A Prep views.
   const [showEnglish, setShowEnglish] = useState(true)
   // Starts from the hardcoded seed (instant, offline-safe) and upgrades to the
   // DB-backed question bank (kori_interview_questions) once it loads — that
   // table is the real seed source now (supabase/seed/kori_interview_questions.sql)
   // and is what "Focus on weak questions" mode on /interview/speaking reads too.
   const [bankQA, setBankQA] = useState<QAItem[]>(() => getSeedQA(topic))
+  const [qaAnswerEnglish, setQaAnswerEnglish] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      (topic.prep?.sampleQuestions ?? [])
+        .map((question, index) => [`qa-seed-${index}`, question.answerEn ?? ""] as const)
+        .filter(([, answer]) => answer.trim().length > 0)
+    )
+  )
   const [customQA, setCustomQA] = useState<CustomQA[]>(loadInitialQA)
   // Named snapshots layered on top of the autosaving draft (kori_interview_scripts,
   // untouched by this) — "Original" / "Script V1" / "Mentor Correction" / etc.
@@ -228,37 +252,50 @@ export default function InterviewScriptPage() {
   }
 
   // Best-effort hydrate from the account, then fill any still-empty sections
-  // from the drafted script. Local edits win — the remote copy is adopted only
-  // when nothing meaningful (non-blank text, not just empty keys) has been
-  // written on this device.
+  // from the drafted script. Compare timestamps so a newer account copy (for
+  // example, a mentor-updated final draft) can replace a stale browser cache,
+  // while genuinely newer local edits still win. Legacy caches have no
+  // timestamp and therefore yield to the account copy once.
   useEffect(() => {
     let active = true
     const hasText = (map: Record<string, string>) =>
       Object.values(map).some((v) => (v ?? "").trim().length > 0)
 
-    const hydrate = (remote: Record<string, string> | null) => {
+    const hydrate = (remote: InterviewScript | null) => {
       if (!active) return
       setValues((prev) => {
-        const base = !hasText(prev) && remote && hasText(remote) ? remote : prev
+        const remoteUpdatedAt = remote ? Date.parse(remote.updatedAt) : Number.NaN
+        const useRemote = Boolean(
+          remote &&
+            hasText(remote.sections) &&
+            Number.isFinite(remoteUpdatedAt) &&
+            remoteUpdatedAt >= loadLocalUpdatedAt()
+        )
+        const base = useRemote && remote ? remote.sections : prev
         const next = withSeedDefaults(base)
         if (next === prev) {
           if (remote) setSynced(true)
           return prev
         }
         try {
-          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
-          setSavedAt(new Date())
+          const localSavedAt = useRemote ? new Date(remoteUpdatedAt) : new Date()
+          saveScriptLocally(next, localSavedAt)
+          setSavedAt(localSavedAt)
         } catch {
           // ignore
         }
-        scheduleSync(next)
+        if (useRemote && next === base) {
+          setSynced(true)
+        } else {
+          scheduleSync(next)
+        }
         return next
       })
     }
 
     interviewApi
       .getScript(topic.id)
-      .then((remote) => hydrate(remote?.sections ?? null))
+      .then(hydrate)
       // Offline or endpoint not live yet — the local copy (plus seed) stands.
       .catch(() => hydrate(null))
     return () => {
@@ -280,6 +317,13 @@ export default function InterviewScriptPage() {
         setBankQA(
           questions.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: q.questionEn ?? "" }))
         )
+        setQaAnswerEnglish(
+          Object.fromEntries(
+            questions
+              .filter((q) => (q.sampleAnswerEn ?? "").trim().length > 0)
+              .map((q) => [q.id, q.sampleAnswerEn ?? ""])
+          )
+        )
         setValues((prev) => {
           let changed = false
           const next = { ...prev }
@@ -291,7 +335,7 @@ export default function InterviewScriptPage() {
           }
           if (!changed) return prev
           try {
-            window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+            saveScriptLocally(next)
             setSavedAt(new Date())
           } catch {
             // ignore
@@ -366,7 +410,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // Ignore quota / private-mode failures.
@@ -418,7 +462,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -451,7 +495,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -541,7 +585,7 @@ export default function InterviewScriptPage() {
     setValues(next)
     setSynced(false)
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+      saveScriptLocally(next)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -562,6 +606,7 @@ export default function InterviewScriptPage() {
     setSynced(false)
     try {
       window.localStorage.removeItem(STORAGE_KEY)
+      window.localStorage.removeItem(STORAGE_UPDATED_AT_KEY)
       setSavedAt(new Date())
     } catch {
       // ignore
@@ -751,12 +796,16 @@ export default function InterviewScriptPage() {
               </button>
             </div>
 
-            {mode === "script" && (
+            {(mode === "script" || mode === "qa") && (
               <button
                 type="button"
                 onClick={() => setShowEnglish((v) => !v)}
                 aria-pressed={showEnglish}
-                title="Show or hide the English translation under each section"
+                title={
+                  mode === "qa"
+                    ? "Show or hide English meanings in Q&A Prep"
+                    : "Show or hide the English translation under each section"
+                }
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-2xl border border-border/70 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wide shadow-sm transition-all",
                   showEnglish
@@ -1175,7 +1224,7 @@ export default function InterviewScriptPage() {
                   예상 질문 &amp; 답변 (Q&amp;A)
                 </h1>
                 <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  Draft an answer to each likely question. Answers autosave and export together with your script.
+                  Practice the Korean answer first, then use the English meaning only to confirm what you are saying.
                 </p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {answeredQA}/{allQA.length} answered · {totalWords} words · {totalChars}자
@@ -1184,8 +1233,9 @@ export default function InterviewScriptPage() {
 
               <div className="mt-8 space-y-8">
                 {allQA.map((item, index) => {
-                  const isCustom = !item.id.startsWith("qa-seed-")
+                  const isCustom = customQA.some((custom) => custom.id === item.id)
                   const answer = view[item.id] ?? ""
+                  const answerEnglish = qaAnswerEnglish[item.id] ?? ""
                   return (
                     <section key={item.id} className="border-l-2 border-transparent pl-4">
                       <div className="flex items-start justify-between gap-3">
@@ -1204,8 +1254,8 @@ export default function InterviewScriptPage() {
                               <p className="text-base font-bold leading-snug text-foreground">
                                 {index + 1}. {item.questionKo}
                               </p>
-                              {item.questionEn && (
-                                <p className="mt-0.5 text-sm font-medium text-muted-foreground/70">
+                              {showEnglish && item.questionEn && (
+                                <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground/70">
                                   {item.questionEn}
                                 </p>
                               )}
@@ -1234,6 +1284,16 @@ export default function InterviewScriptPage() {
                           onChange={(text) => updateSection(item.id, text)}
                           placeholder="여기에 답변을 작성하세요…"
                         />
+                        {showEnglish && answerEnglish && !isCustom && (
+                          <div className="mt-3 border-t border-border/60 pt-3">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">
+                              <Languages size={12} strokeWidth={2.5} /> English meaning
+                            </div>
+                            <p className="mt-1.5 text-sm font-medium leading-relaxed text-muted-foreground">
+                              {answerEnglish}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </section>
                   )

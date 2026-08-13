@@ -2,12 +2,14 @@
 
 import { useState } from "react"
 import { motion } from "motion/react"
-import { Sparkles, X } from "lucide-react"
+import { ChevronDown, Sparkles, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ChipSelect } from "@/components/ui/chip-select"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { itemVariants } from "@/lib/motion"
+import { cn } from "@/lib/utils"
 import type { HabitCategory } from "@/lib/types"
 import { CATEGORY_LABELS, CATEGORY_ORDER } from "./categoryMeta"
 
@@ -21,6 +23,7 @@ export function CreateHabitForm({
   const [label, setLabel] = useState("")
   const [category, setCategory] = useState<HabitCategory>("custom")
   const [identityStatement, setIdentityStatement] = useState("")
+  const [moreOpen, setMoreOpen] = useState(false)
   const [submitting, setSubmitting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -38,7 +41,7 @@ export function CreateHabitForm({
     <motion.form
       variants={itemVariants}
       onSubmit={handleSubmit}
-      className="mx-auto max-w-md space-y-5 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"
+      className="mx-auto max-w-md space-y-4 rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6"
     >
       <div className="flex items-start justify-between gap-4">
         <div className="inline-flex rounded-xl bg-emerald-500/10 p-3 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
@@ -56,50 +59,64 @@ export function CreateHabitForm({
         )}
       </div>
       <div>
-        <h1 className="text-xl font-bold text-foreground">Start a new habit</h1>
+        <h1 className="text-xl font-bold text-foreground">Start a habit</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Small and specific beats big and vague — pick something you can do today.
+          Keep it small enough that you can check it off today.
         </p>
       </div>
 
       <div className="space-y-2">
         <label htmlFor="habit-label" className="text-sm font-semibold text-foreground">
-          What are you building?
+          Habit
         </label>
         <Input
           id="habit-label"
           value={label}
           onChange={(e) => setLabel(e.target.value)}
-          placeholder="e.g. 20 minutes of reading"
+          placeholder="e.g. Practice Korean for 20 minutes"
           maxLength={80}
+          autoFocus
           required
         />
       </div>
 
-      <div className="space-y-2">
-        <span className="text-sm font-semibold text-foreground">Category</span>
-        <ChipSelect
-          options={CATEGORY_ORDER.map((c) => CATEGORY_LABELS[c])}
-          value={CATEGORY_LABELS[category]}
-          onChange={(label) => {
-            const next = CATEGORY_ORDER.find((c) => CATEGORY_LABELS[c] === label)
-            if (next) setCategory(next)
-          }}
-        />
-      </div>
+      <Collapsible open={moreOpen} onOpenChange={setMoreOpen}>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+            More options
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="mt-2 space-y-4">
+          <div className="space-y-2">
+            <span className="text-sm font-semibold text-foreground">Category</span>
+            <ChipSelect
+              options={CATEGORY_ORDER.map((c) => CATEGORY_LABELS[c])}
+              value={CATEGORY_LABELS[category]}
+              onChange={(selectedLabel) => {
+                const next = CATEGORY_ORDER.find((c) => CATEGORY_LABELS[c] === selectedLabel)
+                if (next) setCategory(next)
+              }}
+            />
+          </div>
 
-      <div className="space-y-2">
-        <label htmlFor="habit-identity" className="text-sm font-semibold text-foreground">
-          Who is this making you? <span className="font-normal text-muted-foreground">(optional)</span>
-        </label>
-        <Input
-          id="habit-identity"
-          value={identityStatement}
-          onChange={(e) => setIdentityStatement(e.target.value)}
-          placeholder="e.g. I'm becoming someone who follows through"
-          maxLength={120}
-        />
-      </div>
+          <div className="space-y-2">
+            <label htmlFor="habit-identity" className="text-sm font-semibold text-foreground">
+              Why it matters <span className="font-normal text-muted-foreground">(optional)</span>
+            </label>
+            <Input
+              id="habit-identity"
+              value={identityStatement}
+              onChange={(e) => setIdentityStatement(e.target.value)}
+              placeholder="e.g. I want Korean practice to be automatic"
+              maxLength={120}
+            />
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
 
       <Button type="submit" className="w-full" size="lg" disabled={submitting || !label.trim()}>
         {submitting ? "Starting…" : "Start habit"}

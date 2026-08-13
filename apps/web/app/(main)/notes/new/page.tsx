@@ -44,10 +44,10 @@ export default function NewNotePage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl py-4 sm:py-8">
+    <div className="mx-auto max-w-4xl pb-6 sm:pb-8">
       <Link
         href="/notes"
-        className="mb-6 inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"
+        className="mb-4 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
       >
         <ChevronLeft size={14} />
         All notes

@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest"
 import {
   aiCoachItem,
   allNavItems,
+  askHengoItem,
   bottomTabs,
   comingSoonItems,
   getActiveBottomTabIndex,
@@ -10,14 +11,18 @@ import {
   getSectionForPath,
   isMoreRoute,
   isNavigationItemActive,
+  memoryHubItem,
   moreComingSoon,
   moreGroups,
   navItem,
   navSections,
   primarySections,
+  secondaryNavItems,
   sectionRoutePrefixes,
   shippedItems,
   todayItem,
+  visibleSidebarItems,
+  workspaceNavSections,
 } from "./navigation"
 
 function active(pathname: string, id: string, search?: string) {
@@ -34,9 +39,10 @@ describe("nav model integrity", () => {
     expect(navSections.map((s) => s.id)).toEqual([
       "today",
       "learn",
-      "goals",
-      "growth",
-      "progress",
+      "plan",
+      "grow",
+      "history",
+      "memory",
       "ai",
     ])
   })
@@ -62,26 +68,40 @@ describe("nav model integrity", () => {
       "/practice",
       "/vocab",
       "/learn",
-      "/reading",
+      "/phrasebook?mode=reading",
       "/listening",
       "/scenarios",
       "/interview",
-      "/dashboard",
+      "/goals/overview",
       "/goals",
+      "/goals/tasks",
       "/goals/calendar",
       "/roadmap",
       "/notes",
+      "/inbox",
       "/growth/habits",
       "/growth/recovery",
+      "/progress",
       "/achievements",
       "/statistics",
       "/history",
+      "/timeline",
+      "/review/morning",
+      "/ask-hengo/memories",
       "/chat",
+      "/chat?mode=analyze",
+      "/chat?mode=generate",
+      "/chat?mode=corrections",
+      "/chat?mode=memory",
       "/settings",
-      "/account",
     ]) {
       expect(hrefs).toContain(href)
     }
+  })
+
+  it("has no separate Account nav item — /account is a legacy alias for Settings, not a distinct destination", () => {
+    expect(allNavItems.some((i) => i.id === "account")).toBe(false)
+    expect(allNavItems.some((i) => i.href === "/account")).toBe(false)
   })
 })
 
@@ -174,9 +194,13 @@ describe("query-aware AI active matching", () => {
 describe("section (workspace) selection", () => {
   it("maps routes to their owning section", () => {
     expect(getSectionForPath("/practice")?.id).toBe("learn")
-    expect(getSectionForPath("/goals/create")?.id).toBe("goals")
-    expect(getSectionForPath("/growth/recovery")?.id).toBe("growth")
-    expect(getSectionForPath("/statistics")?.id).toBe("progress")
+    expect(getSectionForPath("/goals/create")?.id).toBe("plan")
+    expect(getSectionForPath("/growth/recovery")?.id).toBe("grow")
+    expect(getSectionForPath("/statistics")?.id).toBe("grow")
+    expect(getSectionForPath("/ask-hengo/memories")?.id).toBe("memory")
+    expect(getSectionForPath("/chat", "mode=memory")?.id).toBe("memory")
+    expect(getSectionForPath("/notes")?.id).toBe("memory")
+    expect(getSectionForPath("/inbox")?.id).toBe("plan")
     expect(getSectionForPath("/chat")?.id).toBe("ai")
     expect(getSectionForPath("/home")?.id).toBe("today")
   })
@@ -191,87 +215,312 @@ describe("section (workspace) selection", () => {
   })
 
   it("gives every primary section a route prefix list for last-visited tracking", () => {
-    expect(Object.keys(sectionRoutePrefixes).sort()).toEqual(["ai", "goals", "growth", "learn", "progress"])
+    expect(Object.keys(sectionRoutePrefixes).sort()).toEqual([
+      "ai",
+      "grow",
+      "history",
+      "learn",
+      "memory",
+      "plan",
+    ])
     expect(sectionRoutePrefixes.ai).toContain("/chat")
+  })
+})
+
+describe("Simplified AI + Memory/Progress navigation", () => {
+  it("only shows Plan and Grow as primary sidebar/rail groups, in that order", () => {
+    expect(workspaceNavSections.map((s) => s.id)).toEqual(["plan", "grow"])
+  })
+
+  it("lists Learn, Calendar, and History as the secondary destinations — Settings lives in the account menu", () => {
+    expect(secondaryNavItems.map((i) => i.id)).toEqual(["learn-hub", "goals-calendar", "history-hub"])
+  })
+
+  it("promotes Calendar out of Plan's nested sidebar group now that it's a secondary top-level item", () => {
+    const plan = navSections.find((s) => s.id === "plan")!
+    expect(visibleSidebarItems(plan).map((i) => i.id)).not.toContain("goals-calendar")
+  })
+
+  it("keeps Chat, Analyze, Generate and Corrections as real, hidden-from-chrome routes", () => {
+    for (const id of ["ai-chat", "ai-analyze", "ai-generate", "ai-corrections"]) {
+      const item = navItem(id)
+      expect(item.showInSidebar).toBe(false)
+      expect(allNavItems).toContain(item)
+    }
+  })
+
+  it("resolves Hengo Coach and its mode variants by title even though they're hidden", () => {
+    expect(getActiveNavItem("/chat")?.label).toBe("Hengo Coach")
+    expect(getActiveNavItem("/chat", "mode=analyze")?.label).toBe("Analyze")
+    expect(getActiveNavItem("/chat", "mode=generate")?.label).toBe("Generate")
+  })
+
+  it("separates the Memory workspace (browse) from the Ask Hengo action (ask) as distinct routes", () => {
+    expect(memoryHubItem.href).toBe("/ask-hengo/memories")
+    expect(askHengoItem.href).toBe("/chat?mode=memory")
+    expect(memoryHubItem.href).not.toBe(askHengoItem.href)
+    // Memory has no chrome presence at all now — every item in the section
+    // (Notes, Memories, Ask Hengo) is hidden from the sidebar/rail/bottom nav.
+    expect(memoryHubItem.showInSidebar).toBe(false)
+    expect(askHengoItem.showInSidebar).toBe(false)
+  })
+
+  it("activates the Memory workspace for /ask-hengo/memories, /chat?mode=memory and /notes — Inbox moved to Plan", () => {
+    expect(getSectionForPath("/ask-hengo/memories")?.id).toBe("memory")
+    expect(getSectionForPath("/chat", "mode=memory")?.id).toBe("memory")
+    expect(getSectionForPath("/notes")?.id).toBe("memory")
+    expect(getSectionForPath("/notes/abc-123")?.id).toBe("memory")
+    expect(getSectionForPath("/inbox")?.id).toBe("plan")
+  })
+
+  it("keeps Memory as a hidden-but-real registry — Notes, Memories and Ask Hengo, none visible in chrome", () => {
+    const memory = navSections.find((s) => s.id === "memory")!
+    expect(memory.items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub", "memory-ask-hengo"])
+    expect(memory.items.every((i) => i.showInSidebar === false)).toBe(true)
+  })
+
+  it("folds the old Progress workspace's routes into Grow, hidden alongside the merged Progress row", () => {
+    const grow = navSections.find((s) => s.id === "grow")!
+    const hidden = grow.items.filter((i) => i.showInSidebar === false && !i.soon)
+    expect(hidden.map((i) => i.id).sort()).toEqual(
+      [
+        "growth-habits",
+        "growth-recovery",
+        "growth-journal",
+        "review-achievements",
+        "review-hub",
+        "review-statistics",
+      ].sort()
+    )
+    for (const route of ["/review/morning", "/achievements", "/statistics"]) {
+      expect(getSectionForPath(route)?.id).toBe("grow")
+    }
+    expect(grow.items.some((i) => i.id === "grow-progress" && i.showInSidebar !== false)).toBe(true)
+    expect(getActiveNavItem("/progress")?.label).toBe("Progress")
+  })
+
+  it("merges Timeline into History as one standalone destination", () => {
+    expect(getSectionForPath("/history")?.id).toBe("history")
+    expect(getSectionForPath("/timeline")?.id).toBe("history")
+    expect(getActiveNavItem("/history")?.label).toBe("History")
+    const history = navSections.find((s) => s.id === "history")!
+    expect(history.items.find((i) => i.id === "review-timeline")?.showInSidebar).toBe(false)
+  })
+})
+
+describe("Learning Hub consolidation", () => {
+  const learnRoutes = [
+    "/learn",
+    "/practice",
+    "/korean-coach",
+    "/vocab",
+    "/phrasebook",
+    "/listening",
+    "/scenarios",
+    "/interview",
+  ]
+
+  it("keeps every Korean route inside the learn section", () => {
+    for (const route of learnRoutes) {
+      expect(getSectionForPath(route)?.id).toBe("learn")
+    }
+    // Reading and Foundations are merged into Phrasebook as ?mode= query
+    // variants, not their own pathnames — see learn-reading/learn-foundations
+    // in lib/navigation.ts.
+    expect(getSectionForPath("/phrasebook", "mode=reading")?.id).toBe("learn")
+    expect(getSectionForPath("/phrasebook", "mode=foundations")?.id).toBe("learn")
+  })
+
+  it("resolves a specific child title for every route, and 'Learn' for the hub itself", () => {
+    expect(getActiveNavItem("/learn")?.label).toBe("Learn")
+    expect(getActiveNavItem("/practice")?.label).toBe("Practice")
+    expect(getActiveNavItem("/korean-coach")?.label).toBe("Korean Coach")
+    expect(getActiveNavItem("/phrasebook", { mode: "reading" })?.label).toBe("Reading")
+    expect(getActiveNavItem("/interview")?.label).toBe("Exam Prep")
+  })
+
+  it("hides every Learn child from the sidebar/rail while keeping it a real, searchable route", () => {
+    const learn = navSections.find((s) => s.id === "learn")!
+    const hidden = learn.items.filter((i) => i.id !== "learn-hub")
+    expect(hidden).toHaveLength(9)
+    expect(hidden.every((i) => i.showInSidebar === false)).toBe(true)
+    expect(hidden.every((i) => allNavItems.includes(i))).toBe(true)
+  })
+
+  it("has its own mobile bottom tab now — Learn moved out of the More sheet", () => {
+    expect(bottomTabs.some((t) => t.id === "tab-learn")).toBe(true)
+    for (const route of ["/learn", "/practice", "/korean-coach", "/phrasebook", "/interview"]) {
+      expect(getActiveBottomTabIndex(route)).toBe(1)
+    }
+  })
+})
+
+describe("Plan Hub consolidation (formerly Goals)", () => {
+  it("keeps every Goals hub route inside the plan section", () => {
+    for (const route of ["/goals", "/goals/overview", "/goals/tasks", "/goals/calendar", "/inbox"]) {
+      expect(getSectionForPath(route)?.id).toBe("plan")
+    }
+  })
+
+  it("resolves a specific child title for Overview/Tasks/Calendar/Inbox, and 'Goals' for the hub's own list route", () => {
+    expect(getActiveNavItem("/goals")?.label).toBe("Goals")
+    expect(getActiveNavItem("/goals/overview")?.label).toBe("Overview")
+    expect(getActiveNavItem("/goals/tasks")?.label).toBe("Tasks")
+    expect(getActiveNavItem("/goals/calendar")?.label).toBe("Calendar")
+    expect(getActiveNavItem("/inbox")?.label).toBe("Inbox")
+  })
+
+  it("hides Overview, Tasks and Roadmap from the sidebar/rail while keeping them real, searchable routes", () => {
+    const plan = navSections.find((s) => s.id === "plan")!
+    const hidden = plan.items.filter((i) => i.showInSidebar === false)
+    expect(hidden.map((i) => i.id).sort()).toEqual(["goals-overview", "goals-roadmap", "goals-tasks"])
+    expect(hidden.every((i) => allNavItems.includes(i))).toBe(true)
+  })
+
+  it("no longer has a standalone Dashboard nav entry — its content moved into Overview", () => {
+    expect(allNavItems.some((i) => i.id === "goals-dashboard")).toBe(false)
+    expect(allNavItems.some((i) => i.label === "Dashboard")).toBe(false)
+  })
+
+  it("now owns Inbox (quick capture feeds Plan, not a Memory browsing tool) — Notes stays with Memory", () => {
+    const plan = navSections.find((s) => s.id === "plan")!
+    expect(plan.items.some((i) => i.label === "Inbox")).toBe(true)
+    expect(plan.items.some((i) => i.label === "Notes")).toBe(false)
+  })
+
+  it("keeps the Goals bottom tab lit while browsing hidden hub children, not just /goals itself", () => {
+    const goalsIndex = bottomTabs.findIndex((t) => t.id === "tab-goals")
+    for (const route of ["/goals", "/goals/overview", "/goals/tasks"]) {
+      expect(getActiveBottomTabIndex(route)).toBe(goalsIndex)
+    }
+    // Calendar and Inbox keep their own distinct sidebar/rail presence, so
+    // they still fall through to More on the bottom bar.
+    expect(getActiveBottomTabIndex("/goals/calendar")).toBe(bottomTabs.length)
+    expect(getActiveBottomTabIndex("/inbox")).toBe(bottomTabs.length)
+  })
+})
+
+describe("Grow workspace consolidation (Habits folded into Recovery, Progress merged in)", () => {
+  it("hides Habits from the sidebar/rail while keeping it a real, searchable route", () => {
+    const grow = navSections.find((s) => s.id === "grow")!
+    expect(grow.items.some((i) => i.id === "growth-habits" && i.showInSidebar === false)).toBe(true)
+    expect(allNavItems).toContain(navItem("growth-habits"))
+  })
+
+  it("makes Recovery the section's default href, not Habits", () => {
+    const grow = navSections.find((s) => s.id === "grow")!
+    expect(grow.href).toBe("/growth/recovery")
+  })
+
+  it("still resolves /growth/habits to the grow section and the Habits title", () => {
+    expect(getSectionForPath("/growth/habits")?.id).toBe("grow")
+    expect(getActiveNavItem("/growth/habits")?.label).toBe("Habits")
+  })
+
+  it("relabels Journal as Reflections", () => {
+    expect(getActiveNavItem("/growth/journal")?.label).toBe("Reflections")
   })
 })
 
 describe("bottom tabs", () => {
   it("has exactly four routed tabs (plus the More trigger)", () => {
     expect(bottomTabs).toHaveLength(4)
-    expect(bottomTabs.map((t) => t.label)).toEqual(["Today", "Learn", "Goals", "Growth"])
+    expect(bottomTabs.map((t) => t.label)).toEqual(["Today", "Learn", "Goals", "Progress"])
   })
 
   it("uses the recommended route mapping", () => {
-    expect(bottomTabs.map((t) => t.href)).toEqual(["/home", "/practice", "/goals", "/growth/habits"])
+    expect(bottomTabs.map((t) => t.href)).toEqual(["/home", "/learn", "/goals", "/progress"])
   })
 
   it("selects the right tab index per route", () => {
     expect(getActiveBottomTabIndex("/home")).toBe(0)
     expect(getActiveBottomTabIndex("/practice")).toBe(1)
     expect(getActiveBottomTabIndex("/goals/abc")).toBe(2)
-    expect(getActiveBottomTabIndex("/growth/habits/h1")).toBe(3)
+    expect(getActiveBottomTabIndex("/progress")).toBe(3)
+  })
+
+  it("falls through to More for /growth/habits and /growth/recovery — Grow has no bottom tab of its own", () => {
+    expect(getActiveBottomTabIndex("/growth/habits")).toBe(bottomTabs.length)
+    expect(getActiveBottomTabIndex("/growth/recovery")).toBe(bottomTabs.length)
+  })
+
+  it("does not light up Progress for Grow's other routes (Recovery, Reflections)", () => {
+    expect(getActiveBottomTabIndex("/growth/journal")).toBe(bottomTabs.length)
   })
 
   it("falls back to the More slot for routes no tab owns", () => {
     expect(getActiveBottomTabIndex("/statistics")).toBe(bottomTabs.length)
     expect(getActiveBottomTabIndex("/settings")).toBe(bottomTabs.length)
+    expect(getActiveBottomTabIndex("/growth/recovery")).toBe(bottomTabs.length)
+    expect(getActiveBottomTabIndex("/chat")).toBe(bottomTabs.length)
   })
 })
 
 describe("More-route detection", () => {
-  it("is false on the four direct tabs", () => {
+  it("is false on the four direct tabs and any route inside a tab's section", () => {
     expect(isMoreRoute("/home")).toBe(false)
-    expect(isMoreRoute("/practice")).toBe(false)
     expect(isMoreRoute("/goals")).toBe(false)
-    expect(isMoreRoute("/growth/habits")).toBe(false)
+    expect(isMoreRoute("/learn")).toBe(false)
+    expect(isMoreRoute("/practice")).toBe(false)
+    expect(isMoreRoute("/progress")).toBe(false)
   })
 
   it("is true for routes reachable only through More", () => {
-    expect(isMoreRoute("/vocab")).toBe(true)
     expect(isMoreRoute("/achievements")).toBe(true)
     expect(isMoreRoute("/goals/calendar")).toBe(true)
+    expect(isMoreRoute("/inbox")).toBe(true)
     expect(isMoreRoute("/settings")).toBe(true)
     expect(isMoreRoute("/chat")).toBe(true)
+    expect(isMoreRoute("/growth/recovery")).toBe(true)
+    expect(isMoreRoute("/growth/habits")).toBe(true)
+    expect(isMoreRoute("/growth/journal")).toBe(true)
+    expect(isMoreRoute("/notes")).toBe(true)
   })
 })
 
 describe("More sheet grouping", () => {
-  it("groups by Progress / Tools / Learn more / Growth / Account", () => {
-    expect(moreGroups.map((g) => g.id)).toEqual([
-      "progress",
-      "tools",
-      "learn-more",
-      "growth-more",
-      "account",
-    ])
+  it("has a labelled Memory group (Notes, Memories) plus a flat menu (Calendar, History, Settings)", () => {
+    expect(moreGroups).toHaveLength(2)
+    expect(moreGroups[0]).toMatchObject({ label: "Memory" })
+    expect(moreGroups[0].items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub"])
+    expect(moreGroups[1].items.map((i) => i.id)).toEqual(["goals-calendar", "history-hub", "settings"])
   })
 
-  it("omits destinations already reachable from a bottom tab", () => {
+  it("omits destinations already reachable from a bottom tab, and Ask Hengo (it's the pinned card instead)", () => {
     const ids = moreGroups.flatMap((g) => g.items.map((i) => i.id))
-    expect(ids).not.toContain("learn-practice")
     expect(ids).not.toContain("goals-goals")
-    expect(ids).not.toContain("growth-habits")
+    expect(ids).not.toContain("learn-hub")
+    expect(ids).not.toContain("grow-progress")
+    expect(ids).not.toContain("memory-ask-hengo")
     expect(ids).not.toContain("today")
   })
 
-  it("puts the less-used learning pages under Learn more", () => {
-    const learnMore = moreGroups.find((g) => g.id === "learn-more")!
-    expect(learnMore.items.map((i) => i.label)).toEqual([
-      "Korean Coach",
-      "Vocabulary",
-      "Phrasebook",
-      "Foundations",
-      "Reading",
-      "Listening",
-      "Scenarios",
-      "Exam Prep",
-    ])
+  it("does not duplicate Goals/Grow sub-pages or the hidden Progress routes", () => {
+    const ids = moreGroups.flatMap((g) => g.items.map((i) => i.id))
+    for (const id of [
+      "plan-inbox",
+      "growth-journal",
+      "growth-recovery",
+      "review-hub",
+      "review-achievements",
+      "review-statistics",
+      "review-timeline",
+    ]) {
+      expect(ids).not.toContain(id)
+    }
   })
 
-  it("offers Notifications-adjacent account rows", () => {
-    const account = moreGroups.find((g) => g.id === "account")!
-    expect(account.items.map((i) => i.href)).toEqual(["/account", "/settings"])
+  it("keeps those routes real and searchable even though the More sheet no longer lists them", () => {
+    for (const route of [
+      "/goals/calendar",
+      "/inbox",
+      "/growth/journal",
+      "/growth/recovery",
+      "/achievements",
+      "/statistics",
+    ]) {
+      expect(getActiveNavItem(route)).toBeDefined()
+    }
   })
 })
 
@@ -286,8 +535,8 @@ describe("Coming Soon filtering", () => {
   })
 
   it("shippedItems / comingSoonItems partition a list", () => {
-    const growth = navSections.find((s) => s.id === "growth")!.items
-    expect(shippedItems(growth).length + comingSoonItems(growth).length).toBe(growth.length)
+    const grow = navSections.find((s) => s.id === "grow")!.items
+    expect(shippedItems(grow).length + comingSoonItems(grow).length).toBe(grow.length)
   })
 })
 

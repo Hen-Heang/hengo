@@ -2913,7 +2913,6 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      kori_send_daily_study_reminder: { Args: never; Returns: number }
       kori_send_exam_countdown_reminders: { Args: never; Returns: number }
       kori_send_reviews_due_reminders: { Args: never; Returns: number }
       kori_send_streak_saver_reminders: { Args: never; Returns: number }

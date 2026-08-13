@@ -81,7 +81,7 @@ export function AskHengoChat() {
                 key={q}
                 type="button"
                 onClick={() => handleAsk(q)}
-                className="rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                className="min-h-11 rounded-full border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
               >
                 {q}
               </button>
@@ -98,7 +98,7 @@ export function AskHengoChat() {
             key={i}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-2 rounded-2xl border border-border bg-card p-4"
+            className="space-y-2 rounded-lg border border-border bg-card p-4"
           >
             <p className="text-sm font-semibold text-foreground">{exchange.question}</p>
             <p className="text-sm leading-relaxed text-foreground">{exchange.answer.answer}</p>

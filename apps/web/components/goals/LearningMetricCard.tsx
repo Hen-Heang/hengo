@@ -121,7 +121,7 @@ export function LearningMetricCard({
   const pct = metric && count != null ? Math.min(100, Math.round((count / metric.targetCount) * 100)) : 0
 
   return (
-    <Card className="rounded-3xl border-border bg-card/50 p-6 shadow-sm sm:rounded-3xl sm:p-8">
+    <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <BarChart3 size={15} strokeWidth={2.5} className="text-primary" />

@@ -51,14 +51,14 @@ export default function JoinGoalPage() {
     <div className="mx-auto flex max-w-xl flex-col gap-6">
       <Link
         href="/goals"
-        className="inline-flex items-center gap-1.5 text-sm font-bold text-muted-foreground transition-colors hover:text-foreground"
+        className="inline-flex min-h-11 items-center gap-1.5 text-sm font-semibold text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft size={16} strokeWidth={2.5} /> Goals
       </Link>
 
-      <PageHero eyebrow="Invitation" title="Join a goal" description="You've been invited to collaborate." />
+      <PageHero eyebrow="Invitation" title="Join a goal" description="You've been invited to collaborate." variant="compact" />
 
-      <Card className="rounded-3xl border-border bg-card/50 p-8 shadow-sm">
+      <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
         {isPending ? (
           <div className="space-y-4">
             <Skeleton className="h-8 w-2/3 rounded-lg" />
@@ -71,7 +71,7 @@ export default function JoinGoalPage() {
               <Target size={32} strokeWidth={1.5} />
             </div>
             <div>
-              <h2 className="text-lg font-bold tracking-tight">Invalid or expired link</h2>
+              <h2 className="text-lg font-semibold tracking-tight">Invalid or expired link</h2>
               <p className="mt-1 max-w-sm text-sm font-medium text-muted-foreground">
                 This share link no longer works. Ask the goal owner for a fresh one.
               </p>
@@ -83,11 +83,11 @@ export default function JoinGoalPage() {
         ) : (
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-primary/10 text-3xl font-bold text-primary">
+              <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-2xl font-semibold text-primary">
                 {goal.metadata?.icon || (goal.title ? goal.title.charAt(0).toUpperCase() : "G")}
               </div>
               <div className="min-w-0 flex-1">
-                <h2 className="text-xl font-extrabold leading-tight tracking-tight text-foreground">
+                <h2 className="text-xl font-semibold leading-tight tracking-tight text-foreground">
                   {goal.title}
                 </h2>
                 {goal.description && (

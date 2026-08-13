@@ -1,24 +1,27 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { ArrowRight, Flame, MessageCircle, Sparkles, Target, TreeDeciduous, Trophy } from "lucide-react"
-import { motion } from "motion/react"
+import { useMemo } from "react"
+import { motion, type Variants } from "motion/react"
+import { ArrowUpRight, CalendarDays, ListChecks, Sparkles, Target } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
 
-import { FirstRunBanner } from "@/components/dashboard/FirstRunBanner"
-import { WorkspacePosterCard } from "@/components/home/WorkspacePosterCard"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
-import { achievementsApi } from "@/lib/api"
+import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
+import { TodayTasksCard } from "@/components/home/TodayTasksCard"
 import { useGoals } from "@/hooks/useGoals"
-import { useHabits } from "@/hooks/useHabits"
-import { useProgress } from "@/hooks/useProgress"
-import { useRecoveryEvents, useRecoveryHabits } from "@/hooks/useRecovery"
-import { getUserId } from "@/lib/auth-store"
 import { calculateGoalDeadlineInfo } from "@/lib/goals"
-import { daysSince } from "@/lib/recovery"
-import { containerVariants, itemVariants } from "@/lib/motion"
 import { getLastVisited } from "@/lib/last-visited"
+import { cn } from "@/lib/utils"
+
+const staggerContainer: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.06 } },
+}
+
+const fadeUp: Variants = {
+  hidden: { opacity: 0, y: 14 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.45, ease: [0.16, 1, 0.3, 1] } },
+}
 
 function getGreeting() {
   const hour = new Date().getHours()
@@ -27,154 +30,215 @@ function getGreeting() {
   return "Good evening"
 }
 
-function HomeLoadingState() {
+function getTodayLabel() {
+  return new Date().toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "short",
+    day: "numeric",
+  })
+}
+
+type ShortcutTone = "calendar" | "goals" | "habits" | "learn"
+
+type Shortcut = {
+  href: string
+  label: string
+  description: string
+  icon: LucideIcon
+  tone: ShortcutTone
+  badge?: string
+  badgeTone?: "default" | "warning"
+}
+
+const shortcutStyles: Record<
+  ShortcutTone,
+  { icon: string; border: string; glow: string; arrow: string; badge: string }
+> = {
+  calendar: {
+    icon: "bg-sky-500/10 text-sky-500 ring-1 ring-inset ring-sky-500/15 dark:text-sky-400",
+    border: "hover:border-sky-500/35 focus-visible:border-sky-500/40",
+    glow: "bg-gradient-to-br from-sky-500/[0.12] via-cyan-500/[0.04] to-transparent",
+    arrow: "text-sky-500 dark:text-sky-400",
+    badge: "bg-sky-500/10 text-sky-600 dark:text-sky-400",
+  },
+  goals: {
+    icon: "bg-emerald-500/10 text-emerald-600 ring-1 ring-inset ring-emerald-500/15 dark:text-emerald-400",
+    border: "hover:border-emerald-500/35 focus-visible:border-emerald-500/40",
+    glow: "bg-gradient-to-br from-emerald-500/[0.12] via-teal-500/[0.04] to-transparent",
+    arrow: "text-emerald-600 dark:text-emerald-400",
+    badge: "bg-emerald-500/10 text-emerald-700 dark:text-emerald-400",
+  },
+  habits: {
+    icon: "bg-amber-500/10 text-amber-600 ring-1 ring-inset ring-amber-500/15 dark:text-amber-400",
+    border: "hover:border-amber-500/35 focus-visible:border-amber-500/40",
+    glow: "bg-gradient-to-br from-amber-500/[0.12] via-orange-500/[0.04] to-transparent",
+    arrow: "text-amber-600 dark:text-amber-400",
+    badge: "bg-amber-500/10 text-amber-700 dark:text-amber-400",
+  },
+  learn: {
+    icon: "bg-violet-500/10 text-violet-600 ring-1 ring-inset ring-violet-500/15 dark:text-violet-400",
+    border: "hover:border-violet-500/35 focus-visible:border-violet-500/40",
+    glow: "bg-gradient-to-br from-violet-500/[0.12] via-fuchsia-500/[0.04] to-transparent",
+    arrow: "text-violet-600 dark:text-violet-400",
+    badge: "bg-violet-500/10 text-violet-700 dark:text-violet-400",
+  },
+}
+
+// Daily shortcuts deliberately favor action over storage. Each card gets a
+// distinct functional color so the four actions are recognizable before the
+// label is read. Motion is intentionally subtle: a small lift/scale on hover
+// and a directional arrow, without distracting looping animation.
+function WorkspaceShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
   return (
-    <div className="mx-auto max-w-6xl space-y-6 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-8 sm:px-6 sm:pt-8 lg:px-8">
-      <Skeleton className="h-24 w-full rounded-2xl" />
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
-        <Skeleton className="h-72 w-full rounded-3xl" />
-      </div>
-    </div>
+    <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+      {shortcuts.map((s) => {
+        const style = shortcutStyles[s.tone]
+
+        return (
+          <motion.div
+            key={s.href}
+            variants={fadeUp}
+            whileHover={{ y: -4, scale: 1.018 }}
+            whileTap={{ scale: 0.985 }}
+            transition={{ type: "spring", stiffness: 360, damping: 24, mass: 0.7 }}
+            className="h-full"
+          >
+            <Link
+              href={s.href}
+              className={cn(
+                "group relative flex h-full min-h-[132px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card/80 p-4 shadow-sm outline-none backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200 hover:bg-card hover:shadow-lg hover:shadow-black/[0.06] focus-visible:ring-2 focus-visible:ring-ring/70 dark:bg-slate-900/45 dark:hover:bg-slate-900/70 dark:hover:shadow-black/25 sm:min-h-[144px] sm:p-5",
+                style.border
+              )}
+            >
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100",
+                  style.glow
+                )}
+              />
+
+              <div className="relative flex items-start justify-between gap-3">
+                <span className={cn("flex size-10 items-center justify-center rounded-xl", style.icon)}>
+                  <s.icon size={19} strokeWidth={2.1} />
+                </span>
+                <span
+                  className={cn(
+                    "flex size-8 translate-x-1 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100",
+                    style.arrow
+                  )}
+                >
+                  <ArrowUpRight size={17} strokeWidth={2.2} />
+                </span>
+              </div>
+
+              <div className="relative mt-4 min-w-0">
+                <span className="block text-[15px] font-semibold tracking-[-0.015em] text-foreground sm:text-base">
+                  {s.label}
+                </span>
+                <span className="mt-1 block text-xs leading-5 text-muted-foreground sm:text-[13px]">
+                  {s.description}
+                </span>
+              </div>
+
+              {s.badge && (
+                <motion.span
+                  key={s.badge}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 22 }}
+                  className={cn(
+                    "relative mt-auto w-fit rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                    s.badgeTone === "warning" ? "bg-red-500/10 text-red-500" : style.badge
+                  )}
+                >
+                  {s.badge}
+                </motion.span>
+              )}
+            </Link>
+          </motion.div>
+        )
+      })}
+    </motion.div>
   )
 }
 
 export default function HomePage() {
-  const { loading, stats } = useProgress()
-  const { sortedGoals, isLoading: goalsLoading } = useGoals()
-  const { activeHabits, loading: habitsLoading } = useHabits()
-  const { activeHabit: recoveryHabit, loading: recoveryHabitsLoading } = useRecoveryHabits()
-  const { lastSlipAt, loading: recoveryEventsLoading } = useRecoveryEvents(recoveryHabit?.id ?? null)
-  const userId = getUserId()
-  const { data: achievementsSummary, isPending: achievementsLoading } = useQuery({
-    queryKey: ["achievements-summary", userId],
-    queryFn: () => achievementsApi.getSummary(),
-    enabled: userId != null,
-  })
+  const { sortedGoals } = useGoals()
 
-  if (
-    loading ||
-    goalsLoading ||
-    achievementsLoading ||
-    habitsLoading ||
-    recoveryHabitsLoading ||
-    (recoveryHabit && recoveryEventsLoading)
-  ) {
-    return <HomeLoadingState />
-  }
+  const goalsBadge = useMemo(() => {
+    const active = sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived")
+    const overdue = active.filter((g) => calculateGoalDeadlineInfo(g).status === "overdue")
+    if (active.length === 0) return undefined
+    return overdue.length > 0
+      ? { text: `${overdue.length} overdue`, tone: "warning" as const }
+      : { text: `${active.length} active`, tone: "default" as const }
+  }, [sortedGoals])
 
-  const activeGoals = sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived")
-  const overdueGoals = activeGoals.filter((g) => calculateGoalDeadlineInfo(g).status === "overdue")
-  const completedGoals = sortedGoals.filter((g) => g.status === "completed")
-  const level = achievementsSummary?.level
-  const unlockedCount = achievementsSummary?.unlockedCount ?? 0
-  const totalCount = achievementsSummary?.totalCount ?? 0
-  const recoveryStreakDays = recoveryHabit ? daysSince(recoveryHabit.startedAt, lastSlipAt) : null
+  const shortcuts: Shortcut[] = [
+    {
+      href: "/goals/calendar",
+      label: "Calendar",
+      description: "Plan your day and time",
+      icon: CalendarDays,
+      tone: "calendar",
+    },
+    {
+      href: getLastVisited("plan", "/goals"),
+      label: "Goals",
+      description: "Keep your direction clear",
+      icon: Target,
+      tone: "goals",
+      badge: goalsBadge?.text,
+      badgeTone: goalsBadge?.tone,
+    },
+    {
+      href: "/growth/habits",
+      label: "Habits",
+      description: "Build your daily routines",
+      icon: ListChecks,
+      tone: "habits",
+    },
+    {
+      href: getLastVisited("learn", "/learn"),
+      label: "Learn",
+      description: "Continue focused practice",
+      icon: Sparkles,
+      tone: "learn",
+    },
+  ]
 
   return (
     <motion.div
+      variants={staggerContainer}
       initial="hidden"
-      animate="visible"
-      variants={containerVariants}
-      className="mx-auto max-w-6xl space-y-8 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] pb-[max(3rem,env(safe-area-inset-bottom))] sm:space-y-10 sm:px-6 sm:pt-8 lg:px-8"
+      animate="show"
+      className="mx-auto max-w-6xl space-y-5 px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:space-y-6 sm:px-6 sm:pt-6 lg:px-8"
     >
-      {/* ── Hero strip ── */}
-      <motion.div
-        variants={itemVariants}
-        className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between"
-      >
-        <div className="max-w-2xl">
-          <p className="app-kicker">Your daily workspace</p>
-          <h1 className="mt-2 text-3xl font-semibold tracking-[-0.035em] text-foreground sm:text-4xl">
-            {getGreeting()} 👋
-          </h1>
-          <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
-            Choose what needs your attention today, or ask your AI coach for a quick start.
-          </p>
-        </div>
-        <div className="flex w-full flex-wrap items-center gap-2.5 sm:w-auto sm:justify-end">
-          <div className="flex h-10 items-center gap-2 rounded-xl border border-border/70 bg-card/80 px-3.5 shadow-xs">
-            <Flame size={15} className="text-orange-500" />
-            <span className="text-sm font-semibold text-foreground">{stats.streakDays} day streak</span>
-          </div>
-          <Button asChild className="h-10 flex-1 sm:flex-none">
-            <Link href="/chat">
-              <MessageCircle size={16} />
-              Ask AI Coach
-              <ArrowRight size={15} />
-            </Link>
-          </Button>
-        </div>
+      {/* ── Greeting ── */}
+      <motion.div variants={fadeUp}>
+        <h1 className="text-2xl font-semibold tracking-[-0.025em] text-foreground sm:text-3xl">
+          {getGreeting()}{" "}
+          <motion.span
+            className="inline-block origin-[70%_70%]"
+            animate={{ rotate: [0, 14, -8, 14, -4, 10, 0] }}
+            transition={{ duration: 1.4, delay: 0.3, ease: "easeInOut" }}
+          >
+            👋
+          </motion.span>
+        </h1>
+        <p className="mt-1 text-sm text-muted-foreground">{getTodayLabel()}</p>
       </motion.div>
 
-      {/* First-run onboarding — shown once to users with no activity yet */}
-      {stats.wordsSaved === 0 && stats.streakDays === 0 && (
-        <motion.div variants={itemVariants}>
-          <FirstRunBanner />
-        </motion.div>
-      )}
+      {/* ── Today's tasks + habits ── */}
+      <motion.div variants={fadeUp} className="grid gap-4 sm:grid-cols-2 sm:gap-5">
+        <TodayTasksCard />
+        <TodayHabitCheckins />
+      </motion.div>
 
-      {/* ── Big entry points ── */}
-      <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2 sm:gap-6 xl:grid-cols-4">
-        <WorkspacePosterCard
-          href={getLastVisited("learn", "/practice")}
-          eyebrow="Learning"
-          title="Korean Learning"
-          description="Vocab, grammar corrections, listening, reading, and exam prep — pick up today's practice."
-          icon={Sparkles}
-          accentColor="blue"
-          stats={[
-            { label: "Day streak", value: String(stats.streakDays) },
-            { label: "Due today", value: String(stats.dueReviews) },
-            { label: "Words saved", value: String(stats.wordsSaved) },
-          ]}
-          cta="Continue learning"
-        />
-        <WorkspacePosterCard
-          href={getLastVisited("goals", "/dashboard")}
-          eyebrow="Productivity"
-          title="Goal Setting"
-          description="Plan goals, break them into tasks, and track deadlines — see what needs you today."
-          icon={Target}
-          accentColor="emerald"
-          stats={[
-            { label: "Active goals", value: String(activeGoals.length) },
-            {
-              label: overdueGoals.length > 0 ? "Overdue" : "Completed",
-              value: overdueGoals.length > 0 ? String(overdueGoals.length) : String(completedGoals.length),
-            },
-          ]}
-          cta="Continue planning"
-        />
-        <WorkspacePosterCard
-          href={getLastVisited("progress", "/achievements")}
-          eyebrow="Progress"
-          title="Your Progress"
-          description="Level, XP, and badges earned across every module — see how far you've come."
-          icon={Trophy}
-          accentColor="amber"
-          stats={[
-            { label: "Level", value: level ? String(level.level) : "1" },
-            { label: "XP", value: level ? String(level.totalXp) : "0" },
-            { label: "Badges", value: `${unlockedCount}/${totalCount}` },
-          ]}
-          cta="View achievements"
-        />
-        <WorkspacePosterCard
-          href="/growth/habits"
-          eyebrow="Growth"
-          title="Habits & Recovery"
-          description="Build identity-based habits and track recovery, one calm check-in at a time."
-          icon={TreeDeciduous}
-          accentColor="violet"
-          stats={[
-            { label: "Active habits", value: String(activeHabits.length) },
-            ...(recoveryStreakDays !== null ? [{ label: "Recovery streak", value: `${recoveryStreakDays}d` }] : []),
-          ]}
-          cta="Open Growth"
-        />
+      {/* ── Daily workspaces ── */}
+      <motion.div variants={fadeUp}>
+        <WorkspaceShortcuts shortcuts={shortcuts} />
       </motion.div>
     </motion.div>
   )

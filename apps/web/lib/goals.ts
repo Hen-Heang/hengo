@@ -1,5 +1,6 @@
-import { differenceInDays, isToday, isPast, parseISO } from "date-fns"
+import { differenceInDays, format, isToday, isPast, parseISO } from "date-fns"
 import type { GoalKeyResult } from "@/lib/goal-key-results"
+import type { Task } from "@/lib/tasks"
 
 // ── Types (ported from Orbit src/types/goal.ts) ──────────────────────────────
 
@@ -108,6 +109,10 @@ export interface Goal {
   // Client-side enrichment: active (non-archived) key results for this goal,
   // when fetched via goalsApi (nested select) — see lib/api/goals.ts.
   keyResults?: GoalKeyResult[]
+  // Client-side enrichment: this goal's tasks (a subset of Task's columns —
+  // see GOAL_SELECT in lib/api/goals.ts), enough to compute a Next Action on
+  // the goals list without a separate per-goal fetch.
+  tasks?: Task[]
   // ── Deferred-feature fields (sharing / themes) — kept optional so ported
   //    components compile; populated only once those features are re-enabled.
   share_code?: string
@@ -324,6 +329,25 @@ export const getDeadlineStatusStyling = (status: GoalDeadlineStatus, urgencyLeve
         progressColor: "bg-blue-500",
       }
   }
+}
+
+/**
+ * Compact footer label for a goal card — one line combining the date and the
+ * urgency instead of a separate pill (e.g. "Jan 1 · 142d left"). Pure
+ * presentation over `GoalDeadlineInfo`; doesn't recompute deadline logic.
+ */
+export const formatDeadlineFooter = (
+  goal: Pick<Goal, "target_date">,
+  info: GoalDeadlineInfo
+): string => {
+  if (info.statusMessage === "No deadline") return "No deadline"
+  if (info.status === "completed") {
+    return goal.target_date ? `Completed ${format(parseISO(goal.target_date), "MMM d, yyyy")}` : "Completed"
+  }
+  if (info.status === "overdue") return `Overdue by ${Math.abs(info.daysRemaining)}d`
+  if (info.status === "due_today") return "Due today"
+  if (!goal.target_date) return info.statusMessage
+  return `${format(parseISO(goal.target_date), "MMM d")} · ${info.daysRemaining}d left`
 }
 
 export const getDeadlineStatusIcon = (status: GoalDeadlineStatus) => {

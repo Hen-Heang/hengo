@@ -141,7 +141,7 @@ export function LearningSnapshot() {
         eyebrow="Reading"
         title={readingUnits.length > 0 ? `${readingCompleted}/${readingUnits.length} units` : "No units yet"}
         detail={readingCompleted > 0 ? "Keep reading to finish the set" : "Start your first unit"}
-        href="/reading"
+        href="/phrasebook?mode=reading"
       />
       <Tile
         icon={Headphones}

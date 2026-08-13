@@ -190,11 +190,11 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
   const renderQuickAdd = () => (
     <div
       className={cn(
-        "rounded-2xl border transition-all",
+        "rounded-lg border transition-colors",
         composerOpen ? "border-primary/40 bg-background shadow-sm" : "border-border bg-background/40"
       )}
     >
-      <div className="flex items-center gap-2 px-3.5 py-2.5">
+      <div className="flex min-h-11 items-center gap-2 px-3.5">
         <Plus className="h-4 w-4 shrink-0 text-muted-foreground/40" />
         <input
           value={newTaskTitle}
@@ -208,14 +208,14 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
             if (e.key === "Escape") resetComposer()
           }}
           placeholder="Add a task for today…"
-          className="min-w-0 flex-1 border-0 bg-transparent text-sm font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground/40"
+          className="h-11 min-w-0 flex-1 border-0 bg-transparent text-sm font-medium outline-none placeholder:font-normal placeholder:text-muted-foreground/40"
         />
         {!composerOpen && (
           <Button
             size="sm"
             onClick={() => void submitTask()}
             disabled={!newTaskTitle.trim() || submitting}
-            className="h-8 shrink-0 rounded-xl bg-primary px-3 text-xs font-medium text-white shadow-sm"
+            className="shrink-0 bg-primary px-3 text-xs font-medium text-white shadow-sm"
           >
             Add
           </Button>
@@ -231,7 +231,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                   <button
                     type="button"
                     className={cn(
-                      "flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium transition-colors",
+                      "flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors",
                       newTaskGoalId ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
                     )}
                   >
@@ -244,14 +244,14 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                     <ChevronDown className="h-3 w-3 opacity-60" />
                   </button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className="w-60 rounded-2xl p-2 shadow-lg">
+                <DropdownMenuContent align="start" className="w-60 rounded-lg p-2 shadow-lg">
                   <DropdownMenuLabel className="px-3 pt-2 text-xs font-medium text-muted-foreground">
                     Assign to
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator className="my-2" />
                   <DropdownMenuItem
                     onSelect={() => setNewTaskGoalId(null)}
-                    className={cn("rounded-xl font-medium", !newTaskGoalId && "bg-primary/10 text-primary")}
+                    className={cn("rounded-lg font-medium", !newTaskGoalId && "bg-primary/10 text-primary")}
                   >
                     No goal (standalone)
                   </DropdownMenuItem>
@@ -260,7 +260,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                       <DropdownMenuItem
                         key={g.id}
                         onSelect={() => setNewTaskGoalId(g.id)}
-                        className={cn("rounded-xl font-medium", newTaskGoalId === g.id && "bg-primary/10 text-primary")}
+                        className={cn("rounded-lg font-medium", newTaskGoalId === g.id && "bg-primary/10 text-primary")}
                       >
                         <span className="truncate">{g.title || "Untitled"}</span>
                       </DropdownMenuItem>
@@ -277,7 +277,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                 setTimeError(null)
               }}
               className={cn(
-                "flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium transition-colors",
+                "flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors",
                 !isAnytime ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
               )}
             >
@@ -293,7 +293,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                 aria-label="Start time"
                 value={dailyStart}
                 onChange={(e) => handleStartTimeChange(e.target.value || "09:00")}
-                className="h-8 rounded-lg border border-border bg-background px-2 text-xs outline-none [color-scheme:light] dark:[color-scheme:dark]"
+                className="h-11 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] dark:[color-scheme:dark]"
               />
               <span className="text-xs text-muted-foreground">to</span>
               <input
@@ -304,7 +304,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                   setDailyEnd(e.target.value || "10:00")
                   setTimeError(null)
                 }}
-                className="h-8 rounded-lg border border-border bg-background px-2 text-xs outline-none [color-scheme:light] dark:[color-scheme:dark]"
+                className="h-11 rounded-lg border border-border bg-background px-2 text-sm outline-none [color-scheme:light] dark:[color-scheme:dark]"
               />
             </div>
           )}
@@ -335,27 +335,32 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                     aria-label={c.name}
                     aria-pressed={selected}
                     onClick={() => setColor(c.value)}
-                    className="h-5 w-5 shrink-0 rounded-full transition-transform hover:scale-110"
-                    style={{
-                      backgroundColor: c.value,
-                      boxShadow: selected
-                        ? `0 0 0 2px var(--background, #fff), 0 0 0 3.5px ${c.value}`
-                        : "inset 0 0 0 1px rgba(0,0,0,0.12)",
-                    }}
-                  />
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full transition-transform hover:scale-105"
+                  >
+                    <span
+                      aria-hidden
+                      className="h-5 w-5 rounded-full"
+                      style={{
+                        backgroundColor: c.value,
+                        boxShadow: selected
+                          ? `0 0 0 2px var(--background, #fff), 0 0 0 3.5px ${c.value}`
+                          : "inset 0 0 0 1px rgba(0,0,0,0.12)",
+                      }}
+                    />
+                  </button>
                 )
               })}
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={resetComposer} className="h-8 rounded-xl px-3 text-xs font-medium">
+              <Button variant="ghost" size="sm" onClick={resetComposer} className="px-3 text-xs font-medium">
                 Cancel
               </Button>
               <Button
                 size="sm"
                 onClick={() => void submitTask()}
                 disabled={!newTaskTitle.trim() || submitting}
-                className="h-8 rounded-xl bg-primary px-4 text-xs font-medium text-white shadow-sm"
+                className="bg-primary px-4 text-xs font-medium text-white shadow-sm"
               >
                 {submitting ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -378,7 +383,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
         onClick={() => (canUndo ? handleUndoMarkAllCompleted() : handleMarkAllCompleted())}
         disabled={isMarkingAll || (!canUndo && completedCount === totalCount)}
         className={cn(
-          "h-9 gap-2 rounded-2xl border-border bg-background/50 px-4 text-xs font-medium",
+          "gap-2 rounded-lg border-border bg-background/50 px-4 text-xs font-medium",
           canUndo ? "text-red-500 hover:text-red-600" : "text-emerald-600 dark:text-emerald-400"
         )}
       >
@@ -395,18 +400,18 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
       <div className="ml-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 rounded-2xl border-border bg-background/50 px-4 text-xs font-medium">
+            <Button variant="outline" size="sm" className="rounded-lg border-border bg-background/50 px-4 text-xs font-medium">
               Filter goals
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-60 rounded-2xl p-2 shadow-lg">
+          <DropdownMenuContent align="end" className="w-60 rounded-lg p-2 shadow-lg">
             <DropdownMenuLabel className="px-3 pt-2 text-xs font-medium text-muted-foreground">Show tasks from</DropdownMenuLabel>
             <DropdownMenuSeparator className="my-2" />
             <DropdownMenuCheckboxItem
               checked={allSelected}
               onCheckedChange={() => toggleAll()}
               onSelect={(e) => e.preventDefault()}
-              className="rounded-xl font-medium"
+              className="rounded-lg font-medium"
             >
               All goals
             </DropdownMenuCheckboxItem>
@@ -418,7 +423,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                   checked={selectedGoalIds.includes(g.id)}
                   onCheckedChange={() => toggleGoal(g.id)}
                   onSelect={(e) => e.preventDefault()}
-                  className="rounded-xl font-medium"
+                  className="rounded-lg font-medium"
                 >
                   <span className="truncate">{g.title || "Untitled"}</span>
                 </DropdownMenuCheckboxItem>
@@ -440,10 +445,10 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95 }}
         className={cn(
-          "group/item relative flex cursor-pointer items-start gap-3.5 rounded-2xl border p-4 transition-all duration-300",
+          "group/item relative flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors sm:p-4",
           overdue
             ? "border-red-500/20 bg-red-500/[0.03] hover:bg-red-500/[0.05]"
-            : "border-border bg-background/40 hover:bg-accent/50 lg:p-5"
+            : "border-border bg-background/40 hover:bg-accent/50"
         )}
         onClick={() => {
           if (editingId !== task.id) handleTaskClick(task)
@@ -451,12 +456,13 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
       >
         <button
           type="button"
+          aria-label={task.completed ? "Mark task incomplete" : "Mark task complete"}
           onClick={(e) => {
             e.stopPropagation()
             void handleToggleTaskCompletion(task.id, task.completed)
           }}
           className={cn(
-            "mt-0.5 shrink-0 transition-transform active:scale-90",
+            "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-transform active:scale-90",
             task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary"
           )}
         >
@@ -533,22 +539,22 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
 
   const sectionHeader = (label: string, count: number, accent?: string) => (
     <div className="flex items-center gap-2 px-1 py-2">
-      <span className={cn("text-[11px] font-semibold uppercase tracking-wide", accent || "text-muted-foreground")}>
+      <span className={cn("text-xs font-semibold", accent || "text-muted-foreground")}>
         {label}
       </span>
-      <span className="text-[11px] font-medium tabular-nums text-muted-foreground">{count}</span>
+      <span className="text-xs font-medium tabular-nums text-muted-foreground">{count}</span>
       <div className="h-px flex-1 bg-foreground/5" />
     </div>
   )
 
   return (
     <div className={cn(
-      "flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40 lg:p-8",
+      "flex flex-col overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5",
       className
     )}>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <ClipboardList size={20} strokeWidth={2} />
           </div>
           <div>
@@ -560,30 +566,31 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
         </div>
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="rounded-xl p-2 text-muted-foreground/40 hover:bg-accent hover:text-foreground lg:hidden"
+          aria-label={collapsed ? "Expand today's tasks" : "Collapse today's tasks"}
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground/60 hover:bg-accent hover:text-foreground lg:hidden"
         >
           <ChevronDown className={cn("h-5 w-5 transition-transform", collapsed && "-rotate-90")} />
         </button>
       </div>
 
       {!collapsed && (
-        <div className="mt-6 space-y-5">
+        <div className="mt-5 space-y-4">
           {totalCount > 0 && renderProgress()}
           {renderQuickAdd()}
           {renderActions()}
           <div className="space-y-2 lg:max-h-[500px] overflow-y-auto pr-1">
             {loading ? (
               <div className="space-y-3 pt-4">
-                <Skeleton className="h-20 w-full rounded-2xl" />
-                <Skeleton className="h-20 w-full rounded-2xl" />
+                <Skeleton className="h-20 w-full rounded-lg" />
+                <Skeleton className="h-20 w-full rounded-lg" />
               </div>
             ) : tasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="flex flex-col items-center justify-center py-8 text-center">
                 <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
                   <CheckCircle size={28} />
                 </div>
                 <h3 className="text-base font-semibold">All clear</h3>
-                <p className="mt-1 text-xs font-medium text-muted-foreground">No tasks left for today.</p>
+                <p className="mt-1 text-sm text-muted-foreground">No tasks left for today.</p>
               </div>
             ) : (
               <AnimatePresence initial={false}>
@@ -612,8 +619,8 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                       onClick={() => setShowCompleted(!showCompleted)}
                       className="flex w-full items-center gap-2 py-2"
                     >
-                      <span className="text-[11px] font-semibold uppercase tracking-wide text-emerald-600/60">Completed</span>
-                      <span className="text-[11px] font-medium text-muted-foreground">{groups.completed.length}</span>
+                      <span className="text-xs font-semibold text-emerald-600/70">Completed</span>
+                      <span className="text-xs font-medium text-muted-foreground">{groups.completed.length}</span>
                       <div className="h-px flex-1 bg-foreground/5" />
                       <ChevronDown className={cn("h-4 w-4 text-muted-foreground/60", showCompleted && "rotate-180")} />
                     </button>

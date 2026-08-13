@@ -31,6 +31,8 @@ type Entry = {
   label: string
   hint: string
   icon: React.ElementType
+  /** Tailwind text-color utility for the icon — see `NavItem.color`. */
+  color?: string
   href: string
   /** Terms matched against the query, in addition to label + hint. */
   keywords: string
@@ -46,6 +48,7 @@ function toEntry(item: NavItem, hint: string): Entry {
     label: item.label,
     hint,
     icon: item.icon,
+    color: item.color,
     href: item.href,
     keywords: [item.label, hint, item.description ?? "", ...(item.keywords ?? [])].join(" ").toLowerCase(),
   }
@@ -68,6 +71,7 @@ const ACTION_ENTRIES: Entry[] = [
     label: "Quick capture",
     hint: "Jot down an idea, task, or phrase",
     icon: Zap,
+    color: "text-amber-500",
     href: "",
     keywords: "quick capture inbox idea note task phrase journal dev second brain",
   },
@@ -76,6 +80,7 @@ const ACTION_ENTRIES: Entry[] = [
     label: "Create goal",
     hint: "New outcome to work toward",
     icon: Plus,
+    color: "text-emerald-500",
     href: "/goals/create",
     keywords: "create goal new objective outcome add plan",
   },
@@ -84,7 +89,8 @@ const ACTION_ENTRIES: Entry[] = [
     label: "Add task",
     hint: "Plan today's work",
     icon: ListPlus,
-    href: "/dashboard",
+    color: "text-blue-500",
+    href: "/goals/tasks",
     keywords: "add task todo new schedule plan today",
   },
   {
@@ -92,6 +98,7 @@ const ACTION_ENTRIES: Entry[] = [
     label: "Ask AI",
     hint: aiCoachItem.description ?? "",
     icon: MessageCircle,
+    color: "text-teal-500",
     href: aiCoachItem.href,
     keywords: "ai ask coach chat assistant korean speaking help",
   },
@@ -319,10 +326,10 @@ export function QuickSwitcher({
                         <span
                           className={cn(
                             "flex size-9 shrink-0 items-center justify-center rounded-lg border border-border",
-                            active && "border-primary/30 bg-primary/10 text-primary"
+                            active && "border-primary/30 bg-primary/10"
                           )}
                         >
-                          <Icon size={17} strokeWidth={2.2} />
+                          <Icon size={17} strokeWidth={2.2} className={cn(entry.color, !active && "opacity-80")} />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span

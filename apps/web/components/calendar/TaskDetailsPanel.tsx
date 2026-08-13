@@ -6,6 +6,7 @@ import {
   Circle,
   Clock,
   CalendarDays,
+  Lock,
   Pencil,
   Trash2,
   Tag,
@@ -17,7 +18,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import type { Task } from "@/lib/tasks"
-import { getTaskColor } from "@/lib/tasks"
+import { getTaskColor, isExternalTask } from "@/lib/tasks"
 import { formatTaskDateRange, formatTaskTimeRange } from "@/lib/calendar"
 
 interface TaskDetailsPanelProps {
@@ -39,8 +40,8 @@ export function TaskDetailsPanel({
 }: TaskDetailsPanelProps) {
   if (!selectedTask) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-8 text-center">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-muted/60">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-4 p-5 text-center">
+        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-muted/60">
           <AlignLeft className="h-6 w-6 text-muted-foreground/40" />
         </div>
         <div>
@@ -57,10 +58,11 @@ export function TaskDetailsPanel({
   const createdAt = selectedTask.created_at ? new Date(selectedTask.created_at) : null
   const hasDescription = selectedTask.description && selectedTask.description !== selectedTask.title
   const taskColor = getTaskColor(selectedTask)
+  const isExternal = isExternalTask(selectedTask)
 
   return (
     <div className="flex h-full w-full flex-col overflow-hidden bg-background/40">
-      <div className="flex flex-shrink-0 items-center gap-3 border-b border-border/60 px-6 py-4">
+      <div className="flex flex-shrink-0 items-center gap-3 border-b border-border/60 px-4 py-3 sm:px-5">
         {onClose && (
           <Button
             variant="ghost"
@@ -78,28 +80,34 @@ export function TaskDetailsPanel({
             {goalTitle}
           </span>
         </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-xl text-muted-foreground hover:bg-primary/5 hover:text-primary"
-            onClick={() => onEditTask(selectedTask)}
-            title="Edit task"
-            aria-label="Edit task"
-          >
-            <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
-            onClick={() => onDeleteTask(selectedTask.id)}
-            title="Delete task"
-            aria-label="Delete task"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
-        </div>
+        {isExternal ? (
+          <span className="flex shrink-0 items-center gap-1.5 rounded-full border border-border/60 px-2.5 py-1 text-xs font-medium text-muted-foreground">
+            <Lock className="h-3 w-3" /> Read-only
+          </span>
+        ) : (
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-xl text-muted-foreground hover:bg-primary/5 hover:text-primary"
+              onClick={() => onEditTask(selectedTask)}
+              title="Edit task"
+              aria-label="Edit task"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-xl text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+              onClick={() => onDeleteTask(selectedTask.id)}
+              title="Delete task"
+              aria-label="Delete task"
+            >
+              <Trash2 className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
 
       <div className="flex-1 overflow-y-auto">
@@ -110,32 +118,41 @@ export function TaskDetailsPanel({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="mx-auto max-w-3xl space-y-10 px-6 py-10 lg:px-12"
+            className="mx-auto max-w-3xl space-y-6 px-4 py-6 sm:px-6 sm:py-8"
           >
-            <div className="flex items-start gap-5">
+            <div className="flex items-start gap-3">
               <div
                 className="mt-1.5 h-9 w-1.5 shrink-0 rounded-full"
                 style={{ backgroundColor: taskColor }}
               />
-              <button
-                onClick={() => onToggleTaskCompletion(selectedTask.id)}
-                className={cn(
-                  "mt-1.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border-2 transition-colors duration-200",
-                  selectedTask.completed
-                    ? "border-emerald-500 bg-emerald-500 text-white"
-                    : "border-primary/40 bg-background hover:border-primary"
-                )}
-                title={selectedTask.completed ? "Mark incomplete" : "Mark complete"}
-              >
-                {selectedTask.completed ? (
-                  <CheckCircle2 className="h-5 w-5" />
-                ) : (
-                  <Circle className="h-5 w-5 opacity-40" />
-                )}
-              </button>
+              {isExternal ? (
+                <div
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 border-border/60 bg-background text-muted-foreground"
+                  title="Read-only — from Google Calendar"
+                >
+                  <Lock className="h-5 w-5" />
+                </div>
+              ) : (
+                <button
+                  onClick={() => onToggleTaskCompletion(selectedTask.id)}
+                  className={cn(
+                    "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 transition-colors duration-200",
+                    selectedTask.completed
+                      ? "border-emerald-500 bg-emerald-500 text-white"
+                      : "border-primary/40 bg-background hover:border-primary"
+                  )}
+                  title={selectedTask.completed ? "Mark incomplete" : "Mark complete"}
+                >
+                  {selectedTask.completed ? (
+                    <CheckCircle2 className="h-5 w-5" />
+                  ) : (
+                    <Circle className="h-5 w-5 opacity-40" />
+                  )}
+                </button>
+              )}
               <h1
                 className={cn(
-                  "flex-1 break-words text-2xl font-bold leading-[1.15] tracking-tight text-foreground transition-colors duration-300 lg:text-4xl",
+                  "flex-1 break-words text-2xl font-semibold leading-tight tracking-tight text-foreground transition-colors duration-300 sm:text-[1.75rem]",
                   selectedTask.completed && "line-through opacity-40"
                 )}
               >
@@ -143,27 +160,33 @@ export function TaskDetailsPanel({
               </h1>
             </div>
 
-            <div className="divide-y divide-border/40 overflow-hidden rounded-2xl border border-border/60 bg-card/50">
+            <div className="divide-y divide-border/40 overflow-hidden rounded-lg border border-border/60 bg-card/50">
               <PropertyRow label="Status">
-                <button
-                  onClick={() => onToggleTaskCompletion(selectedTask.id)}
-                  className={cn(
-                    "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200",
-                    selectedTask.completed
-                      ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                      : "bg-primary/10 text-primary hover:bg-primary/15"
-                  )}
-                >
-                  {selectedTask.completed ? (
-                    <>
-                      <CheckCircle2 className="h-3.5 w-3.5" /> Completed
-                    </>
-                  ) : (
-                    <>
-                      <Clock className="h-3.5 w-3.5" /> In progress
-                    </>
-                  )}
-                </button>
+                {isExternal ? (
+                  <span className="inline-flex items-center gap-2 rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">
+                    <Lock className="h-3.5 w-3.5" /> Google Calendar · Read-only
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => onToggleTaskCompletion(selectedTask.id)}
+                    className={cn(
+                      "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200",
+                      selectedTask.completed
+                        ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                        : "bg-primary/10 text-primary hover:bg-primary/15"
+                    )}
+                  >
+                    {selectedTask.completed ? (
+                      <>
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Completed
+                      </>
+                    ) : (
+                      <>
+                        <Clock className="h-3.5 w-3.5" /> In progress
+                      </>
+                    )}
+                  </button>
+                )}
               </PropertyRow>
 
               <PropertyRow label="Date">
@@ -228,7 +251,7 @@ export function TaskDetailsPanel({
             {hasDescription && (
               <div className="space-y-4">
                 <h2 className="px-1 text-xs font-medium text-muted-foreground">Description</h2>
-                <div className="whitespace-pre-wrap rounded-2xl border border-border/60 bg-card/50 px-6 py-6 text-sm leading-relaxed text-foreground/90">
+                <div className="whitespace-pre-wrap rounded-lg border border-border/60 bg-card/50 p-4 text-sm leading-6 text-foreground/90 sm:p-5">
                   {selectedTask.description}
                 </div>
               </div>
@@ -237,27 +260,35 @@ export function TaskDetailsPanel({
         </AnimatePresence>
       </div>
 
-      <div className="flex flex-shrink-0 items-center justify-between border-t border-border/60 px-6 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        <button
-          onClick={() => onToggleTaskCompletion(selectedTask.id)}
-          className={cn(
-            "flex h-12 items-center gap-3 rounded-2xl px-6 text-sm font-semibold transition-colors duration-200",
-            selectedTask.completed
-              ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:text-emerald-400"
-              : "bg-primary text-primary-foreground hover:bg-primary/90"
-          )}
-        >
-          <CheckCircle2 className="h-5 w-5" />
-          {selectedTask.completed ? "Completed" : "Mark complete"}
-        </button>
-        <Button
-          variant="ghost"
-          className="h-12 gap-3 rounded-2xl px-6 text-sm font-medium text-muted-foreground hover:text-foreground"
-          onClick={() => onEditTask(selectedTask)}
-        >
-          <Pencil className="h-4 w-4" />
-          Edit task
-        </Button>
+      <div className="flex flex-shrink-0 items-center justify-between gap-2 border-t border-border/60 px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
+        {isExternal ? (
+          <span className="flex h-11 items-center gap-2 px-1 text-sm font-medium text-muted-foreground">
+            <Lock className="h-4 w-4" /> From Google Calendar — read-only in Hengo
+          </span>
+        ) : (
+          <>
+            <button
+              onClick={() => onToggleTaskCompletion(selectedTask.id)}
+              className={cn(
+                "flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors duration-200",
+                selectedTask.completed
+                  ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:text-emerald-400"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90"
+              )}
+            >
+              <CheckCircle2 className="h-5 w-5" />
+              {selectedTask.completed ? "Completed" : "Mark complete"}
+            </button>
+            <Button
+              variant="ghost"
+              className="h-11 gap-2 rounded-lg px-4 text-sm font-medium text-muted-foreground hover:text-foreground"
+              onClick={() => onEditTask(selectedTask)}
+            >
+              <Pencil className="h-4 w-4" />
+              Edit task
+            </Button>
+          </>
+        )}
       </div>
     </div>
   )

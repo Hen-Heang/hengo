@@ -18,7 +18,7 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
   return (
     <div className="space-y-4">
       <motion.div variants={itemVariants}>
-        <h1 className="text-xl font-bold text-foreground">{summary.rangeLabel}</h1>
+        <h1 className="text-xl font-semibold text-foreground">{summary.rangeLabel}</h1>
         <p className="mt-1 text-sm text-muted-foreground">This week, at a glance.</p>
       </motion.div>
 
@@ -27,26 +27,26 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.totalCompletedCount}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.totalCompletedCount}</div>
           <div className="text-xs text-muted-foreground">Completed</div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.totalHengoMinutes}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.totalHengoMinutes}</div>
           <div className="text-xs text-muted-foreground">Min in Hengo</div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.totalManualActivityCount}</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.totalManualActivityCount}</div>
           <div className="text-xs text-muted-foreground">Activities</div>
         </div>
-        <div className="rounded-2xl border border-border bg-card p-3 text-center">
-          <div className="text-lg font-bold text-foreground">{summary.journalDaysCount}/7</div>
+        <div className="rounded-lg border border-border bg-card p-3 text-center">
+          <div className="text-lg font-semibold text-foreground">{summary.journalDaysCount}/7</div>
           <div className="text-xs text-muted-foreground">Journal days</div>
         </div>
       </motion.div>
 
       {summary.habitCompletion.length > 0 && (
-        <motion.div variants={itemVariants} className="space-y-2 rounded-2xl border border-border bg-card p-4">
+        <motion.div variants={itemVariants} className="space-y-2 rounded-lg border border-border bg-card p-4">
           <p className="text-sm font-semibold text-foreground">Habits</p>
           {summary.habitCompletion.map((h) => (
             <div key={h.habitId} className="space-y-1">
@@ -64,14 +64,14 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
               </div>
             </div>
           ))}
-          <Link href="/growth/habits" className="inline-block pt-1 text-xs font-medium text-primary hover:underline">
+          <Link href="/growth/habits" className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
             Open Habits →
           </Link>
         </motion.div>
       )}
 
       {summary.goalsAtRisk.length > 0 && (
-        <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4">
+        <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
           <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-foreground">
             <AlertTriangle size={16} className="text-amber-500" />
             Goals needing a review

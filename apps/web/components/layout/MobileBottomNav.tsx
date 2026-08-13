@@ -10,9 +10,12 @@ const TAB =
   "relative flex min-h-11 min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-lg py-1.5 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset"
 
 /**
- * Five mobile destinations: Today, Learn, Goals, Growth, More. A stable
+ * Five mobile destinations: Today, Learn, Goals, Progress, More. A stable
  * elevated bottom surface — one border, one shadow, no glass container, no
- * sliding pill, no per-icon scaling.
+ * sliding pill, no per-icon scaling. Hengo Coach has no tab of its own — the
+ * floating launcher (components/chat/FloatingAiCoach) covers it without
+ * spending a tab slot, which is also what keeps Grow/Memory/Settings/History
+ * reachable through More instead of needing a second nav surface.
  *
  * When the soft keyboard is open the whole element is unmounted by `AppShell`
  * rather than hidden, so nothing inside stays in the tab order.
@@ -46,7 +49,12 @@ export function MobileBottomNav({
                 aria-current={active ? "page" : undefined}
                 className={cn(TAB, active ? "text-primary" : "text-muted-foreground")}
               >
-                <Icon size={21} strokeWidth={active ? 2.4 : 2} aria-hidden className="shrink-0" />
+                <Icon
+                  size={21}
+                  strokeWidth={active ? 2.4 : 2}
+                  aria-hidden
+                  className={cn("shrink-0", item.color, !active && "opacity-70")}
+                />
                 <span
                   className={cn(
                     "w-full truncate px-0.5 text-center text-xs leading-none",

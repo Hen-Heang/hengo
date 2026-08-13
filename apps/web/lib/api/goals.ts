@@ -57,12 +57,17 @@ export interface AiTaskDraft {
 
 type GoalRow = Goal & {
   goal_stars?: { user_id: string }[]
-  tasks?: { id: string; completed: boolean }[]
+  tasks?: Task[]
   goal_key_results?: GoalKeyResult[]
 }
 
 // Nested selects → isStarred / taskCounts / keyResults enrichment in one query.
-const GOAL_SELECT = "*, goal_stars(user_id), tasks(id, completed), goal_key_results(*)"
+// The tasks columns beyond id/completed (title, description, dates, impact,
+// key_result_id, phase_id) are the exact subset selectNextBestAction needs —
+// widened so the goals list can show a Next Action per card without a
+// per-goal task fetch. Rows are otherwise a partial Task (no user_id, etc.).
+const GOAL_SELECT =
+  "*, goal_stars(user_id), tasks(id, title, description, completed, start_date, end_date, daily_start_time, is_anytime, effort_minutes, duration_minutes, impact_level, key_result_id, phase_id), goal_key_results(*)"
 
 function enrichGoal(row: GoalRow): Goal {
   const me = getUserId()
@@ -74,6 +79,7 @@ function enrichGoal(row: GoalRow): Goal {
     isStarred: Boolean(goal_stars?.some((s) => s.user_id === me)),
     taskCounts: { total, completed, incomplete: total - completed },
     keyResults: goal_key_results ?? [],
+    tasks: tasks ?? [],
   } as Goal
 }
 

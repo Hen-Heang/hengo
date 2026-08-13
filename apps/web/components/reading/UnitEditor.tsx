@@ -222,7 +222,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
     <div className="space-y-8 pb-12">
       <div className="space-y-4">
         <Link
-          href={isEdit ? `/reading/${unit!.id}` : "/reading"}
+          href={isEdit ? `/reading/${unit!.id}` : "/phrasebook?mode=reading"}
           className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft size={14} strokeWidth={3} /> {isEdit ? "Back to unit" : "All units"}
@@ -571,7 +571,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
             {isEdit ? "Save changes" : "Create unit"}
           </Button>
           <Link
-            href={isEdit ? `/reading/${unit!.id}` : "/reading"}
+            href={isEdit ? `/reading/${unit!.id}` : "/phrasebook?mode=reading"}
             className="text-xs font-bold uppercase tracking-wider text-muted-foreground hover:text-foreground"
           >
             Cancel

@@ -37,7 +37,7 @@ export function BasicInfoStep({ form, onNextStep, selectedGoalType }: BasicInfoS
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <FormField
         control={form.control}
         name="goal_type"

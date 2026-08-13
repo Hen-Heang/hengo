@@ -28,7 +28,7 @@ export function LearningPracticeCard({
   const completedCount = matches.filter((m) => m.task.completed).length
 
   return (
-    <Card className="rounded-3xl border-border bg-card/50 p-6 shadow-sm sm:rounded-3xl sm:p-8">
+    <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
       <div className="flex items-center justify-between">
         <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">
           <GraduationCap size={14} strokeWidth={2.5} />

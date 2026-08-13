@@ -59,6 +59,9 @@ export default function VocabPage() {
   useSessionTimer("vocab")
   const [query, setQuery] = useState("")
   const [addOpen, setAddOpen] = useState(false)
+  // Set by a deck's "Review this deck" button; consumed by ReviewSession to
+  // jump straight into a scoped Memory Lab session for that category.
+  const [focusCategory, setFocusCategory] = useState<string | null>(null)
 
   // Phrases tab — merges Daily Phrase history into the same page as the vocab
   // dictionary so both "learn a phrase" surfaces live in one place.
@@ -157,6 +160,8 @@ export default function VocabPage() {
               allWords={words}
               loading={loading}
               onRate={rateWord}
+              focusCategory={focusCategory}
+              onFocusHandled={() => setFocusCategory(null)}
             />
 
             {error ? <ErrorBanner>{error}</ErrorBanner> : null}
@@ -220,6 +225,7 @@ export default function VocabPage() {
                 onUpdate={updateWord}
                 onDelete={deleteWord}
                 onAdd={addWord}
+                onReviewDeck={setFocusCategory}
                 onStartAdd={() => setAddOpen(true)}
                 onClearSearch={() => setQuery("")}
               />

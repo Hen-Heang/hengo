@@ -187,7 +187,7 @@ const ThreadScrollToBottom: FC = () => {
       <TooltipIconButton
         tooltip="Scroll to bottom"
         variant="outline"
-        className="aui-thread-scroll-to-bottom dark:border-border dark:bg-background dark:hover:bg-accent absolute -top-12 z-10 self-center rounded-full p-4 disabled:invisible"
+        className="aui-thread-scroll-to-bottom dark:border-border dark:bg-background dark:hover:bg-accent absolute -top-14 z-10 size-11 self-center rounded-full p-0 disabled:invisible"
       >
         <ArrowDownIcon />
       </TooltipIconButton>
@@ -438,7 +438,7 @@ const AssistantMessage: FC = () => {
     >
       <div className="mt-0.5 flex size-8 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-background shadow-sm ring-1 ring-blue-500/15">
         <Image
-          src="/hengo-icon.svg"
+          src="/hengo-icon.png"
           alt=""
           width={32}
           height={32}

@@ -116,7 +116,7 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-8 pb-12"
+      className="space-y-6 pb-12 sm:space-y-7"
     >
       <motion.div variants={itemVariants}>
         <PageHero
@@ -133,27 +133,27 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
 
       <motion.div
         variants={itemVariants}
-        className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
+        className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
       >
-        <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+        <label className="text-sm font-semibold text-foreground">
           Category
         </label>
         <ChipSelect options={categories} value={category} onChange={setCategory} className="mt-3" />
 
-        <label className="mt-6 block text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+        <label className="mt-5 block text-sm font-semibold text-foreground">
           What do you want to say?
         </label>
         <Textarea
           value={intent}
           onChange={(e) => setIntent(e.target.value)}
           placeholder='e.g. "I finished the task and deployed it to staging."'
-          className="mt-3 min-h-28 resize-none rounded-2xl"
+          className="mt-2 min-h-28 resize-none rounded-lg"
         />
         {EXAMPLE_INTENTS[category] && (
           <button
             type="button"
             onClick={() => setIntent(EXAMPLE_INTENTS[category])}
-            className="mt-2 text-left text-[11px] font-bold text-blue-600/70 hover:text-blue-600 dark:text-blue-400/60 dark:hover:text-blue-400 transition-colors"
+            className="mt-1 flex min-h-11 items-center text-left text-xs font-medium text-blue-600/80 transition-colors hover:text-blue-600 dark:text-blue-400/80 dark:hover:text-blue-400"
           >
             ↑ Use example: &ldquo;{EXAMPLE_INTENTS[category]}&rdquo;
           </button>
@@ -167,7 +167,7 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
             type="button"
             onClick={handleGenerate}
             disabled={loading || !intent.trim()}
-            className="h-11 rounded-xl bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-500 active:scale-95"
+            className="h-11 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500"
           >
             <Wand2 size={16} className="mr-2" strokeWidth={2.5} />
             {loading ? "Generating..." : "Generate"}
@@ -180,7 +180,7 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
       {loading && (
         <motion.div variants={itemVariants} className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card p-5 dark:bg-slate-900/40">
+            <div key={i} className="rounded-lg border border-border bg-card p-4 dark:bg-slate-900/40">
               <Skeleton className="h-4 w-24" />
               <Skeleton className="mt-3 h-6 w-2/3" />
               <Skeleton className="mt-2 h-4 w-1/2" />
@@ -195,11 +195,11 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
             {result.variations.map((v, i) => (
               <div
                 key={i}
-                className="overflow-hidden rounded-2xl border border-border bg-card dark:bg-white/4"
+                className="overflow-hidden rounded-lg border border-border bg-card dark:bg-white/4"
               >
                 <div className="flex items-center justify-between gap-2 border-b border-border/60 bg-accent/5 px-4 py-2.5">
                   {v.formality && (
-                    <span className="rounded-full bg-blue-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.15em] text-blue-600 dark:text-blue-400">
+                    <span className="rounded-full bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-600 dark:text-blue-400">
                       {v.formality}
                     </span>
                   )}
@@ -220,7 +220,7 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
                   </div>
                 </div>
                 <div className="px-4 py-3.5">
-                  <p className="text-lg font-bold text-foreground">{v.korean}</p>
+                  <p className="text-lg font-semibold text-foreground">{v.korean}</p>
                   {v.romanization && (
                     <p className="mt-1 text-sm italic text-muted-foreground">{v.romanization}</p>
                   )}

@@ -538,7 +538,7 @@ Design System (keep every screen consistent):
 * `lucide-react` icons at `strokeWidth={2}`; a single blue accent on neutral surfaces, semantic colors only for status
 * Typographic hierarchy — bold only for page titles and key numbers; semibold card titles; medium/muted labels; sentence case (no `uppercase tracking-wide` eyebrows)
 * Icon-only controls where meaning is obvious (view toggles, pagination); text for primary actions and navigation
-* Brand: **Hengo** — logo at `public/hengo-icon.svg`
+* Brand: **Hengo** — logo at `public/hengo-icon.png`
 
 Pages:
 

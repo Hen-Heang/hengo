@@ -183,14 +183,20 @@ export function JournalComposer({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-2xl border border-border bg-card p-5">
+    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-border bg-card p-4 sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-        <DateTimePicker value={values.occurredAt} onChange={(d) => set({ occurredAt: d ?? new Date() })} granularity="minute" />
+        <DateTimePicker
+          value={values.occurredAt}
+          onChange={(d) => set({ occurredAt: d ?? new Date() })}
+          granularity="minute"
+          className="sm:w-auto sm:min-w-52"
+        />
         <Input
+          aria-label="Journal title"
           value={values.title}
           onChange={(e) => set({ title: e.target.value })}
           placeholder="Title (optional)"
-          className="flex-1"
+          className="min-w-0 flex-1"
         />
       </div>
 

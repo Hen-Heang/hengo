@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button"
 import { DEFAULT_TASK_COLOR } from "@/lib/tasks"
 import { bumpEndAfterStart } from "@/lib/calendar"
-import { TaskFormFields, calcDurationMinutes } from "./TaskFormFields"
+import { NO_GOAL, TaskFormFields, calcDurationMinutes, type TaskFormGoalOption } from "./TaskFormFields"
 
 export interface TaskRangePayload {
   title?: string
@@ -19,6 +19,7 @@ export interface TaskRangePayload {
   duration_minutes?: number | null
   completed?: boolean
   color?: string | null
+  goal_id?: string | null
 }
 
 interface AddTaskDialogProps {
@@ -34,6 +35,8 @@ interface AddTaskDialogProps {
   defaultTime?: string | null
   goalStartDate?: Date
   goalTargetDate?: Date
+  /** Goal options for the "Goal" field. Omit to hide it (embedded-in-goal calendars). */
+  goals?: TaskFormGoalOption[]
 }
 
 export function AddTaskDialog({
@@ -44,6 +47,7 @@ export function AddTaskDialog({
   defaultTime,
   goalStartDate,
   goalTargetDate,
+  goals,
 }: AddTaskDialogProps) {
   const defaultDate = useMemo(
     () => propDefaultDate ?? new Date(),
@@ -63,6 +67,7 @@ export function AddTaskDialog({
   const [isAnytime, setIsAnytime] = useState(false)
   const [completed, setCompleted] = useState(false)
   const [color, setColor] = useState<string>(DEFAULT_TASK_COLOR)
+  const [goalId, setGoalId] = useState<string>(NO_GOAL)
   const [timeError, setTimeError] = useState<string | null>(null)
 
   const clampToGoalRange = useCallback(
@@ -134,6 +139,7 @@ export function AddTaskDialog({
     setCompleted(false)
     setIsAnytime(false)
     setColor(DEFAULT_TASK_COLOR)
+    setGoalId(NO_GOAL)
     setTimeError(null)
     setSubmitAttempted(false)
     setStartDate(defaultDate)
@@ -149,6 +155,8 @@ export function AddTaskDialog({
 
   const handleStartDateChange = useCallback((d: Date) => {
     setStartDate(d)
+    // A later start automatically carries the one-day task forward instead
+    // of forcing the user to edit End Date first.
     setEndDate((prev) => (d > prev ? d : prev))
     setSelectedDate(d)
     setTimeError(null)
@@ -160,11 +168,6 @@ export function AddTaskDialog({
       setTimeError(null)
     },
     [startDate]
-  )
-
-  const startDateMax = useMemo(
-    () => (goalTargetDate ? (endDate < goalTargetDate ? endDate : goalTargetDate) : endDate),
-    [goalTargetDate, endDate]
   )
 
   const endDateMin = useMemo(
@@ -204,6 +207,7 @@ export function AddTaskDialog({
           duration_minutes: durationMinutes,
           completed,
           color,
+          goal_id: goals ? (goalId === NO_GOAL ? null : goalId) : undefined,
         })
         resetForm()
         onClose()
@@ -226,6 +230,8 @@ export function AddTaskDialog({
       endDate,
       completed,
       color,
+      goalId,
+      goals,
       onAddTask,
       resetForm,
       onClose,
@@ -236,45 +242,53 @@ export function AddTaskDialog({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-      <DialogContent className="p-0 gap-0 w-[calc(100vw-2rem)] max-w-[520px] max-h-[90dvh] overflow-hidden flex flex-col rounded-2xl">
-        <div className="flex-shrink-0 flex items-center justify-between px-5 py-4 border-b border-border/60">
+      <DialogContent
+        showCloseButton={false}
+        className="flex max-h-[90dvh] w-[calc(100vw-2rem)] max-w-[500px] flex-col gap-0 overflow-hidden rounded-lg p-0"
+      >
+        <div className="flex flex-shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 sm:px-5">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-500/10 rounded-lg border border-blue-500/20">
-              <CalendarClock className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500 dark:text-blue-400" />
+            <div className="rounded-lg border border-blue-500/20 bg-blue-500/10 p-2">
+              <CalendarClock className="h-4 w-4 text-blue-500 dark:text-blue-400 sm:h-5 sm:w-5" />
             </div>
-            <DialogTitle className="text-base sm:text-lg font-semibold text-foreground">
-              Add New Task
-            </DialogTitle>
+            <div>
+              <DialogTitle className="text-base font-semibold text-foreground sm:text-lg">Add task</DialogTitle>
+              <p className="text-xs text-muted-foreground">Name it, choose when, and continue your day.</p>
+            </div>
           </div>
           <button
             type="button"
             onClick={handleClose}
             aria-label="Close dialog"
-            className="rounded-lg p-1.5 text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            className="flex h-11 w-11 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted/60 hover:text-foreground"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
         <DialogDescription className="sr-only">
-          Create a new task with a title, description, dates, optional time range, and color.
+          Quickly create a task. Description, end time, status and color are available under More options.
         </DialogDescription>
 
-        <div className="flex-1 overflow-y-auto no-scrollbar px-5 py-6">
+        <div className="no-scrollbar flex-1 overflow-y-auto p-4 sm:px-5">
           <TaskFormFields
             formId="add-task-form"
             onSubmit={handleSubmit}
+            compact
             title={title}
             onTitleChange={setTitle}
             autoFocusTitle
             showTitleRequired={submitAttempted}
             description={taskDescription}
             onDescriptionChange={setTaskDescription}
+            goals={goals}
+            goalId={goalId}
+            onGoalIdChange={setGoalId}
             startDate={startDate}
             endDate={endDate}
             onStartDateChange={handleStartDateChange}
             onEndDateChange={handleEndDateChange}
             startDateMin={goalStartDate}
-            startDateMax={startDateMax}
+            startDateMax={goalTargetDate}
             endDateMin={endDateMin}
             endDateMax={goalTargetDate}
             rangeHint={rangeHint}
@@ -293,25 +307,25 @@ export function AddTaskDialog({
           />
         </div>
 
-        <div className="flex-shrink-0 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] border-t border-border/60">
+        <div className="flex-shrink-0 border-t border-border/60 px-4 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-5">
           <div className="flex gap-3">
-            <Button type="button" variant="outline" onClick={handleClose} className="flex-1 h-11">
+            <Button type="button" variant="outline" onClick={handleClose} className="h-11 flex-1">
               Cancel
             </Button>
             <Button
               type="submit"
               form="add-task-form"
               disabled={isSubmitDisabled}
-              className="flex-[2] h-11"
+              className="h-11 flex-[2]"
             >
               {isSubmitting ? (
                 <>
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Adding...
                 </>
               ) : (
                 <>
-                  <Check className="h-4 w-4 mr-2" />
+                  <Check className="mr-2 h-4 w-4" />
                   Create Task
                 </>
               )}

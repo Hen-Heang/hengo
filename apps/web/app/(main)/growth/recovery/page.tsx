@@ -4,6 +4,7 @@ import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 
 import { GrowthTabs } from "@/components/growth/GrowthTabs"
+import { TodayHabitCheckins } from "@/components/home/TodayHabitCheckins"
 import { CreateHabitForm } from "@/components/recovery/CreateHabitForm"
 import { RecoveryDashboard } from "@/components/recovery/RecoveryDashboard"
 import { BackLink } from "@/components/ui/back-link"
@@ -26,7 +27,7 @@ import { buildRecoveryDashboardSummary } from "@/lib/recovery"
 function RecoveryLoadingState() {
   return (
     <div className="mx-auto max-w-5xl space-y-5">
-      <Skeleton className="h-64 w-full rounded-3xl" />
+      <Skeleton className="h-52 w-full rounded-lg" />
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">{Array.from({ length: 6 }, (_, index) => <Skeleton key={index} className="h-24 rounded-2xl" />)}</div>
       <Skeleton className="h-72 w-full rounded-2xl" />
     </div>
@@ -62,6 +63,7 @@ export default function RecoveryPage() {
       <div className="mx-auto max-w-5xl pb-14">
         <BackLink href="/home" label="Home" mobileOnly className="mb-2" />
         <GrowthTabs />
+        <div className="mb-4"><TodayHabitCheckins /></div>
         {error && <div className="mx-auto mb-4 max-w-lg"><ErrorBanner>{error}</ErrorBanner></div>}
         <CreateHabitForm
           onCreate={async (input) => {
@@ -84,6 +86,7 @@ export default function RecoveryPage() {
     <div className="mx-auto max-w-5xl">
       <BackLink href="/home" label="Home" mobileOnly className="mb-2" />
       <GrowthTabs />
+      <div className="mb-4"><TodayHabitCheckins /></div>
       {error && <div className="mb-4"><ErrorBanner>{error}</ErrorBanner></div>}
       <RecoveryDashboard
         target={target}

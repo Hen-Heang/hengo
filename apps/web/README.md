@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="public/hengo-icon.svg" alt="Hengo logo" width="88" height="88" />
+<img src="public/hengo-icon.png" alt="Hengo logo" width="88" height="88" />
 
 # Hengo
 
@@ -493,6 +493,17 @@ supabase/
 tests/e2e/         Playwright end-to-end specs
 docs/              implementation plans and audits (see below)
 public/            hengo-icon.svg (primary mark), favicon/app icons,
+                   (includes recovery.ts, habits.ts for the Growth workspace)
+  server/ai.ts     shared plumbing for app/api/ai/* (requireUser, jsonAiRoute, SSE)
+  supabase.ts      single browser Supabase client
+  auth-store.ts    reads the persisted session (storage key "koriai-auth")
+  navigation.ts    single source of truth for the five nav workspaces
+  last-visited.ts  per-workspace "continue where you left off" tracking
+  goals.ts  reading.ts  vocab-review.ts  srs.ts  study-plan.ts
+  recovery.ts  habits.ts   pure logic for the Growth workspace (framework-free, tested)
+  interview.ts  interview-modes.ts  interview-unexpected.ts
+  interview-history.ts  exam-strategy.ts  ...
+public/            hengo-icon.png (mark + full lockup, source of the app icons),
                    sw.js (web push service worker), static assets
 ```
 
@@ -719,7 +730,7 @@ The UI follows one calm, consistent visual language — keep new screens on the 
 
 - `components/ui/*` are generic, owned primitives (shadcn model: copy in, then own).
 - Feature components live in `components/<feature>/` and may compose primitives but stay out of other features' folders.
-- Brand: product name **Hengo**; logo at `public/hengo-icon.svg` (used for the AI Coach avatar and auth/landing marks).
+- Brand: product name **Hengo**; logo at `public/hengo-icon.png` (used for the AI Coach avatar and auth/landing marks).
 
 ---
 

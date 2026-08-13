@@ -157,7 +157,7 @@ const HengoWelcome: FC = () => {
         <div className="relative mx-auto mb-5 w-fit">
           <span className="absolute inset-0 scale-150 rounded-full bg-blue-500/10 blur-xl" />
           <div className="relative flex h-16 w-16 items-center justify-center overflow-hidden rounded-[1.35rem] bg-background shadow-xl shadow-blue-600/15 ring-1 ring-blue-500/20 sm:h-[4.5rem] sm:w-[4.5rem]">
-            <Image src="/hengo-icon.svg" alt="" width={72} height={72} className="h-full w-full" />
+            <Image src="/hengo-icon.png" alt="" width={72} height={72} className="h-full w-full" />
           </div>
           <span className="absolute -right-1 -bottom-1 flex h-5 w-5 items-center justify-center rounded-full border-[3px] border-background bg-emerald-500">
             <span className="h-1.5 w-1.5 rounded-full bg-white" />
@@ -262,6 +262,50 @@ const HengoWelcome: FC = () => {
   )
 }
 
+const CompactHengoWelcome: FC = () => {
+  const { isTechnicalMode, canInteract } = useHengoChat()
+  const runtime = useThreadRuntime()
+  const suggestions = isTechnicalMode ? TECHNICAL_SUGGESTIONS : GENERAL_SUGGESTIONS
+
+  function handleSuggestion(suggestion: Suggestion) {
+    if (!canInteract) return
+    if (suggestion.prefill) {
+      runtime.composer.setText(suggestion.text)
+      return
+    }
+    runtime.append({ role: "user", content: [{ type: "text", text: suggestion.text }] })
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mx-auto flex w-full max-w-sm flex-col items-center px-3 py-5 text-center"
+    >
+      <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
+        <Sparkles className="size-5" aria-hidden="true" />
+      </span>
+      <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">What can I help with?</h2>
+      <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
+        Ask about Korean, workplace communication, or a sentence you want corrected.
+      </p>
+      <div className="mt-4 flex flex-wrap justify-center gap-2">
+        {suggestions.slice(0, 3).map((suggestion) => (
+          <button
+            key={suggestion.label}
+            type="button"
+            disabled={!canInteract}
+            onClick={() => handleSuggestion(suggestion)}
+            className="min-h-10 rounded-full border border-border/70 bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:border-primary/30 hover:bg-primary/5 focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-40"
+          >
+            {suggestion.label}
+          </button>
+        ))}
+      </div>
+    </motion.div>
+  )
+}
+
 // Rendered inside AssistantRuntimeProvider so it can pull the thread runtime
 // itself (same pattern as ComposerSeeder) rather than assume the shape of
 // the outer useExternalStoreRuntime() object.
@@ -317,6 +361,10 @@ const THREAD_COMPONENTS = {
   ComposerLeading: MicButton,
 }
 
+const COMPACT_THREAD_COMPONENTS = {
+  Welcome: CompactHengoWelcome,
+}
+
 type ChatWindowProps = {
   title: string
   subtitle: string
@@ -331,6 +379,9 @@ type ChatWindowProps = {
   // When rendered inside the AI workspace tabs, the surrounding mode bar already
   // provides the back button and safe-area top padding — so we drop ours here.
   embedded?: boolean
+  // Compact mode is used by the global floating coach: its outer panel owns the
+  // title bar, and the welcome state keeps only the highest-value prompts.
+  compact?: boolean
   // Present only when this conversation is a scenario-practice session
   // (kori_conversations.scenario_id) — enables the "End scenario" evaluation
   // flow that gives the linked mission item real completion evidence.
@@ -347,6 +398,7 @@ export function ChatWindow({
   isStartingNewChat,
   onConversationTitled,
   embedded = false,
+  compact = false,
   scenario,
 }: ChatWindowProps) {
   const {
@@ -495,7 +547,12 @@ export function ChatWindow({
   return (
     <AssistantRuntimeProvider runtime={runtime}>
       <HengoChatContext.Provider value={hengoContext}>
-        <div className="relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col overflow-hidden border-border/60 bg-card shadow-2xl dark:bg-slate-950/40 dark:backdrop-blur-md md:rounded-3xl md:border">
+        <div
+          className={cn(
+            "relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col overflow-hidden border-border/60 bg-card dark:bg-slate-950/40 dark:backdrop-blur-md",
+            compact ? "border-0 shadow-none" : "shadow-2xl md:rounded-3xl md:border"
+          )}
+        >
           <AnimatePresence>
             {realtimeVoice.isActive && (
               <RealtimeVoicePanel
@@ -555,37 +612,39 @@ export function ChatWindow({
           )}
 
           {/* ── Desktop/Mobile Optimized Header ── */}
-          <div
-            aria-hidden={realtimeVoice.isActive || undefined}
-            inert={realtimeVoice.isActive || undefined}
-            className={cn(
-              "flex shrink-0 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 py-3 shadow-[0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-xl sm:px-5",
-              embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]"
-            )}
-          >
+          {!compact && (
+            <div
+              aria-hidden={realtimeVoice.isActive || undefined}
+              inert={realtimeVoice.isActive || undefined}
+              className={cn(
+                "flex shrink-0 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 py-3 shadow-[0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-xl sm:px-5",
+                embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]"
+              )}
+            >
             <div className="flex min-w-0 items-center gap-3">
               {!embedded && (
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="h-9 w-9 -ml-2 rounded-xl text-muted-foreground transition-all active:scale-95 md:hidden"
+                  className="-ml-2 h-11 w-11 rounded-lg text-muted-foreground transition-colors active:scale-95 md:hidden"
                   onClick={() => router.push("/home")}
                   title="Back to home"
+                  aria-label="Back to home"
                 >
                   <ChevronLeft size={24} strokeWidth={2.5} />
                 </Button>
               )}
 
               <div className="relative shrink-0">
-                <div className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-background shadow-md shadow-blue-500/15 ring-1 ring-blue-500/15 sm:h-10 sm:w-10 sm:rounded-[0.9rem]">
-                  <Image src="/hengo-icon.svg" alt="" width={40} height={40} className="h-full w-full" />
+                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-blue-500/15">
+                  <Image src="/hengo-icon.png" alt="" width={40} height={40} className="h-full w-full" />
                 </div>
                 <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="truncate text-[15px] font-bold leading-none tracking-tight text-foreground sm:text-[16px]">{title}</h3>
-                  <span className="hidden rounded-full bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-blue-700 dark:text-blue-300 sm:inline">
+                  <h3 className="truncate text-base font-semibold leading-none tracking-tight text-foreground">{title}</h3>
+                  <span className="hidden rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300 sm:inline">
                     AI Coach
                   </span>
                 </div>
@@ -596,7 +655,7 @@ export function ChatWindow({
                       realtimeVoice.isActive ? "animate-pulse bg-blue-500" : "bg-emerald-500"
                     )}
                   />
-                  <p className="truncate text-[11px] font-semibold text-muted-foreground">{coachStatus}</p>
+                  <p className="truncate text-xs font-medium text-muted-foreground">{coachStatus}</p>
                 </div>
               </div>
             </div>
@@ -608,7 +667,7 @@ export function ChatWindow({
                   size="sm"
                   onClick={() => void evaluateScenario()}
                   disabled={isEvaluatingScenario}
-                  className="h-9 items-center gap-1.5 rounded-xl border-emerald-500/40 bg-emerald-500/10 px-2.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 sm:px-3"
+                  className="h-11 items-center gap-1.5 rounded-lg border-emerald-500/40 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
                 >
                   {isEvaluatingScenario ? "Checking…" : "End scenario"}
                 </Button>
@@ -619,7 +678,7 @@ export function ChatWindow({
                 size="sm"
                 onClick={() => setIsTechnicalMode(!isTechnicalMode)}
                 className={cn(
-                  "hidden h-9 items-center gap-2 rounded-xl px-3 text-[12px] font-bold uppercase tracking-wider transition-all sm:flex",
+                  "hidden h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition-colors sm:flex",
                   isTechnicalMode
                     ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
                     : "border-border/60 bg-background/50 text-muted-foreground"
@@ -637,7 +696,7 @@ export function ChatWindow({
                 title={realtimeVoice.isActive ? "End live voice practice" : "Start live Korean voice practice"}
                 aria-pressed={realtimeVoice.isActive}
                 className={cn(
-                  "h-9 items-center gap-2 rounded-full px-2.5 text-[11px] font-bold transition-all sm:px-3",
+                  "h-11 min-w-11 items-center gap-2 rounded-lg px-2.5 text-xs font-semibold transition-colors sm:px-3",
                   realtimeVoice.isActive
                     ? "border-blue-500/40 bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-500"
                     : "border-border/70 bg-background text-muted-foreground hover:border-blue-500/30 hover:text-foreground"
@@ -651,10 +710,11 @@ export function ChatWindow({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="hidden h-9 w-9 rounded-xl border border-border/60 bg-background/50 text-muted-foreground hover:bg-accent hover:text-foreground transition-all active:scale-95 sm:flex"
+                  className="hidden h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95 sm:flex"
                   onClick={onNewChat}
                   disabled={isStartingNewChat}
                   title="Start fresh"
+                  aria-label="Start fresh chat"
                 >
                   <SquarePen size={16} strokeWidth={2.5} />
                 </Button>
@@ -666,7 +726,8 @@ export function ChatWindow({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-9 w-9 rounded-xl border border-border/60 bg-background/50 text-muted-foreground transition-all active:scale-95 sm:hidden"
+                    className="h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors active:scale-95 sm:hidden"
+                    aria-label="Chat options"
                     title="Chat options"
                   >
                     <EllipsisVertical size={18} strokeWidth={2.5} />
@@ -692,7 +753,8 @@ export function ChatWindow({
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>
-          </div>
+              </div>
+          )}
 
           <AnimatePresence>
             {turnAnalysis && !realtimeVoice.isActive && (
@@ -718,7 +780,7 @@ export function ChatWindow({
                 <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Syncing History</p>
               </div>
             )}
-            <Thread components={THREAD_COMPONENTS} />
+            <Thread components={compact ? COMPACT_THREAD_COMPONENTS : THREAD_COMPONENTS} />
             {initialDraft ? <ComposerSeeder text={initialDraft} /> : null}
           </div>
         </div>

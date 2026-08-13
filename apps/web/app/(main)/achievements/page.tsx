@@ -128,7 +128,7 @@ export default function AchievementsPage() {
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      className="space-y-8 pb-12"
+      className="space-y-6 pb-12 sm:space-y-7"
     >
       <AchievementCelebration achievement={newestUnlocked} />
 
@@ -138,7 +138,6 @@ export default function AchievementsPage() {
           title="Your Progress & XP"
           description="Earn XP and unlock badges as you build a daily Korean habit, grow your vocabulary, and master workplace communication."
           stats={[
-            { label: "Level", value: level ? `${level.level} · ${level.name}` : "—" },
             { label: "Total XP", value: level ? `${level.totalXp}` : "—" },
             {
               label: "Unlocked",
@@ -152,10 +151,10 @@ export default function AchievementsPage() {
 
       {loading ? (
         <>
-          <Skeleton className="h-28 w-full rounded-3xl" />
+          <Skeleton className="h-28 w-full rounded-lg" />
           <CardGrid minCardWidth={220}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-32 w-full rounded-2xl" />
+              <Skeleton key={i} className="h-32 w-full rounded-lg" />
             ))}
           </CardGrid>
         </>
@@ -164,18 +163,18 @@ export default function AchievementsPage() {
           {/* Level progress */}
           <motion.div
             variants={itemVariants}
-            className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
+            className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
           >
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg shadow-emerald-600/20">
+                <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-sm">
                   <Trophy size={22} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                  <p className="text-xs font-medium text-muted-foreground">
                     Level {level?.level}
                   </p>
-                  <h3 className="text-lg font-extrabold text-foreground">{level?.name}</h3>
+                  <h3 className="text-lg font-semibold text-foreground">{level?.name}</h3>
                 </div>
               </div>
               <AnimatedCircularProgressBar
@@ -216,7 +215,7 @@ export default function AchievementsPage() {
                 >
                   <div
                     className={cn(
-                      "relative h-full overflow-hidden rounded-2xl border p-5 transition-all",
+                      "relative h-full overflow-hidden rounded-lg border p-4 transition-colors",
                       a.unlocked
                         ? "border-emerald-500/30 bg-emerald-500/5 shadow-sm"
                         : "border-border bg-card/40 dark:bg-slate-900/20"
@@ -233,7 +232,7 @@ export default function AchievementsPage() {
                     <div className="flex items-start justify-between gap-3">
                       <div
                         className={cn(
-                          "flex h-12 w-12 items-center justify-center rounded-2xl",
+                          "flex h-10 w-10 items-center justify-center rounded-lg",
                           a.unlocked
                             ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
                             : "bg-muted text-muted-foreground/50"
@@ -247,7 +246,7 @@ export default function AchievementsPage() {
                       </div>
                       <span
                         className={cn(
-                          "rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.12em]",
+                          "rounded-full px-2.5 py-1 text-xs font-semibold",
                           a.unlocked
                             ? "bg-emerald-600 text-white"
                             : "bg-muted text-muted-foreground/70"
@@ -258,14 +257,14 @@ export default function AchievementsPage() {
                     </div>
                     <h4
                       className={cn(
-                        "mt-4 text-base font-bold",
+                        "mt-3 text-base font-semibold",
                         a.unlocked ? "text-foreground" : "text-muted-foreground"
                       )}
                     >
                       {a.title}
                     </h4>
                     <p className="mt-1 text-sm leading-5 text-muted-foreground">{a.description}</p>
-                    <p className="mt-2 text-[11px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                    <p className="mt-2 text-xs font-medium text-muted-foreground">
                       {a.category}
                     </p>
                   </div>

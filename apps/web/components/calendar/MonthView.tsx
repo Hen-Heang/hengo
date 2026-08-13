@@ -1,10 +1,15 @@
 "use client"
 
-import { isSameDay, isToday } from "date-fns"
+import { format, isSameDay, isToday } from "date-fns"
+import { Plus } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import type { Task } from "@/lib/tasks"
-import { getTaskColor } from "@/lib/tasks"
+import { getTaskColor, hexWithAlpha, isExternalTask } from "@/lib/tasks"
+import { getHolidaysForDate } from "@/lib/holidays"
+import { HolidayMarker } from "./HolidayMarker"
+import { useWeatherForecast } from "@/hooks/useWeatherForecast"
+import { WeatherBadge } from "./WeatherBadge"
 
 interface MonthViewProps {
   currentMonth: Date
@@ -12,6 +17,9 @@ interface MonthViewProps {
   onDateChange: (date: Date) => void
   getTasksForDate: (date: Date) => Task[]
   onTaskClick?: (task: Task) => void
+  onHolidayClick: (date: Date) => void
+  /** Desktop hover affordance: add a task on this date without leaving Month view. */
+  onQuickAdd?: (date: Date) => void
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -55,13 +63,17 @@ export function MonthView({
   onDateChange,
   getTasksForDate,
   onTaskClick,
+  onHolidayClick,
+  onQuickAdd,
 }: MonthViewProps) {
   const days = getDaysInMonth(currentMonth)
   const rowCount = days.length / 7
+  const maxVisibleTasks = rowCount >= 6 ? 1 : rowCount === 5 ? 2 : 3
+  const { getWeatherForDate } = useWeatherForecast()
 
   return (
-    <div className="flex h-full w-full flex-col p-1 sm:p-2">
-      <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card/70 backdrop-blur-md shadow-sm">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-card/20">
+      <div className="flex h-full flex-col overflow-hidden">
         <div className="grid grid-cols-7 border-b border-border/50 bg-muted/30 text-center">
           {WEEKDAYS.map((day, i) => (
             <div
@@ -78,7 +90,7 @@ export function MonthView({
         </div>
 
         <div
-          className="grid flex-1 grid-cols-7"
+          className="grid min-h-0 flex-1 grid-cols-7 overflow-hidden"
           style={{ gridTemplateRows: `repeat(${rowCount}, minmax(0, 1fr))` }}
         >
           {days.map((date, index) => {
@@ -86,45 +98,67 @@ export function MonthView({
             const isSelected = selectedDate && isSameDay(date, selectedDate)
             const today = isToday(date)
             const dayTasks = isCurrentMonth ? getTasksForDate(date) : []
+            const holidays = isCurrentMonth ? getHolidaysForDate(date) : []
+            const weather = isCurrentMonth ? getWeatherForDate(date) : undefined
 
             return (
               <div
-                key={index}
-                onClick={() => isCurrentMonth && onDateChange(date)}
-                onKeyDown={(e) => {
-                  if (isCurrentMonth && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault()
-                    onDateChange(date)
-                  }
-                }}
-                role={isCurrentMonth ? "button" : undefined}
-                tabIndex={isCurrentMonth ? 0 : undefined}
-                aria-pressed={isCurrentMonth ? isSelected : undefined}
-                aria-label={isCurrentMonth ? date.toLocaleDateString(undefined, { month: "long", day: "numeric" }) : undefined}
+                key={date.toISOString()}
                 className={cn(
-                  "relative flex min-h-[80px] flex-col gap-1 border-b border-r border-border/50 p-1.5 transition-colors sm:min-h-[100px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
+                  "group relative flex min-h-10 flex-col gap-1 overflow-hidden border-b border-r border-border/50 p-0.5 transition-colors sm:min-h-0 sm:p-1.5",
                   index % 7 === 0 && "border-l",
                   Math.floor(index / 7) === 0 && "border-t",
-                  !isCurrentMonth && "cursor-default bg-muted/10 opacity-30",
-                  isCurrentMonth && "cursor-pointer hover:bg-muted/20",
+                  !isCurrentMonth && "bg-muted/10 opacity-30",
+                  isCurrentMonth && "hover:bg-muted/20",
                   isSelected && "bg-primary/5"
                 )}
               >
-                <div className="mb-1 flex justify-center">
-                  <span
+                {isCurrentMonth && onQuickAdd && (
+                  <button
+                    type="button"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      onQuickAdd(date)
+                    }}
+                    aria-label={`Add task on ${format(date, "MMMM d")}`}
+                    className="absolute right-0.5 top-0.5 hidden h-5 w-5 items-center justify-center rounded-md text-muted-foreground opacity-0 transition-opacity hover:bg-accent hover:text-foreground focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 group-hover:opacity-100 sm:flex"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                  </button>
+                )}
+
+                <div className="mb-0.5 flex items-center justify-center gap-0.5">
+                  <button
+                    type="button"
+                    disabled={!isCurrentMonth}
+                    onClick={() => onDateChange(date)}
+                    aria-label={isCurrentMonth ? format(date, "MMMM d") : undefined}
+                    aria-pressed={isCurrentMonth ? isSelected : undefined}
                     className={cn(
-                      "flex h-7 w-7 items-center justify-center rounded-lg text-xs font-bold transition-all",
+                      "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 sm:h-7 sm:w-7 sm:text-xs",
                       today && !isSelected && "bg-primary text-primary-foreground shadow",
                       isSelected && "scale-110 bg-primary/90 text-primary-foreground shadow",
-                      !today && !isSelected && "text-muted-foreground"
+                      !today && !isSelected && holidays.length > 0 && "text-rose-600 dark:text-rose-400",
+                      !today && !isSelected && holidays.length === 0 && "text-muted-foreground"
                     )}
                   >
                     {date.getDate()}
-                  </span>
+                  </button>
+                  {isCurrentMonth && holidays.length > 0 && (
+                    <HolidayMarker
+                      date={date}
+                      holidays={holidays}
+                      onClick={onHolidayClick}
+                      variant="month"
+                    />
+                  )}
+                  {isCurrentMonth && weather && (
+                    <WeatherBadge weather={weather} variant="month" />
+                  )}
                 </div>
 
                 {isCurrentMonth && (
-                  <div className="flex flex-1 flex-col justify-end gap-1">
+                  <div className="flex flex-1 flex-col justify-start gap-1">
                     {/* Mobile: dots */}
                     <div className="flex h-1.5 flex-wrap justify-center gap-0.5 px-1 sm:hidden">
                       {dayTasks.slice(0, 4).map((task, i) => (
@@ -140,42 +174,42 @@ export function MonthView({
                     </div>
                     {/* Desktop: chips */}
                     <div className="hidden flex-col gap-0.5 overflow-hidden sm:flex">
-                      {dayTasks.slice(0, 3).map((task) => (
-                        <div
-                          key={task.id}
-                          title={task.title || task.description}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            onTaskClick?.(task)
-                          }}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" || e.key === " ") {
-                              e.preventDefault()
-                              e.stopPropagation()
+                      {dayTasks.slice(0, maxVisibleTasks).map((task) => {
+                        const color = getTaskColor(task)
+                        return (
+                          <button
+                            key={task.id}
+                            type="button"
+                            title={task.title || task.description}
+                            onClick={(event) => {
+                              event.stopPropagation()
                               onTaskClick?.(task)
-                            }
-                          }}
-                          role="button"
-                          tabIndex={0}
-                          aria-label={task.title || task.description}
-                          className={cn(
-                            "mx-0.5 flex cursor-pointer items-center gap-1 truncate rounded-md border border-l-2 px-2 py-1 text-[9px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
-                            task.completed
-                              ? "bg-muted/40 text-muted-foreground line-through opacity-60"
-                              : "bg-muted/30 text-foreground/80 hover:bg-muted/60"
-                          )}
-                          style={{ borderLeftColor: getTaskColor(task) }}
-                        >
-                          <span
-                            className="h-1.5 w-1.5 shrink-0 rounded-full"
-                            style={{ backgroundColor: getTaskColor(task) }}
-                          />
-                          <span className="truncate">{task.title || task.description}</span>
-                        </div>
-                      ))}
-                      {dayTasks.length > 3 && (
+                            }}
+                            aria-label={task.title || task.description}
+                            className={cn(
+                              "mx-0.5 flex items-center gap-1 truncate rounded-md border border-l-2 px-2 py-1 text-left text-[10px] font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
+                              task.completed
+                                ? "text-muted-foreground line-through opacity-60"
+                                : "text-foreground hover:brightness-95 dark:hover:brightness-110",
+                              isExternalTask(task) && "border-dashed",
+                            )}
+                            style={{
+                              backgroundColor: hexWithAlpha(color, 0.16),
+                              borderColor: hexWithAlpha(color, 0.38),
+                              borderLeftColor: color,
+                            }}
+                          >
+                            <span
+                              className="h-1.5 w-1.5 shrink-0 rounded-full"
+                              style={{ backgroundColor: color }}
+                            />
+                            <span className="truncate">{task.title || task.description}</span>
+                          </button>
+                        )
+                      })}
+                      {dayTasks.length > maxVisibleTasks && (
                         <div className="text-center text-[9px] font-medium text-muted-foreground">
-                          +{dayTasks.length - 3} more
+                          +{dayTasks.length - maxVisibleTasks} more
                         </div>
                       )}
                     </div>

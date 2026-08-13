@@ -17,9 +17,14 @@ import type { Task } from "@/lib/tasks"
 // dropped (deferred) → mutations invalidate the query instead.
 //
 // Scope:
-//   goalId set   → that goal's tasks (GET /goals/{id}/tasks)
-//   goalId unset → the user's standalone personal tasks (goal_id = null),
-//                  derived from GET /tasks and filtered client-side.
+//   goalId set   → that one goal's tasks (GET /goals/{id}/tasks), embedded in
+//                  the goal's own page.
+//   goalId unset → every task the user owns — personal (goal_id = null) AND
+//                  every goal's tasks together, same "across every goal"
+//                  scope as the Today page's task list (useTodaysTasks) —
+//                  derived from GET /tasks, unfiltered. This is the
+//                  top-level Calendar's whole point: one place to see (and
+//                  assign) tasks regardless of which goal, if any, owns them.
 
 export const calendarTasksKey = (goalId?: string) =>
   ["calendar-tasks", goalId ?? "personal"] as const
@@ -30,11 +35,7 @@ export function useCalendarTasks(goalId?: string) {
 
   const { data, isLoading, error } = useQuery({
     queryKey: key,
-    queryFn: async (): Promise<Task[]> => {
-      if (goalId) return goalsApi.getTasks(goalId)
-      const all = await tasksApi.range({})
-      return all.filter((t) => !t.goal_id)
-    },
+    queryFn: async (): Promise<Task[]> => (goalId ? goalsApi.getTasks(goalId) : tasksApi.range({})),
     enabled: getUserId() != null,
   })
 
@@ -50,7 +51,10 @@ export function useCalendarTasks(goalId?: string) {
 
   const create = useCallback(
     async (payload: CreateTaskPayload) => {
-      const created = await tasksApi.create({ ...payload, goal_id: goalId ?? null })
+      // Embedded in one goal's own page: every task it creates belongs to
+      // that goal, full stop. Unscoped (the top-level Calendar): honor
+      // whatever goal — or none — the caller picked.
+      const created = await tasksApi.create({ ...payload, goal_id: goalId ?? payload.goal_id ?? null })
       await invalidate()
       return created
     },

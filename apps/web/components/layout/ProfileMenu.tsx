@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ChevronsUpDown, LogOut, Settings, User } from "lucide-react"
+import { ChevronsUpDown, LogOut, Settings } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -57,7 +57,7 @@ export function ProfileMenu({
         <>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-foreground">Account</span>
-            <span className="block truncate text-[11px] text-muted-foreground">{email ?? "Signed in"}</span>
+            <span className="block truncate text-xs text-muted-foreground">{email ?? "Signed in"}</span>
           </span>
           <ChevronsUpDown size={14} aria-hidden className="shrink-0 text-muted-foreground" />
         </>
@@ -83,11 +83,6 @@ export function ProfileMenu({
           {email ?? "Signed in"}
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem asChild className="rounded-lg">
-          <Link href="/account">
-            <User size={16} /> Profile
-          </Link>
-        </DropdownMenuItem>
         <DropdownMenuItem asChild className="rounded-lg">
           <Link href="/settings">
             <Settings size={16} /> Settings

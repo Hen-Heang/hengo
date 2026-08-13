@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs"
 import { describe, expect, it } from "vitest"
 
-import { getInterviewTopic } from "./interview"
+import { getInterviewTopic, getSeedQA } from "./interview"
 import {
   selectTodaysQueue,
   versionsToDeactivate,
@@ -9,13 +9,13 @@ import {
 } from "./interview-practice"
 
 const KOREA_SUMMER_KO =
-  "한국의 여름은 보통 6월부터 8월까지입니다. 기온은 보통 30도 정도이지만, 더운 날에는 35도가 넘을 때도 있습니다. 장마철에는 비가 많이 오고 습도도 높아서 실제 기온보다 더 덥게 느껴집니다. 그래서 사람들은 우산을 가지고 다니고, 에어컨이 있는 실내에서 많은 시간을 보냅니다."
+  "한국의 여름은 6월부터 8월까지입니다. 더운 날에는 기온이 30도를 넘고 습도도 높습니다. 장마철에는 비가 며칠 동안 계속 오기도 합니다. 그래서 기온이 캄보디아보다 낮아도 더 답답하고 덥게 느껴질 때가 있습니다.\n\n한국 사람들은 우산을 가지고 다니고, 에어컨이 있는 곳에서 시간을 보냅니다. 수영장이나 바다에 가기도 하고, 삼계탕을 먹으면서 힘을 내기도 합니다.\n\n저는 한국에서 더운 날에 수박 주스를 마시는 것을 좋아합니다. 수박 주스는 시원하고 달아서 마시면 기분이 좋아집니다."
 const KOREA_SUMMER_EN =
-  "Summer in Korea is usually from June to August. The temperature is normally around 30°C, but it can rise above 35°C on very hot days. During the rainy season, it rains a lot and the humidity is high, so it feels hotter than the actual temperature. Therefore, people carry umbrellas and spend a lot of time indoors with air conditioning."
+  "Summer in Korea is from June to August. On hot days, the temperature rises above 30 degrees, and the humidity is also high. During the rainy season, it can rain continuously for several days. Therefore, even when the temperature is lower than in Cambodia, it sometimes feels more uncomfortable and hotter.\n\nKorean people carry umbrellas and spend time in places with air conditioning. They also go to swimming pools or the beach, and some people eat samgyetang to regain their energy.\n\nIn Korea, I like drinking watermelon juice on hot days. Watermelon juice is cool and sweet, so it makes me feel good."
 const CAMBODIA_COMPARE_KO =
-  "캄보디아는 한국과 조금 다릅니다. 캄보디아는 일 년 내내 덥고, 건기와 우기 두 계절이 있습니다. 가장 더운 시기는 3월부터 5월까지이고, 기온이 40도 가까이 올라갈 때도 있습니다. 낮에는 너무 더워서 밖에 잘 나가지 않고, 저녁에 날씨가 조금 시원해지면 친구들과 밖에 나가곤 했습니다.\n\n가장 더운 시기에는 가끔 친구들과 캄폿이나 시아누크빌, 즉 껌뽕솜 같은 바닷가에 갔습니다. 바다에서 수영하고 시원한 바람을 느끼면서 더위를 식혔습니다. 친구들과 함께 즐거운 시간을 보내서 좋은 추억이 되었습니다.\n\n한국도 비슷한 점이 있습니다. 날씨가 더울 때 사람들은 수영장이나 바다에 가고, 에어컨이 있는 카페나 쇼핑몰에서 시간을 보냅니다. 하지만 한국은 캄보디아보다 습도가 높아서 실제 기온이 더 낮아도 더 덥고 답답하게 느껴질 때가 있습니다."
+  "캄보디아에는 한국처럼 봄, 여름, 가을, 겨울이 없습니다. 대신 건기와 우기, 두 계절이 있습니다. 3월부터 5월까지는 매우 덥고, 특히 4월이 가장 덥습니다. 기온이 40도 가까이 올라갈 때도 있습니다.\n\n4월에는 캄보디아 새해가 있습니다. 날씨는 아주 덥지만, 많은 사람들이 가족과 시간을 보내거나 여행을 갑니다.\n\n저도 더운 계절에는 친구들과 캄폿이나 시아누크빌에 가곤 했습니다. 낮에는 너무 더워서 주로 실내에서 쉬었습니다. 저녁에는 조금 시원해져서 친구들과 밖에 나갔습니다.\n\n캄보디아에서는 더운 날에 코코넛 커피를 자주 마셨습니다. 코코넛 커피는 달고 시원해서 더운 날씨와 잘 어울립니다. 한국에서는 수박 주스를 마시고, 캄보디아에서는 코코넛 커피를 마신다는 점도 재미있는 차이입니다.\n\n비가 오는 모습도 다릅니다. 한국에서는 장마철에 비가 오랫동안 내립니다. 하지만 캄보디아에서는 비가 갑자기 많이 내렸다가 빨리 그칠 때가 많습니다.\n\n그래서 한국에서는 우산이 중요하지만, 캄보디아에서는 그늘을 찾는 것이 더 중요하다고 생각합니다."
 const CAMBODIA_COMPARE_EN =
-  "Cambodia is a little different from Korea. It is hot throughout the year and has two seasons: the dry season and the rainy season. The hottest period is from March to May, and the temperature can sometimes rise to nearly 40°C. During the day, it is often too hot to go outside. When the weather becomes cooler in the evening, I used to go out with my friends.\n\nDuring the hottest period, I sometimes went to seaside areas such as Kampot or Sihanoukville, also known as Kampong Som, with my friends. We swam in the sea and enjoyed the cool breeze to escape the heat. Spending time there with my friends became a good memory.\n\nKorea is similar in some ways. When the weather is hot, people visit swimming pools or beaches and spend time in air-conditioned cafés or shopping malls. However, Korea has higher humidity, so it can sometimes feel hotter and more uncomfortable even when the actual temperature is lower than in Cambodia."
+  "Cambodia does not have spring, summer, autumn, and winter like Korea. Instead, it has two seasons: the dry season and the rainy season. The period from March to May is very hot, and April is especially hot. Sometimes, the temperature rises to nearly 40 degrees.\n\nCambodian New Year is also in April. Although the weather is very hot, many people spend time with their families or travel.\n\nDuring the hot season, I often went to Kampot or Sihanoukville with my friends. During the daytime, it was too hot, so I usually rested indoors. In the evening, the weather became a little cooler, so I went outside with my friends.\n\nIn Cambodia, I often drank coconut coffee on hot days. Coconut coffee is sweet and cool, so it is a good drink for hot weather. It is also an interesting difference that I drink watermelon juice in Korea and coconut coffee in Cambodia.\n\nThe rain is also different. In Korea, rain continues for a long time during the rainy season. However, in Cambodia, it often rains heavily and suddenly and then stops quickly.\n\nTherefore, I think an umbrella is important in Korea, but finding shade is more important in Cambodia."
 
 const focusedSeedPath = new URL(
   "../supabase/seed/kori_interview_questions_cambodia_experience.sql",
@@ -30,6 +30,28 @@ const expectedSlugs = [
   "weather-cambodia-seaside-activities",
   "weather-cambodia-seaside-memory",
   "weather-korea-cambodia-summer-activities",
+  "weather-cambodia-new-year",
+  "weather-korea-hot-day-drink",
+  "weather-cambodia-hot-day-drink",
+  "weather-summer-drink-difference",
+  "weather-rain-pattern-difference",
+  "weather-umbrella-or-shade",
+  "weather-han-river-cycling",
+  "weather-why-evening-cycling",
+  "weather-yeongjongdo-plan",
+  "weather-summer-lesson",
+]
+const revisedScriptQuestionKo = [
+  "캄보디아 새해는 언제이고, 사람들은 보통 무엇을 합니까?",
+  "한국에서 더운 날에 어떤 음료를 좋아합니까?",
+  "캄보디아에서 더운 날에 어떤 음료를 자주 마셨습니까?",
+  "한국과 캄보디아에서 마시는 여름 음료는 어떻게 다릅니까?",
+  "한국과 캄보디아에서는 비가 오는 모습이 어떻게 다릅니까?",
+  "왜 한국에서는 우산이 중요하고 캄보디아에서는 그늘이 중요하다고 생각합니까?",
+  "한국 여름에 꼭 해 보고 싶은 일은 무엇입니까?",
+  "왜 저녁에 한강에서 자전거를 타고 싶습니까?",
+  "영종도에 가면 무엇을 하고 싶습니까?",
+  "두 나라의 여름을 경험하면서 무엇을 배웠습니까?",
 ]
 
 function weatherSlugs(sql: string): string[] {
@@ -72,12 +94,10 @@ describe("weather exam-week script content", () => {
     expect(weather.scriptSeedEn?.compare).toBe(CAMBODIA_COMPARE_EN)
     expect(weather.scriptSeed?.compare).toContain("캄폿")
     expect(weather.scriptSeed?.compare).toContain("시아누크빌")
-    expect(weather.scriptSeed?.compare).toContain("껌뽕솜")
     expect(weather.scriptSeedEn?.compare).toContain("Kampot")
     expect(weather.scriptSeedEn?.compare).toContain("Sihanoukville")
-    expect(weather.scriptSeedEn?.compare).toContain("Kampong Som")
-    expect(weather.scriptSeed?.compare).toContain("가장 더운 시기")
-    expect(weather.scriptSeedEn?.compare).toContain("the hottest period")
+    expect(weather.scriptSeed?.compare).toContain("코코넛 커피")
+    expect(weather.scriptSeedEn?.compare).toContain("coconut coffee")
   })
 
   it("retains every canonical section in both languages", () => {
@@ -89,10 +109,24 @@ describe("weather exam-week script content", () => {
       expect(weather.scriptSeedEn?.[id]?.trim()).not.toBe("")
     }
   })
+
+  it("keeps the revised-script follow-ups available to the page offline", () => {
+    const offlineQA = getSeedQA(weather)
+    const prepQuestions = weather.prep?.sampleQuestions ?? []
+
+    for (const questionKo of revisedScriptQuestionKo) {
+      expect(offlineQA.some((question) => question.questionKo === questionKo)).toBe(true)
+      const model = prepQuestions.find((question) => question.ko === questionKo)
+      expect(model?.answerKo?.trim()).not.toBe("")
+      expect(model?.answerEn?.trim()).not.toBe("")
+      expect(model?.keywords?.length).toBeGreaterThan(0)
+      expect(focusedSeed).toContain(questionKo)
+    }
+  })
 })
 
-describe("Cambodia experience question seed", () => {
-  it("has five conflict-safe slugs that do not duplicate the base seed", () => {
+describe("script-aligned weather question seed", () => {
+  it("has fifteen conflict-safe slugs that do not duplicate the base seed", () => {
     const focusedSlugs = weatherSlugs(focusedSeed)
     const allSlugs = [...weatherSlugs(baseSeed), ...focusedSlugs]
     expect(focusedSlugs).toEqual(expectedSlugs)
@@ -101,29 +135,50 @@ describe("Cambodia experience question seed", () => {
   })
 
   it("uses allowed categories, difficulties, and priorities", () => {
-    expect(focusedSeed.match(/'personal_experience'/g)).toHaveLength(4)
-    expect(focusedSeed.match(/'comparison'/g)).toHaveLength(1)
-    expect(focusedSeed.match(/'beginner'/g)).toHaveLength(3)
-    expect(focusedSeed.match(/'normal'/g)).toHaveLength(2)
-    expect(focusedSeed.match(/'must_practice'/g)).toHaveLength(2)
-    expect(focusedSeed.match(/'recommended'/g)).toHaveLength(3)
+    expect(focusedSeed.match(/'personal_experience'/g)).toHaveLength(9)
+    expect(focusedSeed.match(/'comparison'/g)).toHaveLength(4)
+    expect(focusedSeed.match(/'cambodian_weather'/g)).toHaveLength(1)
+    expect(focusedSeed.match(/'adaptation'/g)).toHaveLength(1)
+    expect(focusedSeed.match(/'beginner'/g)).toHaveLength(7)
+    expect(focusedSeed.match(/'normal'/g)).toHaveLength(5)
+    expect(focusedSeed.match(/'challenging'/g)).toHaveLength(3)
+    expect(focusedSeed.match(/'must_practice'/g)).toHaveLength(6)
+    expect(focusedSeed.match(/'recommended'/g)).toHaveLength(9)
   })
 
-  it("allows all five new records to participate in Today's 5 selection", () => {
-    const questions = [
-      seedQuestion(expectedSlugs[0], 51, "beginner", "must_practice"),
-      seedQuestion(expectedSlugs[1], 52, "beginner", "recommended"),
-      seedQuestion(expectedSlugs[2], 53, "beginner", "recommended"),
-      seedQuestion(expectedSlugs[3], 54, "normal", "recommended"),
-      seedQuestion(expectedSlugs[4], 55, "normal", "must_practice"),
-    ]
-    expect(selectTodaysQueue(questions, {}, "mixed", 5).map((question) => question.id)).toEqual([
-      expectedSlugs[0],
-      expectedSlugs[4],
-      expectedSlugs[1],
-      expectedSlugs[2],
-      expectedSlugs[3],
-    ])
+  it("covers every fact newly introduced by the revised script", () => {
+    for (const detail of [
+      "캄보디아 새해",
+      "Cambodian New Year",
+      "수박 주스",
+      "watermelon juice",
+      "코코넛 커피",
+      "coconut coffee",
+      "갑자기 많이 내렸다가 빨리 그칠",
+      "rains heavily and suddenly and then stops quickly",
+      "그늘",
+      "shade",
+      "한강에서 자전거",
+      "bicycle along the Han River",
+      "영종도",
+      "Yeongjongdo",
+    ]) {
+      expect(focusedSeed).toContain(detail)
+    }
+  })
+
+  it("allows every new record to participate in the daily mixed queue", () => {
+    const questions = expectedSlugs.map((slug, index) =>
+      seedQuestion(
+        slug,
+        51 + index,
+        index % 3 === 0 ? "beginner" : index % 3 === 1 ? "normal" : "challenging",
+        index % 2 === 0 ? "must_practice" : "recommended",
+      ),
+    )
+    const queue = selectTodaysQueue(questions, {}, "mixed", questions.length)
+    expect(queue).toHaveLength(expectedSlugs.length)
+    expect(new Set(queue.map((question) => question.id))).toEqual(new Set(expectedSlugs))
   })
 
   it("keeps activation helpers able to leave one selected version active", () => {

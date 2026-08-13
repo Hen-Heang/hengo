@@ -62,6 +62,12 @@ type ReviewSessionProps = {
   allWords: VocabItem[]
   loading?: boolean
   onRate: (id: string, rating: ReviewRating) => void | Promise<void>
+  // Set by a "Review this deck" button elsewhere on the page (e.g. VocabDeck)
+  // to jump straight into the fullscreen setup screen pre-filtered to one
+  // category. Cleared via onFocusHandled once consumed, so re-clicking the
+  // same deck's button still re-triggers it.
+  focusCategory?: string | null
+  onFocusHandled?: () => void
 }
 
 // Duolingo-style grade buttons: bright fill + darker bottom edge ("3D" press).
@@ -947,7 +953,7 @@ function SentenceCard({
 }
 
 // ─── Main component ────────────────────────────────────────────────────────────
-export function ReviewSession({ dueToday, dueCount, allWords, loading, onRate }: ReviewSessionProps) {
+export function ReviewSession({ dueToday, dueCount, allWords, loading, onRate, focusCategory, onFocusHandled }: ReviewSessionProps) {
   // isOpen=false → compact launch card on the vocab page
   // isOpen=true  → fullscreen (idle setup → quiz → done)
   const [isOpen, setIsOpen] = useState(false)
@@ -1048,6 +1054,18 @@ export function ReviewSession({ dueToday, dueCount, allWords, loading, onRate }:
   )
 
   const canUseChoice = filteredAllWords.length >= 4
+
+  // A "Review this deck" button elsewhere on the page requested a scoped
+  // session — open straight to the (pre-filtered) setup screen and let the
+  // parent know so it can clear the request (otherwise re-clicking the same
+  // deck's button wouldn't re-trigger, since the prop value wouldn't change).
+  useEffect(() => {
+    if (!focusCategory) return
+    setSelectedCategories(new Set([focusCategory]))
+    setPhase("idle")
+    setIsOpen(true)
+    onFocusHandled?.()
+  }, [focusCategory, onFocusHandled])
 
   // Lock page scroll only when Memory Lab is open fullscreen.
   useEffect(() => {

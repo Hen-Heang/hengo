@@ -114,17 +114,17 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {draftRestored && (
-        <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-700 dark:text-amber-300">
+        <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-700 dark:text-amber-300">
           <span>Restored an unsaved draft from your last session.</span>
-          <button type="button" onClick={discardDraft} className="underline underline-offset-2 hover:no-underline">
+          <button type="button" onClick={discardDraft} className="min-h-11 rounded-lg px-2 underline underline-offset-2 hover:no-underline">
             Discard draft
           </button>
         </div>
       )}
 
-      <div className="flex flex-col gap-4 rounded-2xl border border-border/60 bg-card/50 p-6 backdrop-blur-sm">
+      <div className="flex flex-col gap-4 rounded-lg border border-border/60 bg-card/50 p-4 sm:p-5">
         <div className="flex flex-col gap-4 sm:flex-row">
           <div className="flex-1 space-y-4">
             <div className="flex flex-wrap items-center gap-3">
@@ -134,7 +134,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
                 onChange={(e) => set({ icon: e.target.value })}
                 placeholder="java"
                 title="Icon key (e.g. java, sql) — purely visual"
-                className="h-12 w-20 shrink-0 rounded-xl border border-border bg-background text-center text-base font-mono transition-colors focus:border-blue-500/50 focus:outline-none"
+                className="h-11 w-20 shrink-0 rounded-lg border border-border bg-background text-center text-base font-mono transition-colors focus:border-blue-500/50 focus:outline-none"
               />
               <input
                 aria-label="Note title"
@@ -149,7 +149,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
                   })
                 }
                 placeholder="Note title"
-                className="min-w-0 flex-1 bg-transparent text-2xl font-bold text-foreground placeholder:opacity-30 focus:outline-none sm:text-3xl"
+                className="min-h-11 min-w-0 flex-1 bg-transparent text-xl font-semibold text-foreground placeholder:opacity-30 focus:outline-none sm:text-2xl"
               />
               <button
                 type="button"
@@ -157,7 +157,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
                 aria-pressed={values.pinned}
                 aria-label={values.pinned ? "Unpin note" : "Pin note"}
                 className={cn(
-                  "flex size-11 shrink-0 items-center justify-center rounded-xl border transition-colors",
+                  "flex size-11 shrink-0 items-center justify-center rounded-lg border transition-colors",
                   values.pinned
                     ? "border-primary/40 bg-primary/10 text-primary"
                     : "border-border text-muted-foreground hover:text-foreground"
@@ -171,7 +171,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
               value={values.description}
               onChange={(e) => set({ description: e.target.value })}
               placeholder="Short description..."
-              className="w-full bg-transparent text-base text-muted-foreground placeholder:opacity-30 focus:outline-none sm:text-sm"
+              className="min-h-11 w-full bg-transparent text-base text-muted-foreground placeholder:opacity-30 focus:outline-none sm:text-sm"
             />
             <div className="flex items-center gap-2 text-xs text-muted-foreground">
               <span className="font-mono opacity-60">/notes/</span>
@@ -190,7 +190,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
             <button
               onClick={onCancel}
               type="button"
-              className="flex min-h-11 items-center gap-2 rounded-xl bg-accent px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/70"
+              className="flex min-h-11 items-center gap-2 rounded-lg bg-accent px-4 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-accent/70"
             >
               <X size={16} />
               Cancel
@@ -199,7 +199,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
               onClick={handleSave}
               type="button"
               disabled={isSaving}
-              className="flex min-h-11 items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white shadow-lg shadow-blue-600/25 transition-all hover:bg-blue-500 disabled:opacity-50"
+              className="flex min-h-11 items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-50"
             >
               {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
               Save
@@ -249,13 +249,13 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
       </div>
 
       {error && (
-        <p className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm text-red-600 dark:text-red-300">
+        <p className="rounded-lg border border-red-500/20 bg-red-500/10 px-4 py-2 text-sm text-red-600 dark:text-red-300">
           {error}
         </p>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
+        <div className="flex items-center gap-1 rounded-lg border border-border bg-card p-1">
           <button
             type="button"
             onClick={() => setPreview(false)}
@@ -292,7 +292,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
 
       {preview ? (
         <article
-          className="prose prose-zinc min-h-[500px] max-w-none break-words rounded-2xl border border-border/60 bg-card/30 p-6 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:p-8 prose-pre:max-w-full prose-pre:overflow-x-auto"
+          className="prose prose-zinc min-h-[50dvh] max-w-none break-words rounded-lg border border-border/60 bg-card/30 p-4 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:min-h-[500px] sm:p-6 prose-pre:max-w-full prose-pre:overflow-x-auto"
           dangerouslySetInnerHTML={{ __html: renderMarkdown(values.content || "*Nothing to preview yet.*") }}
         />
       ) : (
@@ -301,7 +301,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
           onChange={(e) => set({ content: e.target.value })}
           placeholder="Write your markdown here..."
           aria-invalid={Boolean(errors.content)}
-          className="min-h-[500px] w-full resize-none rounded-2xl border-border/60 bg-card/30 p-6 font-mono text-base leading-relaxed sm:p-8 sm:text-sm"
+          className="min-h-[50dvh] w-full resize-none rounded-lg border-border/60 bg-card/30 p-4 font-mono text-base leading-relaxed sm:min-h-[500px] sm:p-6 sm:text-sm"
         />
       )}
     </div>

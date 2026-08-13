@@ -1,7 +1,6 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Flame } from "lucide-react"
 import { motion } from "motion/react"
 import dynamic from "next/dynamic"
 
@@ -20,7 +19,7 @@ const ProgressChart = dynamic(
   () => import("@/components/dashboard/ProgressChart").then((m) => m.ProgressChart),
   {
     ssr: false,
-    loading: () => <div className="h-64 w-full animate-pulse rounded-2xl bg-muted/20" />,
+    loading: () => <div className="h-64 w-full animate-pulse rounded-lg bg-muted/20" />,
   }
 )
 
@@ -41,16 +40,16 @@ export default function StatisticsPage() {
 
   if (loading) {
     return (
-      <div className="space-y-8 pb-12">
-        <Skeleton className="h-40 w-full rounded-3xl" />
-        <Skeleton className="h-64 w-full rounded-2xl" />
-        <Skeleton className="h-48 w-full rounded-2xl" />
+      <div className="space-y-6 pb-12">
+        <Skeleton className="h-36 w-full rounded-lg" />
+        <Skeleton className="h-64 w-full rounded-lg" />
+        <Skeleton className="h-48 w-full rounded-lg" />
       </div>
     )
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8 pb-12">
+    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-12 sm:space-y-7">
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Progress"
@@ -66,9 +65,9 @@ export default function StatisticsPage() {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid gap-6 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40">
-          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+      <motion.div variants={itemVariants} className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+        <div className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
+          <h2 className="text-base font-semibold text-foreground">
             Weekly practice time
           </h2>
           <div className="mt-4">
@@ -76,8 +75,8 @@ export default function StatisticsPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40">
-          <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+        <div className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
+          <h2 className="text-base font-semibold text-foreground">
             Activity by feature (30d)
           </h2>
           <div className="mt-4">
@@ -86,29 +85,15 @@ export default function StatisticsPage() {
         </div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40">
-        <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">Phrasebook</h2>
+      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
+        <h2 className="text-base font-semibold text-foreground">Phrasebook</h2>
         <div className="mt-4">
           <PhrasebookStatsCard />
         </div>
       </motion.div>
 
-      {stats.streakDays > 0 && (
-        <motion.div
-          variants={itemVariants}
-          className="flex items-center gap-3 rounded-2xl border border-orange-500/20 bg-orange-500/5 px-5 py-3.5"
-        >
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500">
-            <Flame size={18} strokeWidth={2.5} />
-          </div>
-          <p className="text-sm font-bold text-orange-700 dark:text-orange-300">
-            {stats.streakDays}-day streak — {stats.wordsSaved} words saved along the way.
-          </p>
-        </motion.div>
-      )}
-
       {error ? (
-        <p className="rounded-2xl border border-destructive/20 bg-destructive/5 px-6 py-4 text-center text-sm font-bold text-destructive">
+        <p className="rounded-lg border border-destructive/20 bg-destructive/5 px-5 py-4 text-center text-sm font-semibold text-destructive">
           {error}
         </p>
       ) : null}

@@ -77,7 +77,7 @@ export default function ScenariosPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8 pb-12">
+    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-12 sm:space-y-7">
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Scenarios"
@@ -92,9 +92,9 @@ export default function ScenariosPage() {
 
       <motion.div
         variants={itemVariants}
-        className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
+        className="rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5"
       >
-        <label className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+        <label className="text-sm font-semibold text-foreground">
           Category
         </label>
         <ChipSelect options={categories} value={category} onChange={setCategory} className="mt-3" />
@@ -102,9 +102,9 @@ export default function ScenariosPage() {
 
       <motion.div
         variants={itemVariants}
-        className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
+        className="rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5"
       >
-        <label className="flex items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground">
+        <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
           <Sparkles size={14} className="text-blue-500" />
           Or practice your own topic
         </label>
@@ -117,13 +117,13 @@ export default function ScenariosPage() {
               if (e.key === "Enter") handleCustomPractice()
             }}
             placeholder="e.g. asking a coworker for help with a bug"
-            className="h-11 rounded-xl"
+            className="h-11 rounded-lg"
           />
           <Button
             type="button"
             disabled={!customTopic.trim()}
             onClick={handleCustomPractice}
-            className="h-11 shrink-0 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white hover:bg-blue-500 active:scale-95 disabled:opacity-50"
+            className="h-11 shrink-0 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 disabled:opacity-50"
           >
             <MessageCircle size={14} className="mr-2" />
             Practice with AI Coach
@@ -136,7 +136,7 @@ export default function ScenariosPage() {
       {loading && (
         <motion.div variants={itemVariants} className="grid gap-4 sm:grid-cols-2">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-40 w-full rounded-3xl" />
+            <Skeleton key={i} className="h-36 w-full rounded-lg" />
           ))}
         </motion.div>
       )}
@@ -148,23 +148,23 @@ export default function ScenariosPage() {
             return (
               <div
                 key={scenario.id}
-                className="rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40"
+                className="rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
                       <Drama size={20} strokeWidth={2.5} />
                     </div>
                     <div>
-                      <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-blue-600/70 dark:text-blue-400/70">
+                      <p className="text-xs font-medium text-blue-600/80 dark:text-blue-400/80">
                         {scenario.category}
                       </p>
-                      <h3 className="text-base font-extrabold text-foreground">{scenario.title}</h3>
+                      <h3 className="text-base font-semibold text-foreground">{scenario.title}</h3>
                     </div>
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn("border px-2.5 py-1 text-[11px] font-bold", LEVEL_BADGE[scenario.level])}
+                    className={cn("border px-2.5 py-1 text-xs font-semibold", LEVEL_BADGE[scenario.level])}
                   >
                     {scenario.level}
                   </Badge>
@@ -178,8 +178,8 @@ export default function ScenariosPage() {
                 </div>
 
                 {expanded && scenario.introMessage && (
-                  <div className="mt-4 rounded-2xl border border-border bg-background/60 px-4 py-3 dark:bg-white/4">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
+                  <div className="mt-4 rounded-lg border border-border bg-background/60 px-4 py-3 dark:bg-white/4">
+                    <p className="text-xs font-medium text-muted-foreground">
                       Conversation starter
                     </p>
                     <p className="mt-1 text-sm leading-6 text-foreground">{scenario.introMessage}</p>
@@ -190,14 +190,14 @@ export default function ScenariosPage() {
                   <button
                     type="button"
                     onClick={() => setExpandedId(expanded ? null : scenario.id)}
-                    className="text-xs font-bold text-blue-600 hover:underline dark:text-blue-400"
+                    className="min-h-11 px-2 text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
                   >
                     {expanded ? "Hide preview" : "Preview"}
                   </button>
                   <Button
                     type="button"
                     onClick={() => handlePractice(scenario)}
-                    className="h-10 rounded-xl bg-blue-600 px-5 text-xs font-bold text-white hover:bg-blue-500 active:scale-95"
+                    className="h-11 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500"
                   >
                     <MessageCircle size={14} className="mr-2" />
                     Practice with AI Coach
@@ -212,7 +212,7 @@ export default function ScenariosPage() {
       {!loading && !error && visible.length === 0 && (
         <motion.div
           variants={itemVariants}
-          className="rounded-3xl border border-dashed border-border bg-card/40 p-10 text-center"
+          className="rounded-lg border border-dashed border-border bg-card/40 p-6 text-center"
         >
           <Drama size={32} className="mx-auto text-muted-foreground/50" strokeWidth={2} />
           {scenarios.length === 0 ? (

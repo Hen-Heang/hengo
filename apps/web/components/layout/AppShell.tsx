@@ -2,9 +2,9 @@
 
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
-import { Zap } from "lucide-react"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
+import { FloatingAiCoach } from "@/components/chat/FloatingAiCoach"
 import { QuickCaptureDialog } from "@/components/inbox/QuickCaptureDialog"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useMobileKeyboard } from "@/hooks/useMobileKeyboard"
@@ -12,7 +12,6 @@ import { useNavigationMode } from "@/hooks/useNavigationMode"
 import { useSidebarState } from "@/hooks/useSidebarState"
 import { getActiveNavItem, getSectionForPath } from "@/lib/navigation"
 import { recordRecentNavId } from "@/lib/last-visited"
-import { openQuickCapture } from "@/lib/quick-capture-bus"
 import { cn } from "@/lib/utils"
 
 import { DesktopHeader } from "./DesktopHeader"
@@ -132,23 +131,39 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   // Immersive routes. `/chat` keeps the compact mobile header so there is
   // always a visible way back; `/growth/recovery/pause` is fully immersive by
-  // design — navigation must never overlay the breathing timer.
+  // design — navigation must never overlay the breathing timer. `/home` is
+  // the persistent Today page and renders inside the standard shell like any
+  // other route (see docs/navigation-shell-audit.md §2.3) — no isHomeRoute
+  // branch here.
   const isChatRoute = pathname === "/chat" || pathname.startsWith("/chat/")
-  const isHomeRoute = pathname === "/home"
   // `/growth/recovery/pause` is a server redirect to `/growth/recovery/urge`,
   // which is the screen that actually renders the guided pause as a fixed
   // full-screen overlay. Both are listed so no navigation is ever drawn over
   // the pause timer, whichever URL the user arrives on.
   const isPauseRoute = pathname === "/growth/recovery/pause" || pathname === "/growth/recovery/urge"
-  const fullBleed = isHomeRoute || isChatRoute || isPauseRoute
+  // The OAuth consent screen (app/(main)/oauth/consent) is a standalone
+  // decision page, not a Hengo feature — it must never show the app's own
+  // nav chrome, same treatment as the pause timer.
+  const isConsentRoute = pathname === "/oauth/consent"
+  // Same treatment for the Google Calendar OAuth callback — a transient
+  // processing screen, not a place to show nav chrome.
+  const isGoogleCalendarCallbackRoute = pathname === "/integrations/google-calendar/callback"
+  const isChromeless = isPauseRoute || isConsentRoute || isGoogleCalendarCallbackRoute
+  const fullBleed = isChatRoute || isChromeless
+  // Calendar is a primary planning workspace rather than a document page. It
+  // keeps the normal Hengo navigation chrome but owns every remaining pixel,
+  // like a desktop calendar app, instead of inheriting the centered page frame.
+  const isCalendarRoute = pathname === "/goals/calendar"
+  const contentFullBleed = fullBleed || isCalendarRoute
 
   // Chat renders its own compact top bar (mode switcher + a "Back to home"
   // button), so the shell header would be a second one — but the escape route
   // is still always visible, which is what matters.
-  const showMobileHeader = isMobile && !isHomeRoute && !isPauseRoute && !isChatRoute
+  const showMobileHeader = isMobile && !isChromeless && !isChatRoute
   // Unmounted (not just hidden) when the keyboard is up, so nothing inside
   // stays focusable behind the keyboard.
-  const showBottomNav = isMobile && !isHomeRoute && !isPauseRoute && !isChatRoute && !isKeyboardOpen
+  const showBottomNav = isMobile && !isChromeless && !isChatRoute && !isKeyboardOpen
+  const showFloatingCoach = !isChromeless && !isChatRoute
 
   return (
     <TooltipProvider delayDuration={200}>
@@ -164,8 +179,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <RecentTracker />
         </NavSuspense>
 
-        <div className="flex min-h-[100dvh] bg-background">
-          {mode === "desktop" && !isHomeRoute && !isPauseRoute && (
+        <div
+          className={cn(
+            "flex bg-background",
+            isCalendarRoute ? "h-[100dvh] overflow-hidden" : "min-h-[100dvh]",
+          )}
+        >
+          {mode === "desktop" && !isChromeless && (
             <NavSuspense
               fallback={
                 <div
@@ -179,7 +199,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavSuspense>
           )}
 
-          {mode === "tablet" && !isHomeRoute && !isPauseRoute && (
+          {mode === "tablet" && !isChromeless && (
             <NavSuspense
               fallback={
                 <div
@@ -193,8 +213,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </NavSuspense>
           )}
 
-          <div className="flex min-w-0 flex-1 flex-col">
-            {!isMobile && !isHomeRoute && !isPauseRoute && (
+          <div className="flex min-h-0 min-w-0 flex-1 flex-col">
+            {!isMobile && !isChromeless && (
               <NavSuspense fallback={<div aria-hidden className="h-[57px] border-b border-border" />}>
                 <DesktopHeaderChrome />
               </NavSuspense>
@@ -210,15 +230,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               id="main-content"
               tabIndex={-1}
               className={cn(
-                "flex-1 overflow-x-hidden outline-none",
-                fullBleed ? "p-0" : "px-4 pt-5 sm:px-6 lg:px-8",
-                !fullBleed &&
+                "min-h-0 flex-1 overflow-x-hidden outline-none",
+                contentFullBleed ? "p-0" : "px-4 pt-5 sm:px-6 lg:px-8",
+                isCalendarRoute && "overflow-y-hidden",
+                isCalendarRoute && showBottomNav
+                  ? "pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
+                  : !fullBleed && !isCalendarRoute &&
                   (showBottomNav
                     ? "pb-[calc(9rem+env(safe-area-inset-bottom))]"
                     : "pb-10")
               )}
             >
-              <div className={cn("mx-auto w-full", fullBleed ? "h-full max-w-none" : "max-w-6xl")}>
+              <div
+                className={cn(
+                  "mx-auto w-full",
+                  contentFullBleed ? "h-full max-w-none" : "max-w-6xl",
+                )}
+              >
                 {children}
               </div>
             </main>
@@ -241,24 +269,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             other), so the ⌘K / "/" shortcuts never open two dialogs. */}
         {isMobile && <QuickSwitcher hideTrigger open={searchOpen} onOpenChange={setSearchOpen} />}
 
-        {/* Mobile has no header slot for a Quick Capture button (root pages
-            already show Search + notifications), so it gets a floating action
-            button instead — above the bottom nav, hidden with it when the
-            keyboard is up or on immersive routes. Desktop's entry point is the
-            header's Capture button (DesktopHeader.tsx). */}
-        {isMobile && showBottomNav && (
-          <button
-            type="button"
-            onClick={() => openQuickCapture()}
-            aria-label="Quick capture"
-            className="fixed bottom-[calc(4.75rem+env(safe-area-inset-bottom))] right-4 z-40 flex size-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 transition-transform active:scale-95"
-          >
-            <Zap size={22} strokeWidth={2.25} />
-          </button>
+        {/* The global AI action now owns the floating surface. It is omitted on
+            immersive routes and keeps itself clear of the mobile bottom bar. */}
+        {showFloatingCoach && (
+          <FloatingAiCoach
+            mobile={isMobile}
+            bottomNavVisible={showBottomNav}
+            keyboardOpen={isKeyboardOpen}
+          />
         )}
 
-        {/* Single shared instance — every entry point (⌘K action, desktop
-            header button, mobile FAB) just dispatches the open event. */}
+        {/* One shared instance: command palette and both top bars dispatch the
+            open event, so Quick Capture keeps one form and mutation path. */}
         <QuickCaptureDialog />
       </MobileHeaderTitleProvider>
     </TooltipProvider>

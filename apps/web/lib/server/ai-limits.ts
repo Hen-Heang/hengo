@@ -10,6 +10,8 @@ export const RATE_LIMIT_BUCKETS = {
   tts: { limit: 50, description: "Text-to-speech requests" },
   transcription: { limit: 50, description: "Speech transcription requests" },
   large_generation: { limit: 20, description: "Large content generation (vocab sets, listening lessons)" },
+  mcp_read: { limit: 200, description: "MCP connector reads" },
+  mcp_write: { limit: 100, description: "MCP connector writes" },
 } as const
 
 export type RateLimitBucket = keyof typeof RATE_LIMIT_BUCKETS
@@ -47,6 +49,23 @@ const FEATURE_TO_BUCKET: Record<string, RateLimitBucket> = {
   korean_coach_transcription: "transcription",
   ask_hengo: "structured",
   review_summary: "structured",
+  // MCP connector tool calls (lib/mcp/tools/instrument.ts), feature name
+  // "mcp.<tool_name>". No OpenAI cost, so these are bucketed separately from
+  // "structured" rather than sharing its 50/day cap.
+  "mcp.get_today_overview": "mcp_read",
+  "mcp.list_goals": "mcp_read",
+  "mcp.get_goal": "mcp_read",
+  "mcp.list_tasks": "mcp_read",
+  "mcp.get_goal_tasks": "mcp_read",
+  "mcp.get_learning_progress": "mcp_read",
+  "mcp.get_weekly_progress": "mcp_read",
+  "mcp.create_task": "mcp_write",
+  "mcp.update_task": "mcp_write",
+  "mcp.complete_task": "mcp_write",
+  "mcp.create_goal": "mcp_write",
+  "mcp.update_goal": "mcp_write",
+  "mcp.capture_reflection": "mcp_write",
+  "mcp.capture_korean_phrase": "mcp_write",
 }
 
 export function bucketForFeature(feature: string): RateLimitBucket {

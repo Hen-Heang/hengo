@@ -13,7 +13,7 @@ import { useSessionTimer } from "@/hooks/useSessionTimer"
 function OverviewLoadingState() {
   return (
     <div className="mx-auto max-w-xl space-y-6">
-      <div className="rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
+      <div className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
         <Skeleton className="h-4 w-24" />
         <Skeleton className="mt-4 h-12 w-32" />
         <Skeleton className="mt-2 h-4 w-48" />

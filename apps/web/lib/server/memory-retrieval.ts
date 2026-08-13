@@ -203,7 +203,7 @@ export async function retrieveMemoryContext(db: SupabaseClient, question: string
       id: row.id,
       title: row.title?.trim() || row.description.slice(0, 60) || "Task",
       snippet: snippet(`Completed ${row.end_date.slice(0, 10)}`),
-      href: row.goal_id ? `/goals/${row.goal_id}/tasks` : "/dashboard",
+      href: row.goal_id ? `/goals/${row.goal_id}/tasks` : "/goals/tasks",
     })
   }
 

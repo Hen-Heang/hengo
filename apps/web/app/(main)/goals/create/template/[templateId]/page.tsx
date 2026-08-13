@@ -412,7 +412,7 @@ export default function TemplateFormPage() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-[1fr_320px]">
+      <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-[1fr_320px]">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentSection}
@@ -421,10 +421,10 @@ export default function TemplateFormPage() {
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
           >
-            <Card className="rounded-2xl">
-              <CardContent className="p-6 sm:p-8">
+            <Card>
+              <CardContent className="p-5 sm:p-6">
                 <div className="mb-8 flex items-center gap-5">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 text-3xl">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 text-2xl">
                     {section.icon || template.icon}
                   </div>
                   <div>
@@ -435,7 +435,7 @@ export default function TemplateFormPage() {
                   </div>
                 </div>
 
-                <div className="space-y-8">{section.fields.map((field) => renderField(field))}</div>
+                <div className="space-y-5">{section.fields.map((field) => renderField(field))}</div>
               </CardContent>
 
               <div className="flex flex-wrap items-center justify-between gap-4 border-t border-border bg-muted/30 px-6 py-6 sm:px-8">
@@ -473,12 +473,12 @@ export default function TemplateFormPage() {
           </motion.div>
         </AnimatePresence>
 
-        <aside className="space-y-6">
-          <Card className="rounded-2xl">
-            <CardContent className="p-6">
+        <aside className="space-y-5">
+          <Card>
+            <CardContent className="p-5">
               <div className="mb-4 flex items-center gap-3">
                 <div
-                  className="flex h-12 w-12 items-center justify-center rounded-2xl text-2xl"
+                  className="flex h-11 w-11 items-center justify-center rounded-lg text-xl"
                   style={{ background: template.color }}
                 >
                   {template.icon}
@@ -496,7 +496,7 @@ export default function TemplateFormPage() {
             </CardContent>
           </Card>
 
-          <div className="rounded-2xl border border-primary/10 bg-primary/5 p-6">
+          <div className="rounded-lg border border-primary/10 bg-primary/5 p-5">
             <div className="mb-3 flex items-center gap-2">
               <Zap size={14} className="text-primary" />
               <span className="text-[11px] font-medium text-primary">Tip</span>

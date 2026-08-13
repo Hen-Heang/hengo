@@ -46,6 +46,8 @@ type VocabDictionaryProps = {
     meaning: string
     example?: string
   }) => Promise<unknown>
+  /** Enables each deck's "Review this deck" button, which launches Memory Lab scoped to it. */
+  onReviewDeck?: (category: string) => void
   /** Opens the Add Words dialog — shown as the CTA in the empty state. */
   onStartAdd?: () => void
   /** Clears the page-owned search input from the no-results state. */
@@ -122,6 +124,7 @@ export function VocabDictionary({
   onUpdate,
   onDelete,
   onAdd,
+  onReviewDeck,
   onStartAdd,
   onClearSearch,
 }: VocabDictionaryProps) {
@@ -284,6 +287,7 @@ export function VocabDictionary({
               onUpdate={onUpdate}
               onDelete={onDelete}
               onAdd={onAdd}
+              onReviewDeck={onReviewDeck}
             />
           </motion.div>
         ))}
