@@ -2,7 +2,7 @@ import { romanize } from "es-hangul"
 
 import type { VocabItem, SentenceChallengeResponse, SentenceCheckResponse } from "@/lib/types"
 import { supabase } from "@/lib/supabase"
-import { getUserId, requireUserId } from "@/lib/auth-store"
+import { requireUserId } from "@/lib/auth-store"
 import { applyRating, type ReviewRating } from "@/lib/srs"
 import { prepareVocabImport } from "@/lib/vocab-import"
 import { skillForVocabCategory } from "@/lib/learning/skills"

@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -17,7 +17,7 @@ import {
 export function usePush() {
   const userId = getUserId()
   const queryClient = useQueryClient()
-  const telegramKey = ["telegram-status", userId] as const
+  const telegramKey = useMemo(() => ["telegram-status", userId] as const, [userId])
 
   const [webState, setWebState] = useState<WebPushState>("disabled")
   const [webBusy, setWebBusy] = useState(false)

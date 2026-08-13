@@ -5,7 +5,7 @@
        spark above the left stem. Same construction grid as the previous flat
        mark (48-unit grid scaled 21.33x): left stem x15 y16 w6 h22 rx3, right
        stem x27 y6 w6 h32 rx3, crossbar x15 y24 w18 h6 rx3, stems
-       bottom-aligned at y38. Matches public/new-app-logo.png (full lockup). -->
+       bottom-aligned at y38. -->
   <defs>
     <linearGradient id="hengo-right" x1="640" y1="128" x2="640" y2="811" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#7FB3FA"/>

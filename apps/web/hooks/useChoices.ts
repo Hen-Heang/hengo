@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 // These option lists (listening topics, message-generator categories) are static
 // backend constants, so cache the first successful result for the whole session
@@ -26,6 +26,14 @@ export function useChoices(
   const [options, setOptions] = useState<string[]>(initialOptions)
   const [selected, setSelected] = useState<string>(() => pickSelected(initialOptions, initialSelected))
 
+  // Read via ref inside the effect below so a changing `initialSelected` never
+  // triggers a re-fetch (the effect must only re-run when `fetcher` changes),
+  // while still avoiding a stale closure over an old `initialSelected`.
+  const initialSelectedRef = useRef(initialSelected)
+  useEffect(() => {
+    initialSelectedRef.current = initialSelected
+  }, [initialSelected])
+
   useEffect(() => {
     // Already cached this session — no need to hit the backend again.
     if (choicesCache.has(fetcher)) return
@@ -35,7 +43,7 @@ export function useChoices(
         if (active && Array.isArray(data) && data.length > 0) {
           choicesCache.set(fetcher, data)
           setOptions(data)
-          setSelected(pickSelected(data, initialSelected))
+          setSelected(pickSelected(data, initialSelectedRef.current))
         }
       })
       .catch(() => {
