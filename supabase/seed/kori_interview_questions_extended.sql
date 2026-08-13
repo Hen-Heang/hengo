@@ -1,0 +1,222 @@
+-- Extended K-Specialist interview question bank for the "weather" topic.
+-- Adds 30 shared questions: 10 beginner, 12 normal, and 8 challenging.
+-- Re-runnable: existing slugs are skipped.
+
+insert into public.kori_interview_questions
+  (slug, topic_id, question_ko, question_en, sample_answer_ko, sample_answer_en, category, difficulty, priority, keywords, display_order)
+values
+
+-- Beginner: short, direct answers and common listening patterns.
+('weather-korea-summer-months', 'weather',
+ '한국의 여름은 보통 몇 월부터 몇 월까지입니까?',
+ 'Which months are usually summer in Korea?',
+ '한국의 여름은 보통 6월부터 8월까지입니다. 7월과 8월이 특히 덥고 습합니다.',
+ 'Summer in Korea is usually from June to August. July and August are especially hot and humid.',
+ 'korean_summer', 'beginner', 'must_practice', array['6월', '8월', '여름'], 21),
+
+('weather-cambodia-hottest-months', 'weather',
+ '캄보디아는 언제 가장 덥습니까?',
+ 'When is Cambodia the hottest?',
+ '캄보디아는 보통 3월부터 5월까지 가장 덥습니다. 이때 기온이 40도 가까이 올라갈 때도 있습니다.',
+ 'Cambodia is usually the hottest from March to May. During this time, the temperature can rise to nearly 40 degrees.',
+ 'cambodian_weather', 'beginner', 'must_practice', array['3월', '5월', '40도'], 22),
+
+('weather-first-impression', 'weather',
+ '한국의 여름을 처음 경험했을 때 어떤 느낌이었습니까?',
+ 'How did you feel when you first experienced summer in Korea?',
+ '생각보다 덥고 습해서 놀랐습니다. 특히 밖에 조금만 걸어도 땀이 많이 났습니다.',
+ 'I was surprised because it was hotter and more humid than I expected. I sweated a lot even after walking outside for a short time.',
+ 'personal_experience', 'beginner', 'must_practice', array['처음', '놀라다', '땀'], 23),
+
+('weather-rainy-day-prepare', 'weather',
+ '비가 많이 오는 날에는 무엇을 준비합니까?',
+ 'What do you prepare on a day with heavy rain?',
+ '우산을 준비하고 날씨 예보를 확인합니다. 신발과 옷이 젖지 않도록 조심합니다.',
+ 'I prepare an umbrella and check the weather forecast. I am careful so that my shoes and clothes do not get wet.',
+ 'daily_life', 'beginner', 'must_practice', array['우산', '날씨예보', '준비'], 24),
+
+('weather-hot-commute-basic', 'weather',
+ '더운 날에 어떻게 출근합니까?',
+ 'How do you commute on a hot day?',
+ '저는 회사까지 걸어서 출근합니다. 너무 더운 날에는 천천히 걷고 물을 가지고 다닙니다.',
+ 'I walk to work. On very hot days, I walk slowly and carry water with me.',
+ 'daily_life', 'beginner', 'must_practice', array['출근', '걷다', '물'], 25),
+
+('weather-summer-drink', 'weather',
+ '여름에는 무엇을 자주 마십니까?',
+ 'What do you drink often during summer?',
+ '저는 물을 가장 자주 마십니다. 가끔 시원한 커피도 마시지만 건강을 위해 물을 더 많이 마시려고 합니다.',
+ 'I drink water most often. I sometimes drink iced coffee, but I try to drink more water for my health.',
+ 'health', 'beginner', 'recommended', array['물', '커피', '건강'], 26),
+
+('weather-hot-night-sleep-basic', 'weather',
+ '밤에도 더우면 잠을 잘 잡니까?',
+ 'Do you sleep well when it is hot at night?',
+ '아니요, 너무 더우면 잠을 잘 못 잡니다. 그래서 에어컨을 잠깐 켜고 방을 시원하게 합니다.',
+ 'No, I cannot sleep well when it is too hot. So I turn on the air conditioner for a short time and cool the room.',
+ 'health', 'beginner', 'must_practice', array['잠', '열대야', '에어컨'], 27),
+
+('weather-favorite-activity-basic', 'weather',
+ '여름에 가장 좋아하는 활동은 무엇입니까?',
+ 'What is your favorite summer activity?',
+ '저는 수영하는 것을 좋아합니다. 친구와 함께 수영장에 가면 시원하고 즐겁습니다.',
+ 'I like swimming. Going to a swimming pool with a friend is cool and enjoyable.',
+ 'opinion', 'beginner', 'recommended', array['수영', '친구', '활동'], 28),
+
+('weather-carry-umbrella-why', 'weather',
+ '한국 여름에 왜 우산을 가지고 다닙니까?',
+ 'Why do you carry an umbrella during Korean summer?',
+ '장마철에는 갑자기 비가 올 수 있기 때문입니다. 햇빛이 강할 때는 양산처럼 사용할 수도 있습니다.',
+ 'Because it can suddenly rain during the rainy season. When the sunlight is strong, it can also be used like a parasol.',
+ 'korean_summer', 'beginner', 'recommended', array['우산', '장마철', '햇빛'], 29),
+
+('weather-seasons-count-difference', 'weather',
+ '한국과 캄보디아는 계절이 어떻게 다릅니까?',
+ 'How are the seasons different in Korea and Cambodia?',
+ '한국은 봄, 여름, 가을, 겨울의 사계절이 있습니다. 캄보디아는 건기와 우기 두 계절이 있습니다.',
+ 'Korea has four seasons: spring, summer, fall, and winter. Cambodia has two seasons: the dry season and the rainy season.',
+ 'comparison', 'beginner', 'must_practice', array['사계절', '건기', '우기'], 30),
+
+-- Normal: two-to-three sentence workplace, health, and experience answers.
+('weather-work-concentration', 'weather',
+ '더운 날씨가 회사에서 일할 때 집중력에 영향을 줍니까?',
+ 'Does hot weather affect your concentration at work?',
+ '네, 너무 더우면 쉽게 피곤해지고 집중력이 떨어질 수 있습니다. 그래서 물을 자주 마시고 짧게 쉬면서 다시 집중하려고 합니다.',
+ 'Yes, very hot weather can make me tired and reduce my concentration. So I drink water often and take short breaks to focus again.',
+ 'daily_life', 'normal', 'must_practice', array['회사', '집중력', '휴식'], 31),
+
+('weather-commute-change', 'weather',
+ '여름에는 출근 방법이나 시간이 달라집니까?',
+ 'Does your commute method or time change during summer?',
+ '출근 방법은 같지만 평소보다 조금 일찍 나가려고 합니다. 천천히 걷고 그늘이 있는 길을 이용하면 덜 힘듭니다.',
+ 'My commute method is the same, but I try to leave a little earlier. Walking slowly and using shaded paths makes it less difficult.',
+ 'daily_life', 'normal', 'recommended', array['출근', '일찍', '그늘'], 32),
+
+('weather-tropical-night-work', 'weather',
+ '열대야가 다음 날 업무에 어떤 영향을 줍니까?',
+ 'How does a tropical night affect your work the next day?',
+ '열대야 때문에 잠을 잘 못 자면 다음 날 피곤하고 집중하기 어렵습니다. 그래서 잠들기 전에 방을 시원하게 하고 충분히 쉬려고 합니다.',
+ 'If I cannot sleep because of a tropical night, I feel tired and find it difficult to concentrate the next day. So I cool my room before sleeping and try to get enough rest.',
+ 'health', 'normal', 'must_practice', array['열대야', '업무', '집중'], 33),
+
+('weather-aircon-health', 'weather',
+ '에어컨을 너무 많이 사용하면 어떤 문제가 생길 수 있습니까?',
+ 'What problems can occur from using air conditioning too much?',
+ '실내와 실외의 온도 차이가 너무 크면 몸이 피곤하거나 냉방병에 걸릴 수 있습니다. 그래서 온도를 너무 낮게 설정하지 않으려고 합니다.',
+ 'If the temperature difference between indoors and outdoors is too large, I may feel tired or get air-conditioning sickness. So I try not to set the temperature too low.',
+ 'health', 'normal', 'recommended', array['에어컨', '온도차', '냉방병'], 34),
+
+('weather-jangma-commute', 'weather',
+ '장마철이 출퇴근에 어떤 불편을 줍니까?',
+ 'What inconvenience does the rainy season cause during commuting?',
+ '비가 많이 오면 길이 미끄럽고 교통이 혼잡할 수 있습니다. 옷과 신발도 쉽게 젖기 때문에 평소보다 일찍 출발합니다.',
+ 'When it rains heavily, roads can be slippery and traffic can be congested. Clothes and shoes also get wet easily, so I leave earlier than usual.',
+ 'daily_life', 'normal', 'must_practice', array['장마철', '출퇴근', '교통'], 35),
+
+('weather-cambodia-work-heat', 'weather',
+ '캄보디아 사람들은 더운 날에 어떻게 일합니까?',
+ 'How do Cambodian people work on hot days?',
+ '가능하면 가장 더운 낮 시간에는 야외 활동을 줄입니다. 실내에서 일하거나 자주 쉬고 물을 충분히 마십니다.',
+ 'When possible, people reduce outdoor activity during the hottest daytime hours. They work indoors, take frequent breaks, and drink enough water.',
+ 'cambodian_weather', 'normal', 'recommended', array['낮시간', '야외활동', '휴식'], 36),
+
+('weather-better-fit', 'weather',
+ '한국과 캄보디아 중 어느 나라의 여름이 본인에게 더 잘 맞습니까?',
+ 'Which country’s summer suits you better, Korea or Cambodia?',
+ '저는 캄보디아의 더위에 더 익숙합니다. 하지만 한국에서는 공원과 한강 수영장 같은 다양한 여름 활동을 즐길 수 있어서 좋습니다.',
+ 'I am more used to the heat in Cambodia. However, I like that I can enjoy various summer activities in Korea, such as parks and Hangang swimming pools.',
+ 'opinion', 'normal', 'must_practice', array['익숙하다', '잘맞다', '여름활동'], 37),
+
+('weather-advice-cambodian-korea', 'weather',
+ '한국에서 처음 여름을 보내는 캄보디아 사람에게 어떤 조언을 하겠습니까?',
+ 'What advice would you give a Cambodian spending summer in Korea for the first time?',
+ '기온만 보지 말고 습도와 장마 예보도 확인하라고 말하고 싶습니다. 우산과 물을 가지고 다니고, 열대야에는 수면 관리도 해야 합니다.',
+ 'I would tell them to check humidity and the rainy-season forecast, not only the temperature. They should carry an umbrella and water and manage their sleep during tropical nights.',
+ 'adaptation', 'normal', 'recommended', array['조언', '습도', '수면관리'], 38),
+
+('weather-advice-korean-cambodia', 'weather',
+ '여름에 캄보디아를 방문하는 한국 사람에게 무엇을 추천하겠습니까?',
+ 'What would you recommend to a Korean visiting Cambodia during the hot season?',
+ '햇빛이 강하므로 모자와 자외선 차단제를 준비하는 것이 좋습니다. 낮에는 무리하지 말고 물을 자주 마시면서 쉬어야 합니다.',
+ 'Because the sunlight is strong, it is good to prepare a hat and sunscreen. During the day, they should not overexert themselves and should drink water and rest often.',
+ 'cambodian_weather', 'normal', 'recommended', array['캄보디아여행', '자외선', '조언'], 39),
+
+('weather-pool-reason', 'weather',
+ '왜 여의도 한강 수영장에 가기로 했습니까?',
+ 'Why did you decide to go to the Yeouido Hangang swimming pool?',
+ '날씨가 너무 더워서 시원하게 수영하고 싶었습니다. 한국의 여름 문화를 직접 경험하고 친구와 좋은 추억도 만들고 싶었습니다.',
+ 'The weather was very hot, so I wanted to cool down by swimming. I also wanted to experience Korean summer culture and make a good memory with my friend.',
+ 'swimming_pool', 'normal', 'recommended', array['여의도', '이유', '여름문화'], 40),
+
+('weather-park-or-pool-experience', 'weather',
+ '선유도공원과 한강 수영장 중 어디가 더 기억에 남습니까?',
+ 'Which was more memorable, Seonyudo Park or the Hangang swimming pool?',
+ '한강 수영장이 조금 더 기억에 남습니다. 한국에서 처음 수영한 경험이었고, 많은 사람이 여름을 즐기는 모습을 볼 수 있었기 때문입니다.',
+ 'The Hangang swimming pool is a little more memorable. It was my first time swimming in Korea, and I could see many people enjoying summer.',
+ 'personal_experience', 'normal', 'recommended', array['선유도공원', '수영장', '기억'], 41),
+
+('weather-feels-hotter-explain', 'weather',
+ '기온은 캄보디아가 더 높은데 왜 한국이 더 덥게 느껴질 수 있습니까?',
+ 'Why can Korea feel hotter even though Cambodia has a higher temperature?',
+ '한국은 여름에 습도가 높아서 땀이 잘 마르지 않습니다. 그래서 실제 기온이 더 낮아도 몸에는 더 덥고 답답하게 느껴질 수 있습니다.',
+ 'Korea has high humidity during summer, so sweat does not evaporate easily. Therefore, even when the actual temperature is lower, it can feel hotter and more uncomfortable.',
+ 'comparison', 'normal', 'must_practice', array['습도', '땀', '체감온도'], 42),
+
+-- Challenging: unexpected follow-ups, opinions, decisions, and concise summaries.
+('weather-company-outdoor-event', 'weather',
+ '폭염주의보가 있는 날에 회사 야외 행사가 예정되어 있다면 어떻게 하겠습니까?',
+ 'What would you do if a company outdoor event were scheduled on a heat-wave advisory day?',
+ '먼저 담당자에게 날씨와 안전 문제를 말씀드리겠습니다. 가능하면 시간을 바꾸거나 실내 활동으로 변경하고, 행사를 진행한다면 물과 휴식 공간을 충분히 준비해야 합니다.',
+ 'First, I would tell the person in charge about the weather and safety concerns. If possible, I would change the time or move the activity indoors; if it proceeds, enough water and resting areas should be prepared.',
+ 'unexpected_followup', 'challenging', 'recommended', array['폭염주의보', '회사행사', '안전'], 43),
+
+('weather-climate-change', 'weather',
+ '최근 기후 변화가 한국과 캄보디아의 여름에 어떤 영향을 준다고 생각합니까?',
+ 'How do you think recent climate change affects summer in Korea and Cambodia?',
+ '두 나라 모두 폭염과 강한 비가 더 자주 나타나는 것 같습니다. 정확한 원인은 전문가의 분석이 필요하지만, 개인도 에너지를 절약하고 건강과 안전에 더 주의해야 한다고 생각합니다.',
+ 'Both countries seem to experience heat waves and heavy rain more often. Experts need to analyze the exact causes, but I think individuals should save energy and pay more attention to health and safety.',
+ 'opinion', 'challenging', 'optional', array['기후변화', '폭염', '안전'], 44),
+
+('weather-pros-cons', 'weather',
+ '한국 여름의 장점과 단점을 하나씩 말해 보세요.',
+ 'Please tell me one advantage and one disadvantage of Korean summer.',
+ '장점은 한강이나 바다에서 다양한 활동을 즐길 수 있다는 것입니다. 단점은 습도가 높고 열대야가 있어서 생활과 수면이 힘들 수 있다는 것입니다.',
+ 'One advantage is that people can enjoy various activities at the Hangang or the beach. One disadvantage is that high humidity and tropical nights can make daily life and sleep difficult.',
+ 'opinion', 'challenging', 'must_practice', array['장점', '단점', '열대야'], 45),
+
+('weather-biggest-habit-change', 'weather',
+ '한국 여름을 경험한 후 생활 습관이 가장 크게 바뀐 점은 무엇입니까?',
+ 'What daily habit changed the most after experiencing summer in Korea?',
+ '외출하기 전에 기온뿐 아니라 습도와 비 예보도 확인하게 되었습니다. 또 물과 우산을 항상 준비하고, 너무 더운 시간에는 야외 활동을 줄이고 있습니다.',
+ 'Before going out, I now check not only the temperature but also humidity and the rain forecast. I also prepare water and an umbrella and reduce outdoor activity during the hottest hours.',
+ 'adaptation', 'challenging', 'must_practice', array['생활습관', '날씨예보', '적응'], 46),
+
+('weather-most-serious-health-risk', 'weather',
+ '여름철에 가장 주의해야 할 건강 문제는 무엇이며, 어떻게 예방할 수 있습니까?',
+ 'What is the most important summer health risk, and how can it be prevented?',
+ '가장 주의해야 할 문제는 탈수와 온열질환이라고 생각합니다. 물을 규칙적으로 마시고 햇볕이 강한 시간에는 그늘이나 실내에서 쉬는 것이 중요합니다.',
+ 'I think dehydration and heat-related illness are the most important risks. It is important to drink water regularly and rest in the shade or indoors when the sunlight is strong.',
+ 'health', 'challenging', 'must_practice', array['탈수', '온열질환', '예방'], 47),
+
+('weather-examiner-challenge', 'weather',
+ '캄보디아가 더 덥다고 했는데, 그래도 한국 여름이 더 힘들다는 말입니까?',
+ 'You said Cambodia is hotter. Are you still saying Korean summer is more difficult?',
+ '네, 기온 자체는 캄보디아가 더 높을 때가 많습니다. 하지만 저는 캄보디아 날씨에 익숙하고, 한국은 습도가 높기 때문에 개인적으로 더 힘들게 느껴질 때가 있습니다.',
+ 'Yes, Cambodia often has a higher actual temperature. However, I am used to Cambodia’s weather, and because Korea has high humidity, it sometimes feels more difficult for me personally.',
+ 'unexpected_followup', 'challenging', 'must_practice', array['반박질문', '개인적으로', '습도'], 48),
+
+('weather-three-key-points', 'weather',
+ '한국과 캄보디아의 여름 차이를 세 가지로 간단히 정리해 주세요.',
+ 'Please briefly summarize three differences between summer in Korea and Cambodia.',
+ '첫째, 한국은 사계절이 있지만 캄보디아는 건기와 우기가 있습니다. 둘째, 캄보디아의 실제 기온이 더 높고 한국은 습도가 더 높게 느껴집니다. 셋째, 장마와 생활 방식에도 차이가 있습니다.',
+ 'First, Korea has four seasons, while Cambodia has a dry and a rainy season. Second, Cambodia has higher actual temperatures, while Korea feels more humid. Third, there are differences in the rainy season and daily lifestyle.',
+ 'comparison', 'challenging', 'must_practice', array['세가지', '비교', '정리'], 49),
+
+('weather-learned-from-experience', 'weather',
+ '두 나라의 여름을 경험하면서 무엇을 배웠습니까?',
+ 'What did you learn from experiencing summer in both countries?',
+ '같은 더운 날씨라도 습도와 생활 환경에 따라 다르게 느껴질 수 있다는 것을 배웠습니다. 또한 새로운 환경에 적응하려면 건강을 관리하고 현지 생활 방식을 이해하는 것이 중요하다고 생각합니다.',
+ 'I learned that the same hot weather can feel different depending on humidity and the living environment. I also think managing health and understanding local ways of life are important when adapting to a new environment.',
+ 'unexpected_followup', 'challenging', 'recommended', array['배운점', '생활환경', '적응'], 50)
+
+on conflict (slug) do nothing;
