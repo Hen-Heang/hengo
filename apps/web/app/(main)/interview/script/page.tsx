@@ -192,13 +192,20 @@ export default function InterviewScriptPage() {
   const [activeSection, setActiveSection] = useState<string>("")
   const [customSections, setCustomSections] = useState<CustomSection[]>(loadInitialCustom)
   const [mode, setMode] = useState<"script" | "qa" | "read">("script")
-  // Show/hide the editable English translation under each fixed section.
+  // Show/hide English support in both the Script and Q&A Prep views.
   const [showEnglish, setShowEnglish] = useState(true)
   // Starts from the hardcoded seed (instant, offline-safe) and upgrades to the
   // DB-backed question bank (kori_interview_questions) once it loads — that
   // table is the real seed source now (supabase/seed/kori_interview_questions.sql)
   // and is what "Focus on weak questions" mode on /interview/speaking reads too.
   const [bankQA, setBankQA] = useState<QAItem[]>(() => getSeedQA(topic))
+  const [qaAnswerEnglish, setQaAnswerEnglish] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      (topic.prep?.sampleQuestions ?? [])
+        .map((question, index) => [`qa-seed-${index}`, question.answerEn ?? ""] as const)
+        .filter(([, answer]) => answer.trim().length > 0)
+    )
+  )
   const [customQA, setCustomQA] = useState<CustomQA[]>(loadInitialQA)
   // Named snapshots layered on top of the autosaving draft (kori_interview_scripts,
   // untouched by this) — "Original" / "Script V1" / "Mentor Correction" / etc.
@@ -309,6 +316,13 @@ export default function InterviewScriptPage() {
         if (!active || questions.length === 0) return
         setBankQA(
           questions.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: q.questionEn ?? "" }))
+        )
+        setQaAnswerEnglish(
+          Object.fromEntries(
+            questions
+              .filter((q) => (q.sampleAnswerEn ?? "").trim().length > 0)
+              .map((q) => [q.id, q.sampleAnswerEn ?? ""])
+          )
         )
         setValues((prev) => {
           let changed = false
@@ -782,12 +796,16 @@ export default function InterviewScriptPage() {
               </button>
             </div>
 
-            {mode === "script" && (
+            {(mode === "script" || mode === "qa") && (
               <button
                 type="button"
                 onClick={() => setShowEnglish((v) => !v)}
                 aria-pressed={showEnglish}
-                title="Show or hide the English translation under each section"
+                title={
+                  mode === "qa"
+                    ? "Show or hide English meanings in Q&A Prep"
+                    : "Show or hide the English translation under each section"
+                }
                 className={cn(
                   "inline-flex items-center gap-1.5 rounded-2xl border border-border/70 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wide shadow-sm transition-all",
                   showEnglish
@@ -1206,7 +1224,7 @@ export default function InterviewScriptPage() {
                   예상 질문 &amp; 답변 (Q&amp;A)
                 </h1>
                 <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  Draft an answer to each likely question. Answers autosave and export together with your script.
+                  Practice the Korean answer first, then use the English meaning only to confirm what you are saying.
                 </p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {answeredQA}/{allQA.length} answered · {totalWords} words · {totalChars}자
@@ -1215,8 +1233,9 @@ export default function InterviewScriptPage() {
 
               <div className="mt-8 space-y-8">
                 {allQA.map((item, index) => {
-                  const isCustom = !item.id.startsWith("qa-seed-")
+                  const isCustom = customQA.some((custom) => custom.id === item.id)
                   const answer = view[item.id] ?? ""
+                  const answerEnglish = qaAnswerEnglish[item.id] ?? ""
                   return (
                     <section key={item.id} className="border-l-2 border-transparent pl-4">
                       <div className="flex items-start justify-between gap-3">
@@ -1235,8 +1254,8 @@ export default function InterviewScriptPage() {
                               <p className="text-base font-bold leading-snug text-foreground">
                                 {index + 1}. {item.questionKo}
                               </p>
-                              {item.questionEn && (
-                                <p className="mt-0.5 text-sm font-medium text-muted-foreground/70">
+                              {showEnglish && item.questionEn && (
+                                <p className="mt-1 text-sm font-medium leading-relaxed text-muted-foreground/70">
                                   {item.questionEn}
                                 </p>
                               )}
@@ -1265,6 +1284,16 @@ export default function InterviewScriptPage() {
                           onChange={(text) => updateSection(item.id, text)}
                           placeholder="여기에 답변을 작성하세요…"
                         />
+                        {showEnglish && answerEnglish && !isCustom && (
+                          <div className="mt-3 border-t border-border/60 pt-3">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">
+                              <Languages size={12} strokeWidth={2.5} /> English meaning
+                            </div>
+                            <p className="mt-1.5 text-sm font-medium leading-relaxed text-muted-foreground">
+                              {answerEnglish}
+                            </p>
+                          </div>
+                        )}
                       </div>
                     </section>
                   )
