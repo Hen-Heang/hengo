@@ -1,0 +1,141 @@
+name: Apply Q&A English UI patch
+
+on:
+  push:
+    branches:
+      - feat/mentor-final-exam-qa
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/mentor-final-exam-qa
+          fetch-depth: 0
+
+      - name: Patch Q&A Prep English display
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('apps/web/app/(main)/interview/script/page.tsx')
+          text = path.read_text()
+
+          old = '''  const [bankQA, setBankQA] = useState<QAItem[]>(() => getSeedQA(topic))
+  const [customQA, setCustomQA] = useState<CustomQA[]>(loadInitialQA)'''
+          new = '''  const [bankQA, setBankQA] = useState<QAItem[]>(() => getSeedQA(topic))
+  const [qaAnswerEnglish, setQaAnswerEnglish] = useState<Record<string, string>>(() =>
+    Object.fromEntries(
+      (topic.prep?.sampleQuestions ?? [])
+        .map((question, index) => [`qa-seed-${index}`, question.answerEn ?? ""] as const)
+        .filter(([, answer]) => answer.trim().length > 0)
+    )
+  )
+  const [customQA, setCustomQA] = useState<CustomQA[]>(loadInitialQA)'''
+          if old not in text:
+              raise SystemExit('state insertion target not found')
+          text = text.replace(old, new, 1)
+
+          old = '''        setBankQA(
+          questions.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: q.questionEn ?? "" }))
+        )
+        setValues((prev) => {'''
+          new = '''        setBankQA(
+          questions.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: q.questionEn ?? "" }))
+        )
+        setQaAnswerEnglish(
+          Object.fromEntries(
+            questions
+              .filter((q) => (q.sampleAnswerEn ?? "").trim().length > 0)
+              .map((q) => [q.id, q.sampleAnswerEn ?? ""])
+          )
+        )
+        setValues((prev) => {'''
+          if old not in text:
+              raise SystemExit('question bank insertion target not found')
+          text = text.replace(old, new, 1)
+
+          old = '''            {mode === "script" && (
+              <button
+                type="button"
+                onClick={() => setShowEnglish((v) => !v)}
+                aria-pressed={showEnglish}
+                title="Show or hide the English translation under each section"'''
+          new = '''            {(mode === "script" || mode === "qa") && (
+              <button
+                type="button"
+                onClick={() => setShowEnglish((v) => !v)}
+                aria-pressed={showEnglish}
+                title={mode === "qa" ? "Show or hide English meanings in Q&A Prep" : "Show or hide the English translation under each section"}'''
+          if old not in text:
+              raise SystemExit('English toggle target not found')
+          text = text.replace(old, new, 1)
+
+          old = '''                  const isCustom = !item.id.startsWith("qa-seed-")
+                  const answer = view[item.id] ?? ""
+                  return ('''
+          new = '''                  const isCustom = !item.id.startsWith("qa-seed-")
+                  const answer = view[item.id] ?? ""
+                  const answerEnglish = qaAnswerEnglish[item.id] ?? ""
+                  return ('''
+          if old not in text:
+              raise SystemExit('Q&A row target not found')
+          text = text.replace(old, new, 1)
+
+          old = '''                              {item.questionEn && (
+                                <p className="mt-0.5 text-sm font-medium text-muted-foreground/70">
+                                  {item.questionEn}
+                                </p>
+                              )}'''
+          new = '''                              {showEnglish && item.questionEn && (
+                                <p className="mt-0.5 text-sm font-medium leading-relaxed text-muted-foreground/70">
+                                  {item.questionEn}
+                                </p>
+                              )}'''
+          if old not in text:
+              raise SystemExit('question English target not found')
+          text = text.replace(old, new, 1)
+
+          old = '''                      <div className="mt-3 rounded-xl bg-muted/30 p-3">
+                        <DocTextarea
+                          value={answer}
+                          onChange={(text) => updateSection(item.id, text)}
+                          placeholder="여기에 답변을 작성하세요…"
+                        />
+                      </div>'''
+          new = '''                      <div className="mt-3 rounded-xl bg-muted/30 p-3">
+                        <DocTextarea
+                          value={answer}
+                          onChange={(text) => updateSection(item.id, text)}
+                          placeholder="여기에 답변을 작성하세요…"
+                        />
+                        {showEnglish && answerEnglish && (
+                          <div className="mt-3 border-t border-border/60 pt-3">
+                            <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.14em] text-emerald-600 dark:text-emerald-400">
+                              <Languages size={12} strokeWidth={2.5} /> English meaning
+                            </div>
+                            <p className="mt-1.5 text-sm font-medium leading-relaxed text-muted-foreground">
+                              {answerEnglish}
+                            </p>
+                          </div>
+                        )}
+                      </div>'''
+          if old not in text:
+              raise SystemExit('answer block target not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+
+          rm .github/workflows/one-off-qa-english.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat(exam): show English meanings in Q&A prep"
+          git push origin HEAD:feat/mentor-final-exam-qa
