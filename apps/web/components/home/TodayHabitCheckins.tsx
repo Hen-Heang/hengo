@@ -111,7 +111,7 @@ export function TodayHabitCheckins() {
       ) : error ? (
         <div className="mt-3 flex items-center gap-2 rounded-lg border border-destructive/20 bg-destructive/5 px-3 py-3 text-sm text-destructive">
           <AlertTriangle size={16} className="shrink-0" />
-          Couldn&apos;t load your habits.
+          Could&apos;t load your habits.
         </div>
       ) : activeHabits.length === 0 ? (
         <div className="mt-3 rounded-lg border border-border bg-accent/5 px-3 py-3 text-sm text-muted-foreground">
