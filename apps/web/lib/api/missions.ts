@@ -3,6 +3,7 @@ import { requireUserId } from "@/lib/auth-store"
 import { dateKeyInTimeZone, DEFAULT_TIME_ZONE } from "@/lib/date-key"
 import { getDailyGoalMinutes } from "@/lib/onboarding-store"
 import { buildDailyMission, type MissionContext, type MissionItemType } from "@/lib/learning/mission-engine"
+import { EXAM_DATE, isExamActive } from "@/lib/study-plan"
 import type { SkillCode } from "@/lib/learning/skills"
 import { correctionApi, dailyPhraseApi, listeningApi, scenarioApi } from "./learning"
 import { vocabApi } from "./vocab"
@@ -151,11 +152,16 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
     weakSkills: weakSkills.map((s) => ({ skillCode: s.skillCode, masteryScore: s.masteryScore })),
     recentFeatures: (activity.data ?? []).map((a) => a.feature),
     recentTopics: [],
-    // No per-user exam-date field exists yet (the countdown banner shown
-    // elsewhere is a fixed personal date, not per-account data) — leaving
-    // this null avoids fabricating exam personalization from data that
-    // doesn't exist. See README limitations.
-    upcomingExam: null,
+    // No per-user exam-date field exists yet — there's only the one fixed
+    // K-Specialist date every account shares (same source as
+    // ExamCountdownBanner, lib/study-plan.ts), not per-account data. Rather
+    // than fabricate personalization or leave this permanently null, key it
+    // off whether that shared exam window is actually still active: while
+    // it's upcoming/ongoing this lets the `interview` mission type compete
+    // like any other candidate, and once it passes (as of 2026-08-29 it
+    // already has) this reverts to null and `interview` stops being offered
+    // until a future exam cycle updates the constants in lib/study-plan.ts.
+    upcomingExam: isExamActive() ? { date: EXAM_DATE, type: "K-Specialist" } : null,
     availableScenarios: scenarios.map((s) => ({ id: s.id, title: s.title, category: s.category })),
     availableListeningTopics: listeningTopics.map((topic) => ({ topic })),
     dailyPhraseLearned: phrase?.learned ?? true,

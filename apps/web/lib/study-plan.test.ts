@@ -4,8 +4,10 @@ import {
   countdownTo,
   daysUntil,
   getCurrentWeek,
+  isExamActive,
   EXAM_DATE,
   EXAM_DATETIME,
+  EXAM_END_DATETIME,
   STUDY_WEEKS,
 } from "./study-plan"
 
@@ -38,6 +40,18 @@ describe("getCurrentWeek", () => {
 
   it("keeps the exam date in sync with the plan window", () => {
     expect(EXAM_DATE).toBe("2026-08-29")
+  })
+})
+
+describe("isExamActive", () => {
+  it("is true before the exam window ends", () => {
+    expect(isExamActive(new Date(EXAM_DATETIME))).toBe(true)
+    expect(isExamActive(new Date(new Date(EXAM_END_DATETIME).getTime() - 1000))).toBe(true)
+  })
+
+  it("is false once the exam window is fully over — e.g. today, 2026-08-31", () => {
+    expect(isExamActive(new Date(new Date(EXAM_END_DATETIME).getTime() + 1000))).toBe(false)
+    expect(isExamActive(new Date(2026, 7, 31))).toBe(false)
   })
 })
 
