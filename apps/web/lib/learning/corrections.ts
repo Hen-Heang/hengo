@@ -59,7 +59,7 @@ export function planCorrectionUpsert(
   const occurrenceCount = existing.occurrenceCount + 1
 
   if (mistake.severity === "important") {
-    const next = applyRating(existing, "AGAIN")
+    const next = applyRating(existing, "AGAIN", now)
     return {
       action: "update",
       occurrenceCount,

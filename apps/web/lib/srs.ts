@@ -67,7 +67,7 @@ const MASTERY_DELTA: Record<ReviewRating, number> = {
  * client owns it and persists the result to Supabase). SM-2 ease adjustments:
  * AGAIN −0.2 + lapse + reps reset, HARD −0.15, GOOD unchanged, EASY +0.15.
  */
-export function applyRating(card: SrsCardState, rating: ReviewRating): SrsResult {
+export function applyRating(card: SrsCardState, rating: ReviewRating, now: Date = new Date()): SrsResult {
   const interval = previewIntervalDays(card, rating)
   const baseEase = card.easeFactor < MIN_EASE ? START_EASE : card.easeFactor
 
@@ -81,7 +81,7 @@ export function applyRating(card: SrsCardState, rating: ReviewRating): SrsResult
   const lapses = Math.max(0, card.lapses) + (rating === "AGAIN" ? 1 : 0)
   const mastery = Math.max(0, Math.min(100, card.mastery + MASTERY_DELTA[rating]))
 
-  const next = new Date()
+  const next = new Date(now)
   next.setDate(next.getDate() + interval)
 
   return { easeFactor, intervalDays: interval, repetitions, lapses, mastery, nextReview: next.toISOString() }
