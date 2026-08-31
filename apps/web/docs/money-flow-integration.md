@@ -14,7 +14,7 @@ project named `money-flow`, id `lqjjabfmaweztxkvfrsq`, in the same
 organization but not the same database) are separate products with separate
 users, separate auth, and separate data-ownership responsibilities. Money
 Flow remains the sole source of truth for financial data. Hengo only ever
-*displays a read-only summary* of progress toward a financial key result and
+_displays a read-only summary_ of progress toward a financial key result and
 sends the user back to Money Flow to change anything.
 
 ## Proposed Money Flow endpoint (to be built in the Money Flow repo, not here)
@@ -82,8 +82,8 @@ ask for it.
   `requireUser` — server-only secrets, RLS/scoped tokens, never a service
   key shipped to the client).
 - Match accounts by email alone — see `docs/account-reconciliation-plan.md`
-  for why identity matching by email is unreliable even *within* this one
-  project; matching *across* two separate Supabase projects by email would
+  for why identity matching by email is unreliable even _within_ this one
+  project; matching _across_ two separate Supabase projects by email would
   be strictly worse and is explicitly rejected as a linking strategy. The
   one-time connection code (step 1) is the only supported linking mechanism.
 - Copy raw financial records into Hengo's database, ever.

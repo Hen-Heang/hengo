@@ -163,7 +163,10 @@ export function AudioRecorder({
                   <span className="absolute inset-0 animate-ping rounded-full bg-destructive/10 motion-reduce:animate-none" />
                   <Mic className="relative size-8" aria-hidden="true" />
                 </div>
-                <p className="mt-3 font-mono text-2xl font-semibold tabular-nums" aria-live="polite">
+                <p
+                  className="mt-3 font-mono text-2xl font-semibold tabular-nums"
+                  aria-live="polite"
+                >
                   {formatDuration(recorder.state.durationMs)}
                 </p>
                 <p className="mt-1 text-sm text-muted-foreground">Recording your Korean answer</p>
@@ -189,7 +192,8 @@ export function AudioRecorder({
                 </div>
                 <p className="mt-3 font-semibold">Recording ready</p>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {formatDuration(recorder.state.durationMs)} · replay it before sending if you like.
+                  {formatDuration(recorder.state.durationMs)} · replay it before sending if you
+                  like.
                 </p>
                 {recorder.audioUrl && (
                   <audio

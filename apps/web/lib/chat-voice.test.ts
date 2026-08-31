@@ -1,10 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  extractKoreanForSpeech,
-  parseVoiceSubtitles,
-  splitKoreanSentences,
-} from "./chat-voice"
+import { extractKoreanForSpeech, parseVoiceSubtitles, splitKoreanSentences } from "./chat-voice"
 
 describe("extractKoreanForSpeech", () => {
   it("keeps the Korean turn and removes subtitle lines", () => {
@@ -26,9 +22,7 @@ describe("extractKoreanForSpeech", () => {
       "> **FIX:** 다음에 어떤 기능을 만들 거예요?",
     ].join("\n")
 
-    expect(extractKoreanForSpeech(reply)).toBe(
-      "정말 잘됐네요! 다음에는 어떤 기능을 만들 거예요?",
-    )
+    expect(extractKoreanForSpeech(reply)).toBe("정말 잘됐네요! 다음에는 어떤 기능을 만들 거예요?")
   })
 
   it("returns an empty string when there is no Korean to speak", () => {
@@ -56,7 +50,9 @@ describe("parseVoiceSubtitles", () => {
 
   it("returns null for regular prose replies so markdown rendering is kept", () => {
     expect(
-      parseVoiceSubtitles("Here is the difference between 이/가 and 은/는:\n- 이/가 marks the subject"),
+      parseVoiceSubtitles(
+        "Here is the difference between 이/가 and 은/는:\n- 이/가 marks the subject",
+      ),
     ).toBeNull()
   })
 

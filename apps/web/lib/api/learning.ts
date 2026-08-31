@@ -115,7 +115,9 @@ export const correctionApi = {
         })
         const { data: existingRow } = await supabase
           .from("kori_corrections")
-          .select("mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date")
+          .select(
+            "mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date",
+          )
           .eq("user_id", userId)
           .eq("fingerprint", fingerprint)
           .maybeSingle()
@@ -154,7 +156,11 @@ export const correctionApi = {
         if (plan.action === "insert") {
           await supabase.from("kori_corrections").insert(row)
         } else {
-          await supabase.from("kori_corrections").update(row).eq("user_id", userId).eq("fingerprint", fingerprint)
+          await supabase
+            .from("kori_corrections")
+            .update(row)
+            .eq("user_id", userId)
+            .eq("fingerprint", fingerprint)
         }
 
         void skillsApi.recordEvent({
@@ -313,10 +319,7 @@ export const dailyPhraseApi = {
   },
 
   markLearned: async (id: string, learned = true) => {
-    const { error } = await supabase
-      .from("kori_daily_phrases")
-      .update({ learned })
-      .eq("id", id)
+    const { error } = await supabase.from("kori_daily_phrases").update({ learned }).eq("id", id)
     if (error) throw error
   },
 
@@ -481,15 +484,17 @@ export const listeningApi = {
       .select("id, lesson_id, score, total, accuracy, results, created_at")
       .order("created_at", { ascending: false })
     if (error) throw error
-    return (data as Array<{
-      id: string
-      lesson_id: string
-      score: number
-      total: number
-      accuracy: number
-      results: boolean[]
-      created_at: string
-    }>).map((row) => ({
+    return (
+      data as Array<{
+        id: string
+        lesson_id: string
+        score: number
+        total: number
+        accuracy: number
+        results: boolean[]
+        created_at: string
+      }>
+    ).map((row) => ({
       id: row.id,
       lessonId: row.lesson_id,
       score: row.score,
@@ -532,11 +537,7 @@ export const scenarioApi = {
     return (data as ScenarioRow[]).map(toScenario)
   },
   getById: async (id: string): Promise<ScenarioDetail> => {
-    const { data, error } = await supabase
-      .from("kori_scenarios")
-      .select("*")
-      .eq("id", id)
-      .single()
+    const { data, error } = await supabase.from("kori_scenarios").select("*").eq("id", id).single()
     if (error) throw error
     return toScenario(data as ScenarioRow)
   },
@@ -657,14 +658,15 @@ const FALLBACK_SCENARIO: ScenarioDetail = {
 
 export const practiceApi = {
   getToday: async (): Promise<PracticeToday> => {
-    const [profileRes, dueVocab, dueVocabCount, dueCorrections, dailyPhrase, scenarios] = await Promise.all([
-      supabase.from("kori_profiles").select("korean_level").maybeSingle(),
-      vocabApi.getDueWords(),
-      vocabApi.getDueCount(),
-      correctionApi.getDueReviews(),
-      dailyPhraseApi.getToday(),
-      scenarioApi.getList().catch(() => [] as ScenarioDetail[]),
-    ])
+    const [profileRes, dueVocab, dueVocabCount, dueCorrections, dailyPhrase, scenarios] =
+      await Promise.all([
+        supabase.from("kori_profiles").select("korean_level").maybeSingle(),
+        vocabApi.getDueWords(),
+        vocabApi.getDueCount(),
+        correctionApi.getDueReviews(),
+        dailyPhraseApi.getToday(),
+        scenarioApi.getList().catch(() => [] as ScenarioDetail[]),
+      ])
     const scenario =
       scenarios.length > 0
         ? scenarios[Math.floor(Math.random() * scenarios.length)]

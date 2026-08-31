@@ -6,13 +6,7 @@ import { ArrowLeft, ArrowRight, BriefcaseBusiness, Clock3, Coffee, Target } from
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { KOREAN_COACH_SCENARIOS } from "@/lib/korean-coach/scenarios"
 import type { KoreanScenarioCategory } from "@/lib/korean-coach/schemas"
 import { cn } from "@/lib/utils"
@@ -47,8 +41,8 @@ export default function KoreanCoachScenariosPage() {
           What do you need to say?
         </h1>
         <p className="mt-3 max-w-2xl leading-7 text-muted-foreground">
-          Choose one focused situation. The coach will speak first, keep the transcript hidden,
-          and ask only one short question at a time.
+          Choose one focused situation. The coach will speak first, keep the transcript hidden, and
+          ask only one short question at a time.
         </p>
       </header>
 
@@ -146,4 +140,3 @@ export default function KoreanCoachScenariosPage() {
     </div>
   )
 }
-

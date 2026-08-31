@@ -32,10 +32,14 @@ export const POST = jsonAiRoute({
     "mix the candidate's prepared topic (Korean summer weather vs Cambodia, its impact on daily life and health) with " +
     "everyday off-topic probes (life in Korea, work, hometown, food, hobbies, future plans, Korean study). " +
     (styleExamples.length
-      ? "Use the formal interviewer register of these examples:\n" + styleExamples.map((q) => `- ${q}`).join("\n") + "\n"
+      ? "Use the formal interviewer register of these examples:\n" +
+        styleExamples.map((q) => `- ${q}`).join("\n") +
+        "\n"
       : "") +
     `\nDifficulty: ${complexityHint}\n` +
-    (avoid.length ? `Do NOT repeat or trivially rephrase any of these:\n${avoid.map((q) => `- ${q}`).join("\n")}\n` : "") +
+    (avoid.length
+      ? `Do NOT repeat or trivially rephrase any of these:\n${avoid.map((q) => `- ${q}`).join("\n")}\n`
+      : "") +
     "\nFor each question: en = a natural English translation; glosses = up to 4 words from the question an " +
     "intermediate learner may not know (term = the Korean word exactly as it appears in the question, " +
     "meaning = a short English gloss); grammarNote = one short English note on a grammar pattern the question uses.",

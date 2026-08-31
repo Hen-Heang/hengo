@@ -74,4 +74,3 @@ export const LISTENING_CHALLENGES: ListeningChallenge[] = [
     ],
   },
 ]
-

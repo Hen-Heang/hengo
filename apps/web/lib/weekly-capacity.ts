@@ -131,9 +131,7 @@ export interface ScheduleConflict {
 const timeBounds = (task: Task): [number, number] | null => {
   const start = parseHHMMToMinutes(task.daily_start_time)
   if (start == null) return null
-  const end =
-    parseHHMMToMinutes(task.daily_end_time) ??
-    start + (taskEffortMinutes(task) || 60)
+  const end = parseHHMMToMinutes(task.daily_end_time) ?? start + (taskEffortMinutes(task) || 60)
   return [start, Math.max(start + 1, end)]
 }
 

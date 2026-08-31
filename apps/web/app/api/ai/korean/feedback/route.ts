@@ -61,4 +61,3 @@ export async function POST(req: Request): Promise<Response> {
     return coachErrorResponse(safe)
   }
 }
-

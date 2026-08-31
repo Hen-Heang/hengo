@@ -11,13 +11,19 @@ const PHASE_STYLES: Record<MilestonePhase, string> = {
   mastery: "border-fuchsia-500/30 bg-fuchsia-500/10 text-fuchsia-700 dark:text-fuchsia-400",
 }
 
-export function MilestoneBadge({ phase, className }: { phase: MilestonePhase; className?: string }) {
+export function MilestoneBadge({
+  phase,
+  className,
+}: {
+  phase: MilestonePhase
+  className?: string
+}) {
   return (
     <span
       className={cn(
         "rounded-full border px-2.5 py-1 text-xs font-semibold",
         PHASE_STYLES[phase],
-        className
+        className,
       )}
     >
       {MILESTONE_LABELS[phase]}

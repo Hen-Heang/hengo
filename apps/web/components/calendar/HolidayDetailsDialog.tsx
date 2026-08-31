@@ -4,17 +4,8 @@ import { format } from "date-fns"
 import { CalendarDays, Clock3, MapPin } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog"
-import {
-  getHolidaysForDate,
-  HOLIDAY_COUNTRY_META,
-  type HolidayCountry,
-} from "@/lib/holidays"
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
+import { getHolidaysForDate, HOLIDAY_COUNTRY_META, type HolidayCountry } from "@/lib/holidays"
 import { cn } from "@/lib/utils"
 import { HolidayCountryFlag } from "./HolidayCountryFlag"
 
@@ -29,11 +20,7 @@ interface HolidayDetailsDialogProps {
   onClose: () => void
 }
 
-export function HolidayDetailsDialog({
-  date,
-  isOpen,
-  onClose,
-}: HolidayDetailsDialogProps) {
+export function HolidayDetailsDialog({ date, isOpen, onClose }: HolidayDetailsDialogProps) {
   const holidays = date ? getHolidaysForDate(date) : []
 
   return (
@@ -62,10 +49,7 @@ export function HolidayDetailsDialog({
                   COUNTRY_CARD_CLASS[holiday.country],
                 )}
               >
-                <HolidayCountryFlag
-                  country={holiday.country}
-                  className="h-8 w-12"
-                />
+                <HolidayCountryFlag country={holiday.country} className="h-8 w-12" />
                 <div className="min-w-0 flex-1">
                   <div className="mb-2 flex flex-wrap items-center gap-1.5">
                     <Badge variant="outline" className="bg-background/80">

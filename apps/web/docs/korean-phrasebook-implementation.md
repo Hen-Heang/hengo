@@ -6,15 +6,15 @@ The original task brief assumed a codebase shape that does not match this
 repository. Before writing any code the following was verified directly
 against the source:
 
-| Assumed in brief | Actual state in this repo |
-|---|---|
-| `/korean-coach` route + `components/korean-coach/` | Does not exist. Korean practice is spread across `/practice` (mission hub + daily phrase), `/chat` (AI Coach, modes `analyze`/`generate`/`corrections`), `/vocab`, `/scenarios`, `/interview`, `/listening`. |
-| `lib/korean-coach/scenarios.ts`, `schemas.ts`, `tutor-prompt.ts` | Don't exist. Closest equivalents: `lib/api/learning.ts` (`scenarioApi`, `dailyPhraseApi`, `messageGenApi`, `listeningApi`), `lib/server/ai.ts` (shared prompt/route plumbing), `app/api/ai/*` routes per feature. |
-| `AudioRecorder` component + server transcription pipeline | Doesn't exist. Speech capture is 100% client-side via the browser Web Speech API, wrapped in `hooks/useSpeechRecognition.ts`. There is no audio upload or server-side STT anywhere in the app — only text transcripts ever reach the server. |
-| Inbox feature with a `phrase` item type and conversion actions | Does not exist at all — no capture inbox, no item-type union, no conversion pipeline. Closest analog is the plain-markdown `/notes` feature (`lib/api/notes.ts`), which has no "convert" concept. |
-| "Ask Hengo" as a retrieval/RAG system over the user's own data, with source links | "Ask Hengo AI" is just the nav label (`components/layout/MoreNavigationSheet.tsx`) for the general streaming AI Coach chat (`/chat`, `app/api/ai/chat/stream/route.ts`). It has no retrieval tool and produces no citations today. |
-| A stored romanization preference (Always / On request / Never) | Does not exist. Romanization is a static per-item field (`romanization?: string`) shown whenever present; no user-level toggle anywhere. |
-| Playwright wired for authenticated e2e tests | `@playwright/test` is a `devDependency` but there is no `playwright.config.*`, no `e2e/`/`tests/` directory, and no auth harness. Effectively unused today. |
+| Assumed in brief                                                                  | Actual state in this repo                                                                                                                                                                                                                    |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/korean-coach` route + `components/korean-coach/`                                | Does not exist. Korean practice is spread across `/practice` (mission hub + daily phrase), `/chat` (AI Coach, modes `analyze`/`generate`/`corrections`), `/vocab`, `/scenarios`, `/interview`, `/listening`.                                 |
+| `lib/korean-coach/scenarios.ts`, `schemas.ts`, `tutor-prompt.ts`                  | Don't exist. Closest equivalents: `lib/api/learning.ts` (`scenarioApi`, `dailyPhraseApi`, `messageGenApi`, `listeningApi`), `lib/server/ai.ts` (shared prompt/route plumbing), `app/api/ai/*` routes per feature.                            |
+| `AudioRecorder` component + server transcription pipeline                         | Doesn't exist. Speech capture is 100% client-side via the browser Web Speech API, wrapped in `hooks/useSpeechRecognition.ts`. There is no audio upload or server-side STT anywhere in the app — only text transcripts ever reach the server. |
+| Inbox feature with a `phrase` item type and conversion actions                    | Does not exist at all — no capture inbox, no item-type union, no conversion pipeline. Closest analog is the plain-markdown `/notes` feature (`lib/api/notes.ts`), which has no "convert" concept.                                            |
+| "Ask Hengo" as a retrieval/RAG system over the user's own data, with source links | "Ask Hengo AI" is just the nav label (`components/layout/MoreNavigationSheet.tsx`) for the general streaming AI Coach chat (`/chat`, `app/api/ai/chat/stream/route.ts`). It has no retrieval tool and produces no citations today.           |
+| A stored romanization preference (Always / On request / Never)                    | Does not exist. Romanization is a static per-item field (`romanization?: string`) shown whenever present; no user-level toggle anywhere.                                                                                                     |
+| Playwright wired for authenticated e2e tests                                      | `@playwright/test` is a `devDependency` but there is no `playwright.config.*`, no `e2e/`/`tests/` directory, and no auth harness. Effectively unused today.                                                                                  |
 
 **Decisions made with the user before implementing** (see below) resolve
 each mismatch. Everything else in the brief (SRS reuse, TTS reuse, speech
@@ -76,11 +76,11 @@ Korean Coach / Inbox / Ask Hengo code — it existed only in the live database
 and in an unmerged branch. After that branch was merged, three of the four
 decisions above turned out to have a pre-existing implementation:
 
-| Concept | Pre-existing implementation (now merged) |
-|---|---|
-| Korean Coach | `/korean-coach/*`, `lib/api/korean-coach.ts`, `lib/korean-coach/schemas.ts` |
-| Inbox | `kori_inbox_items`, `/inbox`, `lib/api/inbox.ts` (has a `converted_to_type`/`converted_to_id` conversion pattern) |
-| Ask Hengo | `/ask-hengo`, `kori_memory_candidates`, `app/api/ai/memory/ask` |
+| Concept      | Pre-existing implementation (now merged)                                                                          |
+| ------------ | ----------------------------------------------------------------------------------------------------------------- |
+| Korean Coach | `/korean-coach/*`, `lib/api/korean-coach.ts`, `lib/korean-coach/schemas.ts`                                       |
+| Inbox        | `kori_inbox_items`, `/inbox`, `lib/api/inbox.ts` (has a `converted_to_type`/`converted_to_id` conversion pattern) |
+| Ask Hengo    | `/ask-hengo`, `kori_memory_candidates`, `app/api/ai/memory/ask`                                                   |
 
 Only romanization was an outright duplicate, and it was resolved:
 
@@ -112,22 +112,22 @@ cascade on `auth.users` delete — matching every existing migration's pattern
 shape this follows almost verbatim).
 
 - **`kori_phrase_collections`** — `id, user_id, source_key, title_ko,
-  title_en, description, category, seed_version, pinned, created_at,
-  updated_at`. Unique `(user_id, source_key)` where `source_key` is not null,
+title_en, description, category, seed_version, pinned, created_at,
+updated_at`. Unique `(user_id, source_key)` where `source_key` is not null,
   so seeded packs are idempotent per user while user-created collections
   (`source_key = null`) are unrestricted.
 - **`kori_phrase_cards`** — `id, user_id, collection_id, source_key,
-  category, situation, difficulty, question jsonb, question_variants jsonb,
-  answers jsonb, usage_note, vocabulary jsonb, tags text[], position,
-  active, is_user_edited, created_at, updated_at`. `question`/`answers` shape
+category, situation, difficulty, question jsonb, question_variants jsonb,
+answers jsonb, usage_note, vocabulary jsonb, tags text[], position,
+active, is_user_edited, created_at, updated_at`. `question`/`answers` shape
   matches the brief exactly (`korean/romanization/english/register[/usageNote]
-  [/isRecommended]`). `is_user_edited` is the flag that makes seed upgrades
+[/isRecommended]`). `is_user_edited` is the flag that makes seed upgrades
   skip a card without clobbering an edit (see §6).
 - **`kori_phrase_progress`** — one row per `(user_id, phrase_id)` (unique
   constraint), same SM-2 fields as `kori_vocab_cards`/`kori_corrections`
   (`state, repetitions, interval_days, ease_factor, lapses, attempt_count,
-  successful_count, last_grade, last_reviewed_at, next_review_at,
-  mastered`).
+successful_count, last_grade, last_reviewed_at, next_review_at,
+mastered`).
 - **`kori_phrase_attempts`** — append-only log, **no audio, ever** — only
   `transcript` (length-capped) and `feedback jsonb` (validated shape from the
   AI route, not free-form).

@@ -50,61 +50,81 @@ export function registerCaptureKoreanPhraseTool(server: McpServer, ctx: McpConte
         }),
         created: z.boolean(),
       }),
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
-    instrumentedTool(ctx, "write", "capture_korean_phrase", async ({ term, meaning, example, category }) => {
-      const { data: existing, error: dedupeError } = await ctx.db
-        .from("kori_vocab_cards")
-        .select("id, term, meaning, category, pronunciation")
-        .eq("user_id", ctx.userId)
-        .eq("term", term)
-        .eq("meaning", meaning)
-        .gte("created_at", new Date(Date.now() - DEDUPE_WINDOW_MS).toISOString())
-        .maybeSingle()
-      if (dedupeError) throw new Error("Could not save the phrase.")
-      if (existing) {
+    instrumentedTool(
+      ctx,
+      "write",
+      "capture_korean_phrase",
+      async ({ term, meaning, example, category }) => {
+        const { data: existing, error: dedupeError } = await ctx.db
+          .from("kori_vocab_cards")
+          .select("id, term, meaning, category, pronunciation")
+          .eq("user_id", ctx.userId)
+          .eq("term", term)
+          .eq("meaning", meaning)
+          .gte("created_at", new Date(Date.now() - DEDUPE_WINDOW_MS).toISOString())
+          .maybeSingle()
+        if (dedupeError) throw new Error("Could not save the phrase.")
+        if (existing) {
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: `Already saved "${existing.term as string}" moments ago — no duplicate created.`,
+              },
+            ],
+            structuredContent: {
+              phrase: {
+                id: existing.id as string,
+                term: existing.term as string,
+                meaning: existing.meaning as string,
+                category: existing.category as string,
+                pronunciation: (existing.pronunciation as string | null) ?? null,
+              },
+              created: false,
+            },
+          }
+        }
+
+        const { data, error } = await ctx.db
+          .from("kori_vocab_cards")
+          .insert({
+            user_id: ctx.userId,
+            category: category ?? "General",
+            term,
+            meaning,
+            example: example ?? null,
+            pronunciation: autoPronunciation(term),
+          })
+          .select("id, term, meaning, category, pronunciation")
+          .single()
+        if (error) throw new Error("Could not save the phrase.")
+
         return {
-          content: [{ type: "text" as const, text: `Already saved "${existing.term as string}" moments ago — no duplicate created.` }],
+          content: [
+            {
+              type: "text" as const,
+              text: `Saved "${data.term as string}" — ${data.meaning as string}.`,
+            },
+          ],
           structuredContent: {
             phrase: {
-              id: existing.id as string,
-              term: existing.term as string,
-              meaning: existing.meaning as string,
-              category: existing.category as string,
-              pronunciation: (existing.pronunciation as string | null) ?? null,
+              id: data.id as string,
+              term: data.term as string,
+              meaning: data.meaning as string,
+              category: data.category as string,
+              pronunciation: (data.pronunciation as string | null) ?? null,
             },
-            created: false,
+            created: true,
           },
         }
-      }
-
-      const { data, error } = await ctx.db
-        .from("kori_vocab_cards")
-        .insert({
-          user_id: ctx.userId,
-          category: category ?? "General",
-          term,
-          meaning,
-          example: example ?? null,
-          pronunciation: autoPronunciation(term),
-        })
-        .select("id, term, meaning, category, pronunciation")
-        .single()
-      if (error) throw new Error("Could not save the phrase.")
-
-      return {
-        content: [{ type: "text" as const, text: `Saved "${data.term as string}" — ${data.meaning as string}.` }],
-        structuredContent: {
-          phrase: {
-            id: data.id as string,
-            term: data.term as string,
-            meaning: data.meaning as string,
-            category: data.category as string,
-            pronunciation: (data.pronunciation as string | null) ?? null,
-          },
-          created: true,
-        },
-      }
-    }),
+      },
+    ),
   )
 }

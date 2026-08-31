@@ -39,24 +39,36 @@ describe("clampPercent", () => {
 
 describe("keyResultProgress — number/count/duration metrics", () => {
   it("computes baseline→target interpolation", () => {
-    expect(keyResultProgress(kr({ baseline_value: 0, current_value: 25, target_value: 100 }))).toBe(25)
-    expect(keyResultProgress(kr({ baseline_value: 20, current_value: 60, target_value: 100 }))).toBe(50)
+    expect(keyResultProgress(kr({ baseline_value: 0, current_value: 25, target_value: 100 }))).toBe(
+      25,
+    )
+    expect(
+      keyResultProgress(kr({ baseline_value: 20, current_value: 60, target_value: 100 })),
+    ).toBe(50)
   })
 
   it("clamps over-target values to 100", () => {
-    expect(keyResultProgress(kr({ baseline_value: 0, current_value: 150, target_value: 100 }))).toBe(100)
+    expect(
+      keyResultProgress(kr({ baseline_value: 0, current_value: 150, target_value: 100 })),
+    ).toBe(100)
   })
 
   it("clamps below-baseline values to 0", () => {
-    expect(keyResultProgress(kr({ baseline_value: 50, current_value: 10, target_value: 100 }))).toBe(0)
+    expect(
+      keyResultProgress(kr({ baseline_value: 50, current_value: 10, target_value: 100 })),
+    ).toBe(0)
   })
 
   it("treats a zero baseline as a real starting point, not a missing one", () => {
-    expect(keyResultProgress(kr({ baseline_value: 0, current_value: 50, target_value: 100 }))).toBe(50)
+    expect(keyResultProgress(kr({ baseline_value: 0, current_value: 50, target_value: 100 }))).toBe(
+      50,
+    )
   })
 
   it("defaults a missing (null) baseline to 0", () => {
-    expect(keyResultProgress(kr({ baseline_value: null, current_value: 30, target_value: 100 }))).toBe(30)
+    expect(
+      keyResultProgress(kr({ baseline_value: null, current_value: 30, target_value: 100 })),
+    ).toBe(30)
   })
 
   it("returns 0 when target_value is missing", () => {
@@ -64,31 +76,47 @@ describe("keyResultProgress — number/count/duration metrics", () => {
   })
 
   it("treats a missing current_value as still at baseline", () => {
-    expect(keyResultProgress(kr({ baseline_value: 10, current_value: null, target_value: 100 }))).toBe(0)
+    expect(
+      keyResultProgress(kr({ baseline_value: 10, current_value: null, target_value: 100 })),
+    ).toBe(0)
   })
 
   it("handles baseline === target as a degenerate done/not-done case", () => {
-    expect(keyResultProgress(kr({ baseline_value: 100, current_value: 100, target_value: 100 }))).toBe(100)
-    expect(keyResultProgress(kr({ baseline_value: 100, current_value: 50, target_value: 100 }))).toBe(0)
+    expect(
+      keyResultProgress(kr({ baseline_value: 100, current_value: 100, target_value: 100 })),
+    ).toBe(100)
+    expect(
+      keyResultProgress(kr({ baseline_value: 100, current_value: 50, target_value: 100 })),
+    ).toBe(0)
   })
 })
 
 describe("keyResultProgress — percentage/score metrics", () => {
   it("behaves the same as number metrics (already 0–100 scale)", () => {
     expect(
-      keyResultProgress(kr({ metric_type: "percentage", baseline_value: 0, current_value: 42, target_value: 100 })),
+      keyResultProgress(
+        kr({ metric_type: "percentage", baseline_value: 0, current_value: 42, target_value: 100 }),
+      ),
     ).toBe(42)
     expect(
-      keyResultProgress(kr({ metric_type: "score", baseline_value: 40, current_value: 70, target_value: 90 })),
+      keyResultProgress(
+        kr({ metric_type: "score", baseline_value: 40, current_value: 70, target_value: 90 }),
+      ),
     ).toBeCloseTo(60, 5)
   })
 })
 
 describe("keyResultProgress — boolean metrics", () => {
   it("ignores baseline/target entirely", () => {
-    expect(keyResultProgress(kr({ metric_type: "boolean", current_value: 1, target_value: null }))).toBe(100)
-    expect(keyResultProgress(kr({ metric_type: "boolean", current_value: 0, target_value: null }))).toBe(0)
-    expect(keyResultProgress(kr({ metric_type: "boolean", current_value: null, target_value: 1 }))).toBe(0)
+    expect(
+      keyResultProgress(kr({ metric_type: "boolean", current_value: 1, target_value: null })),
+    ).toBe(100)
+    expect(
+      keyResultProgress(kr({ metric_type: "boolean", current_value: 0, target_value: null })),
+    ).toBe(0)
+    expect(
+      keyResultProgress(kr({ metric_type: "boolean", current_value: null, target_value: 1 })),
+    ).toBe(0)
   })
 })
 
@@ -99,7 +127,9 @@ describe("weightedKeyResultProgress", () => {
 
   it("returns null when every key result is archived", () => {
     expect(
-      weightedKeyResultProgress([kr({ current_value: 100, target_value: 100, status: "archived" })]),
+      weightedKeyResultProgress([
+        kr({ current_value: 100, target_value: 100, status: "archived" }),
+      ]),
     ).toBeNull()
   })
 
@@ -129,7 +159,9 @@ describe("weightedKeyResultProgress", () => {
   })
 
   it("clamps a negative or zero total weight to null rather than dividing by it", () => {
-    expect(weightedKeyResultProgress([kr({ current_value: 50, target_value: 100, weight: 0 })])).toBeNull()
+    expect(
+      weightedKeyResultProgress([kr({ current_value: 50, target_value: 100, weight: 0 })]),
+    ).toBeNull()
   })
 })
 

@@ -19,7 +19,11 @@ export function useNotifications() {
   const queryClient = useQueryClient()
   const key = notificationsQueryKey(userId)
 
-  const { data: notifications = [], isPending, isError } = useQuery({
+  const {
+    data: notifications = [],
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: key,
     queryFn: () => notificationsApi.list(false),
     enabled: userId != null,
@@ -32,14 +36,14 @@ export function useNotifications() {
   const invalidate = useCallback(
     () => queryClient.invalidateQueries({ queryKey: key }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queryClient, userId]
+    [queryClient, userId],
   )
 
   const setLocal = useCallback(
     (updater: (prev: GoalNotification[]) => GoalNotification[]) =>
       queryClient.setQueryData<GoalNotification[]>(key, (prev) => updater(prev || [])),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [queryClient, userId]
+    [queryClient, userId],
   )
 
   const markRead = useCallback(
@@ -54,7 +58,7 @@ export function useNotifications() {
         })
       }
     },
-    [setLocal, invalidate]
+    [setLocal, invalidate],
   )
 
   const markAllRead = useCallback(async () => {
@@ -77,8 +81,8 @@ export function useNotifications() {
         prev.map((n) =>
           n.id === id
             ? { ...n, read: true, invitationStatus: accept ? "accepted" : "declined" }
-            : n
-        )
+            : n,
+        ),
       )
       try {
         await notificationsApi.respond(id, accept)
@@ -92,7 +96,7 @@ export function useNotifications() {
         })
       }
     },
-    [setLocal, invalidate, queryClient]
+    [setLocal, invalidate, queryClient],
   )
 
   return {

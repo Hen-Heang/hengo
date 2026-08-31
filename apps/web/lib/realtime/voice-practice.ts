@@ -31,7 +31,11 @@ export interface Option<T extends string> {
 export const PRACTICE_MODE_OPTIONS: Option<VoicePracticeMode>[] = [
   { value: "free", label: "Free conversation", description: "Chat about anything, your pace." },
   { value: "workplace", label: "Workplace conversation", description: "Everyday office Korean." },
-  { value: "developer", label: "Developer meeting", description: "Standups, reviews, technical Korean." },
+  {
+    value: "developer",
+    label: "Developer meeting",
+    description: "Standups, reviews, technical Korean.",
+  },
   { value: "shadow", label: "Repeat & shadow", description: "Listen and repeat target sentences." },
 ]
 

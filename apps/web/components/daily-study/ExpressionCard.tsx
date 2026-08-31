@@ -36,7 +36,9 @@ export function ExpressionCard({
       <div className="mt-3 rounded-xl bg-muted/55 p-3">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0">
-            <p className="break-keep text-sm font-medium [overflow-wrap:anywhere]">{expression.example}</p>
+            <p className="break-keep text-sm font-medium [overflow-wrap:anywhere]">
+              {expression.example}
+            </p>
             {showRomanization && (
               <p className="mt-1 break-words text-[11px] text-blue-600/80 dark:text-blue-400/80">
                 {expression.exampleRomanization}
@@ -52,11 +54,14 @@ export function ExpressionCard({
           {expression.difficulty}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-1 text-muted-foreground">
-          {expression.category === "workplace" ? <BriefcaseBusiness size={12} /> : <MapPin size={12} />}
+          {expression.category === "workplace" ? (
+            <BriefcaseBusiness size={12} />
+          ) : (
+            <MapPin size={12} />
+          )}
           {expression.category === "workplace" ? "Workplace" : "Daily life"}
         </span>
       </div>
     </article>
   )
 }
-

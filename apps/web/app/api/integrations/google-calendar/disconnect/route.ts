@@ -4,7 +4,10 @@
 // unrelated to this integration (see lib/api/integrations.ts).
 import { requireUser } from "@/lib/server/ai"
 import { revokeGoogleToken } from "@/lib/server/google-calendar-oauth"
-import { deleteGoogleCalendarIntegration, getGoogleCalendarTokens } from "@/lib/server/google-calendar-store"
+import {
+  deleteGoogleCalendarIntegration,
+  getGoogleCalendarTokens,
+} from "@/lib/server/google-calendar-store"
 
 export async function POST(req: Request) {
   const authed = await requireUser(req)

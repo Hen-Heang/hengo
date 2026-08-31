@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  KOREAN_COACH_SCENARIOS,
-  validateKoreanCoachScenarios,
-} from "./scenarios"
+import { KOREAN_COACH_SCENARIOS, validateKoreanCoachScenarios } from "./scenarios"
 
 describe("Korean Coach scenarios", () => {
   it("contains the complete workplace and daily-life MVP catalog", () => {
@@ -26,11 +23,7 @@ describe("Korean Coach scenarios", () => {
 
   it("rejects duplicate scenario IDs", () => {
     expect(() =>
-      validateKoreanCoachScenarios([
-        KOREAN_COACH_SCENARIOS[0],
-        KOREAN_COACH_SCENARIOS[0],
-      ]),
+      validateKoreanCoachScenarios([KOREAN_COACH_SCENARIOS[0], KOREAN_COACH_SCENARIOS[0]]),
     ).toThrow(/unique/i)
   })
 })
-

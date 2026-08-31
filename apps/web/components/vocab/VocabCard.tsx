@@ -6,7 +6,17 @@ import { cn } from "@/lib/utils"
 import type { VocabItem } from "@/lib/types"
 import { SpeakButton } from "@/components/ui/SpeakButton"
 import { motion } from "motion/react"
-import { Calendar, Tag, ChevronRight, BookOpen, Pencil, Check, X, Loader2, Trash2 } from "lucide-react"
+import {
+  Calendar,
+  Tag,
+  ChevronRight,
+  BookOpen,
+  Pencil,
+  Check,
+  X,
+  Loader2,
+  Trash2,
+} from "lucide-react"
 import { SentenceChallenge } from "@/components/vocab/SentenceChallenge"
 import {
   AlertDialog,
@@ -29,7 +39,7 @@ type VocabCardProps = {
   onReview?: (id: string) => void
   onUpdate?: (
     id: string,
-    data: { term: string; meaning: string; example?: string; pronunciation?: string }
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
   ) => void | Promise<void>
   onDelete?: (id: string) => void | Promise<void>
 }
@@ -37,7 +47,9 @@ type VocabCardProps = {
 function formatReviewDate(value: string) {
   const date = new Date(value)
   if (Number.isNaN(date.getTime())) return value === "-" ? "Not scheduled" : value
-  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(date)
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", year: "numeric" }).format(
+    date,
+  )
 }
 
 function EditForm({
@@ -46,7 +58,12 @@ function EditForm({
   onCancel,
 }: {
   item: VocabItem
-  onSave: (data: { term: string; meaning: string; example?: string; pronunciation?: string }) => Promise<void>
+  onSave: (data: {
+    term: string
+    meaning: string
+    example?: string
+    pronunciation?: string
+  }) => Promise<void>
   onCancel: () => void
 }) {
   const fieldId = useId()
@@ -77,22 +94,63 @@ function EditForm({
   return (
     <div className="space-y-3 pt-2">
       <div>
-        <label htmlFor={`${fieldId}-term`} className="text-xs font-semibold text-foreground">Korean word</label>
-        <Input id={`${fieldId}-term`} value={term} onChange={(e) => setTerm(e.target.value)} maxLength={200} lang="ko" className="mt-1.5 text-lg font-semibold" />
+        <label htmlFor={`${fieldId}-term`} className="text-xs font-semibold text-foreground">
+          Korean word
+        </label>
+        <Input
+          id={`${fieldId}-term`}
+          value={term}
+          onChange={(e) => setTerm(e.target.value)}
+          maxLength={200}
+          lang="ko"
+          className="mt-1.5 text-lg font-semibold"
+        />
       </div>
       <div>
-        <label htmlFor={`${fieldId}-meaning`} className="text-xs font-semibold text-foreground">English meaning</label>
-        <Input id={`${fieldId}-meaning`} value={meaning} onChange={(e) => setMeaning(e.target.value)} className="mt-1.5" />
+        <label htmlFor={`${fieldId}-meaning`} className="text-xs font-semibold text-foreground">
+          English meaning
+        </label>
+        <Input
+          id={`${fieldId}-meaning`}
+          value={meaning}
+          onChange={(e) => setMeaning(e.target.value)}
+          className="mt-1.5"
+        />
       </div>
       <div>
-        <label htmlFor={`${fieldId}-pronunciation`} className="text-xs font-semibold text-foreground">Pronunciation</label>
-        <Input id={`${fieldId}-pronunciation`} value={pronunciation} onChange={(e) => setPronunciation(e.target.value)} maxLength={300} placeholder="e.g. gong-gam" className="mt-1.5" />
+        <label
+          htmlFor={`${fieldId}-pronunciation`}
+          className="text-xs font-semibold text-foreground"
+        >
+          Pronunciation
+        </label>
+        <Input
+          id={`${fieldId}-pronunciation`}
+          value={pronunciation}
+          onChange={(e) => setPronunciation(e.target.value)}
+          maxLength={300}
+          placeholder="e.g. gong-gam"
+          className="mt-1.5"
+        />
       </div>
       <div>
-        <label htmlFor={`${fieldId}-example`} className="text-xs font-semibold text-foreground">Example sentence</label>
-        <Textarea id={`${fieldId}-example`} value={example} onChange={(e) => setExample(e.target.value)} rows={2} lang="ko" className="mt-1.5 resize-none" />
+        <label htmlFor={`${fieldId}-example`} className="text-xs font-semibold text-foreground">
+          Example sentence
+        </label>
+        <Textarea
+          id={`${fieldId}-example`}
+          value={example}
+          onChange={(e) => setExample(e.target.value)}
+          rows={2}
+          lang="ko"
+          className="mt-1.5 resize-none"
+        />
       </div>
-      {error ? <p role="alert" className="text-xs font-semibold text-destructive">{error}</p> : null}
+      {error ? (
+        <p role="alert" className="text-xs font-semibold text-destructive">
+          {error}
+        </p>
+      ) : null}
       <div className="flex gap-2 pt-1">
         <Button
           type="button"
@@ -100,7 +158,11 @@ function EditForm({
           disabled={saving || !term.trim() || !meaning.trim()}
           className="flex-1 bg-emerald-600 text-white hover:bg-emerald-500"
         >
-          {saving ? <Loader2 size={13} className="animate-spin" /> : <Check size={13} strokeWidth={3} />}
+          {saving ? (
+            <Loader2 size={13} className="animate-spin" />
+          ) : (
+            <Check size={13} strokeWidth={3} />
+          )}
           Save
         </Button>
         <Button
@@ -137,18 +199,14 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
     }
   }
   const masteryColor =
-    mastery >= 80
-      ? "bg-emerald-500"
-      : mastery >= 50
-      ? "bg-amber-500"
-      : "bg-red-500"
+    mastery >= 80 ? "bg-emerald-500" : mastery >= 50 ? "bg-amber-500" : "bg-red-500"
 
   const masteryBg =
     mastery >= 80
       ? "bg-emerald-500/10 text-emerald-600 ring-emerald-500/20 dark:text-emerald-400"
       : mastery >= 50
-      ? "bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:text-amber-400"
-      : "bg-red-500/10 text-red-600 ring-red-500/20 dark:text-red-400"
+        ? "bg-amber-500/10 text-amber-600 ring-amber-500/20 dark:text-amber-400"
+        : "bg-red-500/10 text-red-600 ring-red-500/20 dark:text-red-400"
 
   return (
     <div className="group relative flex flex-col overflow-hidden rounded-3xl border border-border bg-card p-4 shadow-sm transition-all dark:bg-slate-900/40 dark:backdrop-blur-md sm:p-5 sm:hover:-translate-y-1 sm:hover:shadow-xl">
@@ -192,7 +250,9 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
                 />
               </div>
               {item.pronunciation && (
-                <p className="mt-0.5 text-xs font-bold text-muted-foreground italic">[{item.pronunciation}]</p>
+                <p className="mt-0.5 text-xs font-bold text-muted-foreground italic">
+                  [{item.pronunciation}]
+                </p>
               )}
               <p className="mt-2 text-lg font-bold text-muted-foreground leading-tight [overflow-wrap:anywhere] sm:text-xl">
                 {item.meaning}
@@ -235,7 +295,8 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete “{item.term}”?</AlertDialogTitle>
                         <AlertDialogDescription>
-                          This removes the word, its examples, and its review history from this deck. This action cannot be undone.
+                          This removes the word, its examples, and its review history from this
+                          deck. This action cannot be undone.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
@@ -255,17 +316,26 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
                     </AlertDialogContent>
                   </AlertDialog>
                 )}
-                <div className={cn("shrink-0 rounded-2xl px-3 py-1.5 text-xs font-bold uppercase tracking-wide ring-1", masteryBg)}>
+                <div
+                  className={cn(
+                    "shrink-0 rounded-2xl px-3 py-1.5 text-xs font-bold uppercase tracking-wide ring-1",
+                    masteryBg,
+                  )}
+                >
                   {mastery}%
                 </div>
               </div>
               {item.difficultyLevel && (
-                <span className={cn(
-                  "rounded-full px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
-                  item.difficultyLevel === "Easy" ? "bg-emerald-500/10 text-emerald-600" :
-                  item.difficultyLevel === "Medium" ? "bg-amber-500/10 text-amber-600" :
-                  "bg-red-500/10 text-red-600"
-                )}>
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-[12px] font-bold uppercase tracking-wider",
+                    item.difficultyLevel === "Easy"
+                      ? "bg-emerald-500/10 text-emerald-600"
+                      : item.difficultyLevel === "Medium"
+                        ? "bg-amber-500/10 text-amber-600"
+                        : "bg-red-500/10 text-red-600",
+                  )}
+                >
                   {item.difficultyLevel}
                 </span>
               )}
@@ -277,7 +347,9 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
             <div className="mt-6 rounded-2xl border border-border bg-accent/5 p-4 dark:bg-white/5">
               <div className="flex items-center gap-2 mb-2">
                 <BookOpen size={12} className="text-muted-foreground/40" />
-                <span className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Usage Context</span>
+                <span className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Usage Context
+                </span>
               </div>
               <p className="text-sm font-bold leading-relaxed text-foreground/80 [overflow-wrap:anywhere] sm:text-[16px]">
                 {item.example}
@@ -309,7 +381,7 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
             <span className="text-[12px] font-bold text-muted-foreground italic">No tags</span>
           )}
         </div>
-        
+
         <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
           <Calendar size={12} strokeWidth={3} />
           <span>Next review: {formatReviewDate(item.nextReview)}</span>

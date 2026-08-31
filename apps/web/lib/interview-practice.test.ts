@@ -192,18 +192,24 @@ describe("selectTodaysQueue", () => {
     const progressMap = {
       b2: progress({ questionId: "b2", status: "strong", avgScore: 4.8, timesPracticed: 4 }),
     }
-    expect(selectTodaysQueue(samePriority, progressMap, "beginner", 2).map((item) => item.id)).toEqual([
-      "b1",
-      "b3",
-    ])
+    expect(
+      selectTodaysQueue(samePriority, progressMap, "beginner", 2).map((item) => item.id),
+    ).toEqual(["b1", "b3"])
   })
 
   it("prioritizes lower-scoring practised questions", () => {
-    const practised = bank.slice(0, 2).map((item) => ({ ...item, priority: "recommended" as const }))
-    const queue = selectTodaysQueue(practised, {
-      b1: progress({ questionId: "b1", avgScore: 4, timesPracticed: 2 }),
-      b2: progress({ questionId: "b2", avgScore: 2, timesPracticed: 2 }),
-    }, "beginner", 2)
+    const practised = bank
+      .slice(0, 2)
+      .map((item) => ({ ...item, priority: "recommended" as const }))
+    const queue = selectTodaysQueue(
+      practised,
+      {
+        b1: progress({ questionId: "b1", avgScore: 4, timesPracticed: 2 }),
+        b2: progress({ questionId: "b2", avgScore: 2, timesPracticed: 2 }),
+      },
+      "beginner",
+      2,
+    )
     expect(queue.map((item) => item.id)).toEqual(["b2", "b1"])
   })
 
@@ -215,9 +221,15 @@ describe("selectTodaysQueue", () => {
 
   it("preserves stored ids after progress changes", () => {
     const stored = ["b4", "b3", "b2", "b1", "b5"]
-    const queue = selectTodaysQueue(bank, {
-      b4: progress({ questionId: "b4", avgScore: 5, status: "strong" }),
-    }, "beginner", 5, stored)
+    const queue = selectTodaysQueue(
+      bank,
+      {
+        b4: progress({ questionId: "b4", avgScore: 5, status: "strong" }),
+      },
+      "beginner",
+      5,
+      stored,
+    )
     expect(queue.map((item) => item.id)).toEqual(stored)
   })
 
@@ -239,7 +251,13 @@ describe("progress summary and retry", () => {
       b: progress({ questionId: "b", status: "improving", avgScore: 3.7, timesPracticed: 2 }),
       c: progress({ questionId: "c", status: "strong", avgScore: 4.5, timesPracticed: 3 }),
     })
-    expect(summary).toMatchObject({ practiced: 3, practicing: 1, improving: 1, strong: 1, needsRetry: 1 })
+    expect(summary).toMatchObject({
+      practiced: 3,
+      practicing: 1,
+      improving: 1,
+      strong: 1,
+      needsRetry: 1,
+    })
   })
 
   it("computes first-attempt versus retry improvement", () => {
@@ -264,19 +282,25 @@ describe("script version labels", () => {
   })
 
   it("suggests the next unique numbered label", () => {
-    expect(suggestUniqueVersionLabel("Final Practice Version", [
-      "Final Practice Version",
-      "Final Practice Version 2",
-    ])).toBe("Final Practice Version 3")
+    expect(
+      suggestUniqueVersionLabel("Final Practice Version", [
+        "Final Practice Version",
+        "Final Practice Version 2",
+      ]),
+    ).toBe("Final Practice Version 3")
   })
 })
 
 describe("mostDifficultQuestions", () => {
   it("excludes questions that have never been practiced", () => {
     const questions = [question({ id: "a" }), question({ id: "b" })]
-    const result = mostDifficultQuestions(questions, {
-      a: progress({ questionId: "a", avgScore: 2, timesPracticed: 2 }),
-    }, 5)
+    const result = mostDifficultQuestions(
+      questions,
+      {
+        a: progress({ questionId: "a", avgScore: 2, timesPracticed: 2 }),
+      },
+      5,
+    )
     expect(result.map((q) => q.id)).toEqual(["a"])
   })
 

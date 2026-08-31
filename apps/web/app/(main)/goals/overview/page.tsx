@@ -22,15 +22,15 @@ export default function GoalsOverviewPage() {
 
   const activeGoals = useMemo(
     () => sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived"),
-    [sortedGoals]
+    [sortedGoals],
   )
   const completedGoals = useMemo(
     () => sortedGoals.filter((g) => g.status === "completed"),
-    [sortedGoals]
+    [sortedGoals],
   )
   const overdueGoals = useMemo(
     () => activeGoals.filter((g) => calculateGoalDeadlineInfo(g).status === "overdue"),
-    [activeGoals]
+    [activeGoals],
   )
   const deadlineMessage = useMemo(() => getDeadlineNotificationMessage(sortedGoals), [sortedGoals])
 

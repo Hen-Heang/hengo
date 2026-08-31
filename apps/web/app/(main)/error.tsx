@@ -24,7 +24,10 @@ export default function MainError({
         Something went wrong loading this page. Your navigation is still available above.
       </p>
 
-      <Button onClick={reset} className="mt-8 h-11 rounded-xl bg-blue-600 px-6 font-semibold hover:bg-blue-500">
+      <Button
+        onClick={reset}
+        className="mt-8 h-11 rounded-xl bg-blue-600 px-6 font-semibold hover:bg-blue-500"
+      >
         <RotateCw size={18} strokeWidth={2} className="mr-2" />
         Try again
       </Button>

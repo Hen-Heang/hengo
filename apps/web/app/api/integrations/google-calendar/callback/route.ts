@@ -3,7 +3,10 @@
 // browser — it exchanges the code with Google itself and persists the
 // result via lib/server/google-calendar-store.ts (service-role, encrypted).
 import { requireUser } from "@/lib/server/ai"
-import { exchangeGoogleAuthCode, fetchPrimaryCalendarEmail } from "@/lib/server/google-calendar-oauth"
+import {
+  exchangeGoogleAuthCode,
+  fetchPrimaryCalendarEmail,
+} from "@/lib/server/google-calendar-oauth"
 import { storeGoogleCalendarTokens } from "@/lib/server/google-calendar-store"
 
 export async function POST(req: Request) {

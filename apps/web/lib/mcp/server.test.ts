@@ -170,7 +170,11 @@ describe("initialize handshake", () => {
 
 async function listToolNames(handler: ReturnType<typeof makeHandler>): Promise<string[]> {
   await rpc(handler, INIT)
-  const body = await rpc(handler, { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} }, PROTOCOL_HEADER)
+  const body = await rpc(
+    handler,
+    { jsonrpc: "2.0", id: 2, method: "tools/list", params: {} },
+    PROTOCOL_HEADER,
+  )
   return (body.result as { tools: { name: string }[] }).tools.map((t) => t.name)
 }
 

@@ -1,8 +1,5 @@
 import { isKoreanCoachMockMode } from "@/lib/korean-coach/mock"
-import {
-  KOREAN_COACH_TRANSCRIBE_MODEL,
-  KOREAN_COACH_TRANSCRIPTION_TIMEOUT_MS,
-} from "./config"
+import { KOREAN_COACH_TRANSCRIBE_MODEL, KOREAN_COACH_TRANSCRIPTION_TIMEOUT_MS } from "./config"
 import { CoachServiceError, sanitizeProviderError } from "./errors"
 
 export interface TranscriptionResult {
@@ -76,4 +73,3 @@ export async function transcribeKoreanAudio(file: File): Promise<TranscriptionRe
     })
   }
 }
-

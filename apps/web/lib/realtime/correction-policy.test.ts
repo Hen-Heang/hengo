@@ -67,8 +67,12 @@ describe("hasImportantMistake / pickPrimaryMistake", () => {
 describe("decideCorrection — accuracy", () => {
   it("shows important mistakes immediately, ignores clean turns", () => {
     const state = initialCorrectionState()
-    expect(decideCorrection({ policy: "accuracy", analysis: analysisWith(["important"]), state }).show).toBe(true)
-    expect(decideCorrection({ policy: "accuracy", analysis: analysisWith(["minor"]), state }).show).toBe(false)
+    expect(
+      decideCorrection({ policy: "accuracy", analysis: analysisWith(["important"]), state }).show,
+    ).toBe(true)
+    expect(
+      decideCorrection({ policy: "accuracy", analysis: analysisWith(["minor"]), state }).show,
+    ).toBe(false)
     expect(decideCorrection({ policy: "accuracy", analysis: CLEAN, state }).show).toBe(false)
   })
 })
@@ -76,7 +80,11 @@ describe("decideCorrection — accuracy", () => {
 describe("decideCorrection — fluency", () => {
   it("never shows live, but still collects real mistakes", () => {
     const state: CorrectionPolicyState = { userTurnIndex: 5, lastShownAtTurn: null }
-    const decision = decideCorrection({ policy: "fluency", analysis: analysisWith(["important"]), state })
+    const decision = decideCorrection({
+      policy: "fluency",
+      analysis: analysisWith(["important"]),
+      state,
+    })
     expect(decision.show).toBe(false)
     expect(decision.collect).toBe(true)
   })
@@ -88,26 +96,40 @@ describe("decideCorrection — balanced cooldown", () => {
 
     // Turn 1: important → shown.
     state.userTurnIndex = 1
-    const first = decideCorrection({ policy: "balanced", analysis: analysisWith(["important"]), state })
+    const first = decideCorrection({
+      policy: "balanced",
+      analysis: analysisWith(["important"]),
+      state,
+    })
     expect(first.show).toBe(true)
     state.lastShownAtTurn = state.userTurnIndex
 
     // Turn 2: important but within cooldown → suppressed (still collected).
     state.userTurnIndex = 2
-    const second = decideCorrection({ policy: "balanced", analysis: analysisWith(["important"]), state })
+    const second = decideCorrection({
+      policy: "balanced",
+      analysis: analysisWith(["important"]),
+      state,
+    })
     expect(second.show).toBe(false)
     expect(second.collect).toBe(true)
 
     // Turn 1 + cooldown: important → shown again.
     state.userTurnIndex = 1 + BALANCED_COOLDOWN_TURNS
-    const later = decideCorrection({ policy: "balanced", analysis: analysisWith(["important"]), state })
+    const later = decideCorrection({
+      policy: "balanced",
+      analysis: analysisWith(["important"]),
+      state,
+    })
     expect(later.show).toBe(true)
   })
 
   it("collect is true for any real mistake regardless of severity", () => {
     const state = initialCorrectionState()
     state.userTurnIndex = 1
-    expect(decideCorrection({ policy: "balanced", analysis: analysisWith(["minor"]), state }).collect).toBe(true)
+    expect(
+      decideCorrection({ policy: "balanced", analysis: analysisWith(["minor"]), state }).collect,
+    ).toBe(true)
     expect(decideCorrection({ policy: "balanced", analysis: CLEAN, state }).collect).toBe(false)
   })
 })

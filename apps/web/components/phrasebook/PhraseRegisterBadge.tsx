@@ -8,7 +8,13 @@ const LABELS: Record<PhraseRegister, string> = {
   polite: "해요체 · Polite",
 }
 
-export function PhraseRegisterBadge({ register, className }: { register: PhraseRegister; className?: string }) {
+export function PhraseRegisterBadge({
+  register,
+  className,
+}: {
+  register: PhraseRegister
+  className?: string
+}) {
   return (
     <Badge variant={register === "formal" ? "accent" : "secondary"} className={className}>
       {LABELS[register]}

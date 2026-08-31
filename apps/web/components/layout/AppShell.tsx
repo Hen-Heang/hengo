@@ -26,7 +26,13 @@ import { RAIL_WIDTH, TabletNavigationRail } from "./TabletNavigationRail"
  * production build. Each nav surface gets its own boundary so page content
  * never falls into a client-only hole.
  */
-function NavSuspense({ fallback = null, children }: { fallback?: React.ReactNode; children: React.ReactNode }) {
+function NavSuspense({
+  fallback = null,
+  children,
+}: {
+  fallback?: React.ReactNode
+  children: React.ReactNode
+}) {
   return <Suspense fallback={fallback}>{children}</Suspense>
 }
 
@@ -38,7 +44,13 @@ function useNavLocation() {
 
 // ─── Chrome pieces (each reads the query, so each is its own boundary) ────────
 
-function SidebarChrome({ collapsed, onToggleCollapsed }: { collapsed: boolean; onToggleCollapsed: () => void }) {
+function SidebarChrome({
+  collapsed,
+  onToggleCollapsed,
+}: {
+  collapsed: boolean
+  onToggleCollapsed: () => void
+}) {
   const { pathname, searchParams } = useNavLocation()
   return (
     <DesktopSidebar
@@ -62,7 +74,9 @@ function DesktopHeaderChrome() {
 
 function MobileHeaderChrome({ onOpenSearch }: { onOpenSearch: () => void }) {
   const { pathname, searchParams } = useNavLocation()
-  return <MobileHeader pathname={pathname} searchParams={searchParams} onOpenSearch={onOpenSearch} />
+  return (
+    <MobileHeader pathname={pathname} searchParams={searchParams} onOpenSearch={onOpenSearch} />
+  )
 }
 
 function BottomNavChrome() {
@@ -180,13 +194,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {!isMobile && !isChromeless && (
-              <NavSuspense fallback={<div aria-hidden className="h-[57px] border-b border-border" />}>
+              <NavSuspense
+                fallback={<div aria-hidden className="h-[57px] border-b border-border" />}
+              >
                 <DesktopHeaderChrome />
               </NavSuspense>
             )}
 
             {showMobileHeader && (
-              <NavSuspense fallback={<div aria-hidden className="h-[52px] border-b border-border" />}>
+              <NavSuspense
+                fallback={<div aria-hidden className="h-[52px] border-b border-border" />}
+              >
                 <MobileHeaderChrome onOpenSearch={() => setSearchOpen(true)} />
               </NavSuspense>
             )}
@@ -200,10 +218,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 isCalendarRoute && "overflow-y-hidden",
                 isCalendarRoute && showBottomNav
                   ? "pb-[calc(3.75rem+env(safe-area-inset-bottom))]"
-                  : !fullBleed && !isCalendarRoute &&
-                  (showBottomNav
-                    ? "pb-[calc(9rem+env(safe-area-inset-bottom))]"
-                    : "pb-10")
+                  : !fullBleed &&
+                      !isCalendarRoute &&
+                      (showBottomNav ? "pb-[calc(9rem+env(safe-area-inset-bottom))]" : "pb-10"),
               )}
             >
               <div

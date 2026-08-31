@@ -48,7 +48,7 @@ export function WorkspaceFlyout({
             "relative flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-lg py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
             active || open
               ? "bg-accent text-foreground"
-              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
           )}
         >
           {active && (
@@ -62,7 +62,12 @@ export function WorkspaceFlyout({
             strokeWidth={active ? 2.4 : 2}
             className={cn("shrink-0", section.color, !(active || open) && "opacity-70")}
           />
-          <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
+          <span
+            className={cn(
+              "max-w-full truncate px-1 text-xs leading-none",
+              active && "font-semibold",
+            )}
+          >
             {section.label}
           </span>
         </button>

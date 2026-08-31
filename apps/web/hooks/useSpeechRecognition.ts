@@ -19,11 +19,7 @@ type BrowserRecognition = {
   lang: string
   onstart: (() => void) | null
   onresult:
-    | ((event: {
-        results: ArrayLike<BrowserRecognitionResult>
-        resultIndex: number
-      }) => void)
-    | null
+    ((event: { results: ArrayLike<BrowserRecognitionResult>; resultIndex: number }) => void) | null
   onend: (() => void) | null
   onerror: ((event: BrowserRecognitionErrorEvent) => void) | null
   start: () => void
@@ -107,8 +103,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
       return
     }
 
-    const Recognition =
-      window.SpeechRecognition ?? window.webkitSpeechRecognition
+    const Recognition = window.SpeechRecognition ?? window.webkitSpeechRecognition
     if (!Recognition) {
       return
     }
@@ -196,7 +191,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
         listeningRef.current = false
         setStatus("idle")
         setError(
-          "Microphone permission is blocked. Allow microphone access in the browser and try again."
+          "Microphone permission is blocked. Allow microphone access in the browser and try again.",
         )
         return
       }
@@ -206,9 +201,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
         // only a single-shot capture treats silence as a failed take.
         if (continuous) return
         setStatus("idle")
-        setError(
-          "No speech was detected. Try holding the phone closer and speaking once clearly."
-        )
+        setError("No speech was detected. Try holding the phone closer and speaking once clearly.")
         return
       }
 
@@ -216,9 +209,11 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
       startingRef.current = false
       listeningRef.current = false
       setStatus("idle")
-      setError(event.error === "audio-capture"
-        ? "No microphone was found. Connect or enable a microphone, then try again."
-        : "Speech capture failed. You can still type or edit the transcript manually.")
+      setError(
+        event.error === "audio-capture"
+          ? "No microphone was found. Connect or enable a microphone, then try again."
+          : "Speech capture failed. You can still type or edit the transcript manually.",
+      )
     }
 
     recognitionRef.current = recognition
@@ -258,9 +253,7 @@ export function useSpeechRecognition(options: UseSpeechRecognitionOptions = {}) 
 
   function start() {
     if (!recognitionRef.current) {
-      setError(
-        "Speech recognition is not available here. Use the manual transcript box instead."
-      )
+      setError("Speech recognition is not available here. Use the manual transcript box instead.")
       return false
     }
 

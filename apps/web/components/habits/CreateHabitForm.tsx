@@ -17,7 +17,11 @@ export function CreateHabitForm({
   onCreate,
   onClose,
 }: {
-  onCreate: (input: { label: string; category: HabitCategory; identityStatement?: string }) => Promise<unknown>
+  onCreate: (input: {
+    label: string
+    category: HabitCategory
+    identityStatement?: string
+  }) => Promise<unknown>
   onClose?: () => void
 }) {
   const [label, setLabel] = useState("")
@@ -31,7 +35,11 @@ export function CreateHabitForm({
     if (!label.trim() || submitting) return
     setSubmitting(true)
     try {
-      await onCreate({ label: label.trim(), category, identityStatement: identityStatement.trim() || undefined })
+      await onCreate({
+        label: label.trim(),
+        category,
+        identityStatement: identityStatement.trim() || undefined,
+      })
     } finally {
       setSubmitting(false)
     }
@@ -86,7 +94,10 @@ export function CreateHabitForm({
             type="button"
             className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+            <ChevronDown
+              size={14}
+              className={cn("transition-transform", moreOpen && "rotate-180")}
+            />
             More options
           </button>
         </CollapsibleTrigger>

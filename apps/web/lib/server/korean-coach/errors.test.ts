@@ -20,7 +20,10 @@ describe("Korean Coach provider safety and mock mode", () => {
   })
 
   it("maps timeouts to a safe recovery response", () => {
-    const safe = sanitizeProviderError(new DOMException("internal", "TimeoutError"), "SPEECH_FAILED")
+    const safe = sanitizeProviderError(
+      new DOMException("internal", "TimeoutError"),
+      "SPEECH_FAILED",
+    )
     expect(safe).toMatchObject({ code: "AI_TIMEOUT", status: 504, retryable: true })
   })
 

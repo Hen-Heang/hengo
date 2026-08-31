@@ -14,10 +14,7 @@ export const SUPPORTED_AUDIO_MIME_TYPES = [
 ] as const
 
 export type AudioValidationCode =
-  | "empty_audio"
-  | "recording_too_short"
-  | "audio_too_large"
-  | "unsupported_audio_format"
+  "empty_audio" | "recording_too_short" | "audio_too_large" | "unsupported_audio_format"
 
 export interface AudioValidationResult {
   valid: boolean
@@ -40,7 +37,11 @@ export function validateAudioInput(input: {
   durationMs?: number
 }): AudioValidationResult {
   if (input.size <= 0) {
-    return { valid: false, code: "empty_audio", message: "No audio was recorded. Please try again." }
+    return {
+      valid: false,
+      code: "empty_audio",
+      message: "No audio was recorded. Please try again.",
+    }
   }
   if (input.durationMs !== undefined && input.durationMs < KOREAN_COACH_MIN_RECORDING_MS) {
     return {

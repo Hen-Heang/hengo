@@ -147,10 +147,18 @@ describe("tasksApi.setStatus", () => {
 
 describe("tasksApi.setCompleted", () => {
   it("reopens a future-dated task as scheduled and a past-dated one as backlog", async () => {
-    await tasksApi.setCompleted(task({ start_date: "2026-07-30", end_date: "2026-07-30" }), false, "2026-07-22")
+    await tasksApi.setCompleted(
+      task({ start_date: "2026-07-30", end_date: "2026-07-30" }),
+      false,
+      "2026-07-22",
+    )
     expect(lastUpdate().payload).toMatchObject({ status: "scheduled", completed: false })
 
-    await tasksApi.setCompleted(task({ start_date: "2026-07-01", end_date: "2026-07-01" }), false, "2026-07-22")
+    await tasksApi.setCompleted(
+      task({ start_date: "2026-07-01", end_date: "2026-07-01" }),
+      false,
+      "2026-07-22",
+    )
     expect(lastUpdate().payload).toMatchObject({ status: "backlog", completed: false })
   })
 })

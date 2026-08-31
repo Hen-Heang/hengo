@@ -12,7 +12,8 @@ import { useSessionTimer } from "@/hooks/useSessionTimer"
 
 export default function RecoveryTriggersPage() {
   useSessionTimer("recovery")
-  const { triggers, loading, error, addTrigger, updateTrigger, deleteTrigger } = useRecoveryTriggers()
+  const { triggers, loading, error, addTrigger, updateTrigger, deleteTrigger } =
+    useRecoveryTriggers()
 
   if (loading) {
     return (
@@ -25,7 +26,12 @@ export default function RecoveryTriggersPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-xl pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-xl pb-12"
+    >
       {/* Triggers are global (not per-habit), so back goes to the list. */}
       <motion.div variants={itemVariants} className="mb-2">
         <BackLink href="/growth/recovery" label="Recovery" />
@@ -35,7 +41,12 @@ export default function RecoveryTriggersPage() {
           <ErrorBanner>{error}</ErrorBanner>
         </motion.div>
       )}
-      <TriggersManager triggers={triggers} onAdd={addTrigger} onUpdate={updateTrigger} onDelete={deleteTrigger} />
+      <TriggersManager
+        triggers={triggers}
+        onAdd={addTrigger}
+        onUpdate={updateTrigger}
+        onDelete={deleteTrigger}
+      />
     </motion.div>
   )
 }

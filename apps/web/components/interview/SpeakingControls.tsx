@@ -41,7 +41,9 @@ export function SpeakingControls({
   return (
     <div className="space-y-4">
       <div className="flex flex-col items-center rounded-2xl border border-border bg-muted/20 p-5 text-center">
-        <p role="status" aria-live="polite" className="text-sm font-medium text-muted-foreground">{stateLabel}</p>
+        <p role="status" aria-live="polite" className="text-sm font-medium text-muted-foreground">
+          {stateLabel}
+        </p>
         <button
           type="button"
           onClick={toggleRecording}
@@ -55,8 +57,15 @@ export function SpeakingControls({
         >
           {recording ? <Square className="size-7 fill-current" /> : <Mic className="size-8" />}
         </button>
-        <p className="mt-3 text-sm font-semibold text-foreground">{recording ? "Tap to stop" : audioPlaying ? "Question audio is playing" : "Tap to answer"}</p>
-        {recording ? <div className="mt-3 flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300"><span className="size-2 rounded-full bg-rose-600" />Listening - pauses are okay</div> : null}
+        <p className="mt-3 text-sm font-semibold text-foreground">
+          {recording ? "Tap to stop" : audioPlaying ? "Question audio is playing" : "Tap to answer"}
+        </p>
+        {recording ? (
+          <div className="mt-3 flex items-center gap-2 text-xs text-rose-700 dark:text-rose-300">
+            <span className="size-2 rounded-full bg-rose-600" />
+            Listening - pauses are okay
+          </div>
+        ) : null}
       </div>
 
       <div className="rounded-2xl border border-border bg-background p-4">
@@ -65,7 +74,8 @@ export function SpeakingControls({
           <h3 className="text-sm font-semibold text-foreground">What you actually said</h3>
         </div>
         <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-          Your live voice answer. Audio is not stored; only the confirmed transcript below is scored.
+          Your live voice answer. Audio is not stored; only the confirmed transcript below is
+          scored.
         </p>
       </div>
 
@@ -91,13 +101,21 @@ export function SpeakingControls({
             if (!detectedTranscript && speech.transcript) onDetectedTranscript(speech.transcript)
           }}
           disabled={disabled || recording}
-          placeholder={speech.supported ? "Record, then correct the detected Korean if needed." : "Speech recognition is unavailable. Type your Korean answer here."}
+          placeholder={
+            speech.supported
+              ? "Record, then correct the detected Korean if needed."
+              : "Speech recognition is unavailable. Type your Korean answer here."
+          }
           className="mt-3 min-h-28 rounded-xl bg-background text-base leading-relaxed"
         />
       </label>
 
       {speech.error ? (
-        <div role="alert" aria-live="assertive" className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive">
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+        >
           <AlertCircle className="mt-0.5 size-4 shrink-0" />
           <p>{speech.error}</p>
         </div>

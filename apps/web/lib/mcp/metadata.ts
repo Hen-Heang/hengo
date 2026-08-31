@@ -59,7 +59,9 @@ export function authMetadataOptions(config: McpAuthConfig): AuthMetadataOptions 
 }
 
 /** The RFC 9728 document served at the well-known path. */
-export function buildProtectedResourceMetadata(config: McpAuthConfig): OAuthProtectedResourceMetadata {
+export function buildProtectedResourceMetadata(
+  config: McpAuthConfig,
+): OAuthProtectedResourceMetadata {
   return buildOAuthProtectedResourceMetadata(authMetadataOptions(config))
 }
 

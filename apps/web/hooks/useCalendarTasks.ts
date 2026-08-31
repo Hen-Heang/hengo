@@ -3,12 +3,7 @@
 import { useCallback } from "react"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 
-import {
-  goalsApi,
-  tasksApi,
-  type CreateTaskPayload,
-  type UpdateTaskPayload,
-} from "@/lib/api"
+import { goalsApi, tasksApi, type CreateTaskPayload, type UpdateTaskPayload } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import type { Task } from "@/lib/tasks"
 
@@ -54,11 +49,14 @@ export function useCalendarTasks(goalId?: string) {
       // Embedded in one goal's own page: every task it creates belongs to
       // that goal, full stop. Unscoped (the top-level Calendar): honor
       // whatever goal — or none — the caller picked.
-      const created = await tasksApi.create({ ...payload, goal_id: goalId ?? payload.goal_id ?? null })
+      const created = await tasksApi.create({
+        ...payload,
+        goal_id: goalId ?? payload.goal_id ?? null,
+      })
       await invalidate()
       return created
     },
-    [goalId, invalidate]
+    [goalId, invalidate],
   )
 
   const update = useCallback(
@@ -66,9 +64,7 @@ export function useCalendarTasks(goalId?: string) {
       // Optimistic cache patch so toggles/edits feel instant.
       const prev = queryClient.getQueryData<Task[]>(key)
       queryClient.setQueryData<Task[]>(key, (list) =>
-        (list || []).map((t) =>
-          t.id === id ? ({ ...t, ...stripUndefined(payload) } as Task) : t
-        )
+        (list || []).map((t) => (t.id === id ? ({ ...t, ...stripUndefined(payload) } as Task) : t)),
       )
       try {
         const updated = await tasksApi.update(id, payload)
@@ -79,7 +75,7 @@ export function useCalendarTasks(goalId?: string) {
         throw err
       }
     },
-    [queryClient, key, invalidate]
+    [queryClient, key, invalidate],
   )
 
   const remove = useCallback(
@@ -87,14 +83,12 @@ export function useCalendarTasks(goalId?: string) {
       await tasksApi.remove(id)
       await invalidate()
     },
-    [invalidate]
+    [invalidate],
   )
 
   return { tasks, isLoading, error, create, update, remove, invalidate }
 }
 
 function stripUndefined<T extends object>(obj: T): Partial<T> {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([, v]) => v !== undefined)
-  ) as Partial<T>
+  return Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>
 }

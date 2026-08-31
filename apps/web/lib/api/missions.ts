@@ -2,7 +2,11 @@ import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
 import { dateKeyInTimeZone, DEFAULT_TIME_ZONE } from "@/lib/date-key"
 import { getDailyGoalMinutes } from "@/lib/onboarding-store"
-import { buildDailyMission, type MissionContext, type MissionItemType } from "@/lib/learning/mission-engine"
+import {
+  buildDailyMission,
+  type MissionContext,
+  type MissionItemType,
+} from "@/lib/learning/mission-engine"
 import { EXAM_DATE, isExamActive } from "@/lib/study-plan"
 import type { SkillCode } from "@/lib/learning/skills"
 import { correctionApi, dailyPhraseApi, listeningApi, scenarioApi } from "./learning"
@@ -119,22 +123,31 @@ async function fetchMission(userId: string, dateKey: string): Promise<DailyMissi
 }
 
 async function buildContext(dateKey: string): Promise<MissionContext> {
-  const [profileRes, dueVocabulary, dueVocabularyCount, dueCorrections, weakSkills, phrase, scenarios, activity, duePhrases] =
-    await Promise.all([
-      supabase.from("kori_profiles").select("korean_level, learning_goal").maybeSingle(),
-      vocabApi.getDueWords(),
-      vocabApi.getDueCount(),
-      correctionApi.getDueReviews(),
-      skillsApi.getWeakSkills(3),
-      dailyPhraseApi.getToday().catch(() => null),
-      scenarioApi.getList().catch(() => []),
-      supabase
-        .from("kori_activity_log")
-        .select("feature")
-        .order("created_at", { ascending: false })
-        .limit(20),
-      phrasebookApi.getDuePhrases().catch(() => []),
-    ])
+  const [
+    profileRes,
+    dueVocabulary,
+    dueVocabularyCount,
+    dueCorrections,
+    weakSkills,
+    phrase,
+    scenarios,
+    activity,
+    duePhrases,
+  ] = await Promise.all([
+    supabase.from("kori_profiles").select("korean_level, learning_goal").maybeSingle(),
+    vocabApi.getDueWords(),
+    vocabApi.getDueCount(),
+    correctionApi.getDueReviews(),
+    skillsApi.getWeakSkills(3),
+    dailyPhraseApi.getToday().catch(() => null),
+    scenarioApi.getList().catch(() => []),
+    supabase
+      .from("kori_activity_log")
+      .select("feature")
+      .order("created_at", { ascending: false })
+      .limit(20),
+    phrasebookApi.getDuePhrases().catch(() => []),
+  ])
 
   const listeningTopics = await listeningApi.getTopics()
 
@@ -145,7 +158,11 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
     availableMinutes: getDailyGoalMinutes(),
     dueVocabulary: dueVocabulary.map((v) => ({ id: v.id, term: v.term, meaning: v.meaning })),
     dueVocabularyCount,
-    dueCorrections: dueCorrections.map((c) => ({ id: c.id, originalText: c.originalText, correctedText: c.correctedText })),
+    dueCorrections: dueCorrections.map((c) => ({
+      id: c.id,
+      originalText: c.originalText,
+      correctedText: c.correctedText,
+    })),
     dueCorrectionsCount: dueCorrections.length,
     duePhrases: duePhrases.map((p) => ({ id: p.id, category: p.category })),
     duePhrasesCount: duePhrases.length,
@@ -250,10 +267,16 @@ export const missionsApi = {
     if (pending.length === 0) return mission
 
     const [dueVocabIds, dueCorrectionIds, phrase, duePhraseIds] = await Promise.all([
-      vocabApi.getDueCount().then(() => vocabApi.getDueWords()).then((rows) => new Set(rows.map((r) => r.id))),
+      vocabApi
+        .getDueCount()
+        .then(() => vocabApi.getDueWords())
+        .then((rows) => new Set(rows.map((r) => r.id))),
       correctionApi.getDueReviews().then((rows) => new Set(rows.map((r) => r.id))),
       dailyPhraseApi.getToday().catch(() => null),
-      phrasebookApi.getDuePhrases().then((rows) => new Set(rows.map((r) => r.id))).catch(() => new Set<string>()),
+      phrasebookApi
+        .getDuePhrases()
+        .then((rows) => new Set(rows.map((r) => r.id)))
+        .catch(() => new Set<string>()),
     ])
 
     for (const item of pending) {
@@ -352,7 +375,10 @@ export const missionsApi = {
   // Directly completes one item with explicit evidence (used by flows that
   // already know they just satisfied it — e.g. a scenario evaluation result)
   // rather than waiting for the next refreshProgress() poll.
-  completeItemWithEvidence: async (itemId: string, evidence: Record<string, unknown> = {}): Promise<void> => {
+  completeItemWithEvidence: async (
+    itemId: string,
+    evidence: Record<string, unknown> = {},
+  ): Promise<void> => {
     const { error } = await supabase
       .from("kori_daily_mission_items")
       .update({

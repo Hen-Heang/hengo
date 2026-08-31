@@ -82,7 +82,11 @@ function analyzeVelocityTrend(tasks: Task[]): "increasing" | "stable" | "decreas
   return "stable"
 }
 
-function estimateCompletion(tasks: Task[], pending: number, targetDate?: string | null): Date | null {
+function estimateCompletion(
+  tasks: Task[],
+  pending: number,
+  targetDate?: string | null,
+): Date | null {
   if (pending === 0) return new Date()
   const completed = tasks.filter((t) => t.completed)
   if (completed.length < 2) return targetDate ? new Date(targetDate) : null
@@ -103,7 +107,7 @@ function calculateInactiveDays(tasks: Task[]): number {
   if (completed.length === 0) {
     if (tasks.length > 0 && tasks[0].created_at) {
       const oldest = tasks.reduce((o, t) =>
-        new Date(t.created_at || 0) < new Date(o.created_at || 0) ? t : o
+        new Date(t.created_at || 0) < new Date(o.created_at || 0) ? t : o,
       )
       return Math.floor((Date.now() - new Date(oldest.created_at || 0).getTime()) / DAY)
     }
@@ -141,7 +145,7 @@ export function computeAnalytics(tasks: Task[], targetDate?: string | null): Sma
 
   const completionRate = (completed / total) * 100
   const productivityScore = Math.round(
-    (completionRate + calculateRecentActivity(tasks) + calculateConsistency(tasks)) / 3
+    (completionRate + calculateRecentActivity(tasks) + calculateConsistency(tasks)) / 3,
   )
   const velocityTrend = analyzeVelocityTrend(tasks)
   const estimatedCompletionDate = estimateCompletion(tasks, pending, targetDate)
@@ -217,7 +221,9 @@ export function computeAnalytics(tasks: Task[], targetDate?: string | null): Sma
 }
 
 /** Daily completed-task counts for the last 30 days. */
-export function calculateDailyTrend(tasks: Task[]): Array<{ date: string; completed: number; total: number }> {
+export function calculateDailyTrend(
+  tasks: Task[],
+): Array<{ date: string; completed: number; total: number }> {
   const days = 30
   const out: Array<{ date: string; completed: number; total: number }> = []
   const today = new Date()
@@ -270,7 +276,8 @@ export interface ProductivityBreakdown {
 }
 
 export function getProductivityBreakdown(tasks: Task[]): ProductivityBreakdown {
-  if (tasks.length === 0) return { completionRate: 0, recentActivity: 0, consistency: 0, overall: 0 }
+  if (tasks.length === 0)
+    return { completionRate: 0, recentActivity: 0, consistency: 0, overall: 0 }
   const completed = tasks.filter((t) => t.completed).length
   const completionRate = Math.round((completed / tasks.length) * 100)
   const recentActivity = Math.round(calculateRecentActivity(tasks))
@@ -293,7 +300,7 @@ export function calculateStreak(tasks: Task[]): { current: number; longest: numb
         const d = getCompletedAt(t)
         return d ? toLocalDateStr(d) : undefined
       })
-      .filter((d): d is string => d !== undefined)
+      .filter((d): d is string => d !== undefined),
   )
   const sorted = Array.from(dates).sort()
   const today = toLocalDateStr(new Date())
@@ -315,7 +322,9 @@ export function calculateStreak(tasks: Task[]): { current: number; longest: numb
   let longest = sorted.length ? 1 : 0
   let temp = 1
   for (let i = 1; i < sorted.length; i++) {
-    const diff = Math.floor((new Date(sorted[i]).getTime() - new Date(sorted[i - 1]).getTime()) / DAY)
+    const diff = Math.floor(
+      (new Date(sorted[i]).getTime() - new Date(sorted[i - 1]).getTime()) / DAY,
+    )
     if (diff === 1) {
       temp++
       longest = Math.max(longest, temp)

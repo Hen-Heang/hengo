@@ -59,9 +59,9 @@ describe("legacy completed → status migration", () => {
   })
 
   it("maps an incomplete task dated in the future to scheduled", () => {
-    expect(
-      resolveTaskStatus(task({ status: undefined, end_date: "2026-08-01" }), TODAY),
-    ).toBe("scheduled")
+    expect(resolveTaskStatus(task({ status: undefined, end_date: "2026-08-01" }), TODAY)).toBe(
+      "scheduled",
+    )
   })
 
   it("maps an incomplete task dated today to scheduled", () => {
@@ -69,9 +69,9 @@ describe("legacy completed → status migration", () => {
   })
 
   it("maps an incomplete task with a past date to backlog", () => {
-    expect(
-      resolveTaskStatus(task({ status: undefined, end_date: "2026-07-01" }), TODAY),
-    ).toBe("backlog")
+    expect(resolveTaskStatus(task({ status: undefined, end_date: "2026-07-01" }), TODAY)).toBe(
+      "backlog",
+    )
   })
 
   it("maps an incomplete task with no usable date to backlog", () => {
@@ -103,7 +103,10 @@ describe("canonical completed ↔ status synchronization", () => {
 
   it("lets the legacy boolean win when it says re-opened", () => {
     expect(
-      resolveTaskStatus(task({ status: "completed", completed: false, end_date: "2026-08-01" }), TODAY),
+      resolveTaskStatus(
+        task({ status: "completed", completed: false, end_date: "2026-08-01" }),
+        TODAY,
+      ),
     ).toBe("scheduled")
   })
 
@@ -291,13 +294,18 @@ describe("overdue across the Seoul day boundary", () => {
 
   it("marks yesterday's incomplete task overdue and today's not", () => {
     const today = "2026-07-24"
-    expect(isTaskOverdue(task({ start_date: "2026-07-23", end_date: "2026-07-23" }), today)).toBe(true)
+    expect(isTaskOverdue(task({ start_date: "2026-07-23", end_date: "2026-07-23" }), today)).toBe(
+      true,
+    )
     expect(isTaskOverdue(task({ start_date: today, end_date: today }), today)).toBe(false)
   })
 
   it("never marks a completed past-due task overdue", () => {
     expect(
-      isTaskOverdue(task({ start_date: "2026-07-01", end_date: "2026-07-01", completed: true }), "2026-07-24"),
+      isTaskOverdue(
+        task({ start_date: "2026-07-01", end_date: "2026-07-01", completed: true }),
+        "2026-07-24",
+      ),
     ).toBe(false)
   })
 })

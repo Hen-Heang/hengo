@@ -30,7 +30,8 @@ export function CorrectionCard({
   const [saved, setSaved] = useState(false)
 
   const showNatural =
-    analysis.naturalVersion.trim().length > 0 && analysis.naturalVersion.trim() !== analysis.correctedText.trim()
+    analysis.naturalVersion.trim().length > 0 &&
+    analysis.naturalVersion.trim() !== analysis.correctedText.trim()
   const explanation = analysis.overallExplanation || analysis.mistakes[0]?.explanation
 
   async function saveVocabulary() {
@@ -39,12 +40,19 @@ export function CorrectionCard({
     try {
       await Promise.all(
         analysis.usefulVocabulary.map((item) =>
-          vocabApi.save({ category: "Chat", term: item.korean, meaning: item.english, example: item.example ?? undefined }),
+          vocabApi.save({
+            category: "Chat",
+            term: item.korean,
+            meaning: item.english,
+            example: item.example ?? undefined,
+          }),
         ),
       )
       setSaved(true)
       toast.success(
-        analysis.usefulVocabulary.length === 1 ? "Saved to vocabulary" : `Saved ${analysis.usefulVocabulary.length} words to vocabulary`,
+        analysis.usefulVocabulary.length === 1
+          ? "Saved to vocabulary"
+          : `Saved ${analysis.usefulVocabulary.length} words to vocabulary`,
       )
     } catch {
       toast.error("Could not save vocabulary right now.")
@@ -79,27 +87,37 @@ export function CorrectionCard({
 
       <div className="space-y-2.5 px-4 py-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">What you wrote</p>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">
+            What you wrote
+          </p>
           <p className="mt-0.5 break-keep text-sm font-semibold text-red-700/90 line-through dark:text-red-400/80">
             {originalText}
           </p>
         </div>
 
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">Corrected</p>
-          <p className="mt-0.5 break-keep text-sm font-bold text-foreground">{analysis.correctedText}</p>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">
+            Corrected
+          </p>
+          <p className="mt-0.5 break-keep text-sm font-bold text-foreground">
+            {analysis.correctedText}
+          </p>
         </div>
 
         {showNatural && (
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">More natural</p>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground/60">
+              More natural
+            </p>
             <p className="mt-0.5 break-keep text-sm font-semibold text-emerald-700 dark:text-emerald-400">
               {analysis.naturalVersion}
             </p>
           </div>
         )}
 
-        {explanation && <p className="text-[13px] leading-5 text-muted-foreground">{explanation}</p>}
+        {explanation && (
+          <p className="text-[13px] leading-5 text-muted-foreground">{explanation}</p>
+        )}
       </div>
 
       <div className="flex flex-wrap gap-2 px-4 pb-3.5">

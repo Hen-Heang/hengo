@@ -3,7 +3,14 @@
 import { useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 
-import { habitsApi, journalApi, manualActivitiesApi, progressApi, recoveryApi, tasksApi } from "@/lib/api"
+import {
+  habitsApi,
+  journalApi,
+  manualActivitiesApi,
+  progressApi,
+  recoveryApi,
+  tasksApi,
+} from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import { buildTimeline, type TimelineEntry } from "@/lib/timeline"
 

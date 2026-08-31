@@ -54,7 +54,19 @@ const itemVariants = {
 } as const
 
 export default function VocabPage() {
-  const { dueToday, dueCount, error, loading, rateWord, words, addWord, generate, importList, updateWord, deleteWord } = useVocab()
+  const {
+    dueToday,
+    dueCount,
+    error,
+    loading,
+    rateWord,
+    words,
+    addWord,
+    generate,
+    importList,
+    updateWord,
+    deleteWord,
+  } = useVocab()
   const { logActivity } = useLogActivity("vocab")
   useSessionTimer("vocab")
   const [query, setQuery] = useState("")
@@ -75,13 +87,13 @@ export default function VocabPage() {
   })
   function handlePhraseChange(next: DailyPhrase) {
     queryClient.setQueryData<DailyPhrase[]>(phrasesKey, (prev) =>
-      (prev ?? []).map((p) => (p.id === next.id ? next : p))
+      (prev ?? []).map((p) => (p.id === next.id ? next : p)),
     )
   }
 
   const topics = useMemo(
     () => Array.from(new Set(words.map((word) => word.category).filter(Boolean))).sort(),
-    [words]
+    [words],
   )
   const stats = useMemo(() => computeVocabStats(words), [words])
 
@@ -90,7 +102,9 @@ export default function VocabPage() {
     void logActivity()
     // The dialog's job is done — close it so the fresh deck is visible below.
     setAddOpen(false)
-    toast.success("Deck ready", { description: `New “${category}” cards were added to your dictionary.` })
+    toast.success("Deck ready", {
+      description: `New “${category}” cards were added to your dictionary.`,
+    })
   }
 
   async function handleImport(deckName: string, text: string) {
@@ -170,7 +184,10 @@ export default function VocabPage() {
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                   <p className="app-kicker">Your collection</p>
-                  <h2 id="word-library-title" className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+                  <h2
+                    id="word-library-title"
+                    className="mt-1 text-xl font-semibold tracking-tight text-foreground sm:text-2xl"
+                  >
                     Word library
                   </h2>
                   <p className="mt-1 text-sm leading-6 text-muted-foreground">

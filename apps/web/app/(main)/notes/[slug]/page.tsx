@@ -35,7 +35,10 @@ export default function NotePage() {
     return (
       <div className="flex flex-col items-center justify-center py-24 text-center text-muted-foreground">
         <p className="text-sm">{error || "Note not found."}</p>
-        <Link href="/notes" className="mt-4 inline-flex items-center gap-1.5 text-xs text-blue-500 hover:underline">
+        <Link
+          href="/notes"
+          className="mt-4 inline-flex items-center gap-1.5 text-xs text-blue-500 hover:underline"
+        >
           <ChevronLeft size={14} />
           Back to all notes
         </Link>

@@ -48,9 +48,17 @@ describe("buildDailyMission", () => {
   it("prioritizes due vocabulary and corrections when present", () => {
     const ctx = baseContext({
       dueVocabularyCount: 10,
-      dueVocabulary: Array.from({ length: 10 }, (_, i) => ({ id: `v${i}`, term: "x", meaning: "y" })),
+      dueVocabulary: Array.from({ length: 10 }, (_, i) => ({
+        id: `v${i}`,
+        term: "x",
+        meaning: "y",
+      })),
       dueCorrectionsCount: 8,
-      dueCorrections: Array.from({ length: 8 }, (_, i) => ({ id: `c${i}`, originalText: "a", correctedText: "b" })),
+      dueCorrections: Array.from({ length: 8 }, (_, i) => ({
+        id: `c${i}`,
+        originalText: "a",
+        correctedText: "b",
+      })),
     })
     const plan = buildDailyMission(ctx)
     const types = plan.items.map((i) => i.type)
@@ -74,7 +82,11 @@ describe("buildDailyMission", () => {
   it("folds a weak skill onto an existing due-review item instead of duplicating it", () => {
     const ctx = baseContext({
       dueCorrectionsCount: 5,
-      dueCorrections: Array.from({ length: 5 }, (_, i) => ({ id: `c${i}`, originalText: "a", correctedText: "b" })),
+      dueCorrections: Array.from({ length: 5 }, (_, i) => ({
+        id: `c${i}`,
+        originalText: "a",
+        correctedText: "b",
+      })),
       weakSkills: [{ skillCode: "grammar.particles", masteryScore: 15 }],
     })
     const plan = buildDailyMission(ctx)
@@ -90,7 +102,11 @@ describe("buildDailyMission", () => {
   })
 
   it("omits the daily phrase once it's already learned", () => {
-    const ctx = baseContext({ dailyPhraseLearned: true, dueVocabularyCount: 3, dueVocabulary: [{ id: "v1", term: "a", meaning: "b" }] })
+    const ctx = baseContext({
+      dailyPhraseLearned: true,
+      dueVocabularyCount: 3,
+      dueVocabulary: [{ id: "v1", term: "a", meaning: "b" }],
+    })
     const plan = buildDailyMission(ctx)
     expect(plan.items.some((i) => i.type === "daily_phrase")).toBe(false)
   })
@@ -99,9 +115,17 @@ describe("buildDailyMission", () => {
     const ctx = baseContext({
       availableMinutes: 8,
       dueVocabularyCount: 20,
-      dueVocabulary: Array.from({ length: 20 }, (_, i) => ({ id: `v${i}`, term: "x", meaning: "y" })),
+      dueVocabulary: Array.from({ length: 20 }, (_, i) => ({
+        id: `v${i}`,
+        term: "x",
+        meaning: "y",
+      })),
       dueCorrectionsCount: 20,
-      dueCorrections: Array.from({ length: 20 }, (_, i) => ({ id: `c${i}`, originalText: "a", correctedText: "b" })),
+      dueCorrections: Array.from({ length: 20 }, (_, i) => ({
+        id: `c${i}`,
+        originalText: "a",
+        correctedText: "b",
+      })),
       weakSkills: [{ skillCode: "speaking.confidence", masteryScore: 5 }],
       dailyPhraseLearned: true,
     })
@@ -139,7 +163,11 @@ describe("buildDailyMission", () => {
   })
 
   it("never produces an empty mission", () => {
-    const ctx = baseContext({ dailyPhraseLearned: true, availableScenarios: [], availableListeningTopics: [] })
+    const ctx = baseContext({
+      dailyPhraseLearned: true,
+      availableScenarios: [],
+      availableListeningTopics: [],
+    })
     const plan = buildDailyMission(ctx)
     expect(plan.items.length).toBeGreaterThan(0)
   })
@@ -171,10 +199,18 @@ describe("buildDailyMission", () => {
   it("excludes interview from the variety rotation when no exam is active, even if it's the most-neglected type", () => {
     const ctx = baseContext({
       recentFeatures: [
-        "scenario", "scenario", "scenario",
-        "listening", "listening", "listening",
-        "vocab_review", "vocab_review", "vocab_review",
-        "correction_review", "correction_review", "correction_review",
+        "scenario",
+        "scenario",
+        "scenario",
+        "listening",
+        "listening",
+        "listening",
+        "vocab_review",
+        "vocab_review",
+        "vocab_review",
+        "correction_review",
+        "correction_review",
+        "correction_review",
       ],
       upcomingExam: null,
     })
@@ -185,10 +221,18 @@ describe("buildDailyMission", () => {
   it("allows interview back into the variety rotation once an exam is active", () => {
     const ctx = baseContext({
       recentFeatures: [
-        "scenario", "scenario", "scenario",
-        "listening", "listening", "listening",
-        "vocab_review", "vocab_review", "vocab_review",
-        "correction_review", "correction_review", "correction_review",
+        "scenario",
+        "scenario",
+        "scenario",
+        "listening",
+        "listening",
+        "listening",
+        "vocab_review",
+        "vocab_review",
+        "vocab_review",
+        "correction_review",
+        "correction_review",
+        "correction_review",
       ],
       upcomingExam: { date: "2026-09-01", type: "K-Specialist" },
     })

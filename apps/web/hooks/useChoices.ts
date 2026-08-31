@@ -19,12 +19,14 @@ function pickSelected(opts: string[], initialSelected?: string) {
 export function useChoices(
   fetcher: () => Promise<string[]>,
   fallback: string[],
-  initialSelected?: string
+  initialSelected?: string,
 ) {
   const cached = choicesCache.get(fetcher)
   const initialOptions = cached ?? fallback
   const [options, setOptions] = useState<string[]>(initialOptions)
-  const [selected, setSelected] = useState<string>(() => pickSelected(initialOptions, initialSelected))
+  const [selected, setSelected] = useState<string>(() =>
+    pickSelected(initialOptions, initialSelected),
+  )
 
   // Read via ref inside the effect below so a changing `initialSelected` never
   // triggers a re-fetch (the effect must only re-run when `fetcher` changes),

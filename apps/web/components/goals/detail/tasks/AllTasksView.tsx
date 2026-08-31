@@ -328,9 +328,7 @@ export function AllTasksView({
 
       {visible.length === 0 ? (
         <Card className="rounded-xl border-dashed border-border p-5">
-          <p className="text-sm font-medium text-muted-foreground">
-            No tasks match these filters.
-          </p>
+          <p className="text-sm font-medium text-muted-foreground">No tasks match these filters.</p>
         </Card>
       ) : isMobile ? (
         <ul className="space-y-1.5 pb-20">
@@ -363,7 +361,10 @@ export function AllTasksView({
           off the bottom of a long list. */}
       {isMobile && (
         <div className="fixed inset-x-0 bottom-0 z-30 border-t border-border/60 bg-background/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur">
-          <Button onClick={onAddTask} className="h-12 w-full gap-2 rounded-xl text-sm font-semibold">
+          <Button
+            onClick={onAddTask}
+            className="h-12 w-full gap-2 rounded-xl text-sm font-semibold"
+          >
             <Plus className="h-4 w-4" /> Add task
           </Button>
         </div>

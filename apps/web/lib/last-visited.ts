@@ -54,7 +54,10 @@ export function readRecentNavIds(): string[] {
 
 export function recordRecentNavId(id: string) {
   try {
-    const next = [id, ...readRecentNavIds().filter((existing) => existing !== id)].slice(0, MAX_RECENTS)
+    const next = [id, ...readRecentNavIds().filter((existing) => existing !== id)].slice(
+      0,
+      MAX_RECENTS,
+    )
     window.localStorage.setItem(RECENTS_KEY, JSON.stringify(next))
   } catch {
     /* storage unavailable */

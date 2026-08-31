@@ -39,7 +39,8 @@ export function useJournalMutations() {
   })
 
   const update = useMutation({
-    mutationFn: ({ id, input }: { id: string; input: Partial<JournalEntryInput> }) => journalApi.update(id, input),
+    mutationFn: ({ id, input }: { id: string; input: Partial<JournalEntryInput> }) =>
+      journalApi.update(id, input),
     onSuccess: (_res, { id }) => {
       invalidateList()
       queryClient.invalidateQueries({ queryKey: journalEntryQueryKey(id) })

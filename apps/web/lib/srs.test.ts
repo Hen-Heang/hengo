@@ -77,7 +77,13 @@ describe("applyRating", () => {
   })
 
   it("floors ease at 1.3 and treats corrupt ease as the starting ease before applying the delta", () => {
-    const flooredCard = { easeFactor: 1.35, intervalDays: 5, repetitions: 2, lapses: 0, mastery: 50 }
+    const flooredCard = {
+      easeFactor: 1.35,
+      intervalDays: 5,
+      repetitions: 2,
+      lapses: 0,
+      mastery: 50,
+    }
     expect(applyRating(flooredCard, "AGAIN").easeFactor).toBe(1.3)
 
     const corruptCard = { easeFactor: 0, intervalDays: 10, repetitions: 3, lapses: 0, mastery: 50 }

@@ -97,7 +97,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
               key={i}
               className={cn(
                 "h-1.5 flex-1 rounded-full transition-colors",
-                i <= step ? "bg-blue-500" : "bg-muted"
+                i <= step ? "bg-blue-500" : "bg-muted",
               )}
             />
           ))}
@@ -131,7 +131,9 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
             {step === 1 &&
               GOAL_OPTIONS.map((g) => (
                 <OptionCard key={g} selected={goal === g} onClick={() => setGoal(g)}>
-                  <span className="min-w-0 flex-1 text-left text-sm font-semibold text-foreground">{g}</span>
+                  <span className="min-w-0 flex-1 text-left text-sm font-semibold text-foreground">
+                    {g}
+                  </span>
                 </OptionCard>
               ))}
 
@@ -224,14 +226,14 @@ function OptionCard({
         "flex min-h-11 w-full items-center gap-3 rounded-lg border px-4 py-3 text-left transition-colors",
         selected
           ? "border-blue-500/60 bg-blue-500/10"
-          : "border-border bg-card hover:border-blue-500/30 dark:bg-slate-900/40"
+          : "border-border bg-card hover:border-blue-500/30 dark:bg-slate-900/40",
       )}
     >
       {children}
       <span
         className={cn(
           "flex h-5 w-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors",
-          selected ? "border-blue-500 bg-blue-500 text-white" : "border-border text-transparent"
+          selected ? "border-blue-500 bg-blue-500 text-white" : "border-border text-transparent",
         )}
       >
         <Check size={12} strokeWidth={3.5} />

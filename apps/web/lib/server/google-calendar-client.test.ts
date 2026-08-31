@@ -31,7 +31,7 @@ describe("normalizeGoogleEvent", () => {
         start: { dateTime: "2026-08-12T09:00:00+09:00" },
         end: { dateTime: "2026-08-12T09:30:00+09:00" },
       },
-      "primary"
+      "primary",
     )
     expect(result).toEqual({
       id: "evt-1",
@@ -47,8 +47,13 @@ describe("normalizeGoogleEvent", () => {
 
   it("normalizes an all-day event using the date-only fields", () => {
     const result = normalizeGoogleEvent(
-      { id: "evt-2", summary: "Company holiday", start: { date: "2026-08-15" }, end: { date: "2026-08-16" } },
-      "primary"
+      {
+        id: "evt-2",
+        summary: "Company holiday",
+        start: { date: "2026-08-15" },
+        end: { date: "2026-08-16" },
+      },
+      "primary",
     )
     expect(result?.allDay).toBe(true)
     expect(result?.start).toBe("2026-08-15")
@@ -56,8 +61,12 @@ describe("normalizeGoogleEvent", () => {
 
   it("falls back to a placeholder title when the event has none", () => {
     const result = normalizeGoogleEvent(
-      { id: "evt-3", start: { dateTime: "2026-08-12T09:00:00Z" }, end: { dateTime: "2026-08-12T09:30:00Z" } },
-      "primary"
+      {
+        id: "evt-3",
+        start: { dateTime: "2026-08-12T09:00:00Z" },
+        end: { dateTime: "2026-08-12T09:30:00Z" },
+      },
+      "primary",
     )
     expect(result?.title).toBe("(No title)")
   })
@@ -70,7 +79,7 @@ describe("normalizeGoogleEvent", () => {
         start: { dateTime: "2026-08-12T09:00:00Z" },
         end: { dateTime: "2026-08-12T09:30:00Z" },
       },
-      "primary"
+      "primary",
     )
     expect(result).toBeNull()
   })
@@ -90,7 +99,7 @@ describe("getEvents", () => {
 
   it("rejects a range spanning more than ~3 months", async () => {
     await expect(
-      getEvents("user-1", { timeMin: "2026-01-01T00:00:00Z", timeMax: "2026-12-01T00:00:00Z" })
+      getEvents("user-1", { timeMin: "2026-01-01T00:00:00Z", timeMax: "2026-12-01T00:00:00Z" }),
     ).rejects.toThrow(/3 months/)
   })
 
@@ -100,15 +109,29 @@ describe("getEvents", () => {
       .mockResolvedValueOnce(
         jsonResponse({
           timeZone: "Asia/Seoul",
-          items: [{ id: "evt-1", summary: "First", start: { dateTime: "2026-08-11T09:00:00Z" }, end: { dateTime: "2026-08-11T09:30:00Z" } }],
+          items: [
+            {
+              id: "evt-1",
+              summary: "First",
+              start: { dateTime: "2026-08-11T09:00:00Z" },
+              end: { dateTime: "2026-08-11T09:30:00Z" },
+            },
+          ],
           nextPageToken: "page-2",
-        })
+        }),
       )
       .mockResolvedValueOnce(
         jsonResponse({
           timeZone: "Asia/Seoul",
-          items: [{ id: "evt-2", summary: "Second", start: { dateTime: "2026-08-12T09:00:00Z" }, end: { dateTime: "2026-08-12T09:30:00Z" } }],
-        })
+          items: [
+            {
+              id: "evt-2",
+              summary: "Second",
+              start: { dateTime: "2026-08-12T09:00:00Z" },
+              end: { dateTime: "2026-08-12T09:30:00Z" },
+            },
+          ],
+        }),
       )
 
     const result = await getEvents("user-1", { timeMin, timeMax })
@@ -128,7 +151,7 @@ describe("getFreeBusy", () => {
         calendars: {
           primary: { busy: [{ start: "2026-08-11T09:00:00Z", end: "2026-08-11T10:00:00Z" }] },
         },
-      })
+      }),
     )
 
     const result = await getFreeBusy("user-1", {
@@ -138,7 +161,10 @@ describe("getFreeBusy", () => {
     })
 
     expect(result).toEqual([
-      { calendarId: "primary", busy: [{ start: "2026-08-11T09:00:00Z", end: "2026-08-11T10:00:00Z" }] },
+      {
+        calendarId: "primary",
+        busy: [{ start: "2026-08-11T09:00:00Z", end: "2026-08-11T10:00:00Z" }],
+      },
       { calendarId: "team@example.com", busy: [] },
     ])
   })

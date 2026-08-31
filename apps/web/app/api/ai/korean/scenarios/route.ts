@@ -6,4 +6,3 @@ export async function GET(req: Request): Promise<Response> {
   if (auth instanceof Response) return auth
   return coachDataResponse(KOREAN_COACH_SCENARIOS)
 }
-

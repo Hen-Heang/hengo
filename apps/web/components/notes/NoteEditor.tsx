@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from "react"
 import { Eye, Loader2, Pencil, Save, Star, X } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { TagEditor } from "@/components/ui/tag-editor"
 import { Textarea } from "@/components/ui/textarea"
@@ -86,8 +92,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
     }
   }
 
-  const set = (patch: Partial<NoteEditorValues>) =>
-    setValues((prev) => ({ ...prev, ...patch }))
+  const set = (patch: Partial<NoteEditorValues>) => setValues((prev) => ({ ...prev, ...patch }))
 
   const errors = validateNoteInput(values)
 
@@ -118,7 +123,11 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
       {draftRestored && (
         <div className="flex items-center justify-between rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-2.5 text-xs font-medium text-amber-700 dark:text-amber-300">
           <span>Restored an unsaved draft from your last session.</span>
-          <button type="button" onClick={discardDraft} className="min-h-11 rounded-lg px-2 underline underline-offset-2 hover:no-underline">
+          <button
+            type="button"
+            onClick={discardDraft}
+            className="min-h-11 rounded-lg px-2 underline underline-offset-2 hover:no-underline"
+          >
             Discard draft
           </button>
         </div>
@@ -160,7 +169,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
                   "flex size-11 shrink-0 items-center justify-center rounded-lg border transition-colors",
                   values.pinned
                     ? "border-primary/40 bg-primary/10 text-primary"
-                    : "border-border text-muted-foreground hover:text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground",
                 )}
               >
                 <Star size={18} className={values.pinned ? "fill-current" : ""} />
@@ -210,7 +219,10 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
         <div className="grid grid-cols-1 gap-3 border-t border-border/60 pt-4 sm:grid-cols-3">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Type</label>
-            <Select value={values.noteType} onValueChange={(value) => set({ noteType: value as NoteType })}>
+            <Select
+              value={values.noteType}
+              onValueChange={(value) => set({ noteType: value as NoteType })}
+            >
               <SelectTrigger className="w-full" aria-label="Note type">
                 <SelectValue />
               </SelectTrigger>
@@ -232,7 +244,9 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-muted-foreground">Source URL (optional)</label>
+            <label className="text-xs font-medium text-muted-foreground">
+              Source URL (optional)
+            </label>
             <Input
               value={values.sourceUrl}
               onChange={(e) => set({ sourceUrl: e.target.value })}
@@ -261,7 +275,9 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
             onClick={() => setPreview(false)}
             className={cn(
               "min-h-11 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-              !preview ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"
+              !preview
+                ? "bg-accent text-foreground"
+                : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Pencil size={13} />
@@ -272,7 +288,7 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
             onClick={() => setPreview(true)}
             className={cn(
               "min-h-11 flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-              preview ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"
+              preview ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground",
             )}
           >
             <Eye size={13} />
@@ -285,7 +301,10 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
           </span>
           <label className="flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground">
             Pinned
-            <Switch checked={values.pinned} onCheckedChange={(checked) => set({ pinned: checked })} />
+            <Switch
+              checked={values.pinned}
+              onCheckedChange={(checked) => set({ pinned: checked })}
+            />
           </label>
         </div>
       </div>
@@ -293,7 +312,9 @@ export function NoteEditor({ mode, initial, onSave, onCancel }: NoteEditorProps)
       {preview ? (
         <article
           className="prose prose-zinc min-h-[50dvh] max-w-none break-words rounded-lg border border-border/60 bg-card/30 p-4 prose-sm [overflow-wrap:anywhere] dark:prose-invert sm:min-h-[500px] sm:p-6 prose-pre:max-w-full prose-pre:overflow-x-auto"
-          dangerouslySetInnerHTML={{ __html: renderMarkdown(values.content || "*Nothing to preview yet.*") }}
+          dangerouslySetInnerHTML={{
+            __html: renderMarkdown(values.content || "*Nothing to preview yet.*"),
+          }}
         />
       ) : (
         <Textarea

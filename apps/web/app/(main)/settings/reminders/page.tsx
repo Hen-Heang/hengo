@@ -17,13 +17,18 @@ export default function RemindersSettingsPage() {
   const finished = reminders.filter((r) => r.status === "completed" || r.status === "cancelled")
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl space-y-6 pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-2xl space-y-6 pb-16"
+    >
       <motion.div variants={itemVariants}>
         <BackLink href="/settings" label="Settings" />
         <h1 className="mt-2 text-xl font-bold text-foreground">Reminders</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Everything you&apos;ve set a reminder for — tasks, habits, notes, inbox items, journal, and activities. Set new
-          ones from the bell icon on those items.
+          Everything you&apos;ve set a reminder for — tasks, habits, notes, inbox items, journal,
+          and activities. Set new ones from the bell icon on those items.
         </p>
       </motion.div>
 
@@ -37,17 +42,23 @@ export default function RemindersSettingsPage() {
           <ErrorBanner>{error}</ErrorBanner>
         </motion.div>
       ) : reminders.length === 0 ? (
-        <motion.div variants={itemVariants} className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center">
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-border bg-card/50 px-6 py-16 text-center"
+        >
           <p className="text-sm font-semibold text-foreground">No reminders yet</p>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Look for the bell icon on a habit, note, inbox item, or the Journal page to set your first one.
+            Look for the bell icon on a habit, note, inbox item, or the Journal page to set your
+            first one.
           </p>
         </motion.div>
       ) : (
         <>
           {active.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Active</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Active
+              </h2>
               {active.map((r) => (
                 <ReminderRow key={r.id} reminder={r} />
               ))}
@@ -55,7 +66,9 @@ export default function RemindersSettingsPage() {
           )}
           {paused.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Paused</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Paused
+              </h2>
               {paused.map((r) => (
                 <ReminderRow key={r.id} reminder={r} />
               ))}
@@ -63,7 +76,9 @@ export default function RemindersSettingsPage() {
           )}
           {finished.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Completed / cancelled</h2>
+              <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                Completed / cancelled
+              </h2>
               {finished.map((r) => (
                 <ReminderRow key={r.id} reminder={r} />
               ))}

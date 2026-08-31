@@ -28,7 +28,11 @@ type Phase = "teach" | "practice" | "result"
 // score still comes from `complete()` (server-side when wired) at the end.
 function isCorrect(exercise: LessonExercise, answer: number | string | undefined): boolean {
   if (exercise.type === "multiple-choice") return answer === exercise.answerIndex
-  return String(answer ?? "").trim().toLowerCase() === (exercise.answer ?? "").trim().toLowerCase()
+  return (
+    String(answer ?? "")
+      .trim()
+      .toLowerCase() === (exercise.answer ?? "").trim().toLowerCase()
+  )
 }
 
 export function LessonRunner({ lessonId }: { lessonId: string }) {
@@ -53,7 +57,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
   const current = exercises[step]
   const progressPct = useMemo(
     () => (exercises.length === 0 ? 0 : Math.round((step / exercises.length) * 100)),
-    [step, exercises.length]
+    [step, exercises.length],
   )
 
   function resetRun() {
@@ -121,7 +125,10 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
     return (
       <div className="space-y-6">
         <ErrorBanner>{error || "Lesson not found."}</ErrorBanner>
-        <Link href="/phrasebook?mode=foundations" className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400">
+        <Link
+          href="/phrasebook?mode=foundations"
+          className="inline-flex items-center gap-2 text-sm font-bold text-blue-600 hover:underline dark:text-blue-400"
+        >
           <ArrowLeft size={16} /> Back to Foundations
         </Link>
       </div>
@@ -129,10 +136,18 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
   }
 
   return (
-    <motion.div initial={reduceMotion ? false : "hidden"} animate="visible" variants={container} className="space-y-6 pb-16">
+    <motion.div
+      initial={reduceMotion ? false : "hidden"}
+      animate="visible"
+      variants={container}
+      className="space-y-6 pb-16"
+    >
       {/* Header */}
       <motion.div variants={item} className="flex items-center justify-between gap-3">
-        <Link href="/phrasebook?mode=foundations" className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground">
+        <Link
+          href="/phrasebook?mode=foundations"
+          className="inline-flex items-center gap-2 text-sm font-bold text-muted-foreground hover:text-foreground"
+        >
           <ArrowLeft size={16} /> Foundations
         </Link>
         <span className="rounded-full bg-accent px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -141,7 +156,9 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
       </motion.div>
 
       <motion.div variants={item}>
-        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">{lesson.title}</h1>
+        <h1 className="text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl">
+          {lesson.title}
+        </h1>
         <p className="mt-1 text-base text-muted-foreground">{lesson.subtitle}</p>
       </motion.div>
 
@@ -165,7 +182,9 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
                 <div className="flex min-w-[96px] flex-col items-center justify-center rounded-2xl bg-accent/60 px-4 py-3 text-center">
                   <span className="text-3xl font-extrabold text-foreground">{card.hangul}</span>
                   {card.romanization && (
-                    <span className="mt-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">{card.romanization}</span>
+                    <span className="mt-1 text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                      {card.romanization}
+                    </span>
                   )}
                 </div>
                 <div className="min-w-0 flex-1 space-y-1.5">
@@ -212,7 +231,10 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
               <span>{progressPct}%</span>
             </div>
             <div className="h-2 w-full overflow-hidden rounded-full bg-accent">
-              <div className="h-full rounded-full bg-blue-500 transition-all duration-300" style={{ width: `${progressPct}%` }} />
+              <div
+                className="h-full rounded-full bg-blue-500 transition-all duration-300"
+                style={{ width: `${progressPct}%` }}
+              />
             </div>
           </motion.div>
 
@@ -238,10 +260,15 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
                       onClick={() => chooseOption(oi)}
                       className={cn(
                         "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all",
-                        correctOpt && "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-                        wrongChoice && "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
+                        correctOpt &&
+                          "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                        wrongChoice &&
+                          "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
                         !revealed && "border-border bg-background text-foreground hover:bg-accent",
-                        revealed && !correctOpt && !wrongChoice && "border-border bg-background text-muted-foreground"
+                        revealed &&
+                          !correctOpt &&
+                          !wrongChoice &&
+                          "border-border bg-background text-muted-foreground",
                       )}
                     >
                       <span className="text-lg">{opt}</span>
@@ -273,10 +300,14 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
                       "flex items-center gap-2 rounded-xl px-4 py-3 text-sm font-bold",
                       isCorrect(current, answers[step])
                         ? "bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                        : "bg-red-500/10 text-red-700 dark:text-red-300"
+                        : "bg-red-500/10 text-red-700 dark:text-red-300",
                     )}
                   >
-                    {isCorrect(current, answers[step]) ? <CheckCircle2 size={16} /> : <XCircle size={16} />}
+                    {isCorrect(current, answers[step]) ? (
+                      <CheckCircle2 size={16} />
+                    ) : (
+                      <XCircle size={16} />
+                    )}
                     {isCorrect(current, answers[step]) ? "Correct!" : `Answer: ${current.answer}`}
                   </div>
                 )}
@@ -309,9 +340,7 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
                     disabled={submitting}
                     className="h-11 rounded-xl bg-blue-600 px-6 text-sm font-bold text-white hover:bg-blue-500 active:scale-95"
                   >
-                    {submitting ? (
-                      <Loader2 size={16} className="mr-2 animate-spin" />
-                    ) : null}
+                    {submitting ? <Loader2 size={16} className="mr-2 animate-spin" /> : null}
                     {step < exercises.length - 1 ? "Next" : "Finish"}
                     {!submitting && <ArrowRight size={16} className="ml-2" />}
                   </Button>
@@ -330,22 +359,29 @@ export function LessonRunner({ lessonId }: { lessonId: string }) {
               "rounded-3xl border p-8 text-center",
               result.completed
                 ? "border-emerald-500/20 bg-emerald-500/5"
-                : "border-amber-500/20 bg-amber-500/5"
+                : "border-amber-500/20 bg-amber-500/5",
             )}
           >
             <div
               className={cn(
                 "mx-auto flex h-16 w-16 items-center justify-center rounded-full",
-                result.completed ? "bg-emerald-500/15 text-emerald-600" : "bg-amber-500/15 text-amber-600"
+                result.completed
+                  ? "bg-emerald-500/15 text-emerald-600"
+                  : "bg-amber-500/15 text-amber-600",
               )}
             >
-              {result.completed ? <CheckCircle2 size={32} strokeWidth={2.5} /> : <RotateCcw size={30} strokeWidth={2.5} />}
+              {result.completed ? (
+                <CheckCircle2 size={32} strokeWidth={2.5} />
+              ) : (
+                <RotateCcw size={30} strokeWidth={2.5} />
+              )}
             </div>
             <h2 className="mt-4 text-2xl font-extrabold text-foreground">
               {result.score} / {result.total} correct
             </h2>
             <p className="mt-1 text-sm font-bold text-muted-foreground">
-              {result.accuracy}% · {result.completed ? "Lesson complete!" : "Almost — try once more to pass (60%)."}
+              {result.accuracy}% ·{" "}
+              {result.completed ? "Lesson complete!" : "Almost — try once more to pass (60%)."}
             </p>
           </div>
 

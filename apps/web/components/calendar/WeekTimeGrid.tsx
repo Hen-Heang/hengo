@@ -231,7 +231,7 @@ function AllDayStrip({ days, getTasksForDate, onTaskClick, colWidth }: AllDayStr
                 className={cn(
                   "min-h-11 w-full truncate rounded-md border-l-2 px-1.5 py-1 text-left text-xs font-medium text-foreground transition-colors lg:min-h-7",
                   task.completed && "line-through opacity-60",
-                  isExternalTask(task) && "border-dashed"
+                  isExternalTask(task) && "border-dashed",
                 )}
                 style={{ backgroundColor: hexWithAlpha(color, 0.16), borderLeftColor: color }}
               >
@@ -269,10 +269,7 @@ function DayColumn({
   const positioned = useMemo(() => layoutDayTasks(tasks), [tasks])
 
   return (
-    <div
-      className="relative flex-1 border-l border-border/40"
-      style={{ width: colWidth }}
-    >
+    <div className="relative flex-1 border-l border-border/40" style={{ width: colWidth }}>
       {SLOTS.map((minutes) => {
         const hh = String(Math.floor(minutes / 60)).padStart(2, "0")
         const mm = String(minutes % 60).padStart(2, "0")
@@ -287,7 +284,7 @@ function DayColumn({
             className={cn(
               "absolute inset-x-0 z-0 text-left focus-visible:z-40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
               onSlotClick && "hover:bg-accent/10",
-              minutes % 60 === 0 && "border-b border-border/40"
+              minutes % 60 === 0 && "border-b border-border/40",
             )}
             style={{ top: (minutes / 60) * hourHeight, height: hourHeight / 2 }}
           />
@@ -326,7 +323,7 @@ function DayColumn({
             className={cn(
               "absolute z-10 overflow-hidden rounded-lg border border-l-[3px] px-1.5 py-1 text-left text-foreground shadow-sm transition-shadow duration-150 hover:z-30 hover:shadow-md focus-visible:z-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/80",
               p.task.completed && "opacity-60",
-              isExternalTask(p.task) && "border-dashed"
+              isExternalTask(p.task) && "border-dashed",
             )}
             style={{
               top,
@@ -341,7 +338,7 @@ function DayColumn({
             <div
               className={cn(
                 "truncate text-xs font-semibold leading-tight",
-                p.task.completed && "line-through"
+                p.task.completed && "line-through",
               )}
             >
               {p.task.title || p.task.description || "Untitled"}
@@ -351,7 +348,7 @@ function DayColumn({
                 {formatTaskTimeRange(
                   p.task.daily_start_time,
                   p.task.daily_end_time,
-                  p.task.is_anytime
+                  p.task.is_anytime,
                 )}
               </div>
             )}

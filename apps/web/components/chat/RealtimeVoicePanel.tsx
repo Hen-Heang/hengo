@@ -4,10 +4,25 @@ import Image from "next/image"
 import { memo, useEffect, useRef, useState, type FC } from "react"
 import { createPortal } from "react-dom"
 import { AnimatePresence, motion } from "motion/react"
-import { AudioLines, Captions, Lightbulb, LoaderCircle, Mic, MicOff, PhoneOff, RotateCcw, Sparkles, X } from "lucide-react"
+import {
+  AudioLines,
+  Captions,
+  Lightbulb,
+  LoaderCircle,
+  Mic,
+  MicOff,
+  PhoneOff,
+  RotateCcw,
+  Sparkles,
+  X,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import type { RealtimeVoicePhase, RealtimeVoiceTurn, VoiceCorrection } from "@/hooks/useRealtimeVoice"
+import type {
+  RealtimeVoicePhase,
+  RealtimeVoiceTurn,
+  VoiceCorrection,
+} from "@/hooks/useRealtimeVoice"
 import { translateApi } from "@/lib/api"
 import { pickPrimaryMistake } from "@/lib/realtime/correction-policy"
 import {
@@ -200,15 +215,16 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
 
   const showKorean = koreanCaptionsVisible(captionMode)
   // "ko_en" always shows English; "tap" reveals it on demand; others never.
-  const englishOn =
-    englishAllowed(captionMode) && (captionMode === "ko_en" || englishRevealed)
+  const englishOn = englishAllowed(captionMode) && (captionMode === "ko_en" || englishRevealed)
 
   // Only the streaming caption or the last *completed* assistant turn is shown;
   // translation runs on the completed turn only, so it fires once per turn.
   const assistantTranscript = assistantCaption || latestAssistant
   const visibleAssistantCaption =
     assistantTranscript ||
-    (phase === "connecting" ? "잠시만 기다려 주세요…" : "안녕하세요! 오늘은 어떤 이야기를 해 볼까요?")
+    (phase === "connecting"
+      ? "잠시만 기다려 주세요…"
+      : "안녕하세요! 오늘은 어떤 이야기를 해 볼까요?")
   const visibleUserCaption = userCaption || latestUser
   const assistantEnglish = useLiveTranslation(
     latestAssistant,
@@ -223,7 +239,9 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
     const previousBodyOverflow = document.body.style.overflow
     const previousDocumentOverflow = document.documentElement.style.overflow
     const backgroundElements = Array.from(document.body.children)
-      .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== panel)
+      .filter(
+        (element): element is HTMLElement => element instanceof HTMLElement && element !== panel,
+      )
       .map((element) => ({
         element,
         inert: element.inert,
@@ -329,12 +347,23 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
                 phase === "error" ? "border-red-400/40" : "border-blue-300/30",
               )}
             >
-              <Image src="/hengo-icon.png" alt="" width={96} height={96} className="h-full w-full" priority />
+              <Image
+                src="/hengo-icon.png"
+                alt=""
+                width={96}
+                height={96}
+                className="h-full w-full"
+                priority
+              />
             </div>
             <span
               className={cn(
                 "absolute -right-1 -bottom-1 h-5 w-5 rounded-full border-4 border-slate-950",
-                phase === "error" ? "bg-red-400" : phase === "connecting" ? "bg-amber-400" : "bg-emerald-400",
+                phase === "error"
+                  ? "bg-red-400"
+                  : phase === "connecting"
+                    ? "bg-amber-400"
+                    : "bg-emerald-400",
               )}
             />
           </div>
@@ -350,7 +379,9 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
               )}
               <p className="text-[13px] font-bold text-blue-100">{copy.label}</p>
             </div>
-            <p className="mt-1 text-[11px] font-medium text-slate-400 sm:text-[12px]">{copy.detail}</p>
+            <p className="mt-1 text-[11px] font-medium text-slate-400 sm:text-[12px]">
+              {copy.detail}
+            </p>
           </div>
 
           {(phase === "speaking" || phase === "listening") && (
@@ -387,11 +418,14 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
                 aria-atomic="false"
               >
                 {visibleAssistantCaption}
-                {phase === "speaking" && <span className="ml-1 inline-block h-5 w-0.5 animate-pulse bg-blue-300 align-middle" />}
+                {phase === "speaking" && (
+                  <span className="ml-1 inline-block h-5 w-0.5 animate-pulse bg-blue-300 align-middle" />
+                )}
               </p>
             ) : (
               <p className="text-[13px] font-medium text-slate-400">
-                Captions off — listening practice. Hengo is {phase === "speaking" ? "speaking" : "here"}.
+                Captions off — listening practice. Hengo is{" "}
+                {phase === "speaking" ? "speaking" : "here"}.
               </p>
             )}
             {assistantEnglish && (
@@ -420,9 +454,18 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
 
           {showKorean && (
             <div className="mt-3 min-h-16 w-full max-w-2xl rounded-2xl border border-white/[0.07] bg-black/15 px-4 py-3 text-center">
-              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-300/80">You · live subtitle</p>
-              <p className="mt-1 text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]" lang="ko" aria-live="polite">
-                {visibleUserCaption || (phase === "listening" ? "한국어로 편하게 말해 보세요…" : "Your words will appear here as you speak")}
+              <p className="text-[9px] font-bold uppercase tracking-[0.16em] text-emerald-300/80">
+                You · live subtitle
+              </p>
+              <p
+                className="mt-1 text-[14px] font-medium leading-relaxed text-slate-200 sm:text-[15px]"
+                lang="ko"
+                aria-live="polite"
+              >
+                {visibleUserCaption ||
+                  (phase === "listening"
+                    ? "한국어로 편하게 말해 보세요…"
+                    : "Your words will appear here as you speak")}
               </p>
             </div>
           )}
@@ -439,14 +482,26 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
 
           {turns.length > 1 && (
             <div className="mt-4 w-full max-w-2xl rounded-2xl border border-white/[0.07] bg-white/[0.035] p-3 text-left">
-              <p className="px-1 pb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">Recent transcript</p>
+              <p className="px-1 pb-2 text-[9px] font-bold uppercase tracking-[0.15em] text-slate-500">
+                Recent transcript
+              </p>
               <div className="max-h-28 space-y-2 overflow-y-auto pr-1">
                 {turns.slice(-4).map((turn) => (
-                  <div key={turn.id} className="flex gap-2 text-[11px] leading-relaxed sm:text-[12px]">
-                    <span className={cn("w-10 shrink-0 font-bold", turn.role === "assistant" ? "text-blue-300" : "text-emerald-300")}>
+                  <div
+                    key={turn.id}
+                    className="flex gap-2 text-[11px] leading-relaxed sm:text-[12px]"
+                  >
+                    <span
+                      className={cn(
+                        "w-10 shrink-0 font-bold",
+                        turn.role === "assistant" ? "text-blue-300" : "text-emerald-300",
+                      )}
+                    >
                       {turn.role === "assistant" ? "Hengo" : "You"}
                     </span>
-                    <span className="text-slate-300" lang="ko">{turn.text}</span>
+                    <span className="text-slate-300" lang="ko">
+                      {turn.text}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -454,7 +509,10 @@ export const RealtimeVoicePanel = memo(function RealtimeVoicePanel({
           )}
 
           {error && (
-            <div className="mt-4 w-full max-w-xl rounded-2xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-center" role="alert">
+            <div
+              className="mt-4 w-full max-w-xl rounded-2xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-center"
+              role="alert"
+            >
               <p className="text-[12px] font-semibold leading-relaxed text-red-100">{error}</p>
               {phase === "error" && (
                 <Button

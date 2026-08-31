@@ -31,25 +31,25 @@ export default function TermsPage() {
 
         <p>
           These terms govern your use of Hengo, an AI-assisted Korean-learning app for software
-          engineers and foreign professionals working in Korea. By creating an account, you agree
-          to these terms.
+          engineers and foreign professionals working in Korea. By creating an account, you agree to
+          these terms.
         </p>
 
         <h2>Your account</h2>
         <p>
           You&apos;re responsible for keeping your login credentials secure and for the activity
-          that happens under your account. You must be able to legally enter into this agreement
-          to use Hengo.
+          that happens under your account. You must be able to legally enter into this agreement to
+          use Hengo.
         </p>
 
         <h2>Using the AI features</h2>
         <p>
           Hengo&apos;s chat, analyzer, message generator, interview simulator, and related features
           send the text you submit to a third-party AI provider (OpenAI) to generate a response.
-          Don&apos;t submit content that is illegal, infringes someone else&apos;s rights, or contains
-          sensitive personal information you wouldn&apos;t want processed by an AI model. AI output
-          may be inaccurate — treat it as a study aid, not professional, legal, medical, or
-          immigration advice (including for K-Specialist exam preparation).
+          Don&apos;t submit content that is illegal, infringes someone else&apos;s rights, or
+          contains sensitive personal information you wouldn&apos;t want processed by an AI model.
+          AI output may be inaccurate — treat it as a study aid, not professional, legal, medical,
+          or immigration advice (including for K-Specialist exam preparation).
         </p>
 
         <h2>Acceptable use</h2>
@@ -60,9 +60,9 @@ export default function TermsPage() {
 
         <h2>Your content</h2>
         <p>
-          You keep ownership of what you write (messages, notes, vocabulary, interview scripts).
-          You grant Hengo the limited right to store and process that content in order to provide
-          the service to you.
+          You keep ownership of what you write (messages, notes, vocabulary, interview scripts). You
+          grant Hengo the limited right to store and process that content in order to provide the
+          service to you.
         </p>
 
         <h2>Service availability</h2>
@@ -78,7 +78,9 @@ export default function TermsPage() {
         </p>
 
         <h2>Contact</h2>
-        <p>Questions about these terms can be sent to the Hengo team through your account settings.</p>
+        <p>
+          Questions about these terms can be sent to the Hengo team through your account settings.
+        </p>
       </article>
     </main>
   )

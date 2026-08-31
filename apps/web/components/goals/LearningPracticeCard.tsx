@@ -21,7 +21,10 @@ export function LearningPracticeCard({
 }) {
   const matches = tasks
     .map((task) => ({ task, link: getLearningTaskLink(task) }))
-    .filter((m): m is { task: Task; link: NonNullable<ReturnType<typeof getLearningTaskLink>> } => m.link !== null)
+    .filter(
+      (m): m is { task: Task; link: NonNullable<ReturnType<typeof getLearningTaskLink>> } =>
+        m.link !== null,
+    )
 
   if (matches.length === 0) return null
 
@@ -50,7 +53,7 @@ export function LearningPracticeCard({
               aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
               className={cn(
                 "shrink-0 transition-transform active:scale-90",
-                task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary"
+                task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary",
               )}
             >
               {task.completed ? <CheckCircle2 size={20} /> : <Circle size={20} />}
@@ -58,7 +61,7 @@ export function LearningPracticeCard({
             <span
               className={cn(
                 "min-w-0 flex-1 truncate text-sm font-bold",
-                task.completed ? "text-muted-foreground line-through" : "text-foreground"
+                task.completed ? "text-muted-foreground line-through" : "text-foreground",
               )}
             >
               {task.title || task.description}

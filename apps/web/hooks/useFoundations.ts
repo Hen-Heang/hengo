@@ -11,12 +11,7 @@ import {
 } from "@/lib/foundations-data"
 import { getUserId } from "@/lib/auth-store"
 import { useLogActivity } from "@/hooks/useLogActivity"
-import type {
-  LearnTrack,
-  LessonAttemptResult,
-  LessonDetail,
-  LessonSummary,
-} from "@/lib/types"
+import type { LearnTrack, LessonAttemptResult, LessonDetail, LessonSummary } from "@/lib/types"
 
 // Lesson content comes from the local seed; progress is server-backed so it
 // syncs across devices. We still mirror completion to localStorage as an
@@ -65,7 +60,11 @@ function gradeLocally(lesson: LessonDetail, answers: Array<number | string>): Le
       return given === exercise.answerIndex
     }
     const expected = (exercise.answer ?? "").trim().toLowerCase()
-    return String(given ?? "").trim().toLowerCase() === expected
+    return (
+      String(given ?? "")
+        .trim()
+        .toLowerCase() === expected
+    )
   })
   const score = results.filter(Boolean).length
   const total = results.length
@@ -160,7 +159,7 @@ export function useFoundationsLesson(id: string) {
       if (result.completed) void logActivity()
       return result
     },
-    [data, id, queryClient, userId, logActivity]
+    [data, id, queryClient, userId, logActivity],
   )
 
   return {

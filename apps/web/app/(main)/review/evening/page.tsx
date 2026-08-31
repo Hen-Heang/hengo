@@ -23,7 +23,12 @@ export default function EveningReviewPage() {
   const hasJournalToday = entries.some((e) => e.kind === "journal")
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-2xl pb-16"
+    >
       <motion.div variants={itemVariants} className="mb-2">
         <BackLink href="/home" label="Home" mobileOnly />
       </motion.div>

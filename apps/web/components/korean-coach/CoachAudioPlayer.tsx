@@ -147,9 +147,7 @@ export function CoachAudioPlayer({
           <div className="min-w-0">
             <p className="truncate text-sm font-semibold">{label}</p>
             <p className="text-xs text-muted-foreground">
-              {mode === "mock"
-                ? "Mock browser preview · not AI-generated"
-                : "AI-generated voice"}
+              {mode === "mock" ? "Mock browser preview · not AI-generated" : "AI-generated voice"}
             </p>
           </div>
         </div>

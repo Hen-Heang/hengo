@@ -45,7 +45,9 @@ export function LiveElapsedClock({ since }: { since: string }) {
               {unit.label}
             </span>
           </div>
-          {i < UNITS.length - 1 && <span className="pb-4 text-2xl font-bold text-muted-foreground/40 sm:text-3xl">:</span>}
+          {i < UNITS.length - 1 && (
+            <span className="pb-4 text-2xl font-bold text-muted-foreground/40 sm:text-3xl">:</span>
+          )}
         </div>
       ))}
     </div>

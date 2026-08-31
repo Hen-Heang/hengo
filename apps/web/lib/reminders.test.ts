@@ -69,7 +69,11 @@ describe("computeNextRunAt", () => {
     const before = new Date("2026-03-07T20:00:00.000Z") // ~15:00 EST on Mar 7, before 09:00 the next day
     const next = computeNextRunAt(rule, "America/New_York", before)
     const hourInZone = Number(
-      next.toLocaleString("en-US", { timeZone: "America/New_York", hour: "2-digit", hour12: false })
+      next.toLocaleString("en-US", {
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        hour12: false,
+      }),
     )
     expect(hourInZone % 24).toBe(9)
   })
@@ -80,7 +84,11 @@ describe("computeNextRunAt", () => {
     const before = new Date("2026-10-31T20:00:00.000Z")
     const next = computeNextRunAt(rule, "America/New_York", before)
     const hourInZone = Number(
-      next.toLocaleString("en-US", { timeZone: "America/New_York", hour: "2-digit", hour12: false })
+      next.toLocaleString("en-US", {
+        timeZone: "America/New_York",
+        hour: "2-digit",
+        hour12: false,
+      }),
     )
     expect(hourInZone % 24).toBe(9)
   })
@@ -100,11 +108,15 @@ describe("describeRecurrence", () => {
   })
 
   it("describes a weekly recurrence with the anchor weekday", () => {
-    expect(describeRecurrence({ frequency: "weekly", time: "21:00", anchorWeekday: 1 })).toBe("Every Mon at 9:00 PM")
+    expect(describeRecurrence({ frequency: "weekly", time: "21:00", anchorWeekday: 1 })).toBe(
+      "Every Mon at 9:00 PM",
+    )
   })
 
   it("describes a selected-weekdays recurrence", () => {
-    expect(describeRecurrence({ frequency: "weekdays", time: "07:05", weekdays: [3, 1] })).toBe("Mon, Wed at 7:05 AM")
+    expect(describeRecurrence({ frequency: "weekdays", time: "07:05", weekdays: [3, 1] })).toBe(
+      "Mon, Wed at 7:05 AM",
+    )
   })
 
   it("formats midnight and noon correctly", () => {
@@ -115,7 +127,13 @@ describe("describeRecurrence", () => {
 
 describe("validateReminderInput", () => {
   it("requires a title", () => {
-    expect(validateReminderInput({ title: "  ", scheduledFor: "2026-07-20T00:00:00.000Z", channels: ["web"] }).title).toBeTruthy()
+    expect(
+      validateReminderInput({
+        title: "  ",
+        scheduledFor: "2026-07-20T00:00:00.000Z",
+        channels: ["web"],
+      }).title,
+    ).toBeTruthy()
   })
 
   it("requires either a one-time schedule or a recurrence", () => {
@@ -123,7 +141,13 @@ describe("validateReminderInput", () => {
   })
 
   it("accepts a valid one-time reminder", () => {
-    expect(isReminderInputValid({ title: "Reminder", scheduledFor: "2026-07-20T00:00:00.000Z", channels: ["web"] })).toBe(true)
+    expect(
+      isReminderInputValid({
+        title: "Reminder",
+        scheduledFor: "2026-07-20T00:00:00.000Z",
+        channels: ["web"],
+      }),
+    ).toBe(true)
   })
 
   it("requires an anchor weekday for weekly recurrence", () => {
@@ -145,7 +169,13 @@ describe("validateReminderInput", () => {
   })
 
   it("requires at least one channel", () => {
-    expect(validateReminderInput({ title: "Reminder", scheduledFor: "2026-07-20T00:00:00.000Z", channels: [] }).channels).toBeTruthy()
+    expect(
+      validateReminderInput({
+        title: "Reminder",
+        scheduledFor: "2026-07-20T00:00:00.000Z",
+        channels: [],
+      }).channels,
+    ).toBeTruthy()
   })
 
   it("accepts a valid recurring reminder", () => {
@@ -154,7 +184,7 @@ describe("validateReminderInput", () => {
         title: "Reminder",
         recurrence: { frequency: "daily", time: "09:00" },
         channels: ["web", "telegram"],
-      })
+      }),
     ).toBe(true)
   })
 })

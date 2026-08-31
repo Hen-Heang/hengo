@@ -10,24 +10,24 @@ Router). The goal is a UI integration that loses **no feature or function** from
 
 ## Decisions (locked)
 
-| Topic | Decision |
-|---|---|
-| Backend | Extend KoriAI's existing **Spring Boot** API. Goals/tasks become new endpoint groups in `lib/api.ts`. No Supabase. (Backend Java work tracked separately — frontend ships against the contract below.) |
-| Auth | **Unify on KoriAI auth** (`lib/auth-store.ts` JWT). Orbit's Supabase auth is dropped. Goals scoped to the JWT user. |
-| First scope | **Core tracking** only. AI / realtime / PWA / sharing / gcal / PDF / analytics are *deferred*, with documented seams (not stubs). |
-| Routing | Namespaced under **`/goals`** to avoid colliding with KoriAI's study `/dashboard` + `DailyGoalRing` (a *study-minutes* goal, a different concept). |
-| Naming | Tracker is surfaced as **"Goals"** in nav. The product-name "Orbit" is not used in UI. |
+| Topic       | Decision                                                                                                                                                                                               |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Backend     | Extend KoriAI's existing **Spring Boot** API. Goals/tasks become new endpoint groups in `lib/api.ts`. No Supabase. (Backend Java work tracked separately — frontend ships against the contract below.) |
+| Auth        | **Unify on KoriAI auth** (`lib/auth-store.ts` JWT). Orbit's Supabase auth is dropped. Goals scoped to the JWT user.                                                                                    |
+| First scope | **Core tracking** only. AI / realtime / PWA / sharing / gcal / PDF / analytics are _deferred_, with documented seams (not stubs).                                                                      |
+| Routing     | Namespaced under **`/goals`** to avoid colliding with KoriAI's study `/dashboard` + `DailyGoalRing` (a _study-minutes_ goal, a different concept).                                                     |
+| Naming      | Tracker is surfaced as **"Goals"** in nav. The product-name "Orbit" is not used in UI.                                                                                                                 |
 
 ## Route map (Orbit → KoriAI)
 
-| Orbit route | KoriAI route | Status |
-|---|---|---|
-| `/dashboard` (goal list) | `/goals` | ☐ |
-| `/goal/$id` | `/goals/[id]` | ☐ |
-| `/goal/create` (template picker) | `/goals/create` | ☐ |
-| `/goal/create-custom` | `/goals/create/custom` | ☐ |
-| `/goal/create-from-template/$templateId` | `/goals/create/template/[templateId]` | ☐ |
-| `/calendar` (personal tasks) | `/goals/calendar` | ☐ |
+| Orbit route                              | KoriAI route                          | Status |
+| ---------------------------------------- | ------------------------------------- | ------ |
+| `/dashboard` (goal list)                 | `/goals`                              | ☐      |
+| `/goal/$id`                              | `/goals/[id]`                         | ☐      |
+| `/goal/create` (template picker)         | `/goals/create`                       | ☐      |
+| `/goal/create-custom`                    | `/goals/create/custom`                | ☐      |
+| `/goal/create-from-template/$templateId` | `/goals/create/template/[templateId]` | ☐      |
+| `/calendar` (personal tasks)             | `/goals/calendar`                     | ☐      |
 
 ## API contract (to add to `lib/api.ts`, envelope-unwrapped `r.data.data`)
 
@@ -54,7 +54,8 @@ backend) to preserve Orbit's flexible `GoalMetadata` without column sprawl.
 
 Legend: ☐ todo · ◐ in progress · ☑ done
 
-### Goals — list / dashboard  (`components/dashboard/*`, `pages/Dashboard.tsx`)  → `components/goals/*`, `app/(main)/goals/page.tsx`
+### Goals — list / dashboard (`components/dashboard/*`, `pages/Dashboard.tsx`) → `components/goals/*`, `app/(main)/goals/page.tsx`
+
 - ☑ Grid vs List view toggle (persisted `dg_goal_view`)
 - ☑ Sort: title A-Z/Z-A, due date asc/desc, status, created — **starred float to top** (`GoalSorter`, `useGoals`)
 - ☑ Filter tabs: All / Active / Completed (archived hidden)
@@ -67,16 +68,18 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 - ☑ Cmd/Ctrl+K search seam (search feature deferred — toast placeholder)
 - ☑ Deadline banner (overdue/approaching) via `getDeadlineNotificationMessage`
 
-### Goals — detail  (`pages/GoalDetail.tsx`)
+### Goals — detail (`pages/GoalDetail.tsx`)
+
 - ☐ Overview: progress bar, completion count, summary
 - ☐ Tasks tab → embedded Calendar
 - ☐ Settings tab: complete / archive / reactivate, extend deadline
 - ☐ Edit goal (slide panel + advanced form)
 - ☐ Deep-link `?taskId=&date=` opens a task
 - ☐ Tab persistence
-- *Deferred tabs (seam only):* Members (sharing), Analytics, AI chat, Themes
+- _Deferred tabs (seam only):_ Members (sharing), Analytics, AI chat, Themes
 
-### Goals — create  (`pages/TemplateSelection.tsx`, `goal-form/*`, `data/goalTemplates`)
+### Goals — create (`pages/TemplateSelection.tsx`, `goal-form/*`, `data/goalTemplates`)
+
 - ☐ Template picker: search, category filter, 2-col grid (18 templates / 8 categories)
 - ☐ Quick Launch: title + "No Duration" → create → detail
 - ☐ Create-from-template (hydrate form from template)
@@ -85,13 +88,15 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 - ☐ Travel: destination, accommodation, transportation, budget, activities multi-select
 - ☐ Advanced: priority, category, milestones (add/remove), AI-generate toggle (seam)
 - ☐ Zod validation, step progress indicator
-- *Note:* AI task auto-generation is deferred → toggle stays, calls a seam.
+- _Note:_ AI task auto-generation is deferred → toggle stays, calls a seam.
 
 ### Goals — edit / delete
+
 - ☐ EditGoalSlidePanel: title, desc, start/target date, "No Duration", type, icon; hydrate-on-open, cancel reverts
 - ☐ DeleteConfirmDialog: confirm, cascade tasks, page clamp
 
-### Tasks — calendar  (`components/calendar/*`)
+### Tasks — calendar (`components/calendar/*`)
+
 - ☐ Day view (time grid, 24h, auto-scroll to now)
 - ☐ Week view (desktop, 7-col grid)
 - ☐ Month view (grid, task dots, click day → day view)
@@ -101,9 +106,10 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 - ☐ Keyboard up/down between tasks
 - ☐ Completion celebration overlay
 - ☐ Standalone personal calendar (`goalId` null)
-- *Realtime patching is deferred → replaced by Query invalidation.*
+- _Realtime patching is deferred → replaced by Query invalidation._
 
-### Tasks — create / edit / delete  (`AddTaskDialog`, `EditTaskDialog`, `TaskFormFields`)
+### Tasks — create / edit / delete (`AddTaskDialog`, `EditTaskDialog`, `TaskFormFields`)
+
 - ☐ Fields: title*, description, start/end date, is-anytime, daily start/end time, color (8 presets + hex), completed
 - ☐ End-date/time auto-bump to keep duration (same-day)
 - ☐ Anytime mode hides time fields
@@ -112,7 +118,8 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 - ☐ Delete with 5s **undo**
 - ☐ Optimistic add
 
-### Tasks — Today's Tasks widget  (`dashboard/TodaysTasks.tsx`)
+### Tasks — Today's Tasks widget (`dashboard/TodaysTasks.tsx`)
+
 - ☐ Goal multi-select filter (persisted `dg_todays_tasks_selected_goals_v1:{userId}`)
 - ☐ Quick add (Enter submits, personal task)
 - ☐ Progress bar + counter
@@ -120,13 +127,15 @@ Legend: ☐ todo · ◐ in progress · ☑ done
 - ☐ Multi-select mode + "mark all complete" + undo
 - ☐ Mobile collapsible
 
-### Task details panel  (`TaskDetailsPanel` / `TaskDetailsSidebar`)
+### Task details panel (`TaskDetailsPanel` / `TaskDetailsSidebar`)
+
 - ☐ Color bar + completion checkbox + title
 - ☐ Date/time range formatting, anytime label
 - ☐ Markdown description, tags, created/updated relative time, duration
 - ☐ Actions: complete, edit, delete, (share/add-to-calendar = seams)
 
 ### Shared utils / logic to port
+
 - ☐ `goalDeadlineUtils.ts` → status, daysRemaining, urgency, progress%, suggestions, styling
 - ☐ `taskDateUtils.ts` → filterTasksByDate, anchor date, date/time range formatting
 - ☐ `taskColors.ts`, `timeGrid.ts` (bumpEndAfterStart, hhmmToMinutes), task normalization
@@ -137,6 +146,7 @@ Legend: ☐ todo · ◐ in progress · ☑ done
   forms/dialogs work unchanged.
 
 ### Types
+
 - ☐ `Goal`, `GoalMetadata`, `GoalData`, `SortOption`, `GoalTemplate`, `GoalDeadlineInfo` → `lib/goals.ts`
 - ☐ `Task`, `TaskTag` (+ helpers) → `lib/tasks.ts` (drop `@supabase/supabase-js` `User` import)
 

@@ -29,20 +29,10 @@ import {
 } from "@/components/ui/alert-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
-import {
-  getApiErrorMessage,
-  koreanCoachApi,
-  type KoreanCoachDashboard,
-} from "@/lib/api"
+import { getApiErrorMessage, koreanCoachApi, type KoreanCoachDashboard } from "@/lib/api"
 import { getKoreanCoachScenario } from "@/lib/korean-coach/scenarios"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
 
@@ -173,8 +163,8 @@ export default function KoreanCoachDashboardPage() {
               More ways to practise
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Pick a scenario to speak, sharpen your listening, or review a correction you have
-              seen before.
+              Pick a scenario to speak, sharpen your listening, or review a correction you have seen
+              before.
             </p>
           </div>
           <Button asChild variant="ghost" size="icon" aria-label="Korean Coach preferences">
@@ -190,7 +180,9 @@ export default function KoreanCoachDashboardPage() {
                 <Mic aria-hidden="true" />
               </div>
               <CardTitle>Speaking</CardTitle>
-              <CardDescription>Answer one workplace or daily-life question at a time.</CardDescription>
+              <CardDescription>
+                Answer one workplace or daily-life question at a time.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
@@ -292,7 +284,10 @@ export default function KoreanCoachDashboardPage() {
           <CardContent>
             {dashboard.frequentMistakes.length === 0 ? (
               <div className="rounded-xl border border-dashed border-border p-5 text-center">
-                <BookOpenCheck className="mx-auto size-6 text-muted-foreground" aria-hidden="true" />
+                <BookOpenCheck
+                  className="mx-auto size-6 text-muted-foreground"
+                  aria-hidden="true"
+                />
                 <p className="mt-3 text-sm font-medium">No repeated mistakes yet</p>
                 <p className="mt-1 text-sm text-muted-foreground">
                   This is an honest empty state. Patterns appear only after real practice.
@@ -304,7 +299,10 @@ export default function KoreanCoachDashboardPage() {
                   <li key={mistake.id} className="rounded-xl border border-border/70 p-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className="truncate text-sm text-muted-foreground line-through" lang="ko">
+                        <p
+                          className="truncate text-sm text-muted-foreground line-through"
+                          lang="ko"
+                        >
                           {mistake.original}
                         </p>
                         <p className="mt-1 font-semibold" lang="ko">
@@ -351,7 +349,9 @@ export default function KoreanCoachDashboardPage() {
                       <div>
                         <p className="font-medium">
                           {scenario?.englishTitle ??
-                            (session.mode === "listening" ? "Listening challenge" : "Speaking practice")}
+                            (session.mode === "listening"
+                              ? "Listening challenge"
+                              : "Speaking practice")}
                         </p>
                         <p className="mt-1 text-xs text-muted-foreground">
                           {new Date(session.endedAt ?? session.startedAt).toLocaleDateString()} ·{" "}
@@ -375,9 +375,9 @@ export default function KoreanCoachDashboardPage() {
           <div>
             <p className="font-semibold">Voice privacy</p>
             <p className="mt-1 leading-6 text-muted-foreground">
-              Your recording is sent to an AI service for transcription and feedback. Do not
-              record sensitive workplace or personal information. Hengo saves the transcript
-              and learning feedback, not the raw recording.
+              Your recording is sent to an AI service for transcription and feedback. Do not record
+              sensitive workplace or personal information. Hengo saves the transcript and learning
+              feedback, not the raw recording.
             </p>
           </div>
         </div>
@@ -395,8 +395,8 @@ export default function KoreanCoachDashboardPage() {
             <AlertDialogHeader>
               <AlertDialogTitle>Delete complete practice history?</AlertDialogTitle>
               <AlertDialogDescription>
-                This permanently removes Korean Coach sessions, attempts, and saved coach
-                mistakes. Your other Hengo learning history is not affected.
+                This permanently removes Korean Coach sessions, attempts, and saved coach mistakes.
+                Your other Hengo learning history is not affected.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>

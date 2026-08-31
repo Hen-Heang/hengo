@@ -1,4 +1,9 @@
-import { skillLabel, skillsForListeningTopic, skillsForScenarioCategory, type SkillCode } from "@/lib/learning/skills"
+import {
+  skillLabel,
+  skillsForListeningTopic,
+  skillsForScenarioCategory,
+  type SkillCode,
+} from "@/lib/learning/skills"
 
 // Deterministic daily-mission selection. No Math.random anywhere — the same
 // MissionContext always produces the same DailyMissionPlan, which is what
@@ -169,7 +174,12 @@ function buildPhraseCandidate(ctx: MissionContext, weight: number): Candidate | 
   }
 }
 
-function buildScenarioCandidate(ctx: MissionContext, weight: number, reason: string, skillCodes: SkillCode[]): Candidate | null {
+function buildScenarioCandidate(
+  ctx: MissionContext,
+  weight: number,
+  reason: string,
+  skillCodes: SkillCode[],
+): Candidate | null {
   if (ctx.availableScenarios.length === 0) return null
   const scenario = stablePick(ctx.availableScenarios, ctx.dateKey)
   if (!scenario) return null
@@ -187,7 +197,12 @@ function buildScenarioCandidate(ctx: MissionContext, weight: number, reason: str
   }
 }
 
-function buildListeningCandidate(ctx: MissionContext, weight: number, reason: string, skillCodes: SkillCode[]): Candidate | null {
+function buildListeningCandidate(
+  ctx: MissionContext,
+  weight: number,
+  reason: string,
+  skillCodes: SkillCode[],
+): Candidate | null {
   if (ctx.availableListeningTopics.length === 0) return null
   const topic = stablePick(ctx.availableListeningTopics, ctx.dateKey)
   if (!topic) return null
@@ -205,7 +220,11 @@ function buildListeningCandidate(ctx: MissionContext, weight: number, reason: st
   }
 }
 
-function buildInterviewCandidate(weight: number, reason: string, skillCodes: SkillCode[]): Candidate {
+function buildInterviewCandidate(
+  weight: number,
+  reason: string,
+  skillCodes: SkillCode[],
+): Candidate {
   return {
     weight,
     item: {
@@ -220,7 +239,10 @@ function buildInterviewCandidate(weight: number, reason: string, skillCodes: Ski
   }
 }
 
-function buildWeaknessCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItemType>): Candidate | null {
+function buildWeaknessCandidate(
+  ctx: MissionContext,
+  alreadyPresent: Set<MissionItemType>,
+): Candidate | null {
   const weakest = ctx.weakSkills[0]
   if (!weakest) return null
   const type = activityTypeForSkillCategory(weakest.skillCode)
@@ -240,7 +262,10 @@ function buildWeaknessCandidate(ctx: MissionContext, alreadyPresent: Set<Mission
   return buildScenarioCandidate(ctx, 0.3, reason, [weakest.skillCode])
 }
 
-function buildGoalCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItemType>): Candidate | null {
+function buildGoalCandidate(
+  ctx: MissionContext,
+  alreadyPresent: Set<MissionItemType>,
+): Candidate | null {
   if (ctx.upcomingExam) {
     if (alreadyPresent.has("interview")) return null
     return buildInterviewCandidate(
@@ -261,18 +286,30 @@ function buildGoalCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItem
   return null
 }
 
-const VARIETY_TYPES: MissionItemType[] = ["scenario", "listening", "vocab_review", "correction_review", "interview"]
+const VARIETY_TYPES: MissionItemType[] = [
+  "scenario",
+  "listening",
+  "vocab_review",
+  "correction_review",
+  "interview",
+]
 
-function buildVarietyCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItemType>): Candidate | null {
+function buildVarietyCandidate(
+  ctx: MissionContext,
+  alreadyPresent: Set<MissionItemType>,
+): Candidate | null {
   // The type that appears least (or not at all) in recent activity. Interview
   // only enters the rotation when there's a real active exam — otherwise
   // "haven't practiced interview in a while" would make it look neglected
   // for every learner who has simply never taken a mock interview.
-  const varietyTypes = ctx.upcomingExam ? VARIETY_TYPES : VARIETY_TYPES.filter((t) => t !== "interview")
+  const varietyTypes = ctx.upcomingExam
+    ? VARIETY_TYPES
+    : VARIETY_TYPES.filter((t) => t !== "interview")
   const counts = new Map<MissionItemType, number>()
   for (const type of varietyTypes) counts.set(type, 0)
   for (const feature of ctx.recentFeatures) {
-    if (counts.has(feature as MissionItemType)) counts.set(feature as MissionItemType, (counts.get(feature as MissionItemType) ?? 0) + 1)
+    if (counts.has(feature as MissionItemType))
+      counts.set(feature as MissionItemType, (counts.get(feature as MissionItemType) ?? 0) + 1)
   }
   const neglected = [...counts.entries()]
     .filter(([type]) => !alreadyPresent.has(type))
@@ -292,9 +329,18 @@ function buildVarietyCandidate(ctx: MissionContext, alreadyPresent: Set<MissionI
 export function buildDailyMission(ctx: MissionContext): DailyMissionPlan {
   const candidates: Candidate[] = []
   const totalDue = ctx.dueVocabularyCount + ctx.dueCorrectionsCount + ctx.duePhrasesCount
-  const vocabCandidate = buildVocabCandidate(ctx, 0.4 * (ctx.dueVocabularyCount / Math.max(1, totalDue) || 0.34))
-  const correctionCandidate = buildCorrectionCandidate(ctx, 0.4 * (ctx.dueCorrectionsCount / Math.max(1, totalDue) || 0.34))
-  const phraseCandidate = buildPhraseCandidate(ctx, 0.4 * (ctx.duePhrasesCount / Math.max(1, totalDue) || 0.34))
+  const vocabCandidate = buildVocabCandidate(
+    ctx,
+    0.4 * (ctx.dueVocabularyCount / Math.max(1, totalDue) || 0.34),
+  )
+  const correctionCandidate = buildCorrectionCandidate(
+    ctx,
+    0.4 * (ctx.dueCorrectionsCount / Math.max(1, totalDue) || 0.34),
+  )
+  const phraseCandidate = buildPhraseCandidate(
+    ctx,
+    0.4 * (ctx.duePhrasesCount / Math.max(1, totalDue) || 0.34),
+  )
   if (vocabCandidate) candidates.push(vocabCandidate)
   if (correctionCandidate) candidates.push(correctionCandidate)
   if (phraseCandidate) candidates.push(phraseCandidate)
@@ -336,7 +382,8 @@ export function buildDailyMission(ctx: MissionContext): DailyMissionPlan {
   const items: DailyMissionItemPlan[] = []
   let minutesUsed = 0
   for (const candidate of candidates) {
-    if (items.length > 0 && minutesUsed + candidate.item.estimatedMinutes > ctx.availableMinutes) continue
+    if (items.length > 0 && minutesUsed + candidate.item.estimatedMinutes > ctx.availableMinutes)
+      continue
     items.push(candidate.item)
     minutesUsed += candidate.item.estimatedMinutes
   }

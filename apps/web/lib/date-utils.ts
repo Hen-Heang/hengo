@@ -43,14 +43,21 @@ export function endOfLocalMonth(date: Date): Date {
 export type DateRangeGranularity = "day" | "week" | "month"
 
 /** The [start, end] local-time window containing `date` at the given granularity. */
-export function localRangeFor(date: Date, granularity: DateRangeGranularity): { start: Date; end: Date } {
+export function localRangeFor(
+  date: Date,
+  granularity: DateRangeGranularity,
+): { start: Date; end: Date } {
   if (granularity === "day") return { start: startOfLocalDay(date), end: endOfLocalDay(date) }
   if (granularity === "week") return { start: startOfLocalWeek(date), end: endOfLocalWeek(date) }
   return { start: startOfLocalMonth(date), end: endOfLocalMonth(date) }
 }
 
 /** Moves `date` one whole unit forward/back at the given granularity (for prev/next navigation). */
-export function shiftAnchorDate(date: Date, granularity: DateRangeGranularity, direction: 1 | -1): Date {
+export function shiftAnchorDate(
+  date: Date,
+  granularity: DateRangeGranularity,
+  direction: 1 | -1,
+): Date {
   const next = new Date(date)
   if (granularity === "day") next.setDate(next.getDate() + direction)
   else if (granularity === "week") next.setDate(next.getDate() + 7 * direction)
@@ -67,7 +74,11 @@ export function shiftAnchorDate(date: Date, granularity: DateRangeGranularity, d
 const LABEL_LOCALE = "en-US"
 
 /** Short human label for the period containing `date` (e.g. "Today", "Jul 12 – 18", "July 2026"). */
-export function formatRangeLabel(date: Date, granularity: DateRangeGranularity, now: Date = new Date()): string {
+export function formatRangeLabel(
+  date: Date,
+  granularity: DateRangeGranularity,
+  now: Date = new Date(),
+): string {
   if (granularity === "day") {
     if (toLocalDateString(date) === toLocalDateString(now)) return "Today"
     const yesterday = new Date(now)
@@ -79,7 +90,10 @@ export function formatRangeLabel(date: Date, granularity: DateRangeGranularity, 
     const { start, end } = localRangeFor(date, "week")
     const sameMonth = start.getMonth() === end.getMonth()
     const startLabel = start.toLocaleDateString(LABEL_LOCALE, { month: "short", day: "numeric" })
-    const endLabel = end.toLocaleDateString(LABEL_LOCALE, sameMonth ? { day: "numeric" } : { month: "short", day: "numeric" })
+    const endLabel = end.toLocaleDateString(
+      LABEL_LOCALE,
+      sameMonth ? { day: "numeric" } : { month: "short", day: "numeric" },
+    )
     return `${startLabel} – ${endLabel}`
   }
   return date.toLocaleDateString(LABEL_LOCALE, { month: "long", year: "numeric" })

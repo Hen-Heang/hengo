@@ -5,7 +5,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 
 import { recoveryApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
-import { daysSinceLastEvent, lastEventTimestamp, ratePlan, rodeOutCount, type PlanOutcome } from "@/lib/recovery"
+import {
+  daysSinceLastEvent,
+  lastEventTimestamp,
+  ratePlan,
+  rodeOutCount,
+  type PlanOutcome,
+} from "@/lib/recovery"
 import { isDue } from "@/lib/srs"
 import { useLogActivity } from "@/hooks/useLogActivity"
 import type {
@@ -22,14 +28,22 @@ import type {
   UrgeEventInput,
 } from "@/lib/recovery-schemas"
 
-export const recoveryHabitsQueryKey = (userId?: string | null) => ["recovery", "habits", userId] as const
-export const recoveryTriggersQueryKey = (userId?: string | null) => ["recovery", "triggers", userId] as const
-export const recoveryEventsQueryKey = (habitId?: string | null) => ["recovery", "events", habitId] as const
-export const recoveryPlansQueryKey = (habitId?: string | null) => ["recovery", "plans", habitId] as const
-export const recoveryDailyCheckInsQueryKey = (habitId?: string | null) => ["recovery", "daily-check-ins", habitId] as const
-export const recoveryProtectionQueryKey = (habitId?: string | null) => ["recovery", "protection", habitId] as const
-export const recoveryPrivacyQueryKey = (userId?: string | null) => ["recovery", "privacy", userId] as const
-export const recoveryWeeklyReviewsQueryKey = (habitId?: string | null) => ["recovery", "weekly-reviews", habitId] as const
+export const recoveryHabitsQueryKey = (userId?: string | null) =>
+  ["recovery", "habits", userId] as const
+export const recoveryTriggersQueryKey = (userId?: string | null) =>
+  ["recovery", "triggers", userId] as const
+export const recoveryEventsQueryKey = (habitId?: string | null) =>
+  ["recovery", "events", habitId] as const
+export const recoveryPlansQueryKey = (habitId?: string | null) =>
+  ["recovery", "plans", habitId] as const
+export const recoveryDailyCheckInsQueryKey = (habitId?: string | null) =>
+  ["recovery", "daily-check-ins", habitId] as const
+export const recoveryProtectionQueryKey = (habitId?: string | null) =>
+  ["recovery", "protection", habitId] as const
+export const recoveryPrivacyQueryKey = (userId?: string | null) =>
+  ["recovery", "privacy", userId] as const
+export const recoveryWeeklyReviewsQueryKey = (habitId?: string | null) =>
+  ["recovery", "weekly-reviews", habitId] as const
 
 // Triggers are global per user (not per-habit) — the same "after a stressful
 // meeting" trigger can apply across habits, so it's one flat, reusable list.
@@ -368,7 +382,10 @@ export function useRecoveryWeeklyReviews(habitId: string | null) {
   })
 
   const saveReview = async (
-    input: Pick<WeeklyReview, "weekStart" | "statistics" | "summary" | "experiment" | "aiSummary" | "aiConsentAt">,
+    input: Pick<
+      WeeklyReview,
+      "weekStart" | "statistics" | "summary" | "experiment" | "aiSummary" | "aiConsentAt"
+    >,
   ) => {
     if (!habitId) throw new Error("No active habit")
     const review = await recoveryApi.saveWeeklyReview(habitId, input)

@@ -36,7 +36,7 @@ export class GoogleCalendarReauthRequiredError extends Error {
 
 export async function exchangeGoogleAuthCode(
   code: string,
-  redirectUri: string
+  redirectUri: string,
 ): Promise<GoogleTokenExchangeResult> {
   const clientId = getGoogleOAuthClientId()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET
@@ -86,7 +86,7 @@ export interface GoogleTokenRefreshResult {
 }
 
 export async function refreshGoogleAccessToken(
-  refreshToken: string
+  refreshToken: string,
 ): Promise<GoogleTokenRefreshResult> {
   const clientId = getGoogleOAuthClientId()
   const clientSecret = process.env.GOOGLE_CLIENT_SECRET

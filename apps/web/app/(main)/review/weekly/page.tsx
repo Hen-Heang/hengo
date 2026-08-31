@@ -41,10 +41,19 @@ export default function WeeklyReviewPage() {
   const loading = timelineLoading || goalsLoading || habitsLoading || checkinsLoading
 
   const daySummaries = groupTimelineByDay(entries)
-  const habitCompletion = buildHabitWeeklyCompletion(activeHabits, weekCheckins, localWeekDates(start))
+  const habitCompletion = buildHabitWeeklyCompletion(
+    activeHabits,
+    weekCheckins,
+    localWeekDates(start),
+  )
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-2xl pb-16"
+    >
       <motion.div variants={itemVariants} className="mb-2">
         <BackLink href="/home" label="Home" mobileOnly />
       </motion.div>
@@ -60,7 +69,9 @@ export default function WeeklyReviewPage() {
       ) : error ? (
         <ErrorBanner>{error}</ErrorBanner>
       ) : (
-        <WeeklyReviewView summary={buildWeeklyReviewSummary(daySummaries, allGoals, habitCompletion, rangeLabel)} />
+        <WeeklyReviewView
+          summary={buildWeeklyReviewSummary(daySummaries, allGoals, habitCompletion, rangeLabel)}
+        />
       )}
     </motion.div>
   )

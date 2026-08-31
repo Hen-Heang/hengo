@@ -1,52 +1,46 @@
-"use client";
+"use client"
 
-import "@assistant-ui/react-markdown/styles/dot.css";
+import "@assistant-ui/react-markdown/styles/dot.css"
 
 import {
   type CodeHeaderProps,
   MarkdownTextPrimitive,
   unstable_memoizeMarkdownComponents as memoizeMarkdownComponents,
   useIsMarkdownCodeBlock,
-} from "@assistant-ui/react-markdown";
-import { useAuiState } from "@assistant-ui/react";
-import remarkGfm from "remark-gfm";
-import {
-  Children,
-  type FC,
-  memo,
-  type ReactNode,
-  useState,
-} from "react";
-import { CheckIcon, CopyIcon } from "lucide-react";
+} from "@assistant-ui/react-markdown"
+import { useAuiState } from "@assistant-ui/react"
+import remarkGfm from "remark-gfm"
+import { Children, type FC, memo, type ReactNode, useState } from "react"
+import { CheckIcon, CopyIcon } from "lucide-react"
 
-import { CodeSyntaxHighlighter } from "@/components/assistant-ui/code-syntax-highlighter";
-import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button";
-import { SmartPeek } from "@/components/ui/SmartPeek";
-import { cn } from "@/lib/utils";
+import { CodeSyntaxHighlighter } from "@/components/assistant-ui/code-syntax-highlighter"
+import { TooltipIconButton } from "@/components/assistant-ui/tooltip-icon-button"
+import { SmartPeek } from "@/components/ui/SmartPeek"
+import { cn } from "@/lib/utils"
 
 // Word-level tap-to-look-up (Korean dictionary peek). While the reply is still
 // streaming we render plain text — mounting hundreds of Radix popovers per
 // token flush is what made long streaming replies feel janky in the old UI.
 function useSmartPeekEnabled(): boolean {
-  return useAuiState((s) => s.message.status?.type !== "running");
+  return useAuiState((s) => s.message.status?.type !== "running")
 }
 
 function peekWords(children: ReactNode, enabled: boolean): ReactNode {
-  if (!enabled) return children;
+  if (!enabled) return children
   return Children.map(children, (child) => {
-    if (typeof child !== "string") return child;
+    if (typeof child !== "string") return child
     // Split by whitespace but keep the whitespace in the results.
     return child.split(/(\s+)/).map((word, i) => {
-      if (!word.trim()) return <span key={i}>{word}</span>;
+      if (!word.trim()) return <span key={i}>{word}</span>
       // Remove punctuation for the lookup but keep it for display.
-      const cleanWord = word.replace(/[.,!??"']/g, "");
+      const cleanWord = word.replace(/[.,!??"']/g, "")
       return (
         <SmartPeek key={i} word={cleanWord}>
           {word}
         </SmartPeek>
-      );
-    });
-  });
+      )
+    })
+  })
 }
 
 const MarkdownTextImpl = () => {
@@ -57,17 +51,17 @@ const MarkdownTextImpl = () => {
       components={defaultComponents}
       defer
     />
-  );
-};
+  )
+}
 
-export const MarkdownText = memo(MarkdownTextImpl);
+export const MarkdownText = memo(MarkdownTextImpl)
 
 const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
-  const { isCopied, copyToClipboard } = useCopyToClipboard();
+  const { isCopied, copyToClipboard } = useCopyToClipboard()
   const onCopy = () => {
-    if (!code || isCopied) return;
-    copyToClipboard(code);
-  };
+    if (!code || isCopied) return
+    copyToClipboard(code)
+  }
 
   return (
     <div className="aui-code-header-root border-border/50 bg-muted/50 mt-3 flex items-center justify-between rounded-t-xl border border-b-0 px-3.5 py-1.5 text-xs">
@@ -75,40 +69,36 @@ const CodeHeader: FC<CodeHeaderProps> = ({ language, code }) => {
         {language}
       </span>
       <TooltipIconButton tooltip="Copy" onClick={onCopy}>
-        {!isCopied && (
-          <CopyIcon className="animate-in zoom-in-75 fade-in duration-150" />
-        )}
-        {isCopied && (
-          <CheckIcon className="animate-in zoom-in-50 fade-in duration-200 ease-out" />
-        )}
+        {!isCopied && <CopyIcon className="animate-in zoom-in-75 fade-in duration-150" />}
+        {isCopied && <CheckIcon className="animate-in zoom-in-50 fade-in duration-200 ease-out" />}
       </TooltipIconButton>
     </div>
-  );
-};
+  )
+}
 
 const useCopyToClipboard = ({
   copiedDuration = 3000,
 }: {
-  copiedDuration?: number;
+  copiedDuration?: number
 } = {}) => {
-  const [isCopied, setIsCopied] = useState<boolean>(false);
+  const [isCopied, setIsCopied] = useState<boolean>(false)
 
   const copyToClipboard = (value: string) => {
     if (!value || typeof navigator === "undefined" || !navigator.clipboard) {
-      return;
+      return
     }
 
     navigator.clipboard.writeText(value).then(
       () => {
-        setIsCopied(true);
-        setTimeout(() => setIsCopied(false), copiedDuration);
+        setIsCopied(true)
+        setTimeout(() => setIsCopied(false), copiedDuration)
       },
       () => {},
-    );
-  };
+    )
+  }
 
-  return { isCopied, copyToClipboard };
-};
+  return { isCopied, copyToClipboard }
+}
 
 const defaultComponents = memoizeMarkdownComponents({
   h1: ({ className, ...props }) => (
@@ -149,35 +139,23 @@ const defaultComponents = memoizeMarkdownComponents({
   ),
   h5: ({ className, ...props }) => (
     <h5
-      className={cn(
-        "aui-md-h5 mt-3 mb-1 text-sm font-semibold first:mt-0 last:mb-0",
-        className,
-      )}
+      className={cn("aui-md-h5 mt-3 mb-1 text-sm font-semibold first:mt-0 last:mb-0", className)}
       {...props}
     />
   ),
   h6: ({ className, ...props }) => (
     <h6
-      className={cn(
-        "aui-md-h6 mt-3 mb-1 text-sm font-medium first:mt-0 last:mb-0",
-        className,
-      )}
+      className={cn("aui-md-h6 mt-3 mb-1 text-sm font-medium first:mt-0 last:mb-0", className)}
       {...props}
     />
   ),
   p: function P({ className, children, ...props }) {
-    const peek = useSmartPeekEnabled();
+    const peek = useSmartPeekEnabled()
     return (
-      <p
-        className={cn(
-          "aui-md-p my-3 leading-relaxed first:mt-0 last:mb-0",
-          className,
-        )}
-        {...props}
-      >
+      <p className={cn("aui-md-p my-3 leading-relaxed first:mt-0 last:mb-0", className)} {...props}>
         {peekWords(children, peek)}
       </p>
-    );
+    )
   },
   a: ({ className, ...props }) => (
     <a
@@ -216,10 +194,7 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   hr: ({ className, ...props }) => (
-    <hr
-      className={cn("aui-md-hr border-muted-foreground/20 my-3", className)}
-      {...props}
-    />
+    <hr className={cn("aui-md-hr border-muted-foreground/20 my-3", className)} {...props} />
   ),
   table: ({ className, ...props }) => (
     <table
@@ -258,26 +233,23 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   li: function Li({ className, children, ...props }) {
-    const peek = useSmartPeekEnabled();
+    const peek = useSmartPeekEnabled()
     return (
       <li className={cn("aui-md-li leading-relaxed", className)} {...props}>
         {peekWords(children, peek)}
       </li>
-    );
+    )
   },
   strong: function Strong({ className, children, ...props }) {
-    const peek = useSmartPeekEnabled();
+    const peek = useSmartPeekEnabled()
     return (
       <strong className={cn("aui-md-strong font-semibold", className)} {...props}>
         {peekWords(children, peek)}
       </strong>
-    );
+    )
   },
   sup: ({ className, ...props }) => (
-    <sup
-      className={cn("aui-md-sup [&>a]:text-xs [&>a]:no-underline", className)}
-      {...props}
-    />
+    <sup className={cn("aui-md-sup [&>a]:text-xs [&>a]:no-underline", className)} {...props} />
   ),
   pre: ({ className, ...props }) => (
     <pre
@@ -289,7 +261,7 @@ const defaultComponents = memoizeMarkdownComponents({
     />
   ),
   code: function Code({ className, ...props }) {
-    const isCodeBlock = useIsMarkdownCodeBlock();
+    const isCodeBlock = useIsMarkdownCodeBlock()
     return (
       <code
         className={cn(
@@ -299,8 +271,8 @@ const defaultComponents = memoizeMarkdownComponents({
         )}
         {...props}
       />
-    );
+    )
   },
   CodeHeader,
   SyntaxHighlighter: CodeSyntaxHighlighter,
-});
+})

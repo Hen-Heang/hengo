@@ -38,7 +38,11 @@ export function getStudyFocus(stats: DashboardStats): StudyFocus {
       description:
         "You have enough exposure. The next gain comes from producing your own Korean and letting the AI fix repeated grammar and phrasing mistakes.",
       ctaLabel: "Write & correct",
-      ctaHref: "/chat?prompt=" + encodeURIComponent("Please correct my Korean writing and explain each change in English.\n\nMy text:\n"),
+      ctaHref:
+        "/chat?prompt=" +
+        encodeURIComponent(
+          "Please correct my Korean writing and explain each change in English.\n\nMy text:\n",
+        ),
     }
   }
 

@@ -8,7 +8,12 @@ import { z } from "zod"
 import type { McpServer } from "@modelcontextprotocol/server"
 import { addDays, format, parseISO } from "date-fns"
 import type { McpContext } from "../context"
-import { resolveTaskStatus, taskDueDate, todayInAppTimezone, type TaskStatus } from "@/lib/task-status"
+import {
+  resolveTaskStatus,
+  taskDueDate,
+  todayInAppTimezone,
+  type TaskStatus,
+} from "@/lib/task-status"
 import { ymdSchema } from "./schemas"
 import { instrumentedTool } from "./instrument"
 
@@ -45,7 +50,12 @@ export const taskSummarySchema = z.object({
 })
 
 export function toTaskSummary(row: TaskRow, todayYmd: string) {
-  const asTaskShape = { completed: row.completed, status: row.status ?? undefined, start_date: row.start_date, end_date: row.end_date }
+  const asTaskShape = {
+    completed: row.completed,
+    status: row.status ?? undefined,
+    start_date: row.start_date,
+    end_date: row.end_date,
+  }
   const status = resolveTaskStatus(asTaskShape as Parameters<typeof resolveTaskStatus>[0], todayYmd)
   const due = taskDueDate(row)
   return {
@@ -100,12 +110,20 @@ export function registerTaskTools(server: McpServer, ctx: McpContext): void {
         truncated: z.boolean(),
         today: z.string(),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "list_tasks", async ({ goalId, from, to, status, limit }) => {
       const today = todayInAppTimezone()
       const rangeFrom = from ?? today
-      const rangeTo = clampRange(rangeFrom, to ?? format(addDays(parseISO(rangeFrom), 14), "yyyy-MM-dd"))
+      const rangeTo = clampRange(
+        rangeFrom,
+        to ?? format(addDays(parseISO(rangeFrom), 14), "yyyy-MM-dd"),
+      )
 
       let query = ctx.db
         .from("tasks")
@@ -125,7 +143,12 @@ export function registerTaskTools(server: McpServer, ctx: McpContext): void {
       const total = count ?? tasks.length
       const truncated = total > tasks.length
       return {
-        content: [{ type: "text" as const, text: `${total} task${total === 1 ? "" : "s"}${truncated ? ` (showing ${tasks.length})` : ""}.` }],
+        content: [
+          {
+            type: "text" as const,
+            text: `${total} task${total === 1 ? "" : "s"}${truncated ? ` (showing ${tasks.length})` : ""}.`,
+          },
+        ],
         structuredContent: { tasks, total, truncated, today },
       }
     }),
@@ -135,7 +158,8 @@ export function registerTaskTools(server: McpServer, ctx: McpContext): void {
     "get_goal_tasks",
     {
       title: "Get a goal's tasks",
-      description: "List every task under one goal, oldest first. Obtain the goal id from list_goals first.",
+      description:
+        "List every task under one goal, oldest first. Obtain the goal id from list_goals first.",
       inputSchema: z.object({
         goalId: z.string().uuid(),
         status: z.enum(["open", "completed", "all"]).default("all"),
@@ -147,7 +171,12 @@ export function registerTaskTools(server: McpServer, ctx: McpContext): void {
         truncated: z.boolean(),
         today: z.string(),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "get_goal_tasks", async ({ goalId, status, limit }) => {
       const today = todayInAppTimezone()
@@ -166,7 +195,12 @@ export function registerTaskTools(server: McpServer, ctx: McpContext): void {
       const total = count ?? tasks.length
       const truncated = total > tasks.length
       return {
-        content: [{ type: "text" as const, text: `${total} task${total === 1 ? "" : "s"}${truncated ? ` (showing ${tasks.length})` : ""}.` }],
+        content: [
+          {
+            type: "text" as const,
+            text: `${total} task${total === 1 ? "" : "s"}${truncated ? ` (showing ${tasks.length})` : ""}.`,
+          },
+        ],
         structuredContent: { tasks, total, truncated, today },
       }
     }),

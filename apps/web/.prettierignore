@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.next-stale/
+out/
+build/
+coverage/
+playwright-report/
+test-results/
+next-env.d.ts
+pnpm-lock.yaml
+
+# Reference/donor sources not part of this app's build (see eslint.config.mjs).
+goalmap/
+dev-learning-notes/

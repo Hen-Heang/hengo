@@ -33,7 +33,11 @@ export async function POST(req: Request): Promise<Response> {
   const auth = await requireUser(req)
   if (auth instanceof Response) return auth
   const parsed = recoveryCoachInputSchema.safeParse(await req.json().catch(() => ({})))
-  if (!parsed.success) return Response.json({ error: "Explicit consent and valid coaching fields are required." }, { status: 400 })
+  if (!parsed.success)
+    return Response.json(
+      { error: "Explicit consent and valid coaching fields are required." },
+      { status: 400 },
+    )
 
   try {
     const approved = {
@@ -54,6 +58,9 @@ export async function POST(req: Request): Promise<Response> {
     })
     return Response.json(object)
   } catch (error) {
-    return Response.json({ error: error instanceof Error ? error.message : "Recovery coaching request failed." }, { status: 500 })
+    return Response.json(
+      { error: error instanceof Error ? error.message : "Recovery coaching request failed." },
+      { status: 500 },
+    )
   }
 }

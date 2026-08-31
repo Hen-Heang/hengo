@@ -1,9 +1,6 @@
 import { requireUserId } from "@/lib/auth-store"
 import { createCorrectionFingerprint } from "@/lib/learning/korean-text"
-import {
-  planCorrectionUpsert,
-  type ExistingCorrectionState,
-} from "@/lib/learning/corrections"
+import { planCorrectionUpsert, type ExistingCorrectionState } from "@/lib/learning/corrections"
 import {
   koreanCoachPreferencesSchema,
   koreanPhraseSchema,
@@ -52,9 +49,7 @@ type CoachErrorEnvelope = {
 
 async function parseCoachResponse<T>(response: Response): Promise<CoachEnvelope<T>> {
   const payload = (await response.json().catch(() => null)) as
-    | CoachEnvelope<T>
-    | CoachErrorEnvelope
-    | null
+    CoachEnvelope<T> | CoachErrorEnvelope | null
   if (!response.ok || !payload || !("data" in payload)) {
     const detail = payload && "error" in payload ? payload.error : undefined
     throw new KoreanCoachApiError(
@@ -94,7 +89,11 @@ export const koreanCoachAiApi = {
     durationMs: number,
   ): Promise<{ transcript: string; mode: KoreanCoachAiMode }> => {
     const formData = new FormData()
-    const extension = audio.type.includes("mp4") ? "m4a" : audio.type.includes("wav") ? "wav" : "webm"
+    const extension = audio.type.includes("mp4")
+      ? "m4a"
+      : audio.type.includes("wav")
+        ? "wav"
+        : "webm"
     formData.set("audio", audio, `answer.${extension}`)
     formData.set("durationMs", String(Math.round(durationMs)))
     const response = await fetch("/api/ai/korean/transcribe", {
@@ -406,7 +405,8 @@ export const koreanCoachApi = {
     mode: KoreanCoachPracticeMode,
     preferences: KoreanCoachPreferences,
   ): Promise<KoreanPracticeSession> => {
-    if (scenarioId && !getKoreanCoachScenario(scenarioId)) throw new Error("Unknown Korean scenario")
+    if (scenarioId && !getKoreanCoachScenario(scenarioId))
+      throw new Error("Unknown Korean scenario")
     const { data, error } = await supabase
       .from("kori_voice_sessions")
       .insert({

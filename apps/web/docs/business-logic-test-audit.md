@@ -15,18 +15,18 @@ they were not audited.
 
 ## 1. Domain areas found
 
-| Area | Source of truth | Notes |
-| --- | --- | --- |
-| Task workflow status | `lib/task-status.ts` | 5 statuses + legacy `completed` boolean |
-| Derived task state (overdue / today / unscheduled) | `lib/task-status.ts` | Derived, never stored |
-| Task filtering, search, sorting, grouping | `lib/task-views.ts` | Pure, clock injected |
-| Weekly capacity + conflicts | `lib/weekly-capacity.ts` | `goals.weekly_capacity_minutes` |
-| Goal progress (outcome vs activity) | `lib/goal-progress.ts` | Weighted key results |
-| Goal health | `lib/goal-health.ts` | Not re-audited this pass |
-| Next Best Action | `lib/next-best-action.ts` | Deterministic, 6 ordered rules |
-| Recurring occurrences | `lib/goal-schedule-rules.ts` | Civil dates, UTC-anchored |
-| Phases | `lib/goal-plan-phases.ts` | Ordering + status |
-| Task mutations | `lib/api/goals.ts` (`tasksApi`) | The only write path |
+| Area                                               | Source of truth                 | Notes                                   |
+| -------------------------------------------------- | ------------------------------- | --------------------------------------- |
+| Task workflow status                               | `lib/task-status.ts`            | 5 statuses + legacy `completed` boolean |
+| Derived task state (overdue / today / unscheduled) | `lib/task-status.ts`            | Derived, never stored                   |
+| Task filtering, search, sorting, grouping          | `lib/task-views.ts`             | Pure, clock injected                    |
+| Weekly capacity + conflicts                        | `lib/weekly-capacity.ts`        | `goals.weekly_capacity_minutes`         |
+| Goal progress (outcome vs activity)                | `lib/goal-progress.ts`          | Weighted key results                    |
+| Goal health                                        | `lib/goal-health.ts`            | Not re-audited this pass                |
+| Next Best Action                                   | `lib/next-best-action.ts`       | Deterministic, 6 ordered rules          |
+| Recurring occurrences                              | `lib/goal-schedule-rules.ts`    | Civil dates, UTC-anchored               |
+| Phases                                             | `lib/goal-plan-phases.ts`       | Ordering + status                       |
+| Task mutations                                     | `lib/api/goals.ts` (`tasksApi`) | The only write path                     |
 
 The domain layer is genuinely well-factored: it is pure, has no React or
 Supabase coupling, and injects "today" as a civil date rather than reading the
@@ -46,13 +46,12 @@ tests:
    (`todayInAppTimezone`). Verified across the Seoul midnight boundary, month,
    year and leap-day boundaries, and from four host timezones.
 3. **Overdue / due-today / unscheduled are derived, never stored.**
-4. **"Unscheduled" means no *time slot*** (`hasTimeSlot`), not "no date".
+4. **"Unscheduled" means no _time slot_** (`hasTimeSlot`), not "no date".
 5. **`reschedule_count` means "times this slipped"**, not "times it was
    edited" — only `tasksApi.reschedule` bumps it.
 6. **Occurrence generation is timezone-independent and idempotent**; months too
    short for `day_of_month` are skipped, never clamped.
-7. **Outcome progress ≠ activity progress.** `outcomeProgress` is `null` (not
-   0) when a goal has no key results; callers must not render null as 0%.
+7. **Outcome progress ≠ activity progress.** `outcomeProgress` is `null` (not 0) when a goal has no key results; callers must not render null as 0%.
 8. **Progress clamps to [0, 100].**
 
 ## 3–5. Conflicting sources of truth, duplicated calculations, untested logic
@@ -61,15 +60,15 @@ tests:
 
 The headline finding. Two rules coexisted:
 
-| Definition | Used by |
-| --- | --- |
+| Definition                                             | Used by                                                                                                                                                                                  |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **No time slot** (`isTaskUnscheduled` / `hasTimeSlot`) | Unscheduled chip + count, `filters.scheduled`, Schedule tab's "Unscheduled backlog", Plan tab's per-phase `unscheduledCount`, Overview's "Unscheduled" stat, capacity `unscheduledCount` |
-| **No due date** (`dueDate ?? "Unscheduled"`) | `GoalTaskRow` (both variants), `GoalTaskDetailsSheet` header |
+| **No due date** (`dueDate ?? "Unscheduled"`)           | `GoalTaskRow` (both variants), `GoalTaskDetailsSheet` header                                                                                                                             |
 
 `tasksApi.moveToBacklog` **deliberately keeps the task's day and drops only the
 slot**. So every backlogged task still had a date, and the date-based rule never
 fired: the Unscheduled chip could read `3` while **not one row was labelled
-Unscheduled**. Worse, the row's status badge read *"Scheduled"* (see C2).
+Unscheduled**. Worse, the row's status badge read _"Scheduled"_ (see C2).
 
 ### C2 — `moveToBacklog` never wrote the status ✅ FIXED
 
@@ -85,15 +84,15 @@ had been `scheduled` kept that status forever. Consequences:
 `summarizeWeek` adds **every** task whose `start_date` falls in the week to
 `plannedMinutes` — including tasks with no time slot, which the same summary
 simultaneously reports in `unscheduledCount`. A goal can therefore display
-**"Over capacity"** driven by work the very same card lists as *not yet
-scheduled*, and moving a task to the backlog does not reduce the week's load.
+**"Over capacity"** driven by work the very same card lists as _not yet
+scheduled_, and moving a task to the backlog does not reduce the week's load.
 
 Not changed in this pass: it alters a user-visible number and the product must
 choose. Pinned by characterisation tests in `lib/weekly-capacity.test.ts`
 ("capacity: what counts as 'planned'") so any future change is deliberate and
 visible in a diff.
 
-**Recommendation:** capacity should count *scheduled* effort — filter on
+**Recommendation:** capacity should count _scheduled_ effort — filter on
 `isScheduled(task)` in the `plannedMinutes` loop.
 
 ### C4 — Week bucketing uses `start_date`, due-date logic uses `end_date` ⚠️ OPEN
@@ -165,29 +164,29 @@ for dropping the boolean. Tasks with no `status` at all fall back to
 
 ## 13. Traceability
 
-| Business rule | Source file | UI surface | Test level | Test file | Status |
-| --- | --- | --- | --- | --- | --- |
-| `completed` wins over `status` on read | `lib/task-status.ts` | Row, sheet | Unit + Component | `lib/task-status.test.ts`, `GoalTaskRow.test.tsx` | Verified |
-| Writes always emit both fields | `lib/api/goals.ts` | — | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| Blocked reason cleared on leaving blocked | `lib/task-status.ts` | Sheet | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| "Today" = Asia/Seoul civil date | `lib/task-status.ts` | All | Unit | `lib/task-status.test.ts` | Verified |
-| Overdue derived, excludes completed | `lib/task-status.ts` | Row, sheet | Unit + Component | both | Verified |
-| Unscheduled = no time slot | `lib/task-status.ts` | Row, sheet, chips, Schedule tab | Unit + Component | both | Verified |
-| `moveToBacklog` → status `backlog` | `lib/api/goals.ts` | Row menu, sheet | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| `moveToBacklog` keeps the day | `lib/api/goals.ts` | Calendar | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| `reschedule_count` = slips only | `lib/api/goals.ts` | Sheet footer | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| Reopen derives status from schedule | `lib/task-status.ts` | Row checkbox | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| Errors throw, never partial success | `lib/api/goals.ts` | Toast | Integration | `lib/api/goals-tasks.test.ts` | Verified |
-| Mobile/desktop show same state | `GoalTaskRow.tsx` | Both variants | Component | `GoalTaskRow.test.tsx` | Verified |
-| Capacity: zero ≠ unset | `lib/weekly-capacity.ts` | Overview stat | Unit | `lib/weekly-capacity.test.ts` | Verified |
-| Capacity counts unscheduled as planned | `lib/weekly-capacity.ts` | Overview stat | Unit (characterisation) | `lib/weekly-capacity.test.ts` | **Pinned, not endorsed** |
-| Week bucketing by `start_date` | `lib/weekly-capacity.ts` | Overview stat | Unit (characterisation) | `lib/weekly-capacity.test.ts` | **Pinned, not endorsed** |
-| Week start / boundaries timezone-safe | `lib/weekly-capacity.ts` | Overview | Unit | `lib/weekly-capacity.test.ts` | Verified |
-| Outcome progress null ≠ 0 | `lib/goal-progress.ts` | Cards, Progress tab | Unit | `lib/goal-progress.test.ts` (pre-existing) | Verified |
-| Occurrence generation deterministic | `lib/goal-schedule-rules.ts` | Schedule tab | Unit | `lib/goal-schedule-rules.test.ts` (pre-existing) | Verified |
-| Next Best Action deterministic | `lib/next-best-action.ts` | Overview card | Unit | `lib/next-best-action.test.ts` (pre-existing) | Verified |
-| RLS user isolation | Supabase policies | All | — | — | **Not testable in current environment** |
-| Occurrence uniqueness under concurrency | migrations | Schedule tab | — | — | **Not testable in current environment** |
+| Business rule                             | Source file                  | UI surface                      | Test level              | Test file                                         | Status                                  |
+| ----------------------------------------- | ---------------------------- | ------------------------------- | ----------------------- | ------------------------------------------------- | --------------------------------------- |
+| `completed` wins over `status` on read    | `lib/task-status.ts`         | Row, sheet                      | Unit + Component        | `lib/task-status.test.ts`, `GoalTaskRow.test.tsx` | Verified                                |
+| Writes always emit both fields            | `lib/api/goals.ts`           | —                               | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| Blocked reason cleared on leaving blocked | `lib/task-status.ts`         | Sheet                           | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| "Today" = Asia/Seoul civil date           | `lib/task-status.ts`         | All                             | Unit                    | `lib/task-status.test.ts`                         | Verified                                |
+| Overdue derived, excludes completed       | `lib/task-status.ts`         | Row, sheet                      | Unit + Component        | both                                              | Verified                                |
+| Unscheduled = no time slot                | `lib/task-status.ts`         | Row, sheet, chips, Schedule tab | Unit + Component        | both                                              | Verified                                |
+| `moveToBacklog` → status `backlog`        | `lib/api/goals.ts`           | Row menu, sheet                 | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| `moveToBacklog` keeps the day             | `lib/api/goals.ts`           | Calendar                        | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| `reschedule_count` = slips only           | `lib/api/goals.ts`           | Sheet footer                    | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| Reopen derives status from schedule       | `lib/task-status.ts`         | Row checkbox                    | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| Errors throw, never partial success       | `lib/api/goals.ts`           | Toast                           | Integration             | `lib/api/goals-tasks.test.ts`                     | Verified                                |
+| Mobile/desktop show same state            | `GoalTaskRow.tsx`            | Both variants                   | Component               | `GoalTaskRow.test.tsx`                            | Verified                                |
+| Capacity: zero ≠ unset                    | `lib/weekly-capacity.ts`     | Overview stat                   | Unit                    | `lib/weekly-capacity.test.ts`                     | Verified                                |
+| Capacity counts unscheduled as planned    | `lib/weekly-capacity.ts`     | Overview stat                   | Unit (characterisation) | `lib/weekly-capacity.test.ts`                     | **Pinned, not endorsed**                |
+| Week bucketing by `start_date`            | `lib/weekly-capacity.ts`     | Overview stat                   | Unit (characterisation) | `lib/weekly-capacity.test.ts`                     | **Pinned, not endorsed**                |
+| Week start / boundaries timezone-safe     | `lib/weekly-capacity.ts`     | Overview                        | Unit                    | `lib/weekly-capacity.test.ts`                     | Verified                                |
+| Outcome progress null ≠ 0                 | `lib/goal-progress.ts`       | Cards, Progress tab             | Unit                    | `lib/goal-progress.test.ts` (pre-existing)        | Verified                                |
+| Occurrence generation deterministic       | `lib/goal-schedule-rules.ts` | Schedule tab                    | Unit                    | `lib/goal-schedule-rules.test.ts` (pre-existing)  | Verified                                |
+| Next Best Action deterministic            | `lib/next-best-action.ts`    | Overview card                   | Unit                    | `lib/next-best-action.test.ts` (pre-existing)     | Verified                                |
+| RLS user isolation                        | Supabase policies            | All                             | —                       | —                                                 | **Not testable in current environment** |
+| Occurrence uniqueness under concurrency   | migrations                   | Schedule tab                    | —                       | —                                                 | **Not testable in current environment** |
 
 ## 14. Bugs found
 
@@ -215,17 +214,17 @@ Both fixes were verified to **fail** before the change and pass after
 
 ## 16. Known remaining risks
 
-| Risk | Severity | Note |
-| --- | --- | --- |
-| RLS / cross-user isolation untested | **High** | Needs a local Supabase or dedicated test project with two users |
-| No DB uniqueness on `(schedule_rule_id, occurrence_date)` | **High** | Duplicate occurrences possible under concurrent generation; frontend-only dedupe |
-| Capacity counts unscheduled work (C3) | Medium | Product decision required |
-| Habits / recovery / learning / achievements / notifications | Medium | **Not audited** |
-| Goal + key-result + phase CRUD lifecycle | Medium | Not audited this pass |
-| No E2E coverage | Medium | Playwright installed but no specs exist |
-| Cascade-delete behaviour unverified | Medium | Migrations not traced to FK `ON DELETE` |
-| `deriveStatusFromSchedule` vs `hasTimeSlot` (C5) | Low | Intentional; mirrors SQL backfill |
-| Week bucketing `start_date` vs `end_date` (C4) | Low | Only affects multi-day tasks |
+| Risk                                                        | Severity | Note                                                                             |
+| ----------------------------------------------------------- | -------- | -------------------------------------------------------------------------------- |
+| RLS / cross-user isolation untested                         | **High** | Needs a local Supabase or dedicated test project with two users                  |
+| No DB uniqueness on `(schedule_rule_id, occurrence_date)`   | **High** | Duplicate occurrences possible under concurrent generation; frontend-only dedupe |
+| Capacity counts unscheduled work (C3)                       | Medium   | Product decision required                                                        |
+| Habits / recovery / learning / achievements / notifications | Medium   | **Not audited**                                                                  |
+| Goal + key-result + phase CRUD lifecycle                    | Medium   | Not audited this pass                                                            |
+| No E2E coverage                                             | Medium   | Playwright installed but no specs exist                                          |
+| Cascade-delete behaviour unverified                         | Medium   | Migrations not traced to FK `ON DELETE`                                          |
+| `deriveStatusFromSchedule` vs `hasTimeSlot` (C5)            | Low      | Intentional; mirrors SQL backfill                                                |
+| Week bucketing `start_date` vs `end_date` (C4)              | Low      | Only affects multi-day tasks                                                     |
 
 ## Test-environment safety
 

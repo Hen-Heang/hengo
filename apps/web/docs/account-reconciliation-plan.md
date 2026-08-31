@@ -21,9 +21,9 @@ group by gm.user_id;
 Result:
 
 | user_id (truncated) | memberships | has_kori_profile | has_auth_user |
-|---|---|---|---|
-| `ac5db382-...` | 6 | **true** | true |
-| `8586e909-...` | 2 | **false** | true |
+| ------------------- | ----------- | ---------------- | ------------- |
+| `ac5db382-...`      | 6           | **true**         | true          |
+| `8586e909-...`      | 2           | **false**        | true          |
 
 - `ac5db382-...` is the primary, active user: owns all 6 `goals` rows, all
   115 `tasks` rows, all 927 `kori_vocab_cards` rows, all 1,496
@@ -45,14 +45,14 @@ second, narrower identity attached only to the shared-goal domain.
 
 ## Affected tables
 
-| Table | Relationship to identity |
-|---|---|
-| `goals` | `user_id` (owner) |
-| `goal_members` | `user_id` (member, any role) — **the only table where the second identity appears** |
-| `goal_stars` | `user_id` |
-| `tasks` | `user_id` (creator), `updated_by` (nullable, last editor) |
-| `notifications` | `sender_id`, `receiver_id` |
-| `kori_profiles` and all other `kori_*` tables | `user_id` / `id` — **the second identity has zero rows in any of these** |
+| Table                                                    | Relationship to identity                                                             |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| `goals`                                                  | `user_id` (owner)                                                                    |
+| `goal_members`                                           | `user_id` (member, any role) — **the only table where the second identity appears**  |
+| `goal_stars`                                             | `user_id`                                                                            |
+| `tasks`                                                  | `user_id` (creator), `updated_by` (nullable, last editor)                            |
+| `notifications`                                          | `sender_id`, `receiver_id`                                                           |
+| `kori_profiles` and all other `kori_*` tables            | `user_id` / `id` — **the second identity has zero rows in any of these**             |
 | New: `goal_key_results`, `goal_evidence`, `goal_reviews` | `user_id` (RLS-scoped) — inherit the same identity model, no new conflict introduced |
 
 ## Foreign-key dependencies
@@ -83,11 +83,11 @@ identity's membership be removed, kept, or merged into the primary identity.
    and harmless — it can see 2 goals it was legitimately invited to. If it's
    a real second person, this is expected collaboration behavior, not a bug.
 2. **Remove the stale membership** (`delete from goal_members where user_id =
-   '8586e909-...'`) if it's confirmed to be a dead/orphaned invite with no
+'8586e909-...'`) if it's confirmed to be a dead/orphaned invite with no
    real second person behind it.
 3. **Merge into the primary identity** (re-point `goal_members.user_id`,
    `notifications.sender_id/receiver_id` for that identity to
-   `ac5db382-...`) only if it's confirmed to be the *same human* using two
+   `ac5db382-...`) only if it's confirmed to be the _same human_ using two
    Supabase accounts (e.g., an old email vs. a new one) — this is the
    highest-risk option and should only be done after direct confirmation
    from the account owner, never inferred from data alone.

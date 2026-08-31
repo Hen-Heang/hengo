@@ -28,7 +28,7 @@ describe("INTERVIEW_MODES", () => {
   it("both modes mix in unexpected questions, exam more heavily", () => {
     expect(INTERVIEW_MODES.practice.unexpectedQuestionCount).toBeGreaterThan(0)
     expect(INTERVIEW_MODES.exam.unexpectedQuestionCount).toBeGreaterThanOrEqual(
-      INTERVIEW_MODES.practice.unexpectedQuestionCount
+      INTERVIEW_MODES.practice.unexpectedQuestionCount,
     )
   })
 
@@ -38,4 +38,3 @@ describe("INTERVIEW_MODES", () => {
     }
   })
 })
-

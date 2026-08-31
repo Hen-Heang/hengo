@@ -26,8 +26,7 @@ export function useWeatherForecast() {
     return map
   }, [data])
 
-  const getWeatherForDate = (date: Date): DailyWeather | undefined =>
-    byDate.get(formatYMD(date))
+  const getWeatherForDate = (date: Date): DailyWeather | undefined => byDate.get(formatYMD(date))
 
   return { getWeatherForDate, isError }
 }

@@ -69,7 +69,10 @@ function describe(n: GoalNotification): { title: string; body: string } {
     case "task_updated":
       return { title: "Task updated", body: `${who} updated a task in ${goal}.` }
     default:
-      return { title: "Notification", body: n.goalTitle ? `Update in ${goal}.` : "You have an update." }
+      return {
+        title: "Notification",
+        body: n.goalTitle ? `Update in ${goal}.` : "You have an update.",
+      }
   }
 }
 
@@ -111,7 +114,9 @@ function NotificationRow({
         <p className="mt-0.5 text-[13px] font-medium leading-snug text-muted-foreground">{body}</p>
 
         {isInvite && n.invitationStatus === "accepted" && (
-          <p className="mt-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">Accepted</p>
+          <p className="mt-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+            Accepted
+          </p>
         )}
         {isInvite && n.invitationStatus === "declined" && (
           <p className="mt-1.5 text-xs font-bold text-muted-foreground">Declined</p>
@@ -179,8 +184,16 @@ function NotificationRow({
 export function NotificationBell() {
   const router = useRouter()
   const [open, setOpen] = useState(false)
-  const { notifications, unreadCount, isLoading, isError, markRead, markAllRead, respond, refresh } =
-    useNotifications()
+  const {
+    notifications,
+    unreadCount,
+    isLoading,
+    isError,
+    markRead,
+    markAllRead,
+    respond,
+    refresh,
+  } = useNotifications()
 
   const handleNavigate = (n: GoalNotification) => {
     if (!n.read) void markRead(n.id)
@@ -239,7 +252,9 @@ export function NotificationBell() {
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
                 <TriangleAlert size={28} strokeWidth={1.75} />
               </div>
-              <p className="text-sm font-bold tracking-tight text-foreground">Couldn&apos;t load notifications</p>
+              <p className="text-sm font-bold tracking-tight text-foreground">
+                Couldn&apos;t load notifications
+              </p>
               <p className="mt-1 max-w-[220px] text-xs font-medium text-muted-foreground">
                 Something went wrong reaching the server. Check your connection and try again.
               </p>
@@ -259,7 +274,9 @@ export function NotificationBell() {
               <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground">
                 <Bell size={28} strokeWidth={1.75} />
               </div>
-              <p className="text-sm font-bold tracking-tight text-foreground">You&apos;re all caught up</p>
+              <p className="text-sm font-bold tracking-tight text-foreground">
+                You&apos;re all caught up
+              </p>
               <p className="mt-1 max-w-[220px] text-xs font-medium text-muted-foreground">
                 Goal invitations and task updates will show up here.
               </p>

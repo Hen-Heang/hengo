@@ -34,7 +34,7 @@ export function CalendarSourceFilter({
             "flex min-h-11 min-w-11 items-center justify-center gap-1.5 rounded-md px-2 py-1 text-xs font-medium transition-colors sm:px-2.5 sm:text-sm",
             value === option.value
               ? "bg-background text-foreground shadow-sm"
-              : "text-muted-foreground hover:text-foreground"
+              : "text-muted-foreground hover:text-foreground",
           )}
         >
           <span className="flex h-2.5 w-2.5 shrink-0 overflow-hidden rounded-full" aria-hidden>

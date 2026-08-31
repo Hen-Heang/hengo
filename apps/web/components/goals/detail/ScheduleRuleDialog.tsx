@@ -64,7 +64,10 @@ export function ScheduleRuleDialog({
   useEffect(() => {
     if (!isOpen) return
     setError(null)
-    setForm((f) => ({ ...f, start_date: goalStartDate && goalStartDate > todayYmd ? goalStartDate : todayYmd }))
+    setForm((f) => ({
+      ...f,
+      start_date: goalStartDate && goalStartDate > todayYmd ? goalStartDate : todayYmd,
+    }))
   }, [isOpen, goalStartDate, todayYmd])
 
   const buildPayload = () => ({
@@ -208,7 +211,9 @@ export function ScheduleRuleDialog({
                 min={1}
                 max={31}
                 value={form.day_of_month}
-                onChange={(e) => setForm((f) => ({ ...f, day_of_month: Number(e.target.value) || 1 }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, day_of_month: Number(e.target.value) || 1 }))
+                }
                 className="h-11 rounded-xl"
               />
               <p className="text-[11px] text-muted-foreground">

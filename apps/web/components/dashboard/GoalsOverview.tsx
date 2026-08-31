@@ -31,7 +31,7 @@ export function GoalsOverview({ className, limit = 3 }: { className?: string; li
 
   const activeGoals = useMemo(
     () => sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived"),
-    [sortedGoals]
+    [sortedGoals],
   )
   const visible = activeGoals.slice(0, limit)
 
@@ -39,7 +39,7 @@ export function GoalsOverview({ className, limit = 3 }: { className?: string; li
     <div
       className={cn(
         "flex flex-col overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40 lg:p-8",
-        className
+        className,
       )}
     >
       <div className="flex items-center justify-between">
@@ -49,12 +49,15 @@ export function GoalsOverview({ className, limit = 3 }: { className?: string; li
           </div>
           <div>
             <h3 className="text-base font-semibold tracking-tight text-foreground">Your goals</h3>
-            <p className="text-xs font-medium text-muted-foreground">
-              {activeGoals.length} active
-            </p>
+            <p className="text-xs font-medium text-muted-foreground">{activeGoals.length} active</p>
           </div>
         </div>
-        <UIButton asChild variant="ghost" size="sm" className="rounded-xl font-medium text-muted-foreground">
+        <UIButton
+          asChild
+          variant="ghost"
+          size="sm"
+          className="rounded-xl font-medium text-muted-foreground"
+        >
           <Link href="/goals">View all</Link>
         </UIButton>
       </div>

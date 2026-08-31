@@ -24,12 +24,7 @@ import type { TurnAnalysis } from "@/lib/ai/schemas/turn-analysis"
 const EMPTY_BOOTSTRAP: RealtimeBootstrap = { history: [], createInitialResponse: true }
 
 export type RealtimeVoicePhase =
-  | "idle"
-  | "connecting"
-  | "listening"
-  | "thinking"
-  | "speaking"
-  | "error"
+  "idle" | "connecting" | "listening" | "thinking" | "speaking" | "error"
 
 export interface RealtimeVoiceTurn {
   id: string
@@ -204,28 +199,25 @@ export function useRealtimeVoice({
     }
   }, [closeConnection])
 
-  const commitTurn = useCallback(
-    (turn: RealtimeVoiceTurn, persist: boolean) => {
-      const text = turn.text.replace(/\s+/g, " ").trim()
-      if (!text) return
-      const normalized = { ...turn, text }
+  const commitTurn = useCallback((turn: RealtimeVoiceTurn, persist: boolean) => {
+    const text = turn.text.replace(/\s+/g, " ").trim()
+    if (!text) return
+    const normalized = { ...turn, text }
 
-      setTurns((current) => {
-        const existingIndex = current.findIndex((item) => item.id === normalized.id)
-        const next =
-          existingIndex === -1
-            ? [...current, normalized]
-            : current.map((item, index) => (index === existingIndex ? normalized : item))
-        turnsRef.current = next
-        return next
-      })
+    setTurns((current) => {
+      const existingIndex = current.findIndex((item) => item.id === normalized.id)
+      const next =
+        existingIndex === -1
+          ? [...current, normalized]
+          : current.map((item, index) => (index === existingIndex ? normalized : item))
+      turnsRef.current = next
+      return next
+    })
 
-      if (!persist || persistedTurnIdsRef.current.has(normalized.id)) return
-      persistedTurnIdsRef.current.add(normalized.id)
-      void onTurnCompleteRef.current?.(normalized.role, normalized.text)
-    },
-    [],
-  )
+    if (!persist || persistedTurnIdsRef.current.has(normalized.id)) return
+    persistedTurnIdsRef.current.add(normalized.id)
+    void onTurnCompleteRef.current?.(normalized.role, normalized.text)
+  }, [])
 
   // Fire-and-forget analysis of a completed learner turn. Runs the shared
   // Korean turn-analysis + correction-SRS pipeline server-side and, per the
@@ -303,7 +295,8 @@ export function useRealtimeVoice({
           break
         case "response.output_audio_transcript.delta": {
           const id = event.item_id || event.response_id || "assistant-live"
-          const previous = currentAssistantRef.current?.id === id ? currentAssistantRef.current.text : ""
+          const previous =
+            currentAssistantRef.current?.id === id ? currentAssistantRef.current.text : ""
           const text = previous + (event.delta || "")
           currentAssistantRef.current = { id, text }
           setAssistantCaption(text)
@@ -333,7 +326,12 @@ export function useRealtimeVoice({
             const interrupted = currentAssistantRef.current
             if (interrupted?.text.trim()) {
               commitTurn(
-                { id: interrupted.id, role: "assistant", text: interrupted.text, interrupted: true },
+                {
+                  id: interrupted.id,
+                  role: "assistant",
+                  text: interrupted.text,
+                  interrupted: true,
+                },
                 true,
               )
               currentAssistantRef.current = null
@@ -351,188 +349,192 @@ export function useRealtimeVoice({
     [commitTurn, analyzeUserTurn],
   )
 
-  const start = useCallback(async (overrides?: {
-    correctionPolicy?: CorrectionPolicy
-    pace?: SpeakingPace
-    technicalMode?: boolean
-  }) => {
-    if (!conversationId || phase === "connecting" || (phase !== "idle" && phase !== "error")) return
-    // Apply per-session overrides synchronously (from the setup sheet) so the
-    // very first session uses them without waiting for a prop-sync render.
-    if (overrides?.correctionPolicy) correctionPolicyRef.current = overrides.correctionPolicy
-    if (overrides?.pace) paceRef.current = overrides.pace
-    if (overrides?.technicalMode !== undefined) technicalModeRef.current = overrides.technicalMode
-    if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === "undefined") {
-      setError("Live voice is not supported in this browser.")
-      setPhase("error")
-      return
-    }
-
-    closeConnection()
-    closingRef.current = false
-    setPhase("connecting")
-    setError(null)
-    setTurns([])
-    setUserCaption("")
-    setAssistantCaption("")
-    setIsMuted(false)
-    setLearnerLevel(null)
-    setSpeechRate(null)
-    setScenarioTitle(null)
-    setLiveCorrection(null)
-    setSessionReport(null)
-    advanceStatus("start")
-    bootstrapRef.current = EMPTY_BOOTSTRAP
-    persistedTurnIdsRef.current.clear()
-    analyzedItemIdsRef.current.clear()
-    correctionStateRef.current = initialCorrectionState()
-    collectedCorrectionsRef.current = []
-    turnsRef.current = []
-    currentUserRef.current = null
-    currentAssistantRef.current = null
-
-    const controller = new AbortController()
-    startAbortRef.current = controller
-
-    try {
-      const mediaStream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-        },
-      })
-      streamRef.current = mediaStream
-      const credentials = await realtimeApi.createSession(
-        conversationId,
-        technicalModeRef.current,
-        paceRef.current,
-        controller.signal,
-      )
-
-      if (controller.signal.aborted || !mountedRef.current) {
-        mediaStream.getTracks().forEach((track) => track.stop())
+  const start = useCallback(
+    async (overrides?: {
+      correctionPolicy?: CorrectionPolicy
+      pace?: SpeakingPace
+      technicalMode?: boolean
+    }) => {
+      if (!conversationId || phase === "connecting" || (phase !== "idle" && phase !== "error"))
+        return
+      // Apply per-session overrides synchronously (from the setup sheet) so the
+      // very first session uses them without waiting for a prop-sync render.
+      if (overrides?.correctionPolicy) correctionPolicyRef.current = overrides.correctionPolicy
+      if (overrides?.pace) paceRef.current = overrides.pace
+      if (overrides?.technicalMode !== undefined) technicalModeRef.current = overrides.technicalMode
+      if (!navigator.mediaDevices?.getUserMedia || typeof RTCPeerConnection === "undefined") {
+        setError("Live voice is not supported in this browser.")
+        setPhase("error")
         return
       }
 
-      setModel(credentials.model)
-      setLearnerLevel(credentials.learnerLevel)
-      setSpeechRate(credentials.speechRate)
-      setScenarioTitle(credentials.scenarioTitle)
-      sessionMetaRef.current = {
-        startedAt: Date.now(),
-        learnerLevel: credentials.learnerLevel,
-        model: credentials.model,
-        scenarioTitle: credentials.scenarioTitle,
-      }
-
-      // Seed the visible transcript with the recent history the server returned
-      // so a resumed or reconnected session shows continuity, and mark those
-      // ids as already persisted so the completion handler never re-saves them.
-      bootstrapRef.current = credentials.bootstrap
-      const seededTurns: RealtimeVoiceTurn[] = credentials.bootstrap.history.map((message) => ({
-        id: message.id,
-        role: message.role,
-        text: message.text,
-      }))
-      persistedTurnIdsRef.current = new Set(seededTurns.map((turn) => turn.id))
-      turnsRef.current = seededTurns
-      if (seededTurns.length) setTurns(seededTurns)
-
-      const peer = new RTCPeerConnection()
-      peerRef.current = peer
-
-      const remoteAudio = new Audio()
-      remoteAudio.autoplay = true
-      remoteAudio.setAttribute("playsinline", "true")
-      audioRef.current = remoteAudio
-      peer.ontrack = (trackEvent) => {
-        remoteAudio.srcObject = trackEvent.streams[0]
-        void remoteAudio.play().catch(() => {
-          setError("Audio playback was blocked. End the session and start again to enable sound.")
-        })
-      }
-
-      for (const track of mediaStream.getAudioTracks()) {
-        peer.addTrack(track, mediaStream)
-      }
-
-      const channel = peer.createDataChannel("oai-events")
-      channelRef.current = channel
-      channel.addEventListener("message", (messageEvent) => {
-        try {
-          handleServerEvent(JSON.parse(String(messageEvent.data)) as RealtimeServerEvent)
-        } catch {
-          // Ignore malformed diagnostic events; normal audio can continue.
-        }
-      })
-      channel.addEventListener("open", () => {
-        if (!mountedRef.current) return
-        advanceStatus("connected")
-        // Replay recent history into the fresh realtime context, then let the
-        // assistant speak first only when it's genuinely its turn (greet a new
-        // conversation, or answer a pending learner message). Otherwise wait.
-        const bootstrap = bootstrapRef.current
-        for (const event of buildBootstrapEvents(bootstrap.history)) {
-          channel.send(JSON.stringify(event))
-        }
-        if (bootstrap.createInitialResponse) {
-          setPhase("thinking")
-          channel.send(JSON.stringify(responseCreate()))
-        } else {
-          setPhase("listening")
-        }
-      })
-      channel.addEventListener("close", () => {
-        if (mountedRef.current && !closingRef.current && peer.connectionState !== "closed") {
-          setError("The live voice connection ended.")
-          setPhase("error")
-          advanceStatus("fail")
-        }
-      })
-
-      peer.addEventListener("connectionstatechange", () => {
-        if (!mountedRef.current) return
-        if (
-          !closingRef.current &&
-          (peer.connectionState === "failed" || peer.connectionState === "disconnected")
-        ) {
-          setError("The live voice connection was interrupted.")
-          setPhase("error")
-          advanceStatus("fail")
-        }
-      })
-
-      const offer = await peer.createOffer()
-      await peer.setLocalDescription(offer)
-      const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${credentials.clientSecret}`,
-          "Content-Type": "application/sdp",
-        },
-        signal: controller.signal,
-      })
-
-      if (!sdpResponse.ok) {
-        throw new Error("OpenAI could not establish the live audio connection.")
-      }
-
-      await peer.setRemoteDescription({
-        type: "answer",
-        sdp: await sdpResponse.text(),
-      })
-      startAbortRef.current = null
-    } catch (startError) {
       closeConnection()
-      if (startError instanceof DOMException && startError.name === "AbortError") return
-      if (!mountedRef.current) return
-      setError(readableVoiceError(startError))
-      setPhase("error")
-      advanceStatus("fail")
-    }
-  }, [advanceStatus, closeConnection, conversationId, handleServerEvent, phase])
+      closingRef.current = false
+      setPhase("connecting")
+      setError(null)
+      setTurns([])
+      setUserCaption("")
+      setAssistantCaption("")
+      setIsMuted(false)
+      setLearnerLevel(null)
+      setSpeechRate(null)
+      setScenarioTitle(null)
+      setLiveCorrection(null)
+      setSessionReport(null)
+      advanceStatus("start")
+      bootstrapRef.current = EMPTY_BOOTSTRAP
+      persistedTurnIdsRef.current.clear()
+      analyzedItemIdsRef.current.clear()
+      correctionStateRef.current = initialCorrectionState()
+      collectedCorrectionsRef.current = []
+      turnsRef.current = []
+      currentUserRef.current = null
+      currentAssistantRef.current = null
+
+      const controller = new AbortController()
+      startAbortRef.current = controller
+
+      try {
+        const mediaStream = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+        })
+        streamRef.current = mediaStream
+        const credentials = await realtimeApi.createSession(
+          conversationId,
+          technicalModeRef.current,
+          paceRef.current,
+          controller.signal,
+        )
+
+        if (controller.signal.aborted || !mountedRef.current) {
+          mediaStream.getTracks().forEach((track) => track.stop())
+          return
+        }
+
+        setModel(credentials.model)
+        setLearnerLevel(credentials.learnerLevel)
+        setSpeechRate(credentials.speechRate)
+        setScenarioTitle(credentials.scenarioTitle)
+        sessionMetaRef.current = {
+          startedAt: Date.now(),
+          learnerLevel: credentials.learnerLevel,
+          model: credentials.model,
+          scenarioTitle: credentials.scenarioTitle,
+        }
+
+        // Seed the visible transcript with the recent history the server returned
+        // so a resumed or reconnected session shows continuity, and mark those
+        // ids as already persisted so the completion handler never re-saves them.
+        bootstrapRef.current = credentials.bootstrap
+        const seededTurns: RealtimeVoiceTurn[] = credentials.bootstrap.history.map((message) => ({
+          id: message.id,
+          role: message.role,
+          text: message.text,
+        }))
+        persistedTurnIdsRef.current = new Set(seededTurns.map((turn) => turn.id))
+        turnsRef.current = seededTurns
+        if (seededTurns.length) setTurns(seededTurns)
+
+        const peer = new RTCPeerConnection()
+        peerRef.current = peer
+
+        const remoteAudio = new Audio()
+        remoteAudio.autoplay = true
+        remoteAudio.setAttribute("playsinline", "true")
+        audioRef.current = remoteAudio
+        peer.ontrack = (trackEvent) => {
+          remoteAudio.srcObject = trackEvent.streams[0]
+          void remoteAudio.play().catch(() => {
+            setError("Audio playback was blocked. End the session and start again to enable sound.")
+          })
+        }
+
+        for (const track of mediaStream.getAudioTracks()) {
+          peer.addTrack(track, mediaStream)
+        }
+
+        const channel = peer.createDataChannel("oai-events")
+        channelRef.current = channel
+        channel.addEventListener("message", (messageEvent) => {
+          try {
+            handleServerEvent(JSON.parse(String(messageEvent.data)) as RealtimeServerEvent)
+          } catch {
+            // Ignore malformed diagnostic events; normal audio can continue.
+          }
+        })
+        channel.addEventListener("open", () => {
+          if (!mountedRef.current) return
+          advanceStatus("connected")
+          // Replay recent history into the fresh realtime context, then let the
+          // assistant speak first only when it's genuinely its turn (greet a new
+          // conversation, or answer a pending learner message). Otherwise wait.
+          const bootstrap = bootstrapRef.current
+          for (const event of buildBootstrapEvents(bootstrap.history)) {
+            channel.send(JSON.stringify(event))
+          }
+          if (bootstrap.createInitialResponse) {
+            setPhase("thinking")
+            channel.send(JSON.stringify(responseCreate()))
+          } else {
+            setPhase("listening")
+          }
+        })
+        channel.addEventListener("close", () => {
+          if (mountedRef.current && !closingRef.current && peer.connectionState !== "closed") {
+            setError("The live voice connection ended.")
+            setPhase("error")
+            advanceStatus("fail")
+          }
+        })
+
+        peer.addEventListener("connectionstatechange", () => {
+          if (!mountedRef.current) return
+          if (
+            !closingRef.current &&
+            (peer.connectionState === "failed" || peer.connectionState === "disconnected")
+          ) {
+            setError("The live voice connection was interrupted.")
+            setPhase("error")
+            advanceStatus("fail")
+          }
+        })
+
+        const offer = await peer.createOffer()
+        await peer.setLocalDescription(offer)
+        const sdpResponse = await fetch("https://api.openai.com/v1/realtime/calls", {
+          method: "POST",
+          body: offer.sdp,
+          headers: {
+            Authorization: `Bearer ${credentials.clientSecret}`,
+            "Content-Type": "application/sdp",
+          },
+          signal: controller.signal,
+        })
+
+        if (!sdpResponse.ok) {
+          throw new Error("OpenAI could not establish the live audio connection.")
+        }
+
+        await peer.setRemoteDescription({
+          type: "answer",
+          sdp: await sdpResponse.text(),
+        })
+        startAbortRef.current = null
+      } catch (startError) {
+        closeConnection()
+        if (startError instanceof DOMException && startError.name === "AbortError") return
+        if (!mountedRef.current) return
+        setError(readableVoiceError(startError))
+        setPhase("error")
+        advanceStatus("fail")
+      }
+    },
+    [advanceStatus, closeConnection, conversationId, handleServerEvent, phase],
+  )
 
   const stop = useCallback(() => {
     const userTurn = currentUserRef.current
@@ -575,7 +577,11 @@ export function useRealtimeVoice({
         void voiceSessionsApi.record({
           conversationId: conversationIdRef.current ?? null,
           scenarioId: null,
-          practiceMode: meta.scenarioTitle ? "scenario" : technicalModeRef.current ? "developer" : "free",
+          practiceMode: meta.scenarioTitle
+            ? "scenario"
+            : technicalModeRef.current
+              ? "developer"
+              : "free",
           correctionPolicy: correctionPolicyRef.current,
           learnerLevel: meta.learnerLevel,
           model: meta.model,
@@ -587,7 +593,12 @@ export function useRealtimeVoice({
       }
       advanceStatus("summaryReady")
     }
-    sessionMetaRef.current = { startedAt: 0, learnerLevel: "BEGINNER", model: null, scenarioTitle: null }
+    sessionMetaRef.current = {
+      startedAt: 0,
+      learnerLevel: "BEGINNER",
+      model: null,
+      scenarioTitle: null,
+    }
   }, [advanceStatus, closeConnection, commitTurn, analyzeUserTurn])
 
   const toggleMute = useCallback(() => {
@@ -615,7 +626,10 @@ export function useRealtimeVoice({
     dismissLiveCorrection: useCallback(() => setLiveCorrection(null), []),
     // Snapshot of every real mistake collected this session, for the
     // post-session report (Phase 4). Read from a ref, so call it when ending.
-    getSessionCorrections: useCallback((): VoiceCorrection[] => collectedCorrectionsRef.current, []),
+    getSessionCorrections: useCallback(
+      (): VoiceCorrection[] => collectedCorrectionsRef.current,
+      [],
+    ),
     sessionStatus,
     sessionReport,
     dismissSessionReport: useCallback(() => {

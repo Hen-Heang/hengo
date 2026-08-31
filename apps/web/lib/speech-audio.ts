@@ -10,10 +10,7 @@ type ActiveSpeechAudio = {
 const activeAudio = new Set<ActiveSpeechAudio>()
 export const SPEECH_AUDIO_START_EVENT = "koriai:speech-audio-start"
 
-export function registerSpeechAudio(
-  audio: HTMLAudioElement,
-  onFinish?: () => void
-): () => void {
+export function registerSpeechAudio(audio: HTMLAudioElement, onFinish?: () => void): () => void {
   stopSpeechAudio()
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event(SPEECH_AUDIO_START_EVENT))

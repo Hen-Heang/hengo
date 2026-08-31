@@ -52,7 +52,7 @@ export function FirstRunBanner() {
       }
     },
     () => window.localStorage.getItem(DISMISSED_KEY) === "1",
-    () => true
+    () => true,
   )
 
   function dismiss() {
@@ -93,11 +93,17 @@ export function FirstRunBanner() {
           <div className="grid sm:grid-cols-3">
             {STEPS.map(({ num, icon: Icon, title, description, href, color, bg }) => {
               const itemClassName = cn(
-                "group flex min-h-16 w-full items-start gap-3 border-t border-blue-500/10 px-1 py-3 text-left outline-none transition-colors first:border-t-0 hover:bg-blue-500/5 focus-visible:ring-2 focus-visible:ring-blue-500/50 sm:border-l sm:border-t-0 sm:px-3 sm:first:border-l-0"
+                "group flex min-h-16 w-full items-start gap-3 border-t border-blue-500/10 px-1 py-3 text-left outline-none transition-colors first:border-t-0 hover:bg-blue-500/5 focus-visible:ring-2 focus-visible:ring-blue-500/50 sm:border-l sm:border-t-0 sm:px-3 sm:first:border-l-0",
               )
               const content = (
                 <>
-                  <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg", bg, color)}>
+                  <div
+                    className={cn(
+                      "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
+                      bg,
+                      color,
+                    )}
+                  >
                     <Icon size={18} strokeWidth={2.5} />
                   </div>
                   <div className="min-w-0">

@@ -50,7 +50,8 @@ export function useReminderMutations() {
   })
 
   const snooze = useMutation({
-    mutationFn: ({ id, minutes }: { id: string; minutes: number }) => remindersApi.snooze(id, minutes),
+    mutationFn: ({ id, minutes }: { id: string; minutes: number }) =>
+      remindersApi.snooze(id, minutes),
     onSuccess: () => invalidateAll(),
   })
 

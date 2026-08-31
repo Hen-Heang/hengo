@@ -29,7 +29,15 @@ interface NoteActionsProps {
   noteTitle?: string
 }
 
-export function NoteActions({ pinned = false, onEdit, onTogglePin, onDelete, noteId, noteSlug, noteTitle }: NoteActionsProps) {
+export function NoteActions({
+  pinned = false,
+  onEdit,
+  onTogglePin,
+  onDelete,
+  noteId,
+  noteSlug,
+  noteTitle,
+}: NoteActionsProps) {
   const [isDeleting, setIsDeleting] = useState(false)
   const [isPinning, setIsPinning] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
@@ -77,7 +85,7 @@ export function NoteActions({ pinned = false, onEdit, onTogglePin, onDelete, not
           aria-label={pinned ? "Unpin note" : "Pin note"}
           className={cn(
             "hover:border-blue-500/50",
-            pinned ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground"
+            pinned ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground",
           )}
         >
           <Star size={14} className={pinned ? "fill-current" : ""} />

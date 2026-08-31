@@ -123,12 +123,10 @@ export function QuestionAudioBar({
             "rounded-lg border-none px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider",
             exhausted
               ? "bg-rose-500/10 text-rose-600 dark:text-rose-400"
-              : "bg-accent/30 text-foreground"
+              : "bg-accent/30 text-foreground",
           )}
         >
-          {exhausted
-            ? "No listens left"
-            : `${playsLeft} listen${playsLeft === 1 ? "" : "s"} left`}
+          {exhausted ? "No listens left" : `${playsLeft} listen${playsLeft === 1 ? "" : "s"} left`}
         </Badge>
       )}
     </div>

@@ -8,7 +8,11 @@ import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { keyResultsApi, getApiErrorMessage } from "@/lib/api"
 import { keyResultProgress } from "@/lib/goal-progress"
-import { KEY_RESULT_METRIC_TYPES, type GoalKeyResult, type KeyResultMetricType } from "@/lib/goal-key-results"
+import {
+  KEY_RESULT_METRIC_TYPES,
+  type GoalKeyResult,
+  type KeyResultMetricType,
+} from "@/lib/goal-key-results"
 
 /**
  * Key results for a goal — the measurable proof-of-outcome layer (Goal
@@ -59,7 +63,14 @@ export function KeyResultsCard({
         weight: form.weight === "" ? 1 : Number(form.weight),
       })
       onChanged()
-      setForm({ title: "", metric_type: "number", baseline_value: "", target_value: "", unit: "", weight: "1" })
+      setForm({
+        title: "",
+        metric_type: "number",
+        baseline_value: "",
+        target_value: "",
+        unit: "",
+        weight: "1",
+      })
       setAdding(false)
       toast.success("Key result added")
     } catch (err) {
@@ -122,8 +133,8 @@ export function KeyResultsCard({
       <div className="mt-5 space-y-3">
         {active.length === 0 && !adding && (
           <p className="rounded-2xl border border-dashed border-border bg-background/30 px-4 py-5 text-center text-sm font-medium text-muted-foreground">
-            No key results yet. Add one to measure the real outcome instead of just task completion — this
-            goal&apos;s progress bar will keep showing legacy task activity until you do.
+            No key results yet. Add one to measure the real outcome instead of just task completion
+            — this goal&apos;s progress bar will keep showing legacy task activity until you do.
           </p>
         )}
 
@@ -136,11 +147,15 @@ export function KeyResultsCard({
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-bold text-foreground">{kr.title}</p>
                   {kr.description && (
-                    <p className="mt-0.5 text-xs font-medium text-muted-foreground">{kr.description}</p>
+                    <p className="mt-0.5 text-xs font-medium text-muted-foreground">
+                      {kr.description}
+                    </p>
                   )}
                 </div>
                 <div className="flex shrink-0 items-center gap-2">
-                  {isSaving && <Loader2 size={13} className="animate-spin text-muted-foreground/40" />}
+                  {isSaving && (
+                    <Loader2 size={13} className="animate-spin text-muted-foreground/40" />
+                  )}
                   <button
                     type="button"
                     onClick={() => void archive(kr)}
@@ -222,7 +237,9 @@ export function KeyResultsCard({
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={form.metric_type}
-              onChange={(e) => setForm((f) => ({ ...f, metric_type: e.target.value as KeyResultMetricType }))}
+              onChange={(e) =>
+                setForm((f) => ({ ...f, metric_type: e.target.value as KeyResultMetricType }))
+              }
               aria-label="Metric type"
               className="h-9 rounded-xl border border-border bg-background px-2 text-xs font-semibold text-foreground outline-none focus:border-primary/40"
             >
@@ -276,7 +293,11 @@ export function KeyResultsCard({
               disabled={!form.title.trim() || creating}
               className="flex h-9 items-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
             >
-              {creating ? <Loader2 size={14} className="animate-spin" /> : <Check size={14} strokeWidth={3} />}
+              {creating ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Check size={14} strokeWidth={3} />
+              )}
               Add
             </button>
             <button

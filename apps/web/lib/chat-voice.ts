@@ -2,13 +2,11 @@ const HANGUL = /[가-힣]/
 
 // Subtitle/correction lines stay visible in the chat but should never be read
 // aloud as part of the coach's conversational turn.
-const NON_SPOKEN_LINE =
-  /^\s*(?:(?:[-+>]|#{1,6})\s*)?(?:\*\*)?(?:EN|RR|FIX)\s*:(?:\*\*)?/i
+const NON_SPOKEN_LINE = /^\s*(?:(?:[-+>]|#{1,6})\s*)?(?:\*\*)?(?:EN|RR|FIX)\s*:(?:\*\*)?/i
 
 // Captures the label and its value so the UI can render EN/RR/FIX lines as a
 // styled subtitle block instead of raw text inside the bubble.
-const SUBTITLE_LINE =
-  /^\s*(?:(?:[-+>]|#{1,6})\s*)?(?:\*\*)?(EN|RR|FIX)\s*:(?:\*\*)?\s*(.+)$/i
+const SUBTITLE_LINE = /^\s*(?:(?:[-+>]|#{1,6})\s*)?(?:\*\*)?(EN|RR|FIX)\s*:(?:\*\*)?\s*(.+)$/i
 
 export const CHAT_VOICE = "marin"
 

@@ -78,12 +78,18 @@ describe("rodeOutCount", () => {
 
 describe("daysSince (tertiary streak)", () => {
   it("counts from startedAt when there is no slip yet", () => {
-    expect(daysSince("2026-07-01T00:00:00.000Z", null, new Date("2026-07-05T00:00:00.000Z"))).toBe(4)
+    expect(daysSince("2026-07-01T00:00:00.000Z", null, new Date("2026-07-05T00:00:00.000Z"))).toBe(
+      4,
+    )
   })
 
   it("counts from the last slip once one has happened", () => {
     expect(
-      daysSince("2026-07-01T00:00:00.000Z", "2026-07-10T00:00:00.000Z", new Date("2026-07-12T00:00:00.000Z")),
+      daysSince(
+        "2026-07-01T00:00:00.000Z",
+        "2026-07-10T00:00:00.000Z",
+        new Date("2026-07-12T00:00:00.000Z"),
+      ),
     ).toBe(2)
   })
 
@@ -177,7 +183,12 @@ describe("lastEventTimestamp", () => {
 describe("elapsedBreakdown", () => {
   it("returns all zeros for no elapsed time", () => {
     const now = new Date("2026-07-15T12:00:00.000Z")
-    expect(elapsedBreakdown(now.toISOString(), now)).toEqual({ days: 0, hours: 0, minutes: 0, seconds: 0 })
+    expect(elapsedBreakdown(now.toISOString(), now)).toEqual({
+      days: 0,
+      hours: 0,
+      minutes: 0,
+      seconds: 0,
+    })
   })
 
   it("breaks a mixed duration into days/hours/minutes/seconds", () => {

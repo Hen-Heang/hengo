@@ -42,7 +42,7 @@ export function staticQuestionPool(): DrillQuestion[] {
  */
 export function buildDrillQueue(
   size: number = DRILL_SIZE,
-  rng: () => number = Math.random
+  rng: () => number = Math.random,
 ): DrillQuestion[] {
   const pool = staticQuestionPool()
   for (let i = pool.length - 1; i > 0; i--) {
@@ -81,12 +81,7 @@ export function pickStyleExamples(rng: () => number = Math.random): string[] {
 // ── Speaking drill scores ────────────────────────────────────────────────
 
 export type SpeakingScoreKey =
-  | "speaking"
-  | "grammar"
-  | "vocabulary"
-  | "pronunciation"
-  | "confidence"
-  | "naturalness"
+  "speaking" | "grammar" | "vocabulary" | "pronunciation" | "confidence" | "naturalness"
 
 export const SPEAKING_SCORE_KEYS: SpeakingScoreKey[] = [
   "speaking",
@@ -148,8 +143,7 @@ export const LISTENING_LEVELS: Record<ListeningLevel, ListeningLevelConfig> = {
     allowSlowReplay: true,
     maxPlays: null,
     showEnglishOnReveal: true,
-    complexityHint:
-      "one short simple sentence (8-12 words), high-frequency everyday vocabulary",
+    complexityHint: "one short simple sentence (8-12 words), high-frequency everyday vocabulary",
   },
   medium: {
     id: "medium",
@@ -168,8 +162,7 @@ export const LISTENING_LEVELS: Record<ListeningLevel, ListeningLevelConfig> = {
     allowSlowReplay: false,
     maxPlays: 2,
     showEnglishOnReveal: true,
-    complexityHint:
-      "longer question with subordinate clauses and topic-specific vocabulary",
+    complexityHint: "longer question with subordinate clauses and topic-specific vocabulary",
   },
   exam: {
     id: "exam",
@@ -178,7 +171,6 @@ export const LISTENING_LEVELS: Record<ListeningLevel, ListeningLevelConfig> = {
     allowSlowReplay: false,
     maxPlays: 1,
     showEnglishOnReveal: false,
-    complexityHint:
-      "realistic exam question at natural difficulty, formal interviewer register",
+    complexityHint: "realistic exam question at natural difficulty, formal interviewer register",
   },
 }

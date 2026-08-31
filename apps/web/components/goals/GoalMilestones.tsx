@@ -90,7 +90,9 @@ export function GoalMilestones({
         <div className="flex items-center gap-2">
           <Flag size={15} strokeWidth={2.5} className="text-primary" />
           <h3 className="text-sm font-semibold text-foreground">Sub-goals</h3>
-          <span className="rounded-full bg-accent/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">milestones</span>
+          <span className="rounded-full bg-accent/60 px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            milestones
+          </span>
           {saving && <Loader2 size={13} className="animate-spin text-muted-foreground/40" />}
         </div>
         {milestones.length > 0 && (
@@ -129,7 +131,7 @@ export function GoalMilestones({
                   "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg border-2 transition-all active:scale-90",
                   m.done
                     ? "border-primary bg-primary text-primary-foreground"
-                    : "border-border text-transparent hover:border-primary/50"
+                    : "border-border text-transparent hover:border-primary/50",
                 )}
               >
                 <Check size={14} strokeWidth={3.5} />
@@ -137,7 +139,7 @@ export function GoalMilestones({
               <span
                 className={cn(
                   "min-w-0 flex-1 break-words text-sm font-bold leading-snug",
-                  m.done ? "text-muted-foreground line-through" : "text-foreground"
+                  m.done ? "text-muted-foreground line-through" : "text-foreground",
                 )}
               >
                 {m.title}
@@ -162,7 +164,8 @@ export function GoalMilestones({
 
         {milestones.length === 0 && !adding && (
           <p className="rounded-2xl border border-dashed border-border bg-background/30 px-4 py-5 text-center text-sm font-medium text-muted-foreground">
-            Add sub-goals to break this into clear checkpoints — each one you check off moves the milestone bar forward.
+            Add sub-goals to break this into clear checkpoints — each one you check off moves the
+            milestone bar forward.
           </p>
         )}
       </div>

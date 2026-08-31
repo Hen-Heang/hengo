@@ -150,18 +150,14 @@ describe("phase and key-result filters", () => {
 
   it("filters to the unassigned backlog", () => {
     expect(
-      filterTasks(
-        [inPhase, noPhase],
-        filters({ phaseIds: [NONE_FILTER_VALUE] }),
-        context(),
-      ),
+      filterTasks([inPhase, noPhase], filters({ phaseIds: [NONE_FILTER_VALUE] }), context()),
     ).toEqual([noPhase])
   })
 
   it("filters by key result", () => {
-    expect(
-      filterTasks([linked, noPhase], filters({ keyResultIds: ["kr1"] }), context()),
-    ).toEqual([linked])
+    expect(filterTasks([linked, noPhase], filters({ keyResultIds: ["kr1"] }), context())).toEqual([
+      linked,
+    ])
   })
 
   it("filters to tasks with no key result", () => {
@@ -183,9 +179,9 @@ describe("remaining filters", () => {
   it("filters by scheduled / unscheduled", () => {
     const scheduled = task()
     const loose = task({ is_anytime: true })
-    expect(filterTasks([scheduled, loose], filters({ scheduled: "scheduled" }), context())).toEqual([
-      scheduled,
-    ])
+    expect(filterTasks([scheduled, loose], filters({ scheduled: "scheduled" }), context())).toEqual(
+      [scheduled],
+    )
     expect(
       filterTasks([scheduled, loose], filters({ scheduled: "unscheduled" }), context()),
     ).toEqual([loose])
@@ -300,7 +296,16 @@ describe("smart priority sorting", () => {
   })
 
   it("orders the full ladder", () => {
-    const shuffled = [done, backlogTask, otherScheduled, inActivePhase, scheduledHigh, dueToday, blockedHigh, overdue]
+    const shuffled = [
+      done,
+      backlogTask,
+      otherScheduled,
+      inActivePhase,
+      scheduledHigh,
+      dueToday,
+      blockedHigh,
+      overdue,
+    ]
     expect(sortTasks(shuffled, "smart", ctx).map((t) => t.id)).toEqual([
       "overdue",
       "blockedHigh",
@@ -357,8 +362,16 @@ describe("other sorts", () => {
   })
 
   it("sorts by recency", () => {
-    const older = task({ id: "older", created_at: "2026-07-01T00:00:00Z", updated_at: "2026-07-01T00:00:00Z" })
-    const newer = task({ id: "newer", created_at: "2026-07-20T00:00:00Z", updated_at: "2026-07-20T00:00:00Z" })
+    const older = task({
+      id: "older",
+      created_at: "2026-07-01T00:00:00Z",
+      updated_at: "2026-07-01T00:00:00Z",
+    })
+    const newer = task({
+      id: "newer",
+      created_at: "2026-07-20T00:00:00Z",
+      updated_at: "2026-07-20T00:00:00Z",
+    })
     expect(sortTasks([older, newer], "recently_created", ctx).map((t) => t.id)).toEqual([
       "newer",
       "older",
@@ -372,7 +385,10 @@ describe("other sorts", () => {
   it("sorts completed tasks first for the completed-date sort", () => {
     const done = task({ id: "done", completed: true, updated_at: "2026-07-20T00:00:00Z" })
     const open = task({ id: "open", updated_at: "2026-07-21T00:00:00Z" })
-    expect(sortTasks([open, done], "completed_date", ctx).map((t) => t.id)).toEqual(["done", "open"])
+    expect(sortTasks([open, done], "completed_date", ctx).map((t) => t.id)).toEqual([
+      "done",
+      "open",
+    ])
   })
 })
 

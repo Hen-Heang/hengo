@@ -1,34 +1,34 @@
-import type { GoalTemplate } from '@/lib/goal-templates/types';
-import { healthFitnessTemplate } from './healthFitnessTemplate';
-import { fitness5kTemplate, weightLossTemplate, muscleBuildingTemplate } from './fitnessTemplates';
-import { 
-  learnLanguageTemplate, 
-  learnProgrammingTemplate, 
-  readBooksTemplate 
-} from './educationTemplates';
-import { 
-  saveEmergencyFundTemplate, 
-  payOffDebtTemplate, 
-  investmentPortfolioTemplate 
-} from './financialTemplates';
-import { 
-  getPromotionTemplate, 
-  startSideHustleTemplate, 
-  jobSearchTemplate, 
-  skillMasteryTemplate 
-} from './careerTemplates';
-import { 
-  dailyMeditationTemplate, 
-  publicSpeakingTemplate, 
-  morningRoutineTemplate, 
-  digitalDetoxTemplate 
-} from './personalTemplates';
-import { 
-  writeBookTemplate, 
-  learnInstrumentTemplate, 
-  photographyTemplate, 
-  artSkillTemplate 
-} from './creativeTemplates';
+import type { GoalTemplate } from "@/lib/goal-templates/types"
+import { healthFitnessTemplate } from "./healthFitnessTemplate"
+import { fitness5kTemplate, weightLossTemplate, muscleBuildingTemplate } from "./fitnessTemplates"
+import {
+  learnLanguageTemplate,
+  learnProgrammingTemplate,
+  readBooksTemplate,
+} from "./educationTemplates"
+import {
+  saveEmergencyFundTemplate,
+  payOffDebtTemplate,
+  investmentPortfolioTemplate,
+} from "./financialTemplates"
+import {
+  getPromotionTemplate,
+  startSideHustleTemplate,
+  jobSearchTemplate,
+  skillMasteryTemplate,
+} from "./careerTemplates"
+import {
+  dailyMeditationTemplate,
+  publicSpeakingTemplate,
+  morningRoutineTemplate,
+  digitalDetoxTemplate,
+} from "./personalTemplates"
+import {
+  writeBookTemplate,
+  learnInstrumentTemplate,
+  photographyTemplate,
+  artSkillTemplate,
+} from "./creativeTemplates"
 
 // Central registry of all goal templates
 export const goalTemplates: GoalTemplate[] = [
@@ -60,14 +60,14 @@ export const goalTemplates: GoalTemplate[] = [
   learnInstrumentTemplate,
   photographyTemplate,
   artSkillTemplate,
-];
+]
 
 // Helper to get template by ID
 export const getTemplateById = (id: string): GoalTemplate | undefined => {
-  return goalTemplates.find(template => template.id === id);
-};
+  return goalTemplates.find((template) => template.id === id)
+}
 
 // Helper to get templates by category
 export const getTemplatesByCategory = (category: string): GoalTemplate[] => {
-  return goalTemplates.filter(template => template.category === category);
-};
+  return goalTemplates.filter((template) => template.category === category)
+}

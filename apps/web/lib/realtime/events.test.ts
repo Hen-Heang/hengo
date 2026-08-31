@@ -12,7 +12,11 @@ import {
   type RealtimeBootstrapMessage,
 } from "./events"
 
-function msg(role: "user" | "assistant", text: string, id = `${role}-${text}`): RealtimeBootstrapMessage {
+function msg(
+  role: "user" | "assistant",
+  text: string,
+  id = `${role}-${text}`,
+): RealtimeBootstrapMessage {
   return { id, role, text }
 }
 

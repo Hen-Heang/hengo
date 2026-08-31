@@ -36,7 +36,7 @@ export function GoalFormContainer({
   const isLoading = isCreating || isUpdating
   const [step, setStep] = useState<GoalFormStep>("basics")
   const [selectedActivities, setSelectedActivities] = useState<string[]>(
-    initialData?.travel_details?.activities ?? []
+    initialData?.travel_details?.activities ?? [],
   )
 
   const getInitialDate = () => {
@@ -76,7 +76,7 @@ export function GoalFormContainer({
 
   const toggleActivity = (activity: string) => {
     setSelectedActivities((prev) =>
-      prev.includes(activity) ? prev.filter((a) => a !== activity) : [...prev, activity]
+      prev.includes(activity) ? prev.filter((a) => a !== activity) : [...prev, activity],
     )
   }
 
@@ -129,7 +129,7 @@ export function GoalFormContainer({
                 start_date: values.start_date?.toISOString() || new Date().toISOString(),
               },
             },
-            aiOptions
+            aiOptions,
           )
         : await createGoal(
             {
@@ -139,7 +139,7 @@ export function GoalFormContainer({
               start_date: values.start_date,
               metadata,
             },
-            aiOptions
+            aiOptions,
           )
 
     if (result.success && result.goal) {
@@ -178,18 +178,22 @@ export function GoalFormContainer({
               <div
                 className={cn(
                   "flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all",
-                  active ? "bg-primary text-primary-foreground shadow-md" : "bg-muted text-muted-foreground"
+                  active
+                    ? "bg-primary text-primary-foreground shadow-md"
+                    : "bg-muted text-muted-foreground",
                 )}
               >
                 <span
                   className={cn(
                     "flex h-7 w-7 items-center justify-center rounded-full text-sm font-semibold",
-                    active ? "bg-background text-primary" : "bg-foreground/10"
+                    active ? "bg-background text-primary" : "bg-foreground/10",
                   )}
                 >
                   {i + 1}
                 </span>
-                <span className="hidden sm:inline">{i === 0 ? "Goal details" : "AI assistant"}</span>
+                <span className="hidden sm:inline">
+                  {i === 0 ? "Goal details" : "AI assistant"}
+                </span>
               </div>
               {i === 0 && <div className="h-1 w-12 rounded-full bg-muted sm:w-20" />}
             </div>

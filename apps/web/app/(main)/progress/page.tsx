@@ -14,11 +14,7 @@ import { cn } from "@/lib/utils"
 // see app/(main)/history/page.tsx) with one hub, same pattern as the Learn
 // and Goals hubs. Each linked page is untouched — this is navigation, not a
 // content rewrite.
-const CARDS = [
-  navItem("review-hub"),
-  navItem("review-achievements"),
-  navItem("review-statistics"),
-]
+const CARDS = [navItem("review-hub"), navItem("review-achievements"), navItem("review-statistics")]
 
 export default function ProgressPage() {
   const reduceMotion = useReducedMotion()
@@ -34,7 +30,9 @@ export default function ProgressPage() {
     >
       <motion.div variants={item}>
         <p className="app-kicker">Grow</p>
-        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Progress</h1>
+        <h1 className="mt-2 text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">
+          Progress
+        </h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground sm:text-base">
           Your daily/weekly review, achievements, and stats — all in one place.
         </p>
@@ -57,7 +55,7 @@ export default function ProgressPage() {
                 aria-hidden
                 className={cn(
                   "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-primary/10",
-                  card.color ?? "text-primary"
+                  card.color ?? "text-primary",
                 )}
               >
                 <Icon size={20} strokeWidth={2.25} />
@@ -65,7 +63,9 @@ export default function ProgressPage() {
               <div className="min-w-0 flex-1">
                 <h3 className="text-base font-semibold text-foreground">{card.label}</h3>
                 {card.description && (
-                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{card.description}</p>
+                  <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">
+                    {card.description}
+                  </p>
                 )}
               </div>
               <ArrowRight

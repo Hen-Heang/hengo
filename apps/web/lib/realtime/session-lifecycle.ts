@@ -14,16 +14,12 @@ export type VoiceSessionStatus =
   | "failed"
 
 export type VoiceSessionEvent =
-  | "start"
-  | "connected"
-  | "disconnect"
-  | "end"
-  | "summarize"
-  | "summaryReady"
-  | "fail"
-  | "reset"
+  "start" | "connected" | "disconnect" | "end" | "summarize" | "summaryReady" | "fail" | "reset"
 
-const TRANSITIONS: Record<VoiceSessionStatus, Partial<Record<VoiceSessionEvent, VoiceSessionStatus>>> = {
+const TRANSITIONS: Record<
+  VoiceSessionStatus,
+  Partial<Record<VoiceSessionEvent, VoiceSessionStatus>>
+> = {
   idle: { start: "starting" },
   starting: { connected: "active", end: "ending", fail: "failed" },
   active: { disconnect: "reconnecting", end: "ending", fail: "failed" },

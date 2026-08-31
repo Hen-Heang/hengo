@@ -18,20 +18,24 @@ const evalWith = (scores: [string, number][]): InterviewEvaluation => ({
 
 describe("computeOverall", () => {
   it("averages the criteria on a 0–5 scale", () => {
-    expect(computeOverall([
-      { label: "Speaking", score: 4, max: 5 },
-      { label: "Pronunciation", score: 3, max: 5 },
-      { label: "Vocabulary", score: 5, max: 5 },
-      { label: "Confidence", score: 4, max: 5 },
-    ])).toBe(4) // (4+3+5+4)/4
+    expect(
+      computeOverall([
+        { label: "Speaking", score: 4, max: 5 },
+        { label: "Pronunciation", score: 3, max: 5 },
+        { label: "Vocabulary", score: 5, max: 5 },
+        { label: "Confidence", score: 4, max: 5 },
+      ]),
+    ).toBe(4) // (4+3+5+4)/4
   })
 
   it("normalises mixed maxes before averaging", () => {
     // 2/4 -> 2.5/5, and 5/5 -> 5/5 ; average = 3.75
-    expect(computeOverall([
-      { label: "A", score: 2, max: 4 },
-      { label: "B", score: 5, max: 5 },
-    ])).toBe(3.8) // 3.75 rounded to 1 dp
+    expect(
+      computeOverall([
+        { label: "A", score: 2, max: 4 },
+        { label: "B", score: 5, max: 5 },
+      ]),
+    ).toBe(3.8) // 3.75 rounded to 1 dp
   })
 
   it("returns 0 for no scores", () => {
@@ -42,7 +46,14 @@ describe("computeOverall", () => {
 describe("appendScorecard", () => {
   it("appends a dated record with the computed overall", () => {
     const now = new Date("2026-07-01T10:00:00Z")
-    const next = appendScorecard([], evalWith([["Speaking", 4], ["Confidence", 4]]), now)
+    const next = appendScorecard(
+      [],
+      evalWith([
+        ["Speaking", 4],
+        ["Confidence", 4],
+      ]),
+      now,
+    )
     expect(next).toHaveLength(1)
     expect(next[0]).toMatchObject({ overall: 4, date: now.toISOString() })
     expect(next[0].scores).toHaveLength(2)
@@ -69,7 +80,7 @@ describe("appendScorecard", () => {
       evalWith([["Speaking", 4]]),
       new Date("2026-07-14T10:00:00Z"),
       "fixed-id",
-      "exam"
+      "exam",
     )
     expect(next[0].id).toBe("fixed-id")
     expect(next[0].mode).toBe("exam")
@@ -96,17 +107,17 @@ describe("mergeScorecards", () => {
   it("sorts by date ascending regardless of input order", () => {
     const merged = mergeScorecards(
       [record("late", "2026-07-05T10:00:00Z")],
-      [record("early", "2026-07-01T10:00:00Z")]
+      [record("early", "2026-07-01T10:00:00Z")],
     )
     expect(merged.map((r) => r.id)).toEqual(["early", "late"])
   })
 
   it("caps the merged list to 50, dropping the oldest", () => {
     const local = Array.from({ length: 30 }, (_, i) =>
-      record(`l${i}`, `2026-06-${String(i + 1).padStart(2, "0")}T10:00:00Z`)
+      record(`l${i}`, `2026-06-${String(i + 1).padStart(2, "0")}T10:00:00Z`),
     )
     const remote = Array.from({ length: 30 }, (_, i) =>
-      record(`r${i}`, `2026-07-${String(i + 1).padStart(2, "0")}T10:00:00Z`)
+      record(`r${i}`, `2026-07-${String(i + 1).padStart(2, "0")}T10:00:00Z`),
     )
     const merged = mergeScorecards(local, remote)
     expect(merged).toHaveLength(50)

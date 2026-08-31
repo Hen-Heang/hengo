@@ -79,7 +79,8 @@ export function ExamPracticeDashboard({
                 Train the questions you are most likely to hear
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-                Catch the keyword → choose your real story → answer in 2–3 short formal sentences. Clear Korean matters more than long answers.
+                Catch the keyword → choose your real story → answer in 2–3 short formal sentences.
+                Clear Korean matters more than long answers.
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 sm:px-5">
@@ -101,12 +102,22 @@ export function ExamPracticeDashboard({
             <div>
               <h2 className="text-lg font-semibold text-foreground">Choose today&apos;s level</h2>
               <p className="mt-1 text-sm leading-6 text-muted-foreground">
-                Recommended now: <span className="font-medium text-foreground">{difficultyRecommendationLabel(recommended)}</span>. You can override it.
+                Recommended now:{" "}
+                <span className="font-medium text-foreground">
+                  {difficultyRecommendationLabel(recommended)}
+                </span>
+                . You can override it.
               </p>
             </div>
-            <Badge variant="outline">Recommended: {LEVELS.find((level) => level.id === recommended)?.label}</Badge>
+            <Badge variant="outline">
+              Recommended: {LEVELS.find((level) => level.id === recommended)?.label}
+            </Badge>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4" role="radiogroup" aria-label="Practice difficulty">
+          <div
+            className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4"
+            role="radiogroup"
+            aria-label="Practice difficulty"
+          >
             {LEVELS.map((level) => (
               <button
                 key={level.id}
@@ -137,18 +148,36 @@ export function ExamPracticeDashboard({
               <h2 className="text-lg font-semibold text-foreground">Today&apos;s 5</h2>
             </div>
             <p className="mt-2 text-sm leading-6 text-muted-foreground">
-              Focus on must-practise, new, and weak questions first. Listen once before reading when possible.
+              Focus on must-practise, new, and weak questions first. Listen once before reading when
+              possible.
             </p>
-            {error ? <p role="alert" className="mt-3 text-sm text-destructive">{error}</p> : null}
+            {error ? (
+              <p role="alert" className="mt-3 text-sm text-destructive">
+                {error}
+              </p>
+            ) : null}
             <ol className="mt-4 space-y-2.5 border-l border-border pl-4 text-foreground">
               {todayPreview.map((question, index) => (
-                <li key={question.id} lang="ko" className="break-words text-base font-medium leading-7">
-                  <span className="mr-2 text-sm text-muted-foreground">{index + 1}.</span>{question.questionKo}
+                <li
+                  key={question.id}
+                  lang="ko"
+                  className="break-words text-base font-medium leading-7"
+                >
+                  <span className="mr-2 text-sm text-muted-foreground">{index + 1}.</span>
+                  {question.questionKo}
                 </li>
               ))}
             </ol>
-            <Button onClick={onPracticeToday} disabled={loading || questions.length === 0} className="mt-5 h-12 w-full rounded-xl bg-blue-600 text-base font-semibold text-white hover:bg-blue-700">
-              {loading ? <RefreshCw className="mr-2 size-4 animate-spin" /> : <ArrowRight className="mr-2 size-4" />}
+            <Button
+              onClick={onPracticeToday}
+              disabled={loading || questions.length === 0}
+              className="mt-5 h-12 w-full rounded-xl bg-blue-600 text-base font-semibold text-white hover:bg-blue-700"
+            >
+              {loading ? (
+                <RefreshCw className="mr-2 size-4 animate-spin" />
+              ) : (
+                <ArrowRight className="mr-2 size-4" />
+              )}
               Practice Today&apos;s 5
             </Button>
           </CardContent>
@@ -157,13 +186,22 @@ export function ExamPracticeDashboard({
         <Card className="rounded-2xl border-border bg-card shadow-sm">
           <CardContent className="p-5 sm:p-6">
             <h2 className="text-lg font-semibold text-foreground">Your progress</h2>
-            <p className="mt-3 text-xl font-semibold text-foreground">{summary.practiced} / {summary.total} practised</p>
+            <p className="mt-3 text-xl font-semibold text-foreground">
+              {summary.practiced} / {summary.total} practised
+            </p>
             <div className="mt-3 grid grid-cols-2 gap-x-4 gap-y-2.5 text-sm">
-              <span className="text-muted-foreground">Strong</span><span className="text-right font-medium">{summary.strong}</span>
-              <span className="text-muted-foreground">Improving</span><span className="text-right font-medium">{summary.improving}</span>
-              <span className="text-muted-foreground">Need another retry</span><span className="text-right font-medium">{summary.needsRetry}</span>
-              <span className="text-muted-foreground">New</span><span className="text-right font-medium">{summary.newCount}</span>
-              <span className="text-muted-foreground">Latest mock</span><span className="text-right font-medium">{latestAttempt ? `${latestAttempt.overall.toFixed(1)} / 5` : "Not taken"}</span>
+              <span className="text-muted-foreground">Strong</span>
+              <span className="text-right font-medium">{summary.strong}</span>
+              <span className="text-muted-foreground">Improving</span>
+              <span className="text-right font-medium">{summary.improving}</span>
+              <span className="text-muted-foreground">Need another retry</span>
+              <span className="text-right font-medium">{summary.needsRetry}</span>
+              <span className="text-muted-foreground">New</span>
+              <span className="text-right font-medium">{summary.newCount}</span>
+              <span className="text-muted-foreground">Latest mock</span>
+              <span className="text-right font-medium">
+                {latestAttempt ? `${latestAttempt.overall.toFixed(1)} / 5` : "Not taken"}
+              </span>
             </div>
             {summary.practiced === 0 ? (
               <p className="mt-4 rounded-xl bg-muted/50 p-3 text-sm leading-6 text-muted-foreground">
@@ -173,7 +211,11 @@ export function ExamPracticeDashboard({
               <div className="mt-4">
                 <p className="text-xs font-medium text-muted-foreground">Weakest questions</p>
                 <ul className="mt-2 space-y-1.5 text-sm text-foreground">
-                  {weakest.map((question) => <li key={question.id} className="line-clamp-1 list-item list-disc">{question.questionKo}</li>)}
+                  {weakest.map((question) => (
+                    <li key={question.id} className="line-clamp-1 list-item list-disc">
+                      {question.questionKo}
+                    </li>
+                  ))}
                 </ul>
               </div>
             ) : null}
@@ -182,13 +224,28 @@ export function ExamPracticeDashboard({
       </div>
 
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-4">
-        <Button variant="outline" onClick={onAiRandom} className="h-11 rounded-xl"><Sparkles className="mr-2 size-4" />AI Random Questions</Button>
-        <Button asChild variant="outline" className="h-11 rounded-xl"><Link href="/interview"><Target className="mr-2 size-4" />Full Mock Interview</Link></Button>
-        <Button variant="outline" onClick={onReviewWeak} className="h-11 rounded-xl"><RefreshCw className="mr-2 size-4" />Review Weak Questions</Button>
-        <Button variant="outline" onClick={onBrowse} className="h-11 rounded-xl"><ListFilter className="mr-2 size-4" />Browse Question Bank</Button>
+        <Button variant="outline" onClick={onAiRandom} className="h-11 rounded-xl">
+          <Sparkles className="mr-2 size-4" />
+          AI Random Questions
+        </Button>
+        <Button asChild variant="outline" className="h-11 rounded-xl">
+          <Link href="/interview">
+            <Target className="mr-2 size-4" />
+            Full Mock Interview
+          </Link>
+        </Button>
+        <Button variant="outline" onClick={onReviewWeak} className="h-11 rounded-xl">
+          <RefreshCw className="mr-2 size-4" />
+          Review Weak Questions
+        </Button>
+        <Button variant="outline" onClick={onBrowse} className="h-11 rounded-xl">
+          <ListFilter className="mr-2 size-4" />
+          Browse Question Bank
+        </Button>
       </div>
       <p className="text-center text-xs leading-5 text-muted-foreground">
-        Today&apos;s 5 is the main path. Use AI Random only for extra variety after the core questions feel comfortable.
+        Today&apos;s 5 is the main path. Use AI Random only for extra variety after the core
+        questions feel comfortable.
       </p>
     </div>
   )

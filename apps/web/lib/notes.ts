@@ -71,23 +71,34 @@ function isValidHttpUrl(value: string): boolean {
 }
 
 /** Pure validation shared by the create and edit forms. */
-export function validateNoteInput(input: { title: string; content: string; sourceUrl?: string | null }): NoteValidationErrors {
+export function validateNoteInput(input: {
+  title: string
+  content: string
+  sourceUrl?: string | null
+}): NoteValidationErrors {
   const errors: NoteValidationErrors = {}
   const title = input.title.trim()
   if (!title) errors.title = "Title is required."
-  else if (title.length > MAX_NOTE_TITLE_LENGTH) errors.title = `Keep the title under ${MAX_NOTE_TITLE_LENGTH} characters.`
+  else if (title.length > MAX_NOTE_TITLE_LENGTH)
+    errors.title = `Keep the title under ${MAX_NOTE_TITLE_LENGTH} characters.`
 
   const content = input.content.trim()
   if (!content) errors.content = "Content is required."
-  else if (content.length > MAX_NOTE_CONTENT_LENGTH) errors.content = `Keep it under ${MAX_NOTE_CONTENT_LENGTH} characters.`
+  else if (content.length > MAX_NOTE_CONTENT_LENGTH)
+    errors.content = `Keep it under ${MAX_NOTE_CONTENT_LENGTH} characters.`
 
   const sourceUrl = input.sourceUrl?.trim()
-  if (sourceUrl && !isValidHttpUrl(sourceUrl)) errors.sourceUrl = "Enter a full URL (starting with http:// or https://)."
+  if (sourceUrl && !isValidHttpUrl(sourceUrl))
+    errors.sourceUrl = "Enter a full URL (starting with http:// or https://)."
 
   return errors
 }
 
-export function isNoteInputValid(input: { title: string; content: string; sourceUrl?: string | null }): boolean {
+export function isNoteInputValid(input: {
+  title: string
+  content: string
+  sourceUrl?: string | null
+}): boolean {
   return Object.keys(validateNoteInput(input)).length === 0
 }
 
@@ -115,7 +126,8 @@ function matchesMetaQuery(note: NoteMeta, normalizedQuery: string): boolean {
 export function filterNotesMeta(notes: NoteMeta[], filters: NoteFilters): NoteMeta[] {
   const normalizedQuery = filters.query?.trim().toLowerCase() ?? ""
   return notes.filter((note) => {
-    if (filters.noteType && filters.noteType !== "all" && note.noteType !== filters.noteType) return false
+    if (filters.noteType && filters.noteType !== "all" && note.noteType !== filters.noteType)
+      return false
     if (filters.pinnedOnly && !note.pinned) return false
     return matchesMetaQuery(note, normalizedQuery)
   })

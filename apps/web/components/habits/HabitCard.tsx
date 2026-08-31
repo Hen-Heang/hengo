@@ -14,7 +14,7 @@ import { MilestoneBadge } from "./MilestoneBadge"
 export function HabitCard({ habit }: { habit: Habit }) {
   const { checkins, currentStreak, milestone, loading, toggleCheckin } = useHabitCheckins(
     habit.id,
-    habit.startedAt
+    habit.startedAt,
   )
   const Icon = CATEGORY_ICONS[habit.category]
   const today = toCheckinDate()
@@ -25,7 +25,11 @@ export function HabitCard({ habit }: { habit: Habit }) {
       <div className="relative flex items-center gap-3 rounded-2xl border border-border bg-card p-3.5 shadow-sm transition-colors hover:bg-accent/50 sm:gap-4 sm:p-4">
         {/* Stretched link keeps the whole row useful for details. Interactive
             controls below render after it and stay clickable above the link. */}
-        <Link href={`/growth/habits/${habit.id}`} className="absolute inset-0" aria-label={habit.label} />
+        <Link
+          href={`/growth/habits/${habit.id}`}
+          className="absolute inset-0"
+          aria-label={habit.label}
+        />
 
         <div
           className={`pointer-events-none flex size-10 shrink-0 items-center justify-center rounded-xl ${CATEGORY_COLORS[habit.category]}`}
@@ -57,7 +61,11 @@ export function HabitCard({ habit }: { habit: Habit }) {
           whileTap={{ scale: 0.86 }}
           onClick={() => void toggleCheckin(today)}
           disabled={loading}
-          aria-label={doneToday ? `Undo today's check-in for ${habit.label}` : `Check in ${habit.label} for today`}
+          aria-label={
+            doneToday
+              ? `Undo today's check-in for ${habit.label}`
+              : `Check in ${habit.label} for today`
+          }
           title={doneToday ? "Done today" : "Check in today"}
           className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-colors hover:bg-accent disabled:opacity-50"
         >

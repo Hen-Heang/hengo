@@ -22,7 +22,10 @@ export function HealthBadge({
       )}
       title={reason ?? undefined}
     >
-      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styling.dotColor)} aria-hidden="true" />
+      <span
+        className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styling.dotColor)}
+        aria-hidden="true"
+      />
       {GOAL_HEALTH_LABELS[status]}
     </span>
   )

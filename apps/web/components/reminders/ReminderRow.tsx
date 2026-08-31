@@ -55,7 +55,9 @@ export function ReminderRow({ reminder }: { reminder: Reminder }) {
   }
 
   return (
-    <div className={`space-y-2 rounded-2xl border border-border bg-card p-4 ${busy ? "pointer-events-none opacity-60" : ""}`}>
+    <div
+      className={`space-y-2 rounded-2xl border border-border bg-card p-4 ${busy ? "pointer-events-none opacity-60" : ""}`}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-1.5">
@@ -64,14 +66,22 @@ export function ReminderRow({ reminder }: { reminder: Reminder }) {
               {reminder.status}
             </Badge>
           </div>
-          <h3 className="mt-1.5 break-words text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{reminder.title}</h3>
-          {reminder.body && <p className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">{reminder.body}</p>}
+          <h3 className="mt-1.5 break-words text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+            {reminder.title}
+          </h3>
+          {reminder.body && (
+            <p className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">
+              {reminder.body}
+            </p>
+          )}
         </div>
       </div>
 
       <p className="text-xs text-muted-foreground">
         {reminder.recurrence ? describeRecurrence(reminder.recurrence) : "One-time"}
-        {reminder.nextRunAt && reminder.status === "active" && ` · Next: ${formatDateTime(reminder.nextRunAt)}`}
+        {reminder.nextRunAt &&
+          reminder.status === "active" &&
+          ` · Next: ${formatDateTime(reminder.nextRunAt)}`}
         {reminder.lastSentAt && ` · Last sent: ${formatDateTime(reminder.lastSentAt)}`}
       </p>
 
@@ -96,7 +106,12 @@ export function ReminderRow({ reminder }: { reminder: Reminder }) {
                   <DropdownMenuItem
                     key={opt.minutes}
                     className="rounded-lg"
-                    onClick={() => run(() => snooze.mutateAsync({ id: reminder.id, minutes: opt.minutes }), `Snoozed for ${opt.label}`)}
+                    onClick={() =>
+                      run(
+                        () => snooze.mutateAsync({ id: reminder.id, minutes: opt.minutes }),
+                        `Snoozed for ${opt.label}`,
+                      )
+                    }
                   >
                     {opt.label}
                   </DropdownMenuItem>
@@ -146,7 +161,9 @@ export function ReminderRow({ reminder }: { reminder: Reminder }) {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this reminder?</AlertDialogTitle>
-              <AlertDialogDescription>This permanently removes it. This can&apos;t be undone.</AlertDialogDescription>
+              <AlertDialogDescription>
+                This permanently removes it. This can&apos;t be undone.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel>Cancel</AlertDialogCancel>

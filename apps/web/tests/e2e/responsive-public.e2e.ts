@@ -15,7 +15,7 @@ async function expectNoDocumentOverflow(page: Page) {
     scrollWidth: document.documentElement.scrollWidth,
   }))
   expect(geometry.scrollWidth, "document-level horizontal overflow").toBeLessThanOrEqual(
-    geometry.clientWidth + 1
+    geometry.clientWidth + 1,
   )
 }
 
@@ -32,7 +32,7 @@ test.describe("public responsive shell", () => {
         .getByRole("heading", { name: "Everything you need for workplace Korean." })
         .scrollIntoViewIfNeeded()
       await expect(
-        page.getByRole("heading", { name: "Everything you need for workplace Korean." })
+        page.getByRole("heading", { name: "Everything you need for workplace Korean." }),
       ).toBeVisible()
       await expectNoDocumentOverflow(page)
 

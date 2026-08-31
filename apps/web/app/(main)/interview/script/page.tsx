@@ -1,12 +1,6 @@
 "use client"
 
-import {
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  useSyncExternalStore,
-} from "react"
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react"
 import Link from "next/link"
 import {
   ArrowLeft,
@@ -40,10 +34,7 @@ import {
   INTERVIEW_TOPICS,
   type QAItem,
 } from "@/lib/interview"
-import {
-  duplicateVersionLabel,
-  suggestUniqueVersionLabel,
-} from "@/lib/interview-practice"
+import { duplicateVersionLabel, suggestUniqueVersionLabel } from "@/lib/interview-practice"
 import { cn } from "@/lib/utils"
 
 const topic = INTERVIEW_TOPICS[0]
@@ -100,8 +91,7 @@ function saveScriptLocally(value: Record<string, string>, updatedAt = new Date()
 }
 
 const loadInitialQA = (): CustomQA[] => loadJSON<CustomQA[]>(QA_CUSTOM_KEY, [])
-const loadInitial = (): Record<string, string> =>
-  loadJSON<Record<string, string>>(STORAGE_KEY, {})
+const loadInitial = (): Record<string, string> => loadJSON<Record<string, string>>(STORAGE_KEY, {})
 const loadInitialCustom = (): CustomSection[] => loadJSON<CustomSection[]>(CUSTOM_KEY, [])
 
 function countWords(text: string) {
@@ -138,14 +128,11 @@ function withSeedDefaults(current: Record<string, string>): Record<string, strin
 // account — or survives a cache clear — can therefore lack a definition, which
 // would hide it and silently drop it from the export. Re-create a placeholder
 // definition for any such orphaned key so the work is always visible and saved.
-function reconcileCustom(
-  custom: CustomSection[],
-  values: Record<string, string>
-): CustomSection[] {
+function reconcileCustom(custom: CustomSection[], values: Record<string, string>): CustomSection[] {
   const known = new Set(custom.map((s) => s.id))
   const orphans = Object.keys(values)
     .filter(
-      (id) => id.startsWith("custom-") && !known.has(id) && (values[id] ?? "").trim().length > 0
+      (id) => id.startsWith("custom-") && !known.has(id) && (values[id] ?? "").trim().length > 0,
     )
     .map((id) => ({ id, title: "" }))
   return orphans.length > 0 ? [...custom, ...orphans] : custom
@@ -203,8 +190,8 @@ export default function InterviewScriptPage() {
     Object.fromEntries(
       (topic.prep?.sampleQuestions ?? [])
         .map((question, index) => [`qa-seed-${index}`, question.answerEn ?? ""] as const)
-        .filter(([, answer]) => answer.trim().length > 0)
-    )
+        .filter(([, answer]) => answer.trim().length > 0),
+    ),
   )
   const [customQA, setCustomQA] = useState<CustomQA[]>(loadInitialQA)
   // Named snapshots layered on top of the autosaving draft (kori_interview_scripts,
@@ -229,7 +216,7 @@ export default function InterviewScriptPage() {
       return () => undefined
     },
     () => true,
-    () => false
+    () => false,
   )
 
   useEffect(() => {
@@ -267,9 +254,9 @@ export default function InterviewScriptPage() {
         const remoteUpdatedAt = remote ? Date.parse(remote.updatedAt) : Number.NaN
         const useRemote = Boolean(
           remote &&
-            hasText(remote.sections) &&
-            Number.isFinite(remoteUpdatedAt) &&
-            remoteUpdatedAt >= loadLocalUpdatedAt()
+          hasText(remote.sections) &&
+          Number.isFinite(remoteUpdatedAt) &&
+          remoteUpdatedAt >= loadLocalUpdatedAt(),
         )
         const base = useRemote && remote ? remote.sections : prev
         const next = withSeedDefaults(base)
@@ -315,14 +302,18 @@ export default function InterviewScriptPage() {
       .then((questions) => {
         if (!active || questions.length === 0) return
         setBankQA(
-          questions.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: q.questionEn ?? "" }))
+          questions.map((q) => ({
+            id: q.id,
+            questionKo: q.questionKo,
+            questionEn: q.questionEn ?? "",
+          })),
         )
         setQaAnswerEnglish(
           Object.fromEntries(
             questions
               .filter((q) => (q.sampleAnswerEn ?? "").trim().length > 0)
-              .map((q) => [q.id, q.sampleAnswerEn ?? ""])
-          )
+              .map((q) => [q.id, q.sampleAnswerEn ?? ""]),
+          ),
         )
         setValues((prev) => {
           let changed = false
@@ -355,7 +346,7 @@ export default function InterviewScriptPage() {
   // always shown and exported without any state-sync gymnastics.
   const effectiveCustom = useMemo(
     () => reconcileCustom(customSections, values),
-    [customSections, values]
+    [customSections, values],
   )
 
   // Seeded likely questions + the candidate's own, in display order.
@@ -364,12 +355,12 @@ export default function InterviewScriptPage() {
       ...bankQA,
       ...customQA.map((q) => ({ id: q.id, questionKo: q.questionKo, questionEn: "" })),
     ],
-    [bankQA, customQA]
+    [bankQA, customQA],
   )
 
   const scriptDocument = useMemo(
     () => buildScriptDocument(topic, values, effectiveCustom),
-    [values, effectiveCustom]
+    [values, effectiveCustom],
   )
   const qaDocument = useMemo(() => buildQADocument(allQA, values), [allQA, values])
 
@@ -385,12 +376,12 @@ export default function InterviewScriptPage() {
   // `values`, rather than scanning the whole map and filtering by key.
   const countedItems = useMemo(
     () => (mode === "qa" ? allQA : [...outline, ...effectiveCustom]),
-    [mode, allQA, outline, effectiveCustom]
+    [mode, allQA, outline, effectiveCustom],
   )
 
   const totalWords = useMemo(
     () => countedItems.reduce((sum, item) => sum + countWords(values[item.id] ?? ""), 0),
-    [countedItems, values]
+    [countedItems, values],
   )
   // Korean script length is usually judged by 글자 수 (characters, spaces
   // excluded) rather than whitespace-delimited words, so surface both.
@@ -398,9 +389,9 @@ export default function InterviewScriptPage() {
     () =>
       countedItems.reduce(
         (sum, item) => sum + (values[item.id] ?? "").replace(/\s/g, "").length,
-        0
+        0,
       ),
-    [countedItems, values]
+    [countedItems, values],
   )
 
   // Saving happens here in the change handler (not in an effect) so there is no
@@ -440,7 +431,7 @@ export default function InterviewScriptPage() {
     persistCustom(
       exists
         ? customSections.map((s) => (s.id === id ? { ...s, title } : s))
-        : [...customSections, { id, title }]
+        : [...customSections, { id, title }],
     )
   }
 
@@ -533,7 +524,7 @@ export default function InterviewScriptPage() {
   async function saveVersion() {
     const enteredLabel = window.prompt(
       'Name this version (examples: "Final Practice Version 2", "Mentor Review", "Exam Week Version"):',
-      ""
+      "",
     )
     if (!enteredLabel || !enteredLabel.trim()) return
     let label = enteredLabel.trim()
@@ -541,7 +532,7 @@ export default function InterviewScriptPage() {
     if (duplicateVersionLabel(label, existingLabels)) {
       const suggested = suggestUniqueVersionLabel(label, existingLabels)
       const useSuggestion = window.confirm(
-        `A version named "${label}" already exists. Save this snapshot as "${suggested}" instead?`
+        `A version named "${label}" already exists. Save this snapshot as "${suggested}" instead?`,
       )
       if (!useSuggestion) return
       label = suggested
@@ -562,13 +553,16 @@ export default function InterviewScriptPage() {
   async function activateVersion(version: ScriptVersion) {
     if (
       !window.confirm(
-        `Make "${version.versionLabel}" the active practice version? Your live editor draft will not be overwritten.`
+        `Make "${version.versionLabel}" the active practice version? Your live editor draft will not be overwritten.`,
       )
-    ) return
+    )
+      return
     try {
       await interviewApi.setActiveScriptVersion(topic.id, version.id)
       setVersions((prev) => prev.map((v) => ({ ...v, isActive: v.id === version.id })))
-      setPreviewVersion((current) => current?.id === version.id ? { ...current, isActive: true } : current)
+      setPreviewVersion((current) =>
+        current?.id === version.id ? { ...current, isActive: true } : current,
+      )
     } catch {
       // ignore
     }
@@ -577,7 +571,7 @@ export default function InterviewScriptPage() {
   function restoreVersion(version: ScriptVersion) {
     if (
       !window.confirm(
-        `Load "${version.versionLabel}" into the editor? This will overwrite the current draft text below (your saved versions themselves are never lost).`
+        `Load "${version.versionLabel}" into the editor? This will overwrite the current draft text below (your saved versions themselves are never lost).`,
       )
     )
       return
@@ -596,7 +590,7 @@ export default function InterviewScriptPage() {
   function clearAll() {
     if (
       !window.confirm(
-        "Clear the whole script and Q&A? Sections will reset to your original drafted script the next time the page loads."
+        "Clear the whole script and Q&A? Sections will reset to your original drafted script the next time the page loads.",
       )
     )
       return
@@ -651,9 +645,7 @@ export default function InterviewScriptPage() {
   // the way Google Docs tracks the cursor's heading.
   useEffect(() => {
     if (!mounted) return
-    const els = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-doc-section]")
-    )
+    const els = Array.from(document.querySelectorAll<HTMLElement>("[data-doc-section]"))
     if (els.length === 0) return
 
     const observer = new IntersectionObserver(
@@ -665,7 +657,7 @@ export default function InterviewScriptPage() {
           setActiveSection(visible[0].target.id.replace("sec-", ""))
         }
       },
-      { rootMargin: "-15% 0px -75% 0px" }
+      { rootMargin: "-15% 0px -75% 0px" },
     )
     els.forEach((el) => observer.observe(el))
     return () => observer.disconnect()
@@ -732,7 +724,8 @@ export default function InterviewScriptPage() {
                 </>
               ) : (
                 <>
-                  <ClipboardCopy size={15} className="mr-1.5" /> <span className="hidden sm:inline">Copy</span>
+                  <ClipboardCopy size={15} className="mr-1.5" />{" "}
+                  <span className="hidden sm:inline">Copy</span>
                 </>
               )}
             </Button>
@@ -743,7 +736,8 @@ export default function InterviewScriptPage() {
               disabled={!exportDocument}
               className="h-8 rounded-lg font-bold disabled:opacity-40"
             >
-              <Download size={15} className="sm:mr-1.5" /> <span className="hidden sm:inline">Download</span>
+              <Download size={15} className="sm:mr-1.5" />{" "}
+              <span className="hidden sm:inline">Download</span>
             </Button>
             <Button
               size="sm"
@@ -769,7 +763,9 @@ export default function InterviewScriptPage() {
                 onClick={() => setMode("script")}
                 className={cn(
                   "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[12px] font-bold uppercase tracking-wide transition-all",
-                  mode === "script" ? "bg-blue-600 text-white shadow" : "text-muted-foreground/70 hover:text-foreground"
+                  mode === "script"
+                    ? "bg-blue-600 text-white shadow"
+                    : "text-muted-foreground/70 hover:text-foreground",
                 )}
               >
                 <FileText size={14} strokeWidth={2.6} /> Script
@@ -779,7 +775,9 @@ export default function InterviewScriptPage() {
                 onClick={() => setMode("qa")}
                 className={cn(
                   "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[12px] font-bold uppercase tracking-wide transition-all",
-                  mode === "qa" ? "bg-blue-600 text-white shadow" : "text-muted-foreground/70 hover:text-foreground"
+                  mode === "qa"
+                    ? "bg-blue-600 text-white shadow"
+                    : "text-muted-foreground/70 hover:text-foreground",
                 )}
               >
                 <MessagesSquare size={14} strokeWidth={2.6} /> Q&amp;A Prep
@@ -789,7 +787,9 @@ export default function InterviewScriptPage() {
                 onClick={() => setMode("read")}
                 className={cn(
                   "flex items-center gap-1.5 rounded-xl px-4 py-2 text-[12px] font-bold uppercase tracking-wide transition-all",
-                  mode === "read" ? "bg-blue-600 text-white shadow" : "text-muted-foreground/70 hover:text-foreground"
+                  mode === "read"
+                    ? "bg-blue-600 text-white shadow"
+                    : "text-muted-foreground/70 hover:text-foreground",
                 )}
               >
                 <BookOpenText size={14} strokeWidth={2.6} /> Read
@@ -810,7 +810,7 @@ export default function InterviewScriptPage() {
                   "inline-flex items-center gap-1.5 rounded-2xl border border-border/70 px-4 py-2.5 text-[12px] font-bold uppercase tracking-wide shadow-sm transition-all",
                   showEnglish
                     ? "bg-emerald-600 text-white"
-                    : "bg-background text-muted-foreground/70 hover:text-foreground dark:bg-slate-900"
+                    : "bg-background text-muted-foreground/70 hover:text-foreground dark:bg-slate-900",
                 )}
               >
                 <Languages size={14} strokeWidth={2.6} /> English
@@ -908,34 +908,64 @@ export default function InterviewScriptPage() {
                     <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border pb-3">
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-sm font-bold text-foreground">{previewVersion.versionLabel}</p>
+                          <p className="text-sm font-bold text-foreground">
+                            {previewVersion.versionLabel}
+                          </p>
                           {previewVersion.isActive && (
-                            <Badge className="border-none bg-blue-500/10 text-blue-600 dark:text-blue-400">Active</Badge>
+                            <Badge className="border-none bg-blue-500/10 text-blue-600 dark:text-blue-400">
+                              Active
+                            </Badge>
                           )}
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
-                          {new Date(previewVersion.createdAt).toLocaleString()} {"\u00B7"} Source: {previewVersion.sourceType}
+                          {new Date(previewVersion.createdAt).toLocaleString()} {"\u00B7"} Source:{" "}
+                          {previewVersion.sourceType}
                         </p>
                       </div>
                       <div className="flex flex-wrap gap-2">
                         {!previewVersion.isActive && (
-                          <Button size="sm" onClick={() => activateVersion(previewVersion)} className="h-8 rounded-lg bg-blue-600 text-xs text-white hover:bg-blue-700">
+                          <Button
+                            size="sm"
+                            onClick={() => activateVersion(previewVersion)}
+                            className="h-8 rounded-lg bg-blue-600 text-xs text-white hover:bg-blue-700"
+                          >
                             Make active
                           </Button>
                         )}
-                        <Button size="sm" variant="outline" onClick={() => restoreVersion(previewVersion)} className="h-8 rounded-lg text-xs">Load into editor</Button>
-                        <Button size="sm" variant="ghost" onClick={() => setPreviewVersion(null)} className="h-8 rounded-lg text-xs">Close</Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => restoreVersion(previewVersion)}
+                          className="h-8 rounded-lg text-xs"
+                        >
+                          Load into editor
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => setPreviewVersion(null)}
+                          className="h-8 rounded-lg text-xs"
+                        >
+                          Close
+                        </Button>
                       </div>
                     </div>
-                    <p className="mt-3 text-xs text-muted-foreground">Preview only. Activating a version does not overwrite the live draft.</p>
+                    <p className="mt-3 text-xs text-muted-foreground">
+                      Preview only. Activating a version does not overwrite the live draft.
+                    </p>
                     <div className="mt-4 grid gap-4 md:grid-cols-2">
                       <section className="rounded-xl border border-border p-3">
                         <h3 className="text-xs font-bold text-muted-foreground">Korean</h3>
                         <div className="mt-3 space-y-4">
                           {outline.map((section) => (
                             <div key={section.id}>
-                              <p className="text-xs font-medium text-muted-foreground">{section.titleKo}</p>
-                              <p lang="ko" className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
+                              <p className="text-xs font-medium text-muted-foreground">
+                                {section.titleKo}
+                              </p>
+                              <p
+                                lang="ko"
+                                className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground"
+                              >
                                 {previewVersion.sections[section.id] || "\u2014"}
                               </p>
                             </div>
@@ -947,7 +977,9 @@ export default function InterviewScriptPage() {
                         <div className="mt-3 space-y-4">
                           {outline.map((section) => (
                             <div key={section.id}>
-                              <p className="text-xs font-medium text-muted-foreground">{section.titleEn}</p>
+                              <p className="text-xs font-medium text-muted-foreground">
+                                {section.titleEn}
+                              </p>
                               <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-foreground">
                                 {previewVersion.sections[`en-${section.id}`] || "\u2014"}
                               </p>
@@ -963,214 +995,215 @@ export default function InterviewScriptPage() {
           )}
 
           {mode === "script" ? (
-          <div className="flex justify-center gap-6 xl:gap-8">
-          {/* Document outline (Docs left panel) */}
-          <aside className="hidden w-56 shrink-0 lg:block">
-            <div className="sticky top-20">
-              <div className="mb-3 flex items-center gap-2 px-2 text-muted-foreground">
-                <ListTree size={16} strokeWidth={2.5} />
-                <span className="text-xs font-bold uppercase tracking-[0.18em]">
-                  Outline
-                </span>
-              </div>
-              <nav className="space-y-0.5">
-                {allSections.map((section, index) => {
-                  const filled = (view[section.id] ?? "").trim().length > 0
-                  const active = activeSection === section.id
-                  const label = section.custom
-                    ? section.titleKo.trim() || "Untitled section"
-                    : section.titleEn
-                  return (
-                    <button
-                      key={section.id}
-                      type="button"
-                      onClick={() => scrollToSection(section.id)}
-                      className={cn(
-                        "group flex w-full items-center gap-2.5 rounded-lg border-l-2 py-1.5 pl-3 pr-2 text-left transition-colors",
-                        active
-                          ? "border-blue-500 bg-blue-500/10"
-                          : "border-transparent hover:bg-accent"
-                      )}
-                    >
-                      <span
+            <div className="flex justify-center gap-6 xl:gap-8">
+              {/* Document outline (Docs left panel) */}
+              <aside className="hidden w-56 shrink-0 lg:block">
+                <div className="sticky top-20">
+                  <div className="mb-3 flex items-center gap-2 px-2 text-muted-foreground">
+                    <ListTree size={16} strokeWidth={2.5} />
+                    <span className="text-xs font-bold uppercase tracking-[0.18em]">Outline</span>
+                  </div>
+                  <nav className="space-y-0.5">
+                    {allSections.map((section, index) => {
+                      const filled = (view[section.id] ?? "").trim().length > 0
+                      const active = activeSection === section.id
+                      const label = section.custom
+                        ? section.titleKo.trim() || "Untitled section"
+                        : section.titleEn
+                      return (
+                        <button
+                          key={section.id}
+                          type="button"
+                          onClick={() => scrollToSection(section.id)}
+                          className={cn(
+                            "group flex w-full items-center gap-2.5 rounded-lg border-l-2 py-1.5 pl-3 pr-2 text-left transition-colors",
+                            active
+                              ? "border-blue-500 bg-blue-500/10"
+                              : "border-transparent hover:bg-accent",
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              "h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
+                              filled ? "bg-blue-500" : "bg-muted-foreground/30",
+                            )}
+                          />
+                          <span
+                            className={cn(
+                              "truncate text-[13px] font-bold transition-colors",
+                              active
+                                ? "text-blue-700 dark:text-blue-400"
+                                : "text-muted-foreground group-hover:text-foreground",
+                            )}
+                          >
+                            {index + 1}. {label}
+                          </span>
+                        </button>
+                      )
+                    })}
+                  </nav>
+                  <button
+                    type="button"
+                    onClick={addCustomSection}
+                    className="mt-2 flex w-full items-center gap-2 rounded-lg py-1.5 pl-3 pr-2 text-left text-[13px] font-bold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  >
+                    <Plus size={14} strokeWidth={3} className="shrink-0" />
+                    Add section
+                  </button>
+                  <div className="mt-4 border-t border-border/60 px-3 pt-3">
+                    <p className="text-xs font-bold text-muted-foreground/70">
+                      {completedSections}/{allSections.length} sections
+                    </p>
+                    <p className="text-xs font-bold text-muted-foreground/70">
+                      {totalWords} {totalWords === 1 ? "word" : "words"} · {totalChars}자
+                    </p>
+                  </div>
+                </div>
+              </aside>
+
+              {/* The paper */}
+              <article className="w-full max-w-[816px] rounded-sm bg-white px-6 py-10 shadow-[0_1px_3px_rgba(60,64,67,0.15),0_4px_24px_rgba(60,64,67,0.1)] ring-1 ring-black/5 dark:bg-slate-900 dark:ring-white/10 sm:px-14 sm:py-16 lg:px-[96px]">
+                {/* Document title */}
+                <header className="border-b border-border/60 pb-6">
+                  <h1 className="text-[1.7rem] font-bold leading-tight tracking-tight text-foreground sm:text-3xl">
+                    {topic.labelKo}
+                  </h1>
+                  <p className="mt-2 text-sm font-medium text-muted-foreground">
+                    {topic.label} · Interview script · Submit by Aug 21
+                  </p>
+                  <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                    {completedSections}/{allSections.length} sections · {totalWords} words ·{" "}
+                    {totalChars}자
+                  </p>
+                </header>
+
+                {/* Body */}
+                <div className="mt-8 space-y-9">
+                  {allSections.map((section, index) => {
+                    const sectionWords = countWords(view[section.id] ?? "")
+                    const active = activeSection === section.id
+                    return (
+                      <section
+                        key={section.id}
+                        id={`sec-${section.id}`}
+                        data-doc-section
                         className={cn(
-                          "h-1.5 w-1.5 shrink-0 rounded-full transition-colors",
-                          filled ? "bg-blue-500" : "bg-muted-foreground/30"
-                        )}
-                      />
-                      <span
-                        className={cn(
-                          "truncate text-[13px] font-bold transition-colors",
-                          active ? "text-blue-700 dark:text-blue-400" : "text-muted-foreground group-hover:text-foreground"
+                          "scroll-mt-20 rounded-r-lg border-l-2 pl-4 transition-colors",
+                          active ? "border-blue-500/60" : "border-transparent",
                         )}
                       >
-                        {index + 1}. {label}
-                      </span>
-                    </button>
-                  )
-                })}
-              </nav>
-              <button
-                type="button"
-                onClick={addCustomSection}
-                className="mt-2 flex w-full items-center gap-2 rounded-lg py-1.5 pl-3 pr-2 text-left text-[13px] font-bold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
-              >
-                <Plus size={14} strokeWidth={3} className="shrink-0" />
-                Add section
-              </button>
-              <div className="mt-4 border-t border-border/60 px-3 pt-3">
-                <p className="text-xs font-bold text-muted-foreground/70">
-                  {completedSections}/{allSections.length} sections
-                </p>
-                <p className="text-xs font-bold text-muted-foreground/70">
-                  {totalWords} {totalWords === 1 ? "word" : "words"} · {totalChars}자
-                </p>
-              </div>
-            </div>
-          </aside>
-
-          {/* The paper */}
-          <article className="w-full max-w-[816px] rounded-sm bg-white px-6 py-10 shadow-[0_1px_3px_rgba(60,64,67,0.15),0_4px_24px_rgba(60,64,67,0.1)] ring-1 ring-black/5 dark:bg-slate-900 dark:ring-white/10 sm:px-14 sm:py-16 lg:px-[96px]">
-            {/* Document title */}
-            <header className="border-b border-border/60 pb-6">
-              <h1 className="text-[1.7rem] font-bold leading-tight tracking-tight text-foreground sm:text-3xl">
-                {topic.labelKo}
-              </h1>
-              <p className="mt-2 text-sm font-medium text-muted-foreground">
-                {topic.label} · Interview script · Submit by Aug 21
-              </p>
-              <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                {completedSections}/{allSections.length} sections · {totalWords} words · {totalChars}자
-              </p>
-            </header>
-
-            {/* Body */}
-            <div className="mt-8 space-y-9">
-              {allSections.map((section, index) => {
-                const sectionWords = countWords(view[section.id] ?? "")
-                const active = activeSection === section.id
-                return (
-                  <section
-                    key={section.id}
-                    id={`sec-${section.id}`}
-                    data-doc-section
-                    className={cn(
-                      "scroll-mt-20 rounded-r-lg border-l-2 pl-4 transition-colors",
-                      active ? "border-blue-500/60" : "border-transparent"
-                    )}
-                  >
-                    <div className="flex items-center justify-between gap-3">
-                      {section.custom ? (
-                        <div className="flex min-w-0 flex-1 items-baseline gap-2">
-                          <span className="text-lg font-bold text-foreground">{index + 1}.</span>
-                          <input
-                            id={`title-${section.id}`}
-                            value={section.titleKo}
-                            onChange={(e) => renameCustomSection(section.id, e.target.value)}
-                            placeholder="Section title…"
-                            className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg font-bold text-foreground outline-none placeholder:font-bold placeholder:text-muted-foreground/40 focus:ring-0"
+                        <div className="flex items-center justify-between gap-3">
+                          {section.custom ? (
+                            <div className="flex min-w-0 flex-1 items-baseline gap-2">
+                              <span className="text-lg font-bold text-foreground">
+                                {index + 1}.
+                              </span>
+                              <input
+                                id={`title-${section.id}`}
+                                value={section.titleKo}
+                                onChange={(e) => renameCustomSection(section.id, e.target.value)}
+                                placeholder="Section title…"
+                                className="min-w-0 flex-1 border-0 bg-transparent p-0 text-lg font-bold text-foreground outline-none placeholder:font-bold placeholder:text-muted-foreground/40 focus:ring-0"
+                              />
+                            </div>
+                          ) : (
+                            <h2 className="text-lg font-bold text-foreground">
+                              {index + 1}. {section.titleKo}
+                              <span className="ml-2 text-sm font-bold text-muted-foreground/70">
+                                {section.titleEn}
+                              </span>
+                            </h2>
+                          )}
+                          <div className="flex shrink-0 items-center gap-2">
+                            {sectionWords > 0 && (
+                              <span className="text-xs font-bold tabular-nums text-muted-foreground">
+                                {sectionWords}w
+                              </span>
+                            )}
+                            {(view[section.id] ?? "").trim() && (
+                              <SpeakButton
+                                text={view[section.id]}
+                                title="Listen to what you wrote"
+                                className="shrink-0"
+                              />
+                            )}
+                            {section.custom && (
+                              <div className="flex items-center">
+                                <button
+                                  type="button"
+                                  onClick={() => moveCustomSection(section.id, "up")}
+                                  aria-label="Move section up"
+                                  className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
+                                >
+                                  <ChevronUp size={15} strokeWidth={2.5} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => moveCustomSection(section.id, "down")}
+                                  aria-label="Move section down"
+                                  className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
+                                >
+                                  <ChevronDown size={15} strokeWidth={2.5} />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => removeCustomSection(section.id)}
+                                  aria-label="Delete section"
+                                  className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-destructive/10 hover:text-destructive"
+                                >
+                                  <Trash2 size={14} strokeWidth={2.5} />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        {section.hint && (
+                          <p className="mt-1.5 text-xs font-medium italic leading-relaxed text-muted-foreground/80">
+                            💡 {section.hint}
+                          </p>
+                        )}
+                        <div className="mt-3">
+                          <DocTextarea
+                            value={view[section.id] ?? ""}
+                            onChange={(text) => updateSection(section.id, text)}
+                            placeholder="여기에 한국어로 작성하세요…"
                           />
                         </div>
-                      ) : (
-                        <h2 className="text-lg font-bold text-foreground">
-                          {index + 1}. {section.titleKo}
-                          <span className="ml-2 text-sm font-bold text-muted-foreground/70">
-                            {section.titleEn}
-                          </span>
-                        </h2>
-                      )}
-                      <div className="flex shrink-0 items-center gap-2">
-                        {sectionWords > 0 && (
-                          <span className="text-xs font-bold tabular-nums text-muted-foreground">
-                            {sectionWords}w
-                          </span>
-                        )}
-                        {(view[section.id] ?? "").trim() && (
-                          <SpeakButton
-                            text={view[section.id]}
-                            title="Listen to what you wrote"
-                            className="shrink-0"
-                          />
-                        )}
-                        {section.custom && (
-                          <div className="flex items-center">
-                            <button
-                              type="button"
-                              onClick={() => moveCustomSection(section.id, "up")}
-                              aria-label="Move section up"
-                              className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
-                            >
-                              <ChevronUp size={15} strokeWidth={2.5} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => moveCustomSection(section.id, "down")}
-                              aria-label="Move section down"
-                              className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-accent hover:text-foreground"
-                            >
-                              <ChevronDown size={15} strokeWidth={2.5} />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => removeCustomSection(section.id)}
-                              aria-label="Delete section"
-                              className="flex h-7 w-6 items-center justify-center rounded-md text-muted-foreground/40 transition-colors hover:bg-destructive/10 hover:text-destructive"
-                            >
-                              <Trash2 size={14} strokeWidth={2.5} />
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    {section.hint && (
-                      <p className="mt-1.5 text-xs font-medium italic leading-relaxed text-muted-foreground/80">
-                        💡 {section.hint}
-                      </p>
-                    )}
-                    <div className="mt-3">
-                      <DocTextarea
-                        value={view[section.id] ?? ""}
-                        onChange={(text) => updateSection(section.id, text)}
-                        placeholder="여기에 한국어로 작성하세요…"
-                      />
-                    </div>
-                    {/* Editable English translation, defaulted from the topic's
+                        {/* Editable English translation, defaulted from the topic's
                         seed until the candidate writes their own. Reference
                         only — excluded from counts and the Korean export. */}
-                    {!section.custom && showEnglish && (
-                      <div className="mt-3 rounded-xl bg-muted/30 p-3">
-                        <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                          <Languages size={11} strokeWidth={2.5} /> English
-                        </p>
-                        <div className="mt-1.5">
-                          <DocTextarea
-                            value={
-                              view[`en-${section.id}`] ??
-                              topic.scriptSeedEn?.[section.id] ??
-                              ""
-                            }
-                            onChange={(text) => updateSection(`en-${section.id}`, text)}
-                            placeholder="Write the English translation here…"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div className="mt-2 border-b border-dashed border-border/50" />
-                  </section>
-                )
-              })}
+                        {!section.custom && showEnglish && (
+                          <div className="mt-3 rounded-xl bg-muted/30 p-3">
+                            <p className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                              <Languages size={11} strokeWidth={2.5} /> English
+                            </p>
+                            <div className="mt-1.5">
+                              <DocTextarea
+                                value={
+                                  view[`en-${section.id}`] ?? topic.scriptSeedEn?.[section.id] ?? ""
+                                }
+                                onChange={(text) => updateSection(`en-${section.id}`, text)}
+                                placeholder="Write the English translation here…"
+                              />
+                            </div>
+                          </div>
+                        )}
+                        <div className="mt-2 border-b border-dashed border-border/50" />
+                      </section>
+                    )
+                  })}
 
-              {/* Add a new custom section to the end of the document */}
-              <button
-                type="button"
-                onClick={addCustomSection}
-                className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-3.5 text-sm font-bold text-muted-foreground transition-colors hover:border-blue-500/40 hover:bg-blue-500/5 hover:text-blue-600"
-              >
-                <Plus size={16} strokeWidth={2.5} /> Add section
-              </button>
+                  {/* Add a new custom section to the end of the document */}
+                  <button
+                    type="button"
+                    onClick={addCustomSection}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-border py-3.5 text-sm font-bold text-muted-foreground transition-colors hover:border-blue-500/40 hover:bg-blue-500/5 hover:text-blue-600"
+                  >
+                    <Plus size={16} strokeWidth={2.5} /> Add section
+                  </button>
+                </div>
+              </article>
             </div>
-          </article>
-          </div>
           ) : mode === "read" ? (
             <article className="mx-auto w-full max-w-[816px] rounded-sm bg-white px-6 py-10 shadow-[0_1px_3px_rgba(60,64,67,0.15),0_4px_24px_rgba(60,64,67,0.1)] ring-1 ring-black/5 dark:bg-slate-900 dark:ring-white/10 sm:px-14 sm:py-16 lg:px-[96px]">
               <header className="border-b border-border/60 pb-6">
@@ -1224,7 +1257,8 @@ export default function InterviewScriptPage() {
                   예상 질문 &amp; 답변 (Q&amp;A)
                 </h1>
                 <p className="mt-2 text-sm font-medium text-muted-foreground">
-                  Practice the Korean answer first, then use the English meaning only to confirm what you are saying.
+                  Practice the Korean answer first, then use the English meaning only to confirm
+                  what you are saying.
                 </p>
                 <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                   {answeredQA}/{allQA.length} answered · {totalWords} words · {totalChars}자
@@ -1264,7 +1298,11 @@ export default function InterviewScriptPage() {
                         </div>
                         <div className="flex shrink-0 items-center gap-2">
                           {item.questionKo.trim() && (
-                            <SpeakButton text={item.questionKo} title="Hear the question" className="shrink-0" />
+                            <SpeakButton
+                              text={item.questionKo}
+                              title="Hear the question"
+                              className="shrink-0"
+                            />
                           )}
                           {isCustom && (
                             <button

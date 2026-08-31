@@ -13,7 +13,14 @@ describe("parseCsvImport", () => {
   it("parses a simple CSV with header row", () => {
     const csv = "category,situation,questionKorean,answerKorean\nworkplace,deadline,질문,답변"
     const rows = parseCsvImport(csv)
-    expect(rows).toEqual([{ category: "workplace", situation: "deadline", questionKorean: "질문", answerKorean: "답변" }])
+    expect(rows).toEqual([
+      {
+        category: "workplace",
+        situation: "deadline",
+        questionKorean: "질문",
+        answerKorean: "답변",
+      },
+    ])
   })
 
   it("handles quoted fields containing commas", () => {

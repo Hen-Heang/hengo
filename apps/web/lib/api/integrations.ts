@@ -86,7 +86,10 @@ export const integrationsApi = {
   // access token itself — the browser never sees one. Callers should treat
   // any rejection as "no Google events right now" rather than a hard error;
   // the calendar must keep working when disconnected or mid-reauth.
-  getGoogleCalendarEvents: async (timeMin: string, timeMax: string): Promise<GoogleCalendarEventsResult> => {
+  getGoogleCalendarEvents: async (
+    timeMin: string,
+    timeMax: string,
+  ): Promise<GoogleCalendarEventsResult> => {
     const params = new URLSearchParams({ timeMin, timeMax })
     const res = await authedFetch(`/api/integrations/google-calendar/events?${params}`)
     if (!res) throw new Error("Google Calendar requires an active Hengo session.")
@@ -99,7 +102,7 @@ export const integrationsApi = {
   // getGoogleCalendarEvents.
   getGoogleCalendarFreeBusy: async (
     timeMin: string,
-    timeMax: string
+    timeMax: string,
   ): Promise<{ start: string; end: string }[]> => {
     const params = new URLSearchParams({ timeMin, timeMax })
     const res = await authedFetch(`/api/integrations/google-calendar/freebusy?${params}`)
@@ -143,7 +146,9 @@ export const integrationsApi = {
   // Revokes the grant at Google and deletes Hengo's stored credentials.
   // Never signs the user out of Hengo or touches their Google login identity.
   disconnectGoogleCalendar: async (): Promise<void> => {
-    const res = await authedFetch("/api/integrations/google-calendar/disconnect", { method: "POST" })
+    const res = await authedFetch("/api/integrations/google-calendar/disconnect", {
+      method: "POST",
+    })
     if (!res) throw new Error("Not signed in.")
     if (!res.ok) throw new Error("Could not disconnect Google Calendar.")
   },

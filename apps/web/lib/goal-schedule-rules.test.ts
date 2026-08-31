@@ -27,34 +27,50 @@ describe("weekdayOf", () => {
 
 describe("daily recurrence", () => {
   it("fires every day inside the window", () => {
-    expect(
-      generateOccurrences(rule({}), { from: "2026-07-01", to: "2026-07-05" }),
-    ).toEqual(["2026-07-01", "2026-07-02", "2026-07-03", "2026-07-04", "2026-07-05"])
+    expect(generateOccurrences(rule({}), { from: "2026-07-01", to: "2026-07-05" })).toEqual([
+      "2026-07-01",
+      "2026-07-02",
+      "2026-07-03",
+      "2026-07-04",
+      "2026-07-05",
+    ])
   })
 
   it("honours the interval and stays on the rule's own cycle", () => {
     // Window starts mid-cycle (Jul 2 is an off day for an every-3-days rule
     // anchored on Jul 1) — the first hit must snap forward to Jul 4, not Jul 2.
     expect(
-      generateOccurrences(rule({ recurrence_interval: 3 }), { from: "2026-07-02", to: "2026-07-10" }),
+      generateOccurrences(rule({ recurrence_interval: 3 }), {
+        from: "2026-07-02",
+        to: "2026-07-10",
+      }),
     ).toEqual(["2026-07-04", "2026-07-07", "2026-07-10"])
   })
 
   it("never fires before the rule start date", () => {
     expect(
-      generateOccurrences(rule({ start_date: "2026-07-10" }), { from: "2026-07-01", to: "2026-07-11" }),
+      generateOccurrences(rule({ start_date: "2026-07-10" }), {
+        from: "2026-07-01",
+        to: "2026-07-11",
+      }),
     ).toEqual(["2026-07-10", "2026-07-11"])
   })
 
   it("never fires after the rule end date", () => {
     expect(
-      generateOccurrences(rule({ end_date: "2026-07-03" }), { from: "2026-07-01", to: "2026-07-31" }),
+      generateOccurrences(rule({ end_date: "2026-07-03" }), {
+        from: "2026-07-01",
+        to: "2026-07-31",
+      }),
     ).toEqual(["2026-07-01", "2026-07-02", "2026-07-03"])
   })
 
   it("crosses a month boundary correctly", () => {
     expect(
-      generateOccurrences(rule({ start_date: "2026-07-30" }), { from: "2026-07-30", to: "2026-08-02" }),
+      generateOccurrences(rule({ start_date: "2026-07-30" }), {
+        from: "2026-07-30",
+        to: "2026-08-02",
+      }),
     ).toEqual(["2026-07-30", "2026-07-31", "2026-08-01", "2026-08-02"])
   })
 })
@@ -62,10 +78,10 @@ describe("daily recurrence", () => {
 describe("weekly recurrence", () => {
   it("fires on the selected weekdays only", () => {
     expect(
-      generateOccurrences(
-        rule({ recurrence_type: "weekly", days_of_week: [1, 3, 5] }),
-        { from: "2026-07-01", to: "2026-07-12" },
-      ),
+      generateOccurrences(rule({ recurrence_type: "weekly", days_of_week: [1, 3, 5] }), {
+        from: "2026-07-01",
+        to: "2026-07-12",
+      }),
     ).toEqual([
       "2026-07-01", // Wed
       "2026-07-03", // Fri
@@ -136,7 +152,12 @@ describe("monthly recurrence", () => {
   it("honours a multi-month interval", () => {
     expect(
       generateOccurrences(
-        rule({ recurrence_type: "monthly", day_of_month: 1, recurrence_interval: 3, start_date: "2026-07-01" }),
+        rule({
+          recurrence_type: "monthly",
+          day_of_month: 1,
+          recurrence_interval: 3,
+          start_date: "2026-07-01",
+        }),
         { from: "2026-07-01", to: "2027-02-28" },
       ),
     ).toEqual(["2026-07-01", "2026-10-01", "2027-01-01"])
@@ -169,7 +190,11 @@ describe("boundaries", () => {
   })
 
   it("never exceeds the requested limit", () => {
-    const dates = generateOccurrences(rule({}), { from: "2026-01-01", to: "2026-12-31" }, { limit: 5 })
+    const dates = generateOccurrences(
+      rule({}),
+      { from: "2026-01-01", to: "2026-12-31" },
+      { limit: 5 },
+    )
     expect(dates).toHaveLength(5)
   })
 
@@ -221,11 +246,12 @@ describe("scheduleRuleInputSchema", () => {
   })
 
   it("requires a day of month for monthly rules", () => {
+    expect(scheduleRuleInputSchema.safeParse({ ...base, recurrence_type: "monthly" }).success).toBe(
+      false,
+    )
     expect(
-      scheduleRuleInputSchema.safeParse({ ...base, recurrence_type: "monthly" }).success,
-    ).toBe(false)
-    expect(
-      scheduleRuleInputSchema.safeParse({ ...base, recurrence_type: "monthly", day_of_month: 5 }).success,
+      scheduleRuleInputSchema.safeParse({ ...base, recurrence_type: "monthly", day_of_month: 5 })
+        .success,
     ).toBe(true)
   })
 
@@ -242,10 +268,12 @@ describe("scheduleRuleInputSchema", () => {
   it("rejects out-of-range weekdays, non-positive durations and interval 0", () => {
     expect(scheduleRuleInputSchema.safeParse({ ...base, days_of_week: [7] }).success).toBe(false)
     expect(
-      scheduleRuleInputSchema.safeParse({ ...base, days_of_week: [1], duration_minutes: 0 }).success,
+      scheduleRuleInputSchema.safeParse({ ...base, days_of_week: [1], duration_minutes: 0 })
+        .success,
     ).toBe(false)
     expect(
-      scheduleRuleInputSchema.safeParse({ ...base, days_of_week: [1], recurrence_interval: 0 }).success,
+      scheduleRuleInputSchema.safeParse({ ...base, days_of_week: [1], recurrence_interval: 0 })
+        .success,
     ).toBe(false)
   })
 })
@@ -254,12 +282,12 @@ describe("describeRecurrence / endTimeFor", () => {
   it("summarises cadence in plain language", () => {
     expect(describeRecurrence(rule({}))).toBe("Every day")
     expect(describeRecurrence(rule({ recurrence_interval: 3 }))).toBe("Every 3 days")
-    expect(
-      describeRecurrence(rule({ recurrence_type: "weekly", days_of_week: [1, 3] })),
-    ).toBe("Every week · Mon, Wed")
-    expect(
-      describeRecurrence(rule({ recurrence_type: "monthly", day_of_month: 12 })),
-    ).toBe("Every month · day 12")
+    expect(describeRecurrence(rule({ recurrence_type: "weekly", days_of_week: [1, 3] }))).toBe(
+      "Every week · Mon, Wed",
+    )
+    expect(describeRecurrence(rule({ recurrence_type: "monthly", day_of_month: 12 }))).toBe(
+      "Every month · day 12",
+    )
   })
 
   it("derives an end time and clamps at end of day", () => {

@@ -141,10 +141,16 @@ export function GoalDetailHeader({
               <DropdownMenuItem className="rounded-lg" onSelect={onManage}>
                 <Users className="mr-2.5 h-4 w-4 text-muted-foreground" /> Members &amp; sharing
                 {memberCount > 1 && (
-                  <span className="ml-auto text-xs tabular-nums text-muted-foreground">{memberCount}</span>
+                  <span className="ml-auto text-xs tabular-nums text-muted-foreground">
+                    {memberCount}
+                  </span>
                 )}
               </DropdownMenuItem>
-              <DropdownMenuItem className="rounded-lg" disabled={isMutatingStatus} onSelect={onToggleComplete}>
+              <DropdownMenuItem
+                className="rounded-lg"
+                disabled={isMutatingStatus}
+                onSelect={onToggleComplete}
+              >
                 {isCompleted ? (
                   <RotateCcw className="mr-2.5 h-4 w-4 text-blue-500" />
                 ) : (
@@ -155,7 +161,11 @@ export function GoalDetailHeader({
               {isOwner && (
                 <>
                   <DropdownMenuSeparator className="my-1.5" />
-                  <DropdownMenuItem variant="destructive" className="rounded-lg" onSelect={onDelete}>
+                  <DropdownMenuItem
+                    variant="destructive"
+                    className="rounded-lg"
+                    onSelect={onDelete}
+                  >
                     <Trash2 className="mr-2.5 h-4 w-4" /> Delete goal
                   </DropdownMenuItem>
                 </>
@@ -169,7 +179,9 @@ export function GoalDetailHeader({
       <div className="space-y-1.5">
         <div className="flex items-baseline justify-between gap-3 text-xs font-medium text-muted-foreground">
           <span>{progressLabel}</span>
-          <span className="text-xs font-semibold tabular-nums text-foreground">{progressValue}%</span>
+          <span className="text-xs font-semibold tabular-nums text-foreground">
+            {progressValue}%
+          </span>
         </div>
         <div
           className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/8"
@@ -191,7 +203,10 @@ export function GoalDetailHeader({
 
       {/* Primary actions */}
       <div className="flex flex-wrap items-center gap-2">
-        <Button onClick={onPlanWeek} className="h-10 min-h-11 gap-1.5 rounded-xl px-3.5 text-xs font-semibold sm:min-h-0">
+        <Button
+          onClick={onPlanWeek}
+          className="h-10 min-h-11 gap-1.5 rounded-xl px-3.5 text-xs font-semibold sm:min-h-0"
+        >
           <CalendarPlus className="h-4 w-4" /> Plan week
         </Button>
         <Button

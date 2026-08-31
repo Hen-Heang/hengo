@@ -54,7 +54,7 @@ export const ModernTaskItem = memo(function ModernTaskItem({
         task.completed
           ? "bg-muted/35 border-border/50 opacity-75"
           : "bg-card border-border/70 shadow-sm",
-        compact ? "p-2" : "px-2.5 py-2"
+        compact ? "p-2" : "px-2.5 py-2",
       )}
       onClick={() => onClick?.(task)}
     >
@@ -71,7 +71,7 @@ export const ModernTaskItem = memo(function ModernTaskItem({
           onClick={handleToggle}
           className={cn(
             "relative shrink-0 flex h-5 w-5 items-center justify-center rounded-lg border transition-colors",
-            task.completed ? "border-primary bg-primary shadow-sm" : "border-border bg-background"
+            task.completed ? "border-primary bg-primary shadow-sm" : "border-border bg-background",
           )}
           aria-label={task.completed ? "Mark incomplete" : "Mark complete"}
         >
@@ -95,7 +95,7 @@ export const ModernTaskItem = memo(function ModernTaskItem({
           title={rawTitle}
           className={cn(
             "block w-full min-w-0 overflow-hidden whitespace-nowrap text-ellipsis truncate text-[13px] font-medium leading-tight",
-            task.completed ? "text-muted-foreground line-through" : "text-foreground"
+            task.completed ? "text-muted-foreground line-through" : "text-foreground",
           )}
         >
           {displayTitle}
@@ -110,7 +110,7 @@ export const ModernTaskItem = memo(function ModernTaskItem({
                   "h-4.5 px-1.5 text-[11px] font-medium",
                   task.completed
                     ? "border-muted-foreground/20 text-muted-foreground bg-transparent"
-                    : "border-primary/20 text-primary bg-primary/5"
+                    : "border-primary/20 text-primary bg-primary/5",
                 )}
               >
                 {!task.is_anytime && <Clock className="w-2.5 h-2.5 mr-1" />}
@@ -118,7 +118,10 @@ export const ModernTaskItem = memo(function ModernTaskItem({
               </Badge>
             )}
             {isExternal && (
-              <Badge variant="outline" className="h-4.5 border-border/60 bg-transparent px-1.5 text-[11px] font-medium text-muted-foreground">
+              <Badge
+                variant="outline"
+                className="h-4.5 border-border/60 bg-transparent px-1.5 text-[11px] font-medium text-muted-foreground"
+              >
                 Google
               </Badge>
             )}
@@ -162,7 +165,7 @@ export const ModernTaskItem = memo(function ModernTaskItem({
       <div
         className={cn(
           "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full",
-          task.completed ? "h-3.5 opacity-40" : "h-7"
+          task.completed ? "h-3.5 opacity-40" : "h-7",
         )}
         style={{ backgroundColor: getTaskColor(task) }}
       />

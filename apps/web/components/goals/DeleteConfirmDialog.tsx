@@ -37,7 +37,9 @@ export function DeleteConfirmDialog({
           <AlertDialogTitle>{isTask ? "Delete task" : "Delete goal"}</AlertDialogTitle>
           <AlertDialogDescription>
             Are you sure you want to delete <strong>{goalTitle}</strong>?
-            {isTask ? " This cannot be undone." : " This also removes its tasks and cannot be undone."}
+            {isTask
+              ? " This cannot be undone."
+              : " This also removes its tasks and cannot be undone."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

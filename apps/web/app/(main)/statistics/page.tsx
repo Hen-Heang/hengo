@@ -20,7 +20,7 @@ const ProgressChart = dynamic(
   {
     ssr: false,
     loading: () => <div className="h-64 w-full animate-pulse rounded-lg bg-muted/20" />,
-  }
+  },
 )
 
 export default function StatisticsPage() {
@@ -49,7 +49,12 @@ export default function StatisticsPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-12 sm:space-y-7">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6 pb-12 sm:space-y-7"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Progress"
@@ -59,33 +64,39 @@ export default function StatisticsPage() {
             { label: "Streak", value: `${stats.streakDays} days`, href: "/history" },
             { label: "This week", value: `${stats.weeklyMinutes}m`, href: "/dashboard" },
             summary
-              ? { label: "Level", value: `${summary.level.level} · ${summary.level.totalXp} XP`, href: "/achievements" }
+              ? {
+                  label: "Level",
+                  value: `${summary.level.level} · ${summary.level.totalXp} XP`,
+                  href: "/achievements",
+                }
               : { label: "Level", value: "—", href: "/achievements" },
           ]}
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]">
+      <motion.div
+        variants={itemVariants}
+        className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(0,0.8fr)]"
+      >
         <div className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
-          <h2 className="text-base font-semibold text-foreground">
-            Weekly practice time
-          </h2>
+          <h2 className="text-base font-semibold text-foreground">Weekly practice time</h2>
           <div className="mt-4">
             <ProgressChart data={chartData} />
           </div>
         </div>
 
         <div className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
-          <h2 className="text-base font-semibold text-foreground">
-            Activity by feature (30d)
-          </h2>
+          <h2 className="text-base font-semibold text-foreground">Activity by feature (30d)</h2>
           <div className="mt-4">
             <FeatureBreakdown />
           </div>
         </div>
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
+      <motion.div
+        variants={itemVariants}
+        className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
+      >
         <h2 className="text-base font-semibold text-foreground">Phrasebook</h2>
         <div className="mt-4">
           <PhrasebookStatsCard />

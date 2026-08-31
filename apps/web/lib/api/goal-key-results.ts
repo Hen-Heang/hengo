@@ -41,7 +41,13 @@ export const keyResultsApi = {
   create: async (data: CreateKeyResultPayload): Promise<GoalKeyResult> => {
     const { data: row, error } = await supabase
       .from("goal_key_results")
-      .insert({ user_id: requireUserId(), weight: 1, data_source: "manual", status: "active", ...data })
+      .insert({
+        user_id: requireUserId(),
+        weight: 1,
+        data_source: "manual",
+        status: "active",
+        ...data,
+      })
       .select()
       .single()
     if (error) throw error
@@ -62,7 +68,8 @@ export const keyResultsApi = {
   // Archiving (not deleting) is the default way to retire a key result — it
   // keeps historical evidence/tasks linked and drops out of progress/weight
   // calculations (lib/goal-progress.ts filters out status === "archived").
-  archive: async (id: string): Promise<GoalKeyResult> => keyResultsApi.update(id, { status: "archived" }),
+  archive: async (id: string): Promise<GoalKeyResult> =>
+    keyResultsApi.update(id, { status: "archived" }),
 
   remove: async (id: string): Promise<void> => {
     const { error } = await supabase.from("goal_key_results").delete().eq("id", id)

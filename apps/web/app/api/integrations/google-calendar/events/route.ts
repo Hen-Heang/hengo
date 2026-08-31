@@ -3,7 +3,10 @@
 // ExternalCalendarEvent DTO (lib/external-calendar.ts) leaves this route.
 import { requireUser } from "@/lib/server/ai"
 import { getEvents } from "@/lib/server/google-calendar-client"
-import { GoogleCalendarNotConnectedError, GoogleCalendarReauthRequiredError } from "@/lib/server/google-calendar-token"
+import {
+  GoogleCalendarNotConnectedError,
+  GoogleCalendarReauthRequiredError,
+} from "@/lib/server/google-calendar-token"
 
 export async function GET(req: Request) {
   const authed = await requireUser(req)

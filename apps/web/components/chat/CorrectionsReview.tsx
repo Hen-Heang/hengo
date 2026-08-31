@@ -60,7 +60,12 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
       setQueue((q) => {
         const next = [...q]
         next.splice(currentIndex, 1)
-        next.push({ ...card, repetitions: 0, intervalDays: 0, easeFactor: Math.max(1.3, card.easeFactor - 0.2) })
+        next.push({
+          ...card,
+          repetitions: 0,
+          intervalDays: 0,
+          easeFactor: Math.max(1.3, card.easeFactor - 0.2),
+        })
         return next
       })
       setRevealed(false)
@@ -156,7 +161,11 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
                   <Eye size={18} strokeWidth={2.5} /> Show Correction
                 </button>
               ) : (
-                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6 space-y-4"
+                >
                   <div className="rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/[0.06] p-5 dark:bg-emerald-500/[0.08]">
                     <p className="text-[12px] font-bold uppercase tracking-wide text-emerald-700/70 dark:text-emerald-400/70">
                       Correct
@@ -173,7 +182,9 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
                   {card.grammarPoints.length > 0 && (
                     <div className="flex flex-wrap gap-2">
                       {card.grammarPoints.map((point) => (
-                        <Badge key={point} variant="secondary">{point}</Badge>
+                        <Badge key={point} variant="secondary">
+                          {point}
+                        </Badge>
                       ))}
                     </div>
                   )}
@@ -186,10 +197,12 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
                         onClick={() => grade(rating)}
                         className={cn(
                           "flex h-16 flex-col items-center justify-center gap-0.5 rounded-2xl border-b-4 transition-all active:translate-y-[3px] active:border-b-0",
-                          GRADE_STYLES[rating].classes
+                          GRADE_STYLES[rating].classes,
                         )}
                       >
-                        <span className="text-xs font-bold uppercase tracking-wider">{GRADE_STYLES[rating].label}</span>
+                        <span className="text-xs font-bold uppercase tracking-wider">
+                          {GRADE_STYLES[rating].label}
+                        </span>
                         <span className="text-[12px] font-bold opacity-80">
                           {formatInterval(previewIntervalDays(card, rating))}
                         </span>

@@ -28,7 +28,11 @@ export function ReminderButton({
   defaultTitle: string
 }) {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const { reminders, loading } = useReminders({ entityType, entityId: entityId ?? undefined, status: "active" })
+  const { reminders, loading } = useReminders({
+    entityType,
+    entityId: entityId ?? undefined,
+    status: "active",
+  })
   const { pause, cancel } = useReminderMutations()
 
   const active = reminders[0]

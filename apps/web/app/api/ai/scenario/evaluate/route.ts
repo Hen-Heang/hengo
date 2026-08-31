@@ -33,7 +33,9 @@ export const POST = jsonAiRoute({
       .max(6),
   }),
   buildPrompt: ({ goal, transcript }) => {
-    const lines = transcript.map((t) => `${t.role === "assistant" ? "Coach" : "Learner"}: ${t.text}`).join("\n")
+    const lines = transcript
+      .map((t) => `${t.role === "assistant" ? "Coach" : "Learner"}: ${t.text}`)
+      .join("\n")
     const userTurns = transcript.filter((t) => t.role === "user").length
 
     return (

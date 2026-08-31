@@ -41,7 +41,10 @@ export function CheckinCalendar({
   const leadingBlanks = startOfMonth(month).getDay()
 
   return (
-    <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5">
+    <motion.div
+      variants={itemVariants}
+      className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-5"
+    >
       <div className="mb-4 flex items-center justify-between">
         <button
           type="button"
@@ -92,7 +95,7 @@ export function CheckinCalendar({
                 disabled && "pointer-events-none text-muted-foreground/30",
                 !disabled && !isCompleted && "bg-background text-muted-foreground hover:bg-accent",
                 isCompleted && "bg-emerald-500 text-white shadow-sm shadow-emerald-500/30",
-                isToday(day) && !isCompleted && !disabled && "ring-2 ring-emerald-500/40"
+                isToday(day) && !isCompleted && !disabled && "ring-2 ring-emerald-500/40",
               )}
             >
               {format(day, "d")}

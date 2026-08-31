@@ -65,7 +65,9 @@ export function DailyPhraseCard({
             <SpeakButton text={phrase.phrase} className="shrink-0" />
           </div>
           {phrase.romanization && (
-            <p className="mt-1 text-sm font-medium italic text-muted-foreground">{phrase.romanization}</p>
+            <p className="mt-1 text-sm font-medium italic text-muted-foreground">
+              {phrase.romanization}
+            </p>
           )}
           <p className="mt-3 text-base font-bold text-foreground/90">{phrase.meaning}</p>
         </div>
@@ -73,8 +75,12 @@ export function DailyPhraseCard({
 
       {phrase.whenToUse && (
         <div className="mt-5 rounded-2xl border border-sky-200/60 bg-sky-50/60 p-4 dark:border-sky-400/15 dark:bg-sky-400/6">
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-400">When to use</p>
-          <p className="mt-1.5 text-sm leading-6 text-sky-800 dark:text-sky-200">{phrase.whenToUse}</p>
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-400">
+            When to use
+          </p>
+          <p className="mt-1.5 text-sm leading-6 text-sky-800 dark:text-sky-200">
+            {phrase.whenToUse}
+          </p>
         </div>
       )}
 
@@ -117,7 +123,10 @@ export function DailyPhraseCard({
             Similar expressions
           </p>
           {phrase.similarExpressions.map((s, i) => (
-            <div key={i} className="rounded-2xl border border-border bg-card px-4 py-3 dark:bg-white/4">
+            <div
+              key={i}
+              className="rounded-2xl border border-border bg-card px-4 py-3 dark:bg-white/4"
+            >
               <div className="flex items-center gap-1.5">
                 <p className="font-bold text-foreground">{s.phrase}</p>
                 <SpeakButton text={s.phrase} />
@@ -135,7 +144,9 @@ export function DailyPhraseCard({
           </div>
           <div>
             <h4 className="text-sm font-bold text-foreground">Write it yourself</h4>
-            <p className="text-xs font-medium text-muted-foreground">Use today&apos;s phrase in your own sentence</p>
+            <p className="text-xs font-medium text-muted-foreground">
+              Use today&apos;s phrase in your own sentence
+            </p>
           </div>
         </div>
         <SentenceChallenge

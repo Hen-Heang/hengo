@@ -34,11 +34,19 @@ export default function TimelinePage() {
 
   const { entries, loading, error } = useTimeline(range)
 
-  const filtered = useMemo(() => filterTimelineEntries(entries, { kind, query }), [entries, kind, query])
+  const filtered = useMemo(
+    () => filterTimelineEntries(entries, { kind, query }),
+    [entries, kind, query],
+  )
   const days = useMemo(() => groupTimelineByDay(filtered), [filtered])
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6 pb-16"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Progress"
@@ -77,7 +85,8 @@ export default function TimelinePage() {
           <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed border-border bg-card/50 px-5 py-12 text-center">
             <p className="text-sm font-semibold text-foreground">Nothing in this period</p>
             <p className="max-w-sm text-sm text-muted-foreground">
-              Complete a task, check in a habit, write a journal entry, or log an activity — it&apos;ll show up here.
+              Complete a task, check in a habit, write a journal entry, or log an activity —
+              it&apos;ll show up here.
             </p>
           </div>
         ) : (

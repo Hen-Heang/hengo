@@ -44,7 +44,7 @@ export function LevelBadge({ className }: { className?: string }) {
         aria-hidden
         className={cn(
           "inline-flex h-[26px] w-[92px] animate-pulse rounded-full border border-border/50 bg-muted/40",
-          className
+          className,
         )}
       />
     )
@@ -61,7 +61,7 @@ export function LevelBadge({ className }: { className?: string }) {
       title={`Level ${level.level} · ${level.totalXp} XP${level.xpForNextLevel ? ` · ${level.xpIntoLevel}/${level.xpForNextLevel} to next level` : ""}`}
       className={cn(
         "flex flex-col gap-1 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-amber-700 transition-transform hover:scale-105 active:scale-95 dark:text-amber-400",
-        className
+        className,
       )}
     >
       <span className="flex items-center gap-1.5">

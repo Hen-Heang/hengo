@@ -34,7 +34,11 @@ export const MOCK_MONEY_FLOW_SUMMARY: MoneyFlowSummary = {
   monthlySavingRate: 0.18,
   savingsGoals: [
     { name: "Emergency fund", externalId: "mock-emergency-fund", progressPercentage: 62 },
-    { name: "Korea relocation buffer", externalId: "mock-relocation-buffer", progressPercentage: 34 },
+    {
+      name: "Korea relocation buffer",
+      externalId: "mock-relocation-buffer",
+      progressPercentage: 34,
+    },
   ],
   generatedAt: "2026-07-23T00:00:00.000Z",
 }

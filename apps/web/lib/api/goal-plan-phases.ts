@@ -34,8 +34,7 @@ export const planPhasesApi = {
     const { goal_id, ...rest } = payload
     const input = phaseInputSchema.parse(rest)
     // Append to the end unless the caller pinned a position explicitly.
-    const position =
-      input.position ?? (await planPhasesApi.listForGoal(goal_id)).length
+    const position = input.position ?? (await planPhasesApi.listForGoal(goal_id)).length
     const { data, error } = await supabase
       .from("goal_plan_phases")
       .insert({ user_id: requireUserId(), goal_id, ...input, position })
@@ -112,10 +111,7 @@ export const planPhasesApi = {
    * user separately chooses to clear it, so a failed or regretted conversion
    * never loses data.
    */
-  convertMilestones: async (
-    goalId: string,
-    drafts: PhaseDraft[],
-  ): Promise<GoalPlanPhase[]> => {
+  convertMilestones: async (goalId: string, drafts: PhaseDraft[]): Promise<GoalPlanPhase[]> => {
     if (drafts.length === 0) return []
     const existing = await planPhasesApi.listForGoal(goalId)
     const userId = requireUserId()
@@ -136,10 +132,7 @@ export const planPhasesApi = {
 
   /** Move a task into a phase (or back to the backlog with `null`). */
   assignTask: async (taskId: string, phaseId: string | null): Promise<void> => {
-    const { error } = await supabase
-      .from("tasks")
-      .update({ phase_id: phaseId })
-      .eq("id", taskId)
+    const { error } = await supabase.from("tasks").update({ phase_id: phaseId }).eq("id", taskId)
     if (error) throw error
   },
 }

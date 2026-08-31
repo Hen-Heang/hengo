@@ -60,7 +60,7 @@ export function NumberTicker({
           ref.current.textContent = padStart ? formatted.padStart(padStart, "0") : formatted
         }
       }),
-    [springValue, decimalPlaces, padStart]
+    [springValue, decimalPlaces, padStart],
   )
 
   return (
@@ -68,7 +68,7 @@ export function NumberTicker({
       ref={ref}
       className={cn(
         "inline-block tracking-wider text-black tabular-nums dark:text-white",
-        className
+        className,
       )}
       {...props}
     >

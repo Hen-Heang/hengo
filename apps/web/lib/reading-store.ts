@@ -69,7 +69,7 @@ export async function createReadingUnit(payload: ReadingUnitPayload): Promise<Re
 
 export async function updateReadingUnit(
   id: string,
-  payload: ReadingUnitPayload
+  payload: ReadingUnitPayload,
 ): Promise<ReadingUnit> {
   const updated = await readingApi.updateUnit(id, payload)
   snapshot = (snapshot ?? []).map((u) => (u.id === id ? updated : u))

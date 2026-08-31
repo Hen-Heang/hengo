@@ -24,7 +24,12 @@ const containerVariants: Variants = {
 }
 const itemVariants: Variants = {
   hidden: { opacity: 0, y: 20, scale: 0.95 },
-  visible: { opacity: 1, y: 0, scale: 1, transition: { type: "spring", stiffness: 300, damping: 24 } },
+  visible: {
+    opacity: 1,
+    y: 0,
+    scale: 1,
+    transition: { type: "spring", stiffness: 300, damping: 24 },
+  },
 }
 
 const LIFE_GOAL_CATEGORIES = new Set(["financial", "career", "personal"])
@@ -207,9 +212,7 @@ export default function CreateGoalPage() {
               <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 px-3 py-3">
                 <div className="flex flex-col">
                   <span className="text-sm font-semibold">Infinite duration</span>
-                  <span className="text-xs text-muted-foreground">
-                    No specific deadline
-                  </span>
+                  <span className="text-xs text-muted-foreground">No specific deadline</span>
                 </div>
                 <Switch checked={noDuration} onCheckedChange={setNoDuration} />
               </div>
@@ -234,9 +237,7 @@ export default function CreateGoalPage() {
           <div className="space-y-3">
             <div className="flex items-center gap-2 px-2">
               <Filter size={14} className="text-primary" />
-              <h3 className="text-xs font-medium text-muted-foreground">
-                Categories
-              </h3>
+              <h3 className="text-xs font-medium text-muted-foreground">Categories</h3>
             </div>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -287,7 +288,10 @@ export default function CreateGoalPage() {
         {/* Right: template grid */}
         <div className="lg:col-span-2">
           <div className="relative mb-5">
-            <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <Search
+              size={18}
+              className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground"
+            />
             <Input
               type="text"
               placeholder="Search templates..."

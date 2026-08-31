@@ -68,7 +68,12 @@ export const chatApi = {
     const userId = requireUserId()
     const { data, error } = await supabase
       .from("kori_conversations")
-      .insert({ user_id: userId, title, conversation_type: conversationType, scenario_id: scenarioId ?? null })
+      .insert({
+        user_id: userId,
+        title,
+        conversation_type: conversationType,
+        scenario_id: scenarioId ?? null,
+      })
       .select(CONVERSATION_SELECT)
       .single()
     if (error) throw error

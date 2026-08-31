@@ -11,7 +11,10 @@ import {
 
 describe("seed data validity", () => {
   it("has exactly two packs: workplace and daily", () => {
-    expect(SEED_PACKS.map((p) => p.sourceKey).sort()).toEqual(["daily-life-essentials", "workplace-essentials"])
+    expect(SEED_PACKS.map((p) => p.sourceKey).sort()).toEqual([
+      "daily-life-essentials",
+      "workplace-essentials",
+    ])
   })
 
   it("workplace pack has 10 cards, daily pack has 10 cards", () => {
@@ -25,7 +28,10 @@ describe("seed data validity", () => {
     for (const pack of SEED_PACKS) {
       for (const card of pack.cards) {
         const result = phraseCardContentSchema.safeParse(card)
-        expect(result.success, `${pack.sourceKey}/${card.sourceKey}: ${JSON.stringify(result.success ? null : result.error?.issues)}`).toBe(true)
+        expect(
+          result.success,
+          `${pack.sourceKey}/${card.sourceKey}: ${JSON.stringify(result.success ? null : result.error?.issues)}`,
+        ).toBe(true)
       }
     }
   })
@@ -87,7 +93,11 @@ describe("planSeedUpsert", () => {
       seedVersion: p.seedVersion,
     }))
     const existingCards: ExistingSeedCard[] = SEED_PACKS.flatMap((p) =>
-      p.cards.map((c) => ({ id: `card-${c.sourceKey}`, sourceKey: c.sourceKey, isUserEdited: false })),
+      p.cards.map((c) => ({
+        id: `card-${c.sourceKey}`,
+        sourceKey: c.sourceKey,
+        isUserEdited: false,
+      })),
     )
     const plan = planSeedUpsert(existingCollections, existingCards)
     expect(isSeedPlanEmpty(plan)).toBe(true)
@@ -104,7 +114,9 @@ describe("planSeedUpsert", () => {
     ]
     const plan = planSeedUpsert(existingCollections, existingCards, [workplace])
     expect(plan.cardsToInsert).toHaveLength(workplace.cards.length - 1)
-    expect(plan.cardsToInsert.some((c) => c.card.sourceKey === workplace.cards[0].sourceKey)).toBe(false)
+    expect(plan.cardsToInsert.some((c) => c.card.sourceKey === workplace.cards[0].sourceKey)).toBe(
+      false,
+    )
     expect(plan.collectionsToInsert).toHaveLength(0)
   })
 
@@ -117,7 +129,9 @@ describe("planSeedUpsert", () => {
       { id: "card-1", sourceKey: workplace.cards[0].sourceKey, isUserEdited: true },
     ]
     const plan = planSeedUpsert(existingCollections, existingCards, [workplace])
-    expect(plan.cardsToInsert.some((c) => c.card.sourceKey === workplace.cards[0].sourceKey)).toBe(false)
+    expect(plan.cardsToInsert.some((c) => c.card.sourceKey === workplace.cards[0].sourceKey)).toBe(
+      false,
+    )
   })
 
   it("bumps collection seed_version when the pack version increases, and inserts newly-added cards", () => {

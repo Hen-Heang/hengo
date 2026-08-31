@@ -2,10 +2,20 @@
 
 import { beforeEach, describe, expect, it } from "vitest"
 
-import { clearRecoveryLock, hasRecoveryLockCredential, isRecoveryUnlocked, lockRecovery, setRecoveryPin, unlockRecovery } from "./recovery-lock"
+import {
+  clearRecoveryLock,
+  hasRecoveryLockCredential,
+  isRecoveryUnlocked,
+  lockRecovery,
+  setRecoveryPin,
+  unlockRecovery,
+} from "./recovery-lock"
 
 describe("local Recovery Lock", () => {
-  beforeEach(() => { localStorage.clear(); sessionStorage.clear() })
+  beforeEach(() => {
+    localStorage.clear()
+    sessionStorage.clear()
+  })
 
   it("stores a derived verifier rather than the raw PIN", async () => {
     await setRecoveryPin("4826")

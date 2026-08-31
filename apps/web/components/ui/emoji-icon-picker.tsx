@@ -66,7 +66,7 @@ export default function EmojiIconPicker({
                       onClick={() => pick(emoji)}
                       className={cn(
                         "flex h-8 w-8 items-center justify-center rounded-lg text-lg transition-colors hover:bg-accent",
-                        value === emoji && "bg-primary/15 ring-1 ring-primary/40"
+                        value === emoji && "bg-primary/15 ring-1 ring-primary/40",
                       )}
                     >
                       {emoji}

@@ -37,8 +37,18 @@ export interface PhrasebookCounts {
   total: number
 }
 
-export function countPhraseStates(cards: PhraseCardWithProgress[], now: Date = new Date()): PhrasebookCounts {
-  const counts: PhrasebookCounts = { due: 0, overdue: 0, new: 0, learning: 0, mastered: 0, total: cards.length }
+export function countPhraseStates(
+  cards: PhraseCardWithProgress[],
+  now: Date = new Date(),
+): PhrasebookCounts {
+  const counts: PhrasebookCounts = {
+    due: 0,
+    overdue: 0,
+    new: 0,
+    learning: 0,
+    mastered: 0,
+    total: cards.length,
+  }
   for (const card of cards) {
     const progress = card.progress
     if (!progress || progress.state === "new") {
@@ -93,7 +103,8 @@ export function filterPhraseCards(
     if (filters.category && card.category !== filters.category) return false
     if (filters.situation && card.situation !== filters.situation) return false
     if (filters.difficulty && card.difficulty !== filters.difficulty) return false
-    if (filters.dueOnly && !(card.progress && isCardDue(card.progress.nextReviewAt, now))) return false
+    if (filters.dueOnly && !(card.progress && isCardDue(card.progress.nextReviewAt, now)))
+      return false
     if (filters.query && !matchesQuery(card, filters.query)) return false
     return true
   })

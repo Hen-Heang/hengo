@@ -152,8 +152,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
     setEditingValue("")
   }
 
-  const allSelected =
-    availableGoals.length > 0 && selectedGoalIds.length === availableGoals.length
+  const allSelected = availableGoals.length > 0 && selectedGoalIds.length === availableGoals.length
 
   const handleTaskClick = (task: Task) => {
     if (task.goal_id) router.push(`/goals/${task.goal_id}?task=${task.id}`)
@@ -166,7 +165,11 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
     return (
       <div className="space-y-1.5">
         <div className="flex items-center justify-between text-xs font-medium">
-          <span className={cn(allDone ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground")}>
+          <span
+            className={cn(
+              allDone ? "text-emerald-600 dark:text-emerald-400" : "text-muted-foreground",
+            )}
+          >
             {allDone ? "All tasks done" : "Daily progress"}
           </span>
           <span className="tabular-nums text-muted-foreground">
@@ -175,7 +178,10 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
         </div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-foreground/5">
           <motion.div
-            className={cn("h-full w-full origin-left rounded-full", allDone ? "bg-emerald-500" : "bg-primary")}
+            className={cn(
+              "h-full w-full origin-left rounded-full",
+              allDone ? "bg-emerald-500" : "bg-primary",
+            )}
             initial={false}
             animate={{ scaleX: progressPct / 100 }}
             transition={{ type: "spring", stiffness: 200, damping: 30 }}
@@ -191,7 +197,9 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
     <div
       className={cn(
         "rounded-lg border transition-colors",
-        composerOpen ? "border-primary/40 bg-background shadow-sm" : "border-border bg-background/40"
+        composerOpen
+          ? "border-primary/40 bg-background shadow-sm"
+          : "border-border bg-background/40",
       )}
     >
       <div className="flex min-h-11 items-center gap-2 px-3.5">
@@ -232,7 +240,9 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                     type="button"
                     className={cn(
                       "flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors",
-                      newTaskGoalId ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                      newTaskGoalId
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground",
                     )}
                   >
                     <Target className="h-3.5 w-3.5" />
@@ -251,7 +261,10 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                   <DropdownMenuSeparator className="my-2" />
                   <DropdownMenuItem
                     onSelect={() => setNewTaskGoalId(null)}
-                    className={cn("rounded-lg font-medium", !newTaskGoalId && "bg-primary/10 text-primary")}
+                    className={cn(
+                      "rounded-lg font-medium",
+                      !newTaskGoalId && "bg-primary/10 text-primary",
+                    )}
                   >
                     No goal (standalone)
                   </DropdownMenuItem>
@@ -260,7 +273,10 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                       <DropdownMenuItem
                         key={g.id}
                         onSelect={() => setNewTaskGoalId(g.id)}
-                        className={cn("rounded-lg font-medium", newTaskGoalId === g.id && "bg-primary/10 text-primary")}
+                        className={cn(
+                          "rounded-lg font-medium",
+                          newTaskGoalId === g.id && "bg-primary/10 text-primary",
+                        )}
                       >
                         <span className="truncate">{g.title || "Untitled"}</span>
                       </DropdownMenuItem>
@@ -278,7 +294,9 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
               }}
               className={cn(
                 "flex min-h-11 items-center gap-1.5 rounded-lg px-2 text-sm font-medium transition-colors",
-                !isAnytime ? "bg-primary/10 text-primary" : "text-muted-foreground hover:text-foreground"
+                !isAnytime
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               <Clock className="h-3.5 w-3.5" />
@@ -353,7 +371,12 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
             </div>
 
             <div className="ml-auto flex items-center gap-2">
-              <Button variant="ghost" size="sm" onClick={resetComposer} className="px-3 text-xs font-medium">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={resetComposer}
+                className="px-3 text-xs font-medium"
+              >
                 Cancel
               </Button>
               <Button
@@ -362,11 +385,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                 disabled={!newTaskTitle.trim() || submitting}
                 className="bg-primary px-4 text-xs font-medium text-white shadow-sm"
               >
-                {submitting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  "Add task"
-                )}
+                {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : "Add task"}
               </Button>
             </div>
           </div>
@@ -384,7 +403,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
         disabled={isMarkingAll || (!canUndo && completedCount === totalCount)}
         className={cn(
           "gap-2 rounded-lg border-border bg-background/50 px-4 text-xs font-medium",
-          canUndo ? "text-red-500 hover:text-red-600" : "text-emerald-600 dark:text-emerald-400"
+          canUndo ? "text-red-500 hover:text-red-600" : "text-emerald-600 dark:text-emerald-400",
         )}
       >
         {isMarkingAll ? (
@@ -400,12 +419,18 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
       <div className="ml-auto">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm" className="rounded-lg border-border bg-background/50 px-4 text-xs font-medium">
+            <Button
+              variant="outline"
+              size="sm"
+              className="rounded-lg border-border bg-background/50 px-4 text-xs font-medium"
+            >
               Filter goals
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-60 rounded-lg p-2 shadow-lg">
-            <DropdownMenuLabel className="px-3 pt-2 text-xs font-medium text-muted-foreground">Show tasks from</DropdownMenuLabel>
+            <DropdownMenuLabel className="px-3 pt-2 text-xs font-medium text-muted-foreground">
+              Show tasks from
+            </DropdownMenuLabel>
             <DropdownMenuSeparator className="my-2" />
             <DropdownMenuCheckboxItem
               checked={allSelected}
@@ -448,7 +473,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
           "group/item relative flex cursor-pointer items-start gap-3 rounded-lg border p-3 transition-colors sm:p-4",
           overdue
             ? "border-red-500/20 bg-red-500/[0.03] hover:bg-red-500/[0.05]"
-            : "border-border bg-background/40 hover:bg-accent/50"
+            : "border-border bg-background/40 hover:bg-accent/50",
         )}
         onClick={() => {
           if (editingId !== task.id) handleTaskClick(task)
@@ -463,7 +488,7 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
           }}
           className={cn(
             "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg transition-transform active:scale-90",
-            task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary"
+            task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary",
           )}
         >
           {task.completed ? <CheckCircle2 className="h-6 w-6" /> : <Circle className="h-6 w-6" />}
@@ -486,15 +511,24 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
               className="w-full rounded-lg border border-primary/40 bg-background px-2 py-1 text-sm font-medium outline-none"
             />
           ) : (
-            <span className={cn(
-              "block text-sm font-medium leading-snug transition-all",
-              task.completed ? "text-muted-foreground line-through" : "text-foreground group-hover/item:text-primary"
-            )}>
+            <span
+              className={cn(
+                "block text-sm font-medium leading-snug transition-all",
+                task.completed
+                  ? "text-muted-foreground line-through"
+                  : "text-foreground group-hover/item:text-primary",
+              )}
+            >
               {task.title || task.description}
             </span>
           )}
           <div className="mt-2 flex items-center justify-between text-xs font-medium">
-            <span className={cn("flex items-center gap-1.5", overdue ? "text-red-500/80" : "text-muted-foreground")}>
+            <span
+              className={cn(
+                "flex items-center gap-1.5",
+                overdue ? "text-red-500/80" : "text-muted-foreground",
+              )}
+            >
               {overdue ? <AlertTriangle className="h-3 w-3" /> : <Clock className="h-3 w-3" />}
               {task.is_anytime ? "Anytime" : task.daily_start_time?.slice(0, 5)}
             </span>
@@ -548,17 +582,21 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
   )
 
   return (
-    <div className={cn(
-      "flex flex-col overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5",
-      className
-    )}>
+    <div
+      className={cn(
+        "flex flex-col overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5",
+        className,
+      )}
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
             <ClipboardList size={20} strokeWidth={2} />
           </div>
           <div>
-            <h3 className="text-base font-semibold tracking-tight text-foreground">Today&apos;s tasks</h3>
+            <h3 className="text-base font-semibold tracking-tight text-foreground">
+              Today&apos;s tasks
+            </h3>
             <p className="text-xs font-medium text-muted-foreground">
               {format(new Date(), "EEEE, MMM d")}
             </p>
@@ -597,19 +635,19 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                 {groups.overdue.length > 0 && (
                   <React.Fragment key="overdue-group">
                     {sectionHeader("Overdue", groups.overdue.length, "text-red-500/80")}
-                    {groups.overdue.map(t => renderTaskItem(t))}
+                    {groups.overdue.map((t) => renderTaskItem(t))}
                   </React.Fragment>
                 )}
                 {groups.scheduled.length > 0 && (
                   <React.Fragment key="scheduled-group">
                     {sectionHeader("Scheduled", groups.scheduled.length)}
-                    {groups.scheduled.map(t => renderTaskItem(t))}
+                    {groups.scheduled.map((t) => renderTaskItem(t))}
                   </React.Fragment>
                 )}
                 {groups.anytime.length > 0 && (
                   <React.Fragment key="anytime-group">
                     {sectionHeader("Anytime", groups.anytime.length)}
-                    {groups.anytime.map(t => renderTaskItem(t))}
+                    {groups.anytime.map((t) => renderTaskItem(t))}
                   </React.Fragment>
                 )}
                 {groups.completed.length > 0 && (
@@ -620,11 +658,18 @@ export function TodaysTasks({ className }: TodaysTasksProps) {
                       className="flex w-full items-center gap-2 py-2"
                     >
                       <span className="text-xs font-semibold text-emerald-600/70">Completed</span>
-                      <span className="text-xs font-medium text-muted-foreground">{groups.completed.length}</span>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {groups.completed.length}
+                      </span>
                       <div className="h-px flex-1 bg-foreground/5" />
-                      <ChevronDown className={cn("h-4 w-4 text-muted-foreground/60", showCompleted && "rotate-180")} />
+                      <ChevronDown
+                        className={cn(
+                          "h-4 w-4 text-muted-foreground/60",
+                          showCompleted && "rotate-180",
+                        )}
+                      />
                     </button>
-                    {showCompleted && groups.completed.map(t => renderTaskItem(t))}
+                    {showCompleted && groups.completed.map((t) => renderTaskItem(t))}
                   </React.Fragment>
                 )}
               </AnimatePresence>

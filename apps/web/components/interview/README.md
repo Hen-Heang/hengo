@@ -16,7 +16,7 @@ The plan runs 11 weeks (`w0`–`w10`) in four phases:
 
 1. **Baseline (Week 0)** — take one full mock to get a starting score, draft all 7 script sections roughly, start the daily routine.
 2. **Foundation (Weeks 1–3)** — daily core routine, grammar points, rewrite two script sections per week, build listening reps.
-3. **Speaking (Weeks 4–6)** — switch to daily *full* mocks (5+ turns) with real scoring, drill your top mistakes, start memorizing script content (not just reading it).
+3. **Speaking (Weeks 4–6)** — switch to daily _full_ mocks (5+ turns) with real scoring, drill your top mistakes, start memorizing script content (not just reading it).
 4. **Polish (Weeks 7–9)** — tighten wording, fix weak pronunciation, handle off-script/follow-up questions, finalize and submit the script by Aug 21.
 5. **Taper (Week 10)** — timed mocks under real conditions (no English, no notes), light review only, rest before exam day.
 
@@ -51,6 +51,7 @@ The shared question bank includes a focused, script-aligned seed at `supabase/se
 9. **Be honest, not perfect** — sincerity and effort score higher than fake fluency.
 
 **Safety sentences to memorize:**
+
 - 네, 질문 감사합니다. — Yes, thank you for the question.
 - 천천히 말씀해 주시면 감사하겠습니다. — I would appreciate it if you could speak slowly.
 - 한국어가 아직 부족해서 간단히 말씀드리겠습니다. — My Korean is still limited, so I'll keep it simple.
@@ -61,13 +62,13 @@ The shared question bank includes a focused, script-aligned seed at `supabase/se
 
 ## Training plan by skill
 
-| Skill | Goal | Frequency |
-|---|---|---|
-| Reading | Read the topic smoothly | Daily · 15–20 min |
-| Listening | Understand common questions | 3–4×/week · 20 min |
-| Pronunciation | Clear sounds, not speed | Daily · 10 min |
-| Speaking | Short, simple answers | Daily · 15 min |
-| Confidence | Repetition + routine | Weekly full simulation + daily consistency |
+| Skill         | Goal                        | Frequency                                  |
+| ------------- | --------------------------- | ------------------------------------------ |
+| Reading       | Read the topic smoothly     | Daily · 15–20 min                          |
+| Listening     | Understand common questions | 3–4×/week · 20 min                         |
+| Pronunciation | Clear sounds, not speed     | Daily · 10 min                             |
+| Speaking      | Short, simple answers       | Daily · 15 min                             |
+| Confidence    | Repetition + routine        | Weekly full simulation + daily consistency |
 
 ## Using the app to practice
 

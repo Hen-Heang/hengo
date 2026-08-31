@@ -65,7 +65,7 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
       instanceRef.current?.reset()
       instanceRef.current = null
     },
-    [globalOptions]
+    [globalOptions],
   )
 
   const fire = useCallback(
@@ -76,7 +76,7 @@ const ConfettiComponent = forwardRef<ConfettiRef, Props>((props, ref) => {
         disableForReducedMotion: true,
       })
     },
-    [options]
+    [options],
   )
 
   const api = useMemo(() => ({ fire }), [fire])
@@ -100,15 +100,10 @@ ConfettiComponent.displayName = "Confetti"
 export const Confetti = ConfettiComponent
 
 interface ConfettiButtonProps extends React.ComponentProps<"button"> {
-  options?: ConfettiOptions &
-    ConfettiGlobalOptions & { canvas?: HTMLCanvasElement }
+  options?: ConfettiOptions & ConfettiGlobalOptions & { canvas?: HTMLCanvasElement }
 }
 
-const ConfettiButtonComponent = ({
-  options,
-  children,
-  ...props
-}: ConfettiButtonProps) => {
+const ConfettiButtonComponent = ({ options, children, ...props }: ConfettiButtonProps) => {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     const rect = event.currentTarget.getBoundingClientRect()
     const x = rect.left + rect.width / 2

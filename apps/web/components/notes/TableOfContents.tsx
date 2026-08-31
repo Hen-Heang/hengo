@@ -16,7 +16,10 @@ export function TableOfContents({ html, mobile = false }: { html: string; mobile
     return headings.map((heading) => ({
       id:
         heading.id ||
-        heading.textContent?.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-") ||
+        heading.textContent
+          ?.toLowerCase()
+          .trim()
+          .replace(/[^a-z0-9]+/g, "-") ||
         "",
       text: heading.textContent || "",
       level: parseInt(heading.tagName.substring(1)),
@@ -31,7 +34,7 @@ export function TableOfContents({ html, mobile = false }: { html: string; mobile
           setActiveId(visibleEntry.target.id)
         }
       },
-      { rootMargin: "-100px 0% -80% 0%" }
+      { rootMargin: "-100px 0% -80% 0%" },
     )
 
     const headingElements = document.querySelectorAll("h2, h3")
@@ -59,13 +62,13 @@ export function TableOfContents({ html, mobile = false }: { html: string; mobile
             key={`${item.id}-${index}`}
             className={cn(
               "group relative pl-4 transition-all duration-200",
-              item.level === 3 ? "ml-4" : ""
+              item.level === 3 ? "ml-4" : "",
             )}
           >
             <div
               className={cn(
                 "absolute left-[-0.5px] top-1/2 h-full w-px -translate-y-1/2 bg-transparent transition-colors group-hover:bg-muted-foreground/40",
-                activeId === item.id ? "z-10 h-full w-[2px] bg-blue-500" : ""
+                activeId === item.id ? "z-10 h-full w-[2px] bg-blue-500" : "",
               )}
             />
 
@@ -78,7 +81,7 @@ export function TableOfContents({ html, mobile = false }: { html: string; mobile
               }}
               className={cn(
                 "block py-1.5 text-xs font-medium transition-colors hover:text-foreground",
-                activeId === item.id ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground"
+                activeId === item.id ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground",
               )}
             >
               {item.text}

@@ -119,7 +119,15 @@ export const lapseEventSchema = urgeEventSchema.extend({ kind: z.literal("slip")
 export const copingActionSchema = z.object({
   id: z.string().trim().min(1).max(100),
   label: z.string().trim().min(1).max(160),
-  category: z.enum(["environment", "movement", "learning", "focus", "sleep", "connection", "custom"]),
+  category: z.enum([
+    "environment",
+    "movement",
+    "learning",
+    "focus",
+    "sleep",
+    "connection",
+    "custom",
+  ]),
   href: z.string().trim().max(240).optional(),
   preferred: z.boolean().optional(),
 })
@@ -133,7 +141,10 @@ export const whenThenPlanInputSchema = z.object({
 export const whenThenPlanUpdateSchema = whenThenPlanInputSchema
   .pick({ ifText: true, thenText: true })
   .partial()
-  .refine((plan) => plan.ifText !== undefined || plan.thenText !== undefined, "At least one plan field is required.")
+  .refine(
+    (plan) => plan.ifText !== undefined || plan.thenText !== undefined,
+    "At least one plan field is required.",
+  )
 
 export const whenThenPlanSchema = whenThenPlanInputSchema.extend({
   id: z.uuid(),
@@ -166,17 +177,19 @@ export const protectionItemSchema = protectionItemInputSchema.extend({
 
 const reviewStatisticSchema = z.union([z.number(), z.string(), z.null()])
 
-export const weeklyReviewInputSchema = z.object({
-  weekStart: z.iso.date(),
-  statistics: z.record(z.string(), reviewStatisticSchema),
-  summary: z.string().trim().max(600).optional(),
-  experiment: z.string().trim().max(240).optional(),
-  aiSummary: z.string().trim().max(1200).optional(),
-  aiConsentAt: z.iso.datetime().optional(),
-}).refine((review) => !review.aiSummary || Boolean(review.aiConsentAt), {
-  message: "AI summaries require an explicit consent timestamp.",
-  path: ["aiConsentAt"],
-})
+export const weeklyReviewInputSchema = z
+  .object({
+    weekStart: z.iso.date(),
+    statistics: z.record(z.string(), reviewStatisticSchema),
+    summary: z.string().trim().max(600).optional(),
+    experiment: z.string().trim().max(240).optional(),
+    aiSummary: z.string().trim().max(1200).optional(),
+    aiConsentAt: z.iso.datetime().optional(),
+  })
+  .refine((review) => !review.aiSummary || Boolean(review.aiConsentAt), {
+    message: "AI summaries require an explicit consent timestamp.",
+    path: ["aiConsentAt"],
+  })
 
 export const weeklyReviewSchema = weeklyReviewInputSchema.safeExtend({
   id: z.uuid(),
@@ -189,8 +202,14 @@ export const recoveryPrivacySettingsSchema = z.object({
   lockEnabled: z.boolean(),
   discreetNotifications: z.boolean(),
   customNotificationText: z.string().trim().max(120).optional(),
-  quietHoursStart: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
-  quietHoursEnd: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+  quietHoursStart: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
+  quietHoursEnd: z
+    .string()
+    .regex(/^([01]\d|2[0-3]):[0-5]\d$/)
+    .optional(),
   morningReminder: z.boolean(),
   eveningReminder: z.boolean(),
   riskTimeReminder: z.boolean(),
@@ -207,15 +226,29 @@ export const recoveryDashboardSummarySchema = z.object({
   healthyActionsCompleted: z.number().int().nonnegative(),
   checkInConsistency: z.number().min(0).max(100),
   momentum: z.number().min(0).max(100),
-  momentumFactors: z.array(z.object({
-    key: z.enum(["check_ins", "managed_urges", "healthy_actions", "honest_reflections", "fast_returns"]),
-    label: z.string(),
-    points: z.number().nonnegative(),
-    maximum: z.number().positive(),
-    explanation: z.string(),
-  })),
+  momentumFactors: z.array(
+    z.object({
+      key: z.enum([
+        "check_ins",
+        "managed_urges",
+        "healthy_actions",
+        "honest_reflections",
+        "fast_returns",
+      ]),
+      label: z.string(),
+      points: z.number().nonnegative(),
+      maximum: z.number().positive(),
+      explanation: z.string(),
+    }),
+  ),
   averageUrgeIntensity: z.number().min(1).max(10).nullable(),
-  highestRiskWindow: z.object({ startHour: z.number().int().min(0).max(23), endHour: z.number().int().min(0).max(23), count: z.number().int().positive() }).nullable(),
+  highestRiskWindow: z
+    .object({
+      startHour: z.number().int().min(0).max(23),
+      endHour: z.number().int().min(0).max(23),
+      count: z.number().int().positive(),
+    })
+    .nullable(),
   averageReturnHours: z.number().nonnegative().nullable(),
 })
 

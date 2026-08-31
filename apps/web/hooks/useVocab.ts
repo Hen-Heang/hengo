@@ -112,7 +112,7 @@ export function useVocab() {
 
   const updateWord = async (
     id: string,
-    data: { term: string; meaning: string; example?: string; pronunciation?: string }
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
   ) => {
     await vocabApi.update(id, data)
     await invalidate()

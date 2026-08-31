@@ -18,7 +18,11 @@ import { ImportPhrasesDialog } from "@/components/phrasebook/ImportPhrasesDialog
 import { phrasebookApi, getApiErrorMessage } from "@/lib/api"
 import { useRomanizationPreference } from "@/hooks/useRomanizationPreference"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
-import { countPhraseStates, filterPhraseCards, type PhraseFilters as PhraseFiltersValue } from "@/lib/korean-phrasebook/mastery"
+import {
+  countPhraseStates,
+  filterPhraseCards,
+  type PhraseFilters as PhraseFiltersValue,
+} from "@/lib/korean-phrasebook/mastery"
 import { containerVariants, itemVariants } from "@/lib/motion"
 import type { PhraseCardWithProgress, PhraseCollection } from "@/lib/types"
 
@@ -62,7 +66,9 @@ export function PhrasebookHome() {
   const categories = useMemo(() => [...new Set(cards.map((c) => c.category))].sort(), [cards])
   const situations = useMemo(() => [...new Set(cards.map((c) => c.situation))].sort(), [cards])
   const difficulties = useMemo(() => [...new Set(cards.map((c) => c.difficulty))].sort(), [cards])
-  const isFiltering = Boolean(filters.query || filters.category || filters.situation || filters.difficulty)
+  const isFiltering = Boolean(
+    filters.query || filters.category || filters.situation || filters.difficulty,
+  )
   const filteredCards = useMemo(() => filterPhraseCards(cards, filters), [cards, filters])
 
   const myCollections = collections.filter((c) => !c.sourceKey)
@@ -72,16 +78,22 @@ export function PhrasebookHome() {
     const collectionCards = cards.filter((c) => c.collectionId === collectionId)
     const cardCount = collectionCards.length
     const masteredCount = collectionCards.filter((c) => c.progress?.state === "mastered").length
-    const dueCount = collectionCards.filter((c) => c.progress && c.progress.nextReviewAt <= new Date().toISOString()).length
+    const dueCount = collectionCards.filter(
+      (c) => c.progress && c.progress.nextReviewAt <= new Date().toISOString(),
+    ).length
     return { cardCount, masteredCount, dueCount }
   }
 
   async function togglePin(collection: PhraseCollection) {
-    setCollections((prev) => prev.map((c) => (c.id === collection.id ? { ...c, pinned: !c.pinned } : c)))
+    setCollections((prev) =>
+      prev.map((c) => (c.id === collection.id ? { ...c, pinned: !c.pinned } : c)),
+    )
     try {
       await phrasebookApi.setPinned(collection.id, !collection.pinned)
     } catch {
-      setCollections((prev) => prev.map((c) => (c.id === collection.id ? { ...c, pinned: collection.pinned } : c)))
+      setCollections((prev) =>
+        prev.map((c) => (c.id === collection.id ? { ...c, pinned: collection.pinned } : c)),
+      )
     }
   }
 
@@ -95,7 +107,12 @@ export function PhrasebookHome() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8 pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8 pb-12"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Learn"
@@ -130,7 +147,13 @@ export function PhrasebookHome() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <PhraseFilters value={filters} onChange={setFilters} categories={categories} situations={situations} difficulties={difficulties} />
+        <PhraseFilters
+          value={filters}
+          onChange={setFilters}
+          categories={categories}
+          situations={situations}
+          difficulties={difficulties}
+        />
       </motion.div>
 
       {isFiltering ? (
@@ -145,7 +168,12 @@ export function PhrasebookHome() {
           ) : (
             <div className="space-y-3">
               {filteredCards.map((card) => (
-                <PhraseCardListItem key={card.id} card={card} romanizationPreference={romanizationPreference} editHref={`/phrasebook/new?cardId=${card.id}`} />
+                <PhraseCardListItem
+                  key={card.id}
+                  card={card}
+                  romanizationPreference={romanizationPreference}
+                  editHref={`/phrasebook/new?cardId=${card.id}`}
+                />
               ))}
             </div>
           )}
@@ -153,7 +181,9 @@ export function PhrasebookHome() {
       ) : (
         <>
           <motion.div variants={itemVariants} className="space-y-3">
-            <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">Practice packs</h2>
+            <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+              Practice packs
+            </h2>
             <div className="grid gap-4 sm:grid-cols-2">
               {seededCollections.map((collection) => {
                 const stats = statsFor(collection.id)
@@ -171,8 +201,13 @@ export function PhrasebookHome() {
 
           <motion.div variants={itemVariants} className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">My Q&A</h2>
-              <Link href="/phrasebook/new" className="text-xs font-bold text-primary hover:underline">
+              <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+                My Q&A
+              </h2>
+              <Link
+                href="/phrasebook/new"
+                className="text-xs font-bold text-primary hover:underline"
+              >
                 + Add
               </Link>
             </div>
@@ -199,10 +234,17 @@ export function PhrasebookHome() {
 
           {recentlyPracticed.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">Recently practiced</h2>
+              <h2 className="text-xs font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+                Recently practiced
+              </h2>
               <div className="space-y-3">
                 {recentlyPracticed.map((card) => (
-                  <PhraseCardListItem key={card.id} card={card} romanizationPreference={romanizationPreference} editHref={`/phrasebook/new?cardId=${card.id}`} />
+                  <PhraseCardListItem
+                    key={card.id}
+                    card={card}
+                    romanizationPreference={romanizationPreference}
+                    editHref={`/phrasebook/new?cardId=${card.id}`}
+                  />
                 ))}
               </div>
             </motion.div>

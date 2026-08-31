@@ -17,7 +17,10 @@ import { cn } from "@/lib/utils"
 
 const SmartAnalytics = dynamic(
   () => import("@/components/goals/SmartAnalytics").then((m) => m.SmartAnalytics),
-  { ssr: false, loading: () => <div className="h-64 w-full animate-pulse rounded-xl bg-muted/20" /> },
+  {
+    ssr: false,
+    loading: () => <div className="h-64 w-full animate-pulse rounded-xl bg-muted/20" />,
+  },
 )
 
 interface ProgressTabProps {
@@ -80,7 +83,9 @@ export function ProgressTab({
                 return (
                   <li key={kr.id} className="space-y-1">
                     <div className="flex items-baseline justify-between gap-3 text-sm">
-                      <span className="min-w-0 truncate font-medium text-foreground">{kr.title}</span>
+                      <span className="min-w-0 truncate font-medium text-foreground">
+                        {kr.title}
+                      </span>
                       <span className="shrink-0 text-xs font-semibold tabular-nums text-muted-foreground">
                         {pct}%
                       </span>
@@ -93,7 +98,10 @@ export function ProgressTab({
                       aria-valuemin={0}
                       aria-valuemax={100}
                     >
-                      <div className="h-full rounded-full bg-primary" style={{ width: `${pct}%` }} />
+                      <div
+                        className="h-full rounded-full bg-primary"
+                        style={{ width: `${pct}%` }}
+                      />
                     </div>
                   </li>
                 )

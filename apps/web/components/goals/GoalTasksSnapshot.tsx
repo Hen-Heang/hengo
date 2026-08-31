@@ -31,7 +31,10 @@ export function GoalTasksSnapshot() {
           <ClipboardList size={14} strokeWidth={2.5} />
           Goal tasks today
         </h3>
-        <Link href="/goals/tasks" className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline">
+        <Link
+          href="/goals/tasks"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-primary hover:underline"
+        >
           View all
         </Link>
       </div>
@@ -67,15 +70,21 @@ export function GoalTasksSnapshot() {
                 }}
                 className={cn(
                   "flex h-11 w-11 shrink-0 items-center justify-center rounded-md transition-[background-color,color,transform] hover:bg-accent active:scale-95",
-                  task.completed ? "text-emerald-500" : "text-muted-foreground/60 hover:text-primary"
+                  task.completed
+                    ? "text-emerald-500"
+                    : "text-muted-foreground/60 hover:text-primary",
                 )}
               >
-                {task.completed ? <CheckCircle2 className="h-5 w-5" /> : <Circle className="h-5 w-5" />}
+                {task.completed ? (
+                  <CheckCircle2 className="h-5 w-5" />
+                ) : (
+                  <Circle className="h-5 w-5" />
+                )}
               </button>
               <span
                 className={cn(
                   "min-w-0 flex-1 truncate text-sm font-medium",
-                  task.completed && "text-muted-foreground line-through"
+                  task.completed && "text-muted-foreground line-through",
                 )}
               >
                 {task.title || task.description}

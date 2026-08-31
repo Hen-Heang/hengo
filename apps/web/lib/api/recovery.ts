@@ -76,7 +76,12 @@ type TriggerRow = {
 }
 
 function toTrigger(row: TriggerRow): RecoveryTrigger {
-  return { id: row.id, label: row.label, category: row.category ?? "situation", createdAt: row.created_at }
+  return {
+    id: row.id,
+    label: row.label,
+    category: row.category ?? "situation",
+    createdAt: row.created_at,
+  }
 }
 
 type EventRow = {
@@ -359,9 +364,13 @@ export const recoveryApi = {
       .from("kori_focus_habits")
       .update({
         ...(data.label !== undefined ? { label: data.label } : {}),
-        ...(data.replacementBehavior !== undefined ? { replacement_behavior: data.replacementBehavior } : {}),
+        ...(data.replacementBehavior !== undefined
+          ? { replacement_behavior: data.replacementBehavior }
+          : {}),
         ...(data.trackingMode !== undefined ? { tracking_mode: data.trackingMode } : {}),
-        ...(data.recoveryStatement !== undefined ? { recovery_statement: data.recoveryStatement } : {}),
+        ...(data.recoveryStatement !== undefined
+          ? { recovery_statement: data.recoveryStatement }
+          : {}),
         ...(data.reasons !== undefined ? { reasons: data.reasons } : {}),
         ...(data.baseline !== undefined ? { baseline: data.baseline } : {}),
         ...(data.personalLimit !== undefined ? { personal_limit: data.personalLimit } : {}),
@@ -390,7 +399,10 @@ export const recoveryApi = {
     return (data as TriggerRow[]).map(toTrigger)
   },
 
-  addTrigger: async (label: string, category: TriggerCategory = "situation"): Promise<RecoveryTrigger> => {
+  addTrigger: async (
+    label: string,
+    category: TriggerCategory = "situation",
+  ): Promise<RecoveryTrigger> => {
     const input = triggerTagInputSchema.parse({ label, category })
     const { data: row, error } = await supabase
       .from("kori_focus_triggers")
@@ -401,12 +413,20 @@ export const recoveryApi = {
     return toTrigger(row as TriggerRow)
   },
 
-  updateTrigger: async (id: string, label: string, category?: TriggerCategory): Promise<RecoveryTrigger> => {
+  updateTrigger: async (
+    id: string,
+    label: string,
+    category?: TriggerCategory,
+  ): Promise<RecoveryTrigger> => {
     const safeLabel = triggerTagInputSchema.shape.label.parse(label)
     const safeCategory = category === undefined ? undefined : triggerCategorySchema.parse(category)
     const { data: row, error } = await supabase
       .from("kori_focus_triggers")
-      .update({ label: safeLabel, ...(safeCategory ? { category: safeCategory } : {}), updated_at: new Date().toISOString() })
+      .update({
+        label: safeLabel,
+        ...(safeCategory ? { category: safeCategory } : {}),
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id)
       .select()
       .single()
@@ -433,10 +453,7 @@ export const recoveryApi = {
     return (data as EventRow[]).map(toEvent)
   },
 
-  logEvent: async (
-    habitId: string,
-    data: UrgeEventInput,
-  ): Promise<RecoveryEvent> => {
+  logEvent: async (habitId: string, data: UrgeEventInput): Promise<RecoveryEvent> => {
     const input = urgeEventInputSchema.parse(data)
     const { data: row, error } = await supabase
       .from("kori_focus_events")
@@ -508,11 +525,15 @@ export const recoveryApi = {
         ...(data.location !== undefined ? { location: data.location } : {}),
         ...(data.device !== undefined ? { device: data.device } : {}),
         ...(data.situation !== undefined ? { situation: data.situation } : {}),
-        ...(data.previousActivity !== undefined ? { previous_activity: data.previousActivity } : {}),
+        ...(data.previousActivity !== undefined
+          ? { previous_activity: data.previousActivity }
+          : {}),
         ...(data.sleepQuality !== undefined ? { sleep_quality: data.sleepQuality } : {}),
         ...(data.stressLevel !== undefined ? { stress_level: data.stressLevel } : {}),
         ...(data.actionTaken !== undefined ? { action_taken: data.actionTaken } : {}),
-        ...(data.healthyActionCompleted !== undefined ? { healthy_action_completed: data.healthyActionCompleted } : {}),
+        ...(data.healthyActionCompleted !== undefined
+          ? { healthy_action_completed: data.healthyActionCompleted }
+          : {}),
         ...(data.rodeOut !== undefined ? { rode_out: data.rodeOut } : {}),
         ...(data.note !== undefined ? { note: data.note } : {}),
         ...(data.resolvedAt !== undefined ? { resolved_at: data.resolvedAt } : {}),
@@ -563,7 +584,10 @@ export const recoveryApi = {
 
   // Edits the plan's own wording — distinct from ratePlan, which only
   // touches SRS scheduling fields after a rehearsal.
-  updatePlan: async (id: string, data: { ifText?: string; thenText?: string }): Promise<RecoveryPlan> => {
+  updatePlan: async (
+    id: string,
+    data: { ifText?: string; thenText?: string },
+  ): Promise<RecoveryPlan> => {
     const input = whenThenPlanUpdateSchema.parse(data)
     const { data: row, error } = await supabase
       .from("kori_focus_plans")
@@ -588,7 +612,14 @@ export const recoveryApi = {
   // lib/srs.ts) to a plan after the user rehearses it.
   ratePlan: async (
     id: string,
-    next: { easeFactor: number; intervalDays: number; repetitions: number; lapses: number; mastery: number; nextReview: string },
+    next: {
+      easeFactor: number
+      intervalDays: number
+      repetitions: number
+      lapses: number
+      mastery: number
+      nextReview: string
+    },
   ): Promise<RecoveryPlan> => {
     const { data: row, error } = await supabase
       .from("kori_focus_plans")
@@ -621,8 +652,13 @@ export const recoveryApi = {
 
   // All habits' daily check-ins in a date range — for the Timeline aggregator
   // (lib/timeline.ts), which needs check-ins across every Recovery habit.
-  getDailyCheckInsInRange: async (params: { from?: string; to?: string } = {}): Promise<DailyCheckIn[]> => {
-    let query = supabase.from("kori_focus_daily_checkins").select("*").order("local_date", { ascending: false })
+  getDailyCheckInsInRange: async (
+    params: { from?: string; to?: string } = {},
+  ): Promise<DailyCheckIn[]> => {
+    let query = supabase
+      .from("kori_focus_daily_checkins")
+      .select("*")
+      .order("local_date", { ascending: false })
     if (params.from) query = query.gte("local_date", params.from)
     if (params.to) query = query.lte("local_date", params.to)
     const { data, error } = await query
@@ -677,7 +713,10 @@ export const recoveryApi = {
     return (data as ProtectionItemRow[]).map(toProtectionItem)
   },
 
-  saveProtectionItem: async (habitId: string, data: ProtectionItemInput): Promise<ProtectionItem> => {
+  saveProtectionItem: async (
+    habitId: string,
+    data: ProtectionItemInput,
+  ): Promise<ProtectionItem> => {
     const input = protectionItemInputSchema.parse(data)
     const { data: row, error } = await supabase
       .from("kori_focus_protection_items")
@@ -748,7 +787,10 @@ export const recoveryApi = {
 
   saveWeeklyReview: async (
     habitId: string,
-    input: Pick<WeeklyReview, "weekStart" | "statistics" | "summary" | "experiment" | "aiSummary" | "aiConsentAt">,
+    input: Pick<
+      WeeklyReview,
+      "weekStart" | "statistics" | "summary" | "experiment" | "aiSummary" | "aiConsentAt"
+    >,
   ): Promise<WeeklyReview> => {
     const review = weeklyReviewInputSchema.parse(input)
     const { data: row, error } = await supabase

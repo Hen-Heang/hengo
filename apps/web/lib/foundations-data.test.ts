@@ -9,7 +9,7 @@ describe("Foundations curriculum", () => {
   it("uses unique lesson and exercise IDs", () => {
     const lessonIds = FOUNDATIONS_SEED.map((lesson) => lesson.id)
     const exerciseIds = FOUNDATIONS_SEED.flatMap((lesson) =>
-      lesson.exercises.map((exercise) => exercise.id)
+      lesson.exercises.map((exercise) => exercise.id),
     )
 
     expect(new Set(lessonIds).size).toBe(lessonIds.length)
@@ -21,7 +21,7 @@ describe("Foundations curriculum", () => {
 
     expect(lessons.length).toBeGreaterThan(0)
     expect(lessons.map((lesson) => lesson.order)).toEqual(
-      Array.from({ length: lessons.length }, (_, index) => index + 1)
+      Array.from({ length: lessons.length }, (_, index) => index + 1),
     )
   })
 

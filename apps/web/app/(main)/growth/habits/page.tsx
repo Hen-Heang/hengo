@@ -57,7 +57,12 @@ export default function HabitsPage() {
           </p>
         </div>
         {activeHabits.length > 0 && !showForm && (
-          <Button size="sm" variant="outline" onClick={() => setShowForm(true)} className="shrink-0">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setShowForm(true)}
+            className="shrink-0"
+          >
             <Plus size={16} strokeWidth={2} />
             New
           </Button>
@@ -70,7 +75,8 @@ export default function HabitsPage() {
           className="flex items-center gap-2 rounded-lg border border-emerald-500/15 bg-emerald-500/5 px-3 py-2.5 text-sm text-muted-foreground"
         >
           <CheckCircle2 size={16} className="shrink-0 text-emerald-500" />
-          {activeHabits.length} active habit{activeHabits.length === 1 ? "" : "s"}. Finish today first; manage details only when needed.
+          {activeHabits.length} active habit{activeHabits.length === 1 ? "" : "s"}. Finish today
+          first; manage details only when needed.
         </motion.div>
       )}
 

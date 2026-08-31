@@ -49,7 +49,7 @@ export function ProfileMenu({
       className={cn(
         "flex min-h-11 w-full items-center gap-2.5 rounded-lg px-2 py-2 text-left outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring",
         collapsed && "justify-center px-0",
-        className
+        className,
       )}
     >
       <UserAvatar className="size-8 rounded-lg" />
@@ -57,7 +57,9 @@ export function ProfileMenu({
         <>
           <span className="min-w-0 flex-1">
             <span className="block truncate text-sm font-medium text-foreground">Account</span>
-            <span className="block truncate text-xs text-muted-foreground">{email ?? "Signed in"}</span>
+            <span className="block truncate text-xs text-muted-foreground">
+              {email ?? "Signed in"}
+            </span>
           </span>
           <ChevronsUpDown size={14} aria-hidden className="shrink-0 text-muted-foreground" />
         </>
@@ -94,7 +96,10 @@ export function ProfileMenu({
           <ThemeToggle />
         </div>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={handleSignOut} className="rounded-lg text-destructive focus:text-destructive">
+        <DropdownMenuItem
+          onClick={handleSignOut}
+          className="rounded-lg text-destructive focus:text-destructive"
+        >
           <LogOut size={16} /> Sign out
         </DropdownMenuItem>
       </DropdownMenuContent>

@@ -128,6 +128,8 @@ export function tryLoadMcpAuthConfig(): { config: McpAuthConfig } | { error: str
   try {
     return { config: loadMcpAuthConfig() }
   } catch (err) {
-    return { error: err instanceof McpConfigError ? err.message : "MCP configuration is unavailable." }
+    return {
+      error: err instanceof McpConfigError ? err.message : "MCP configuration is unavailable.",
+    }
   }
 }

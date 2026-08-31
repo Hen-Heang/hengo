@@ -27,6 +27,9 @@ export async function recordToolCall(ctx: McpContext, record: ToolCallRecord): P
       request_id: ctx.requestId,
     })
   } catch (err) {
-    console.error("[mcp-audit] failed to record tool call:", err instanceof Error ? err.message : "unknown error")
+    console.error(
+      "[mcp-audit] failed to record tool call:",
+      err instanceof Error ? err.message : "unknown error",
+    )
   }
 }

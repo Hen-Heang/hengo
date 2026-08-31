@@ -49,7 +49,9 @@ function Stat({ icon, value, label }: { icon: React.ReactNode; value: string; la
     <div className="flex flex-1 flex-col items-center gap-1 rounded-2xl border border-border/60 bg-muted/30 px-2 py-3 text-center">
       <span className="text-muted-foreground">{icon}</span>
       <span className="text-[17px] font-bold leading-none text-foreground">{value}</span>
-      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</span>
+      <span className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </span>
     </div>
   )
 }
@@ -73,7 +75,9 @@ export function VoiceSessionReport({
             <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/12 text-blue-600 dark:text-blue-400">
               <Sparkles size={16} />
             </span>
-            <DialogTitle className="text-[17px] font-bold tracking-tight">Speaking session summary</DialogTitle>
+            <DialogTitle className="text-[17px] font-bold tracking-tight">
+              Speaking session summary
+            </DialogTitle>
           </div>
           <DialogDescription className="text-[13px]">
             {report.scenarioTitle
@@ -85,9 +89,21 @@ export function VoiceSessionReport({
         <div className="min-h-0 flex-1 space-y-5 overflow-y-auto px-5 py-5">
           {/* Honest, measured stats — no invented pronunciation score. */}
           <div className="flex gap-2">
-            <Stat icon={<Clock size={15} />} value={formatDuration(metrics.durationSeconds)} label="Time" />
-            <Stat icon={<MessageSquare size={15} />} value={String(metrics.userTurnCount)} label="Your turns" />
-            <Stat icon={<Languages size={15} />} value={`~${metrics.approxWordCount}`} label="KO words" />
+            <Stat
+              icon={<Clock size={15} />}
+              value={formatDuration(metrics.durationSeconds)}
+              label="Time"
+            />
+            <Stat
+              icon={<MessageSquare size={15} />}
+              value={String(metrics.userTurnCount)}
+              label="Your turns"
+            />
+            <Stat
+              icon={<Languages size={15} />}
+              value={`~${metrics.approxWordCount}`}
+              label="KO words"
+            />
           </div>
 
           {report.scenarioTitle && report.scenarioCompleted !== null && (
@@ -106,10 +122,15 @@ export function VoiceSessionReport({
 
           {report.strengths.length > 0 && (
             <section className="space-y-2">
-              <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">What went well</h4>
+              <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                What went well
+              </h4>
               <ul className="space-y-1.5">
                 {report.strengths.map((strength, i) => (
-                  <li key={i} className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground/90">
+                  <li
+                    key={i}
+                    className="flex items-start gap-2 text-[13px] leading-relaxed text-foreground/90"
+                  >
                     <CheckCircle2 size={14} className="mt-0.5 shrink-0 text-emerald-500" />
                     {strength}
                   </li>
@@ -125,7 +146,10 @@ export function VoiceSessionReport({
               </h4>
               <div className="space-y-2">
                 {report.corrections.map((correction, i) => (
-                  <div key={i} className="rounded-2xl border border-border/60 bg-muted/20 px-3.5 py-3">
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-border/60 bg-muted/20 px-3.5 py-3"
+                  >
                     <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[13px]">
                       <span className="text-muted-foreground line-through" lang="ko">
                         {correction.original}
@@ -140,7 +164,9 @@ export function VoiceSessionReport({
                         자연스럽게: {correction.natural}
                       </p>
                     )}
-                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">{correction.explanation}</p>
+                    <p className="mt-1 text-[12px] leading-relaxed text-muted-foreground">
+                      {correction.explanation}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -192,23 +218,38 @@ export function VoiceSessionReport({
               <Lightbulb size={13} />
               Recommended next
             </div>
-            <p className="mt-1 text-[13px] font-bold text-foreground">{report.recommendedPractice.label}</p>
+            <p className="mt-1 text-[13px] font-bold text-foreground">
+              {report.recommendedPractice.label}
+            </p>
             <p className="text-[12px] text-muted-foreground">{report.recommendedPractice.reason}</p>
           </section>
         </div>
 
         <div className="grid shrink-0 grid-cols-2 gap-2 border-t border-border/50 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Button type="button" variant="outline" onClick={onPracticeAgain} className="h-11 gap-1.5 rounded-xl text-[13px] font-bold">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onPracticeAgain}
+            className="h-11 gap-1.5 rounded-xl text-[13px] font-bold"
+          >
             <RotateCcw size={15} />
             Practice again
           </Button>
           {report.corrections.length > 0 ? (
-            <Button type="button" onClick={onReviewCorrections} className="h-11 gap-1.5 rounded-xl bg-blue-600 text-[13px] font-bold text-white hover:bg-blue-500">
+            <Button
+              type="button"
+              onClick={onReviewCorrections}
+              className="h-11 gap-1.5 rounded-xl bg-blue-600 text-[13px] font-bold text-white hover:bg-blue-500"
+            >
               Review corrections
               <ArrowRight size={15} />
             </Button>
           ) : (
-            <Button type="button" onClick={onStartRecommended} className="h-11 gap-1.5 rounded-xl bg-blue-600 text-[13px] font-bold text-white hover:bg-blue-500">
+            <Button
+              type="button"
+              onClick={onStartRecommended}
+              className="h-11 gap-1.5 rounded-xl bg-blue-600 text-[13px] font-bold text-white hover:bg-blue-500"
+            >
               {report.recommendedPractice.label}
               <ArrowRight size={15} />
             </Button>

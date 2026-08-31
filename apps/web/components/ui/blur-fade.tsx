@@ -29,8 +29,7 @@ interface BlurFadeProps extends MotionProps {
   blur?: string
 }
 
-const getFilter = (v: Variants[string]) =>
-  typeof v === "function" ? undefined : v.filter
+const getFilter = (v: Variants[string]) => (typeof v === "function" ? undefined : v.filter)
 
 export function BlurFade({
   children,
@@ -68,9 +67,7 @@ export function BlurFade({
   const visibleFilter = getFilter(combinedVariants.visible)
 
   const shouldTransitionFilter =
-    hiddenFilter != null &&
-    visibleFilter != null &&
-    hiddenFilter !== visibleFilter
+    hiddenFilter != null && visibleFilter != null && hiddenFilter !== visibleFilter
 
   return (
     <AnimatePresence>

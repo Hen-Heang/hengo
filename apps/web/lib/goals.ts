@@ -8,7 +8,8 @@ import type { Task } from "@/lib/tasks"
 // against, and over what window. "activity_sessions" counts rows in
 // kori_activity_log for a given `feature` (see lib/api/progress.ts); the other
 // sources map 1:1 to a kori_* table's row count.
-export type LearningMetricSource = "vocab_cards" | "corrections" | "foundation_lessons" | "activity_sessions"
+export type LearningMetricSource =
+  "vocab_cards" | "corrections" | "foundation_lessons" | "activity_sessions"
 export type LearningMetricWindow = "total" | "weekly" | "daily"
 
 export interface LearningMetric {
@@ -71,7 +72,8 @@ export type GoalType = "general" | "travel" | "finance" | "education" | "financi
 // Deterministic health status computed by lib/goal-health.ts and persisted so
 // the goal list/detail don't need to recompute it on every render. Distinct
 // from GoalDeadlineStatus below, which is purely time-based.
-export type GoalHealthStatus = "on_track" | "attention" | "at_risk" | "blocked" | "completed" | "not_started"
+export type GoalHealthStatus =
+  "on_track" | "attention" | "at_risk" | "blocked" | "completed" | "not_started"
 export type GoalReviewFrequency = "weekly" | "biweekly" | "monthly"
 
 export interface Goal {
@@ -151,8 +153,15 @@ export interface GoalData {
 }
 
 export const goalDataToGoal = (goalData: GoalData, userId?: string): Partial<Goal> => {
-  const { title, description, target_date, goal_type, start_date, status = "active", ...restData } =
-    goalData
+  const {
+    title,
+    description,
+    target_date,
+    goal_type,
+    start_date,
+    status = "active",
+    ...restData
+  } = goalData
 
   return {
     title,
@@ -187,11 +196,7 @@ export const goalToFormData = (goal: Goal) => {
 // ── Deadline logic (ported from Orbit src/utils/goalDeadlineUtils.ts) ─────────
 
 export type GoalDeadlineStatus =
-  | "on_track"
-  | "approaching_deadline"
-  | "due_today"
-  | "overdue"
-  | "completed"
+  "on_track" | "approaching_deadline" | "due_today" | "overdue" | "completed"
 
 export type UrgencyLevel = "low" | "medium" | "high" | "critical"
 
@@ -278,7 +283,10 @@ export const calculateGoalDeadlineInfo = (goal: Goal): GoalDeadlineInfo => {
   }
 }
 
-export const getDeadlineStatusStyling = (status: GoalDeadlineStatus, urgencyLevel: UrgencyLevel) => {
+export const getDeadlineStatusStyling = (
+  status: GoalDeadlineStatus,
+  urgencyLevel: UrgencyLevel,
+) => {
   switch (status) {
     case "completed":
       return {
@@ -338,11 +346,13 @@ export const getDeadlineStatusStyling = (status: GoalDeadlineStatus, urgencyLeve
  */
 export const formatDeadlineFooter = (
   goal: Pick<Goal, "target_date">,
-  info: GoalDeadlineInfo
+  info: GoalDeadlineInfo,
 ): string => {
   if (info.statusMessage === "No deadline") return "No deadline"
   if (info.status === "completed") {
-    return goal.target_date ? `Completed ${format(parseISO(goal.target_date), "MMM d, yyyy")}` : "Completed"
+    return goal.target_date
+      ? `Completed ${format(parseISO(goal.target_date), "MMM d, yyyy")}`
+      : "Completed"
   }
   if (info.status === "overdue") return `Overdue by ${Math.abs(info.daysRemaining)}d`
   if (info.status === "due_today") return "Due today"

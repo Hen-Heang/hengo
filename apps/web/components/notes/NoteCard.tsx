@@ -16,7 +16,15 @@ interface NoteCardProps {
   index: number
 }
 
-export function NoteCard({ slug, title, description, icon, noteType, pinned, index }: NoteCardProps) {
+export function NoteCard({
+  slug,
+  title,
+  description,
+  icon,
+  noteType,
+  pinned,
+  index,
+}: NoteCardProps) {
   const accentColor = getTechColor(icon || slug)
 
   return (
@@ -48,10 +56,14 @@ export function NoteCard({ slug, title, description, icon, noteType, pinned, ind
               </div>
               <div className="mt-1 flex min-w-0 items-center gap-2">
                 <span className="text-xs font-medium text-muted-foreground">
-                  {noteType ? NOTE_TYPES.find((t) => t.value === noteType)?.label ?? "Module" : "Module"}
+                  {noteType
+                    ? (NOTE_TYPES.find((t) => t.value === noteType)?.label ?? "Module")
+                    : "Module"}
                 </span>
                 <div className="h-1 w-1 rounded-full bg-muted-foreground/30" />
-                <span className="truncate font-mono text-xs font-medium text-blue-500/80">/{slug}</span>
+                <span className="truncate font-mono text-xs font-medium text-blue-500/80">
+                  /{slug}
+                </span>
               </div>
             </div>
           </div>

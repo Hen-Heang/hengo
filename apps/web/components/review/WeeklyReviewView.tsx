@@ -23,7 +23,12 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <ReviewSummaryCard summary={ai.summary} focusSuggestion={ai.focusSuggestion} loading={ai.loading} error={ai.error} />
+        <ReviewSummaryCard
+          summary={ai.summary}
+          focusSuggestion={ai.focusSuggestion}
+          loading={ai.loading}
+          error={ai.error}
+        />
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -36,7 +41,9 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
           <div className="text-xs text-muted-foreground">Min in Hengo</div>
         </div>
         <div className="rounded-lg border border-border bg-card p-3 text-center">
-          <div className="text-lg font-semibold text-foreground">{summary.totalManualActivityCount}</div>
+          <div className="text-lg font-semibold text-foreground">
+            {summary.totalManualActivityCount}
+          </div>
           <div className="text-xs text-muted-foreground">Activities</div>
         </div>
         <div className="rounded-lg border border-border bg-card p-3 text-center">
@@ -46,7 +53,10 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
       </motion.div>
 
       {summary.habitCompletion.length > 0 && (
-        <motion.div variants={itemVariants} className="space-y-2 rounded-lg border border-border bg-card p-4">
+        <motion.div
+          variants={itemVariants}
+          className="space-y-2 rounded-lg border border-border bg-card p-4"
+        >
           <p className="text-sm font-semibold text-foreground">Habits</p>
           {summary.habitCompletion.map((h) => (
             <div key={h.habitId} className="space-y-1">
@@ -59,12 +69,17 @@ export function WeeklyReviewView({ summary }: { summary: WeeklyReviewSummary }) 
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
                 <div
                   className="h-full rounded-full bg-primary"
-                  style={{ width: `${h.totalDays ? Math.round((h.completedDays / h.totalDays) * 100) : 0}%` }}
+                  style={{
+                    width: `${h.totalDays ? Math.round((h.completedDays / h.totalDays) * 100) : 0}%`,
+                  }}
                 />
               </div>
             </div>
           ))}
-          <Link href="/growth/habits" className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
+          <Link
+            href="/growth/habits"
+            className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline"
+          >
             Open Habits →
           </Link>
         </motion.div>

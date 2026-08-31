@@ -44,7 +44,7 @@ function useMounted() {
       return () => undefined
     },
     () => true,
-    () => false
+    () => false,
   )
 }
 
@@ -56,7 +56,13 @@ const insightStyle: Record<SmartInsight["type"], { icon: React.ElementType; colo
   productivity: { icon: Sparkles, color: "text-emerald-500 bg-emerald-500/10" },
 }
 
-export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDate?: string | null }) {
+export function SmartAnalytics({
+  tasks,
+  targetDate,
+}: {
+  tasks: Task[]
+  targetDate?: string | null
+}) {
   const mounted = useMounted()
 
   const { analytics, breakdown, daily, velocity } = useMemo(
@@ -66,7 +72,7 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
       daily: calculateDailyTrend(tasks),
       velocity: calculateVelocityData(tasks),
     }),
-    [tasks, targetDate]
+    [tasks, targetDate],
   )
 
   const scoreColor =
@@ -135,7 +141,10 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
                 <span className="tabular-nums text-foreground">{b.value}%</span>
               </div>
               <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                <div className="h-full rounded-full bg-primary transition-all" style={{ width: `${b.value}%` }} />
+                <div
+                  className="h-full rounded-full bg-primary transition-all"
+                  style={{ width: `${b.value}%` }}
+                />
               </div>
             </div>
           ))}
@@ -157,7 +166,11 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
                     <stop offset="100%" stopColor="var(--primary)" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" vertical={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  className="stroke-border/40"
+                  vertical={false}
+                />
                 <XAxis
                   dataKey="date"
                   tickFormatter={(d: string) => format(new Date(d), "M/d")}
@@ -166,12 +179,24 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
                   axisLine={false}
                   tickLine={false}
                 />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={28} />
+                <YAxis
+                  allowDecimals={false}
+                  tick={{ fontSize: 10 }}
+                  axisLine={false}
+                  tickLine={false}
+                  width={28}
+                />
                 <Tooltip
                   labelFormatter={(d) => format(new Date(d as string), "MMM d")}
                   contentStyle={{ fontSize: 12, borderRadius: 12 }}
                 />
-                <Area type="monotone" dataKey="completed" stroke="var(--primary)" fill="url(#cgrad)" strokeWidth={2} />
+                <Area
+                  type="monotone"
+                  dataKey="completed"
+                  stroke="var(--primary)"
+                  fill="url(#cgrad)"
+                  strokeWidth={2}
+                />
               </AreaChart>
             </ResponsiveContainer>
           </Card>
@@ -187,7 +212,11 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
             ) : (
               <ResponsiveContainer width="100%" height={180}>
                 <BarChart data={velocity} margin={{ top: 4, right: 4, bottom: 0, left: -24 }}>
-                  <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" vertical={false} />
+                  <CartesianGrid
+                    strokeDasharray="3 3"
+                    className="stroke-border/40"
+                    vertical={false}
+                  />
                   <XAxis
                     dataKey="week"
                     tickFormatter={(d: string) => format(new Date(d), "M/d")}
@@ -195,7 +224,13 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
                     axisLine={false}
                     tickLine={false}
                   />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 10 }} axisLine={false} tickLine={false} width={28} />
+                  <YAxis
+                    allowDecimals={false}
+                    tick={{ fontSize: 10 }}
+                    axisLine={false}
+                    tickLine={false}
+                    width={28}
+                  />
                   <Tooltip
                     labelFormatter={(d) => `Week of ${format(new Date(d as string), "MMM d")}`}
                     contentStyle={{ fontSize: 12, borderRadius: 12 }}
@@ -224,12 +259,19 @@ export function SmartAnalytics({ tasks, targetDate }: { tasks: Task[]; targetDat
               const Icon = s.icon
               return (
                 <li key={i} className="flex items-start gap-3">
-                  <span className={cn("mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl", s.color)}>
+                  <span
+                    className={cn(
+                      "mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl",
+                      s.color,
+                    )}
+                  >
                     <Icon className="h-4 w-4" />
                   </span>
                   <div className="min-w-0">
                     <p className="text-sm font-bold text-foreground">{ins.title}</p>
-                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">{ins.description}</p>
+                    <p className="text-xs font-medium leading-relaxed text-muted-foreground">
+                      {ins.description}
+                    </p>
                   </div>
                 </li>
               )

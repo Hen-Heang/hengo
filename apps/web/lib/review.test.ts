@@ -60,7 +60,14 @@ function habit(overrides: Partial<Habit> = {}): Habit {
 }
 
 function checkin(overrides: Partial<HabitCheckIn> = {}): HabitCheckIn {
-  return { id: "c1", habitId: "h1", date: "2026-07-26", completed: true, createdAt: "2026-07-26T00:00:00.000Z", ...overrides }
+  return {
+    id: "c1",
+    habitId: "h1",
+    date: "2026-07-26",
+    completed: true,
+    createdAt: "2026-07-26T00:00:00.000Z",
+    ...overrides,
+  }
 }
 
 describe("goalsNeedingAttention", () => {
@@ -93,7 +100,9 @@ describe("isReminderDueToday / remindersDueToday", () => {
   })
 
   it("is false for a paused reminder", () => {
-    expect(isReminderDueToday(reminder({ status: "paused", nextRunAt: "2026-07-26T09:00:00" }), now)).toBe(false)
+    expect(
+      isReminderDueToday(reminder({ status: "paused", nextRunAt: "2026-07-26T09:00:00" }), now),
+    ).toBe(false)
   })
 
   it("is false when nextRunAt is null", () => {
@@ -110,7 +119,13 @@ describe("isReminderDueToday / remindersDueToday", () => {
 })
 
 describe("buildMorningBrief", () => {
-  const taskCounts: MorningBriefTaskCounts = { overdueCount: 1, scheduledCount: 2, anytimeCount: 0, completedCount: 3, totalCount: 6 }
+  const taskCounts: MorningBriefTaskCounts = {
+    overdueCount: 1,
+    scheduledCount: 2,
+    anytimeCount: 0,
+    completedCount: 3,
+    totalCount: 6,
+  }
 
   it("splits active habits into done vs pending based on today's checkins", () => {
     const brief = buildMorningBrief({
@@ -149,7 +164,13 @@ describe("formatMorningBriefContext", () => {
     const brief = buildMorningBrief({
       now: new Date("2026-07-26T08:00:00"),
       streakDays: 3,
-      taskCounts: { overdueCount: 0, scheduledCount: 1, anytimeCount: 0, completedCount: 0, totalCount: 1 },
+      taskCounts: {
+        overdueCount: 0,
+        scheduledCount: 1,
+        anytimeCount: 0,
+        completedCount: 0,
+        totalCount: 1,
+      },
       activeHabits: [habit({ id: "h1", label: "Read" })],
       todaysCheckins: [],
       reminders: [],
@@ -188,19 +209,34 @@ describe("buildEveningReviewSummary / formatEveningReviewContext", () => {
 })
 
 describe("buildHabitWeeklyCompletion", () => {
-  const weekDates = ["2026-07-20", "2026-07-21", "2026-07-22", "2026-07-23", "2026-07-24", "2026-07-25", "2026-07-26"]
+  const weekDates = [
+    "2026-07-20",
+    "2026-07-21",
+    "2026-07-22",
+    "2026-07-23",
+    "2026-07-24",
+    "2026-07-25",
+    "2026-07-26",
+  ]
 
   it("counts completed days within the week", () => {
     const result = buildHabitWeeklyCompletion(
       [habit({ id: "h1", startedAt: "2026-01-01" })],
-      [checkin({ habitId: "h1", date: "2026-07-20" }), checkin({ habitId: "h1", date: "2026-07-22" })],
+      [
+        checkin({ habitId: "h1", date: "2026-07-20" }),
+        checkin({ habitId: "h1", date: "2026-07-22" }),
+      ],
       weekDates,
     )
     expect(result).toEqual([{ habitId: "h1", label: "Read", completedDays: 2, totalDays: 7 }])
   })
 
   it("only counts days on/after the habit's start date", () => {
-    const result = buildHabitWeeklyCompletion([habit({ id: "h1", startedAt: "2026-07-23" })], [], weekDates)
+    const result = buildHabitWeeklyCompletion(
+      [habit({ id: "h1", startedAt: "2026-07-23" })],
+      [],
+      weekDates,
+    )
     expect(result[0].totalDays).toBe(4)
   })
 
@@ -230,8 +266,22 @@ describe("localWeekDates", () => {
 
 describe("buildWeeklyReviewSummary / formatWeeklyReviewContext", () => {
   const daySummaries: DailySummary[] = [
-    { date: "2026-07-20", entries: [], hengoMinutes: 10, completedCount: 2, manualActivityCount: 0, journalCount: 1 },
-    { date: "2026-07-21", entries: [], hengoMinutes: 5, completedCount: 1, manualActivityCount: 1, journalCount: 0 },
+    {
+      date: "2026-07-20",
+      entries: [],
+      hengoMinutes: 10,
+      completedCount: 2,
+      manualActivityCount: 0,
+      journalCount: 1,
+    },
+    {
+      date: "2026-07-21",
+      entries: [],
+      hengoMinutes: 5,
+      completedCount: 1,
+      manualActivityCount: 1,
+      journalCount: 0,
+    },
   ]
 
   it("sums across the provided day summaries", () => {
@@ -243,7 +293,12 @@ describe("buildWeeklyReviewSummary / formatWeeklyReviewContext", () => {
   })
 
   it("includes at-risk goals from the full goal list", () => {
-    const result = buildWeeklyReviewSummary([], [goal({ id: "g1", health_status: "blocked" })], [], "range")
+    const result = buildWeeklyReviewSummary(
+      [],
+      [goal({ id: "g1", health_status: "blocked" })],
+      [],
+      "range",
+    )
     expect(result.goalsAtRisk).toHaveLength(1)
   })
 

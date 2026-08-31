@@ -12,12 +12,16 @@ import { NOTE_TYPES, type Note } from "@/lib/notes"
 
 const TableOfContents = dynamic(
   () => import("@/components/notes/TableOfContents").then((mod) => mod.TableOfContents),
-  { ssr: false }
+  { ssr: false },
 )
 
 function formatDate(iso?: string): string {
   if (!iso) return ""
-  return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+  return new Date(iso).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  })
 }
 
 interface NoteViewProps {
@@ -53,7 +57,7 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
         if (!text) return
         setActiveSectionLabel(text.length > 28 ? `${text.slice(0, 28)}…` : text)
       },
-      { rootMargin: "-15% 0% -75% 0%" }
+      { rootMargin: "-15% 0% -75% 0%" },
     )
     headingElements.forEach((el) => observer.observe(el))
     return () => headingElements.forEach((el) => observer.unobserve(el))
@@ -71,7 +75,9 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
             onClick={() => {
               setShowMobileToc(true)
               requestAnimationFrame(() => {
-                document.getElementById("note-toc-mobile")?.scrollIntoView({ behavior: "smooth", block: "start" })
+                document
+                  .getElementById("note-toc-mobile")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" })
               })
             }}
             className="flex min-h-11 max-w-[16rem] items-center gap-2 rounded-full border border-border bg-card px-4 py-2.5 text-xs font-semibold text-muted-foreground shadow-lg backdrop-blur-xl active:scale-95"
@@ -130,14 +136,18 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
 
             <div className="flex flex-wrap gap-x-5 gap-y-2 border-t border-border/60 pt-4 text-sm text-muted-foreground">
               <div className="flex min-w-[120px] items-center gap-2">
-                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Type</span>
+                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">
+                  Type
+                </span>
                 <span className="font-medium capitalize text-foreground/80">
                   {NOTE_TYPES.find((t) => t.value === note.noteType)?.label ?? note.noteType}
                 </span>
               </div>
               {note.category && (
                 <div className="flex min-w-[120px] items-center gap-2">
-                  <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Category</span>
+                  <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">
+                    Category
+                  </span>
                   <span className="flex items-center gap-1.5 font-medium text-foreground/80">
                     <Hash size={12} className="text-muted-foreground" />
                     {note.category}
@@ -145,7 +155,9 @@ export function NoteView({ slug, note, html, onEdit, onTogglePin, onDelete }: No
                 </div>
               )}
               <div className="flex min-w-[120px] items-center gap-2">
-                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">Module</span>
+                <span className="w-16 shrink-0 text-xs font-medium text-muted-foreground">
+                  Module
+                </span>
                 <span className="rounded border border-border bg-card px-2 py-0.5 font-mono text-xs font-medium text-foreground/80">
                   {slug}
                 </span>

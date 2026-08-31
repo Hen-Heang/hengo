@@ -335,7 +335,16 @@ export const navSections: NavSection[] = [
         icon: MessagesSquare,
         color: "text-sky-500",
         description: "Workplace and daily-life Q&A practice",
-        keywords: ["phrasebook", "questions", "answers", "workplace", "qa", "speaking", "listening", "korean"],
+        keywords: [
+          "phrasebook",
+          "questions",
+          "answers",
+          "workplace",
+          "qa",
+          "speaking",
+          "listening",
+          "korean",
+        ],
         // Bare /phrasebook only — the "Reading" mode below owns its own
         // active state (same pattern as aiCoachItem/absentQuery).
         match: { pathname: "/phrasebook", absentQuery: ["mode"] },
@@ -650,10 +659,7 @@ export const navSections: NavSection[] = [
 export const primarySections: NavSection[] = navSections.filter((s) => s.id !== "today")
 
 /** Every navigable item in the app, including Settings. */
-export const allNavItems: NavItem[] = [
-  ...navSections.flatMap((s) => s.items),
-  settingsItem,
-]
+export const allNavItems: NavItem[] = [...navSections.flatMap((s) => s.items), settingsItem]
 
 // Only items that actually get their own sidebar/rail/bottom-nav row can
 // "shadow" a parent's prefix match (see the sibling-wins comment below).
@@ -663,7 +669,7 @@ export const allNavItems: NavItem[] = [
 // the parent (e.g. the Goals bottom tab) stay lit while browsing them instead
 // of going dark.
 const navPathnames = new Set(
-  allNavItems.filter((item) => item.showInSidebar !== false).map((item) => linkPath(item.href))
+  allNavItems.filter((item) => item.showInSidebar !== false).map((item) => linkPath(item.href)),
 )
 
 /** Look an item up by its stable id. Throws on typos at module-load time. */
@@ -716,7 +722,9 @@ export const primaryNavItems: NavItem[] = [
  * `secondaryNavItems`); Memory and AI have no chrome presence at all — every
  * item they hold is `showInSidebar: false`.
  */
-export const workspaceNavSections: NavSection[] = ["plan", "grow"].map((id) => section(id as NavSectionId))
+export const workspaceNavSections: NavSection[] = ["plan", "grow"].map((id) =>
+  section(id as NavSectionId),
+)
 
 /**
  * Secondary desktop/tablet destinations, rendered below the primary groups:
@@ -746,11 +754,7 @@ export function linkPath(href: string): string {
 
 /** Read-only view of the current query — accepts `URLSearchParams` or a plain object. */
 export type NavSearchParams =
-  | URLSearchParams
-  | Record<string, string | undefined>
-  | string
-  | null
-  | undefined
+  URLSearchParams | Record<string, string | undefined> | string | null | undefined
 
 function readParam(search: NavSearchParams, key: string): string | null {
   if (search == null) return null
@@ -833,14 +837,20 @@ export function isLinkActive(pathname: string, href: string): boolean {
 }
 
 /** Which section the current route belongs to, or undefined for /settings etc. */
-export function getSectionForPath(pathname: string, searchParams?: NavSearchParams): NavSection | undefined {
+export function getSectionForPath(
+  pathname: string,
+  searchParams?: NavSearchParams,
+): NavSection | undefined {
   return navSections.find((section) =>
-    section.items.some((item) => isNavigationItemActive({ pathname, searchParams, item }))
+    section.items.some((item) => isNavigationItemActive({ pathname, searchParams, item })),
   )
 }
 
 /** The single nav item matching the current route — drives header titles. */
-export function getActiveNavItem(pathname: string, searchParams?: NavSearchParams): NavItem | undefined {
+export function getActiveNavItem(
+  pathname: string,
+  searchParams?: NavSearchParams,
+): NavItem | undefined {
   return allNavItems.find((item) => isNavigationItemActive({ pathname, searchParams, item }))
 }
 
@@ -857,7 +867,12 @@ export function getActiveNavItem(pathname: string, searchParams?: NavSearchParam
  */
 export const bottomTabs: NavItem[] = [
   todayItem,
-  { ...navItem("learn-hub"), id: "tab-learn", label: "Learn", match: { pathname: "/learn", sectionId: "learn" } },
+  {
+    ...navItem("learn-hub"),
+    id: "tab-learn",
+    label: "Learn",
+    match: { pathname: "/learn", sectionId: "learn" },
+  },
   { ...navItem("goals-goals"), id: "tab-goals", label: "Goals" },
   // No sectionId match: "grow" also holds Recovery/Journal, which have no
   // chrome row at all now (reachable via Quick Switcher / deep link) and
@@ -877,7 +892,9 @@ export function isMoreRoute(pathname: string, searchParams?: NavSearchParams): b
 
 /** Index of the active bottom tab, or `bottomTabs.length` for More, or -1. */
 export function getActiveBottomTabIndex(pathname: string, searchParams?: NavSearchParams): number {
-  const index = bottomTabs.findIndex((item) => isNavigationItemActive({ pathname, searchParams, item }))
+  const index = bottomTabs.findIndex((item) =>
+    isNavigationItemActive({ pathname, searchParams, item }),
+  )
   if (index !== -1) return index
   return isMoreRoute(pathname, searchParams) ? bottomTabs.length : -1
 }
@@ -912,7 +929,7 @@ export function comingSoonItems(items: NavItem[]): NavItem[] {
  */
 export function visibleSidebarItems(section: NavSection): NavItem[] {
   return shippedItems(section.items).filter(
-    (item) => item.showInSidebar !== false && !secondaryNavItems.includes(item)
+    (item) => item.showInSidebar !== false && !secondaryNavItems.includes(item),
   )
 }
 
@@ -949,5 +966,5 @@ export const moreComingSoon: NavItem[] = navSections.flatMap((s) => comingSoonIt
 
 /** Plain route prefixes per section id, for `lib/last-visited.ts`. */
 export const sectionRoutePrefixes: Record<string, string[]> = Object.fromEntries(
-  primarySections.map((s) => [s.id, s.items.map((i) => linkPath(i.href))])
+  primarySections.map((s) => [s.id, s.items.map((i) => linkPath(i.href))]),
 )

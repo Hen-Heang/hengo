@@ -37,7 +37,12 @@ export function registerWeeklyProgressTool(server: McpServer, ctx: McpContext): 
         totalMinutes: z.number(),
         days: z.array(dayPointSchema),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "get_weekly_progress", async () => {
       // A same-time-of-day lower bound is enough: rows are bucketed below by
@@ -60,12 +65,21 @@ export function registerWeeklyProgressTool(server: McpServer, ctx: McpContext): 
       const days = Array.from({ length: DAYS }, (_, i) => {
         const dayDate = seoulDaysAgo(DAYS - 1 - i)
         const key = todayInAppTimezone(dayDate, APP_TIMEZONE)
-        return { date: key, day: format(dayDate, "EEE"), minutes: Math.round((byDay.get(key) ?? 0) / 60000) }
+        return {
+          date: key,
+          day: format(dayDate, "EEE"),
+          minutes: Math.round((byDay.get(key) ?? 0) / 60000),
+        }
       })
       const totalMinutes = days.reduce((sum, d) => sum + d.minutes, 0)
 
       return {
-        content: [{ type: "text" as const, text: `${totalMinutes} minutes practiced over the last ${DAYS} days.` }],
+        content: [
+          {
+            type: "text" as const,
+            text: `${totalMinutes} minutes practiced over the last ${DAYS} days.`,
+          },
+        ],
         structuredContent: { totalMinutes, days },
       }
     }),

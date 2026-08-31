@@ -19,7 +19,10 @@ import type { ScorecardRecord } from "@/lib/interview-history"
 // recharts-backed; deferred so the summary paints before the chart chunk loads.
 const ScoreTrend = dynamic(
   () => import("@/components/interview/ScoreTrend").then((m) => m.ScoreTrend),
-  { ssr: false, loading: () => <div className="h-48 w-full animate-pulse rounded-3xl bg-muted/20" /> }
+  {
+    ssr: false,
+    loading: () => <div className="h-48 w-full animate-pulse rounded-3xl bg-muted/20" />,
+  },
 )
 
 const containerVariants = {
@@ -204,11 +207,7 @@ export function EvaluationSummary({
             </CardHeader>
             <CardContent className="space-y-2.5 pt-5">
               {advice.map((tip, i) => (
-                <BlurFade
-                  key={i}
-                  delay={i * 0.06}
-                  inView
-                >
+                <BlurFade key={i} delay={i * 0.06} inView>
                   <div className="flex items-start gap-3 rounded-2xl border border-border bg-accent/5 p-4">
                     <span className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md bg-amber-500/10 text-xs font-bold text-amber-600">
                       {i + 1}

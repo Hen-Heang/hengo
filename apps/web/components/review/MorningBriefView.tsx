@@ -26,7 +26,12 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <ReviewSummaryCard summary={summary} focusSuggestion={focusSuggestion} loading={loading} error={error} />
+        <ReviewSummaryCard
+          summary={summary}
+          focusSuggestion={focusSuggestion}
+          loading={loading}
+          error={error}
+        />
       </motion.div>
 
       <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-4">
@@ -35,12 +40,17 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
           Tasks today
         </div>
         <div className="flex flex-wrap gap-1.5 text-xs">
-          {brief.taskCounts.overdueCount > 0 && <Badge variant="destructive">{brief.taskCounts.overdueCount} overdue</Badge>}
+          {brief.taskCounts.overdueCount > 0 && (
+            <Badge variant="destructive">{brief.taskCounts.overdueCount} overdue</Badge>
+          )}
           <Badge variant="outline">{brief.taskCounts.scheduledCount} scheduled</Badge>
           <Badge variant="outline">{brief.taskCounts.anytimeCount} anytime</Badge>
           <Badge variant="outline">{brief.taskCounts.completedCount} done</Badge>
         </div>
-        <Link href="/goals/tasks" className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
+        <Link
+          href="/goals/tasks"
+          className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline"
+        >
           Open today&apos;s tasks →
         </Link>
       </motion.div>
@@ -63,7 +73,10 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
         ) : brief.habitsTotalCount > 0 ? (
           <p className="text-xs text-muted-foreground">All caught up.</p>
         ) : null}
-        <Link href="/growth/habits" className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
+        <Link
+          href="/growth/habits"
+          className="mt-2 inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline"
+        >
           Open Habits →
         </Link>
       </motion.div>
@@ -79,7 +92,10 @@ export function MorningBriefView({ brief }: { brief: MorningBrief }) {
               <li key={r.id}>{r.title}</li>
             ))}
           </ul>
-          <Link href="/settings/reminders" className="mt-3 inline-block text-xs font-medium text-primary hover:underline">
+          <Link
+            href="/settings/reminders"
+            className="mt-3 inline-block text-xs font-medium text-primary hover:underline"
+          >
             Manage reminders →
           </Link>
         </motion.div>

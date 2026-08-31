@@ -26,11 +26,16 @@ export function BestQuizStreakCard() {
       <div className="min-w-0 flex-1">
         <p className="text-xl font-bold tabular-nums text-foreground">
           {best ?? "—"}
-          {best ? <span className="ml-1.5 text-sm font-medium text-muted-foreground">in a row</span> : null}
+          {best ? (
+            <span className="ml-1.5 text-sm font-medium text-muted-foreground">in a row</span>
+          ) : null}
         </p>
         <p className="text-xs font-medium text-muted-foreground/70">Best quiz streak</p>
       </div>
-      <ArrowRight size={16} className="text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-orange-500" />
+      <ArrowRight
+        size={16}
+        className="text-muted-foreground/60 transition-transform group-hover:translate-x-0.5 group-hover:text-orange-500"
+      />
     </Link>
   )
 }

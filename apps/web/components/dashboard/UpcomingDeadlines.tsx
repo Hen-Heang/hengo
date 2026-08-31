@@ -23,7 +23,7 @@ export function UpcomingDeadlines({ limit = 5 }: { limit?: number }) {
         .filter(({ info }) => info.status !== "completed")
         .sort((a, b) => a.info.daysRemaining - b.info.daysRemaining)
         .slice(0, limit),
-    [sortedGoals, limit]
+    [sortedGoals, limit],
   )
 
   return (
@@ -51,7 +51,9 @@ export function UpcomingDeadlines({ limit = 5 }: { limit?: number }) {
               href={`/goals/${goal.id}`}
               className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-background/40 px-4 py-3 transition-colors hover:bg-accent/40"
             >
-              <span className="min-w-0 truncate text-sm font-bold text-foreground">{goal.title}</span>
+              <span className="min-w-0 truncate text-sm font-bold text-foreground">
+                {goal.title}
+              </span>
               <DeadlineStatusBadge deadlineInfo={info} size="sm" />
             </Link>
           ))}

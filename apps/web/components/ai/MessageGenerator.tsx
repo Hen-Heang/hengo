@@ -44,22 +44,24 @@ const EXAMPLE_INTENTS: Record<string, string> = {
   "Deployment Updates": "I just deployed the latest build to production. Everything looks stable.",
   "Bug Reports": "I found a critical bug in the payment flow that blocks users from checking out.",
   "Requesting Time Off": "I need to take Friday afternoon off for a personal appointment.",
-  "Status Update to Manager": "I want to give my manager a quick update on what I worked on this week.",
+  "Status Update to Manager":
+    "I want to give my manager a quick update on what I worked on this week.",
   "Declining a Request Politely": "I need to decline a meeting request because I have a deadline.",
-  "Apologizing for a Mistake": "I accidentally pushed broken code to main and want to apologize to the team.",
+  "Apologizing for a Mistake":
+    "I accidentally pushed broken code to main and want to apologize to the team.",
   "Scheduling a Meeting": "I want to schedule a 30-minute code review session with my team.",
 }
 
 export function MessageGenerator({ initialCategory }: { initialCategory?: string } = {}) {
   // Treat empty string the same as undefined — both mean "no category from URL"
   const safeInitialCategory = initialCategory || undefined
-  const { options: categories, selected: category, setSelected: setCategory } = useChoices(
-    messageGenApi.getCategories,
-    FALLBACK_CATEGORIES,
-    safeInitialCategory
-  )
+  const {
+    options: categories,
+    selected: category,
+    setSelected: setCategory,
+  } = useChoices(messageGenApi.getCategories, FALLBACK_CATEGORIES, safeInitialCategory)
   const [intent, setIntent] = useState(() =>
-    safeInitialCategory ? (EXAMPLE_INTENTS[safeInitialCategory] ?? "") : ""
+    safeInitialCategory ? (EXAMPLE_INTENTS[safeInitialCategory] ?? "") : "",
   )
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -90,10 +92,12 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
     messageGenApi
       .generate(example, category)
       .then((data) => setResult(data))
-      .catch((err) => setError(getApiErrorMessage(err, "Could not generate messages. Please try again.")))
+      .catch((err) =>
+        setError(getApiErrorMessage(err, "Could not generate messages. Please try again.")),
+      )
       .finally(() => setLoading(false))
-  // Only run once after mount — category stabilises quickly via cache
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // Only run once after mount — category stabilises quickly via cache
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   async function handleGenerate() {
@@ -135,9 +139,7 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
         variants={itemVariants}
         className="rounded-lg border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
       >
-        <label className="text-sm font-semibold text-foreground">
-          Category
-        </label>
+        <label className="text-sm font-semibold text-foreground">Category</label>
         <ChipSelect options={categories} value={category} onChange={setCategory} className="mt-3" />
 
         <label className="mt-5 block text-sm font-semibold text-foreground">
@@ -180,7 +182,10 @@ export function MessageGenerator({ initialCategory }: { initialCategory?: string
       {loading && (
         <motion.div variants={itemVariants} className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="rounded-lg border border-border bg-card p-4 dark:bg-slate-900/40">
+            <div
+              key={i}
+              className="rounded-lg border border-border bg-card p-4 dark:bg-slate-900/40"
+            >
               <Skeleton className="h-4 w-24" />
               <Skeleton className="mt-3 h-6 w-2/3" />
               <Skeleton className="mt-2 h-4 w-1/2" />

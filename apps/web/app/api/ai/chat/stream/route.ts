@@ -1,5 +1,13 @@
 import { streamText } from "ai"
-import { AI_PROVIDER_OPTIONS, DEFAULT_MODEL, aiModel, requireUser, sseChunk, sseResponse, learnerProfileBlock } from "@/lib/server/ai"
+import {
+  AI_PROVIDER_OPTIONS,
+  DEFAULT_MODEL,
+  aiModel,
+  requireUser,
+  sseChunk,
+  sseResponse,
+  learnerProfileBlock,
+} from "@/lib/server/ai"
 import { checkRateLimit, recordUsage } from "@/lib/server/ai-limits"
 import { shouldAnalyzeKoreanTurn } from "@/lib/learning/korean-text"
 import { runTurnAnalysis } from "@/lib/server/turn-analysis"
@@ -30,7 +38,10 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "conversationId and message are required" }, { status: 400 })
   }
   if (message.length > MAX_MESSAGE_LENGTH) {
-    return Response.json({ error: `message must be ${MAX_MESSAGE_LENGTH} characters or fewer` }, { status: 400 })
+    return Response.json(
+      { error: `message must be ${MAX_MESSAGE_LENGTH} characters or fewer` },
+      { status: 400 },
+    )
   }
   const displayMessage = body.displayMessage?.trim() || message
 
@@ -52,7 +63,12 @@ export async function POST(req: Request): Promise<Response> {
     return Response.json({ error: "Conversation not found" }, { status: 404 })
   }
 
-  const [{ data: historyRows }, { data: profile }, { data: userMessage, error: insertError }, phrasebookBlock] = await Promise.all([
+  const [
+    { data: historyRows },
+    { data: profile },
+    { data: userMessage, error: insertError },
+    phrasebookBlock,
+  ] = await Promise.all([
     db
       .from("kori_messages")
       .select("role, content")
@@ -61,11 +77,18 @@ export async function POST(req: Request): Promise<Response> {
       .limit(29),
     db
       .from("kori_profiles")
-      .select("display_name, korean_level, preferred_model, occupation, learning_goal, native_language, country")
+      .select(
+        "display_name, korean_level, preferred_model, occupation, learning_goal, native_language, country",
+      )
       .maybeSingle(),
     db
       .from("kori_messages")
-      .insert({ conversation_id: conversationId, user_id: user.id, role: "user", content: displayMessage })
+      .insert({
+        conversation_id: conversationId,
+        user_id: user.id,
+        role: "user",
+        content: displayMessage,
+      })
       .select("id")
       .single(),
     buildPhrasebookContextBlock(db, user.id),
@@ -73,10 +96,10 @@ export async function POST(req: Request): Promise<Response> {
   if (insertError) return Response.json({ error: insertError.message }, { status: 500 })
 
   const history = [
-    ...((historyRows ?? []).reverse().map((row) => ({
+    ...(historyRows ?? []).reverse().map((row) => ({
       role: row.role as "user" | "assistant",
       content: row.content,
-    }))),
+    })),
     { role: "user" as const, content: message },
   ]
   const preparedAt = performance.now()
@@ -223,4 +246,3 @@ export async function POST(req: Request): Promise<Response> {
 
   return sseResponse(stream)
 }
-

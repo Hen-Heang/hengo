@@ -67,7 +67,8 @@ async function profileSettings(): Promise<{ timezone: string; romanizationVisibl
     supabase.from("kori_profiles").select("timezone, korean_level").maybeSingle(),
     supabase.from("kori_korean_coach_preferences").select("romanization_mode").maybeSingle(),
   ])
-  const beginner = !data?.korean_level || String(data.korean_level).toUpperCase().includes("BEGINNER")
+  const beginner =
+    !data?.korean_level || String(data.korean_level).toUpperCase().includes("BEGINNER")
   return {
     timezone: data?.timezone || DEFAULT_TIME_ZONE,
     romanizationVisible: coachPrefs?.romanization_mode === "never" ? false : beginner,
@@ -175,10 +176,17 @@ export const dailyStudyPlanApi = {
     const rows = data ?? []
     return {
       studiedDays: rows.filter((row) => (row.total_focus_seconds ?? 0) > 0).length,
-      focusedMinutes: Math.floor(rows.reduce((sum, row) => sum + (row.total_focus_seconds ?? 0), 0) / 60),
+      focusedMinutes: Math.floor(
+        rows.reduce((sum, row) => sum + (row.total_focus_seconds ?? 0), 0) / 60,
+      ),
       completedActivities: rows.reduce((sum, row) => {
         const activities = z.array(dailyStudyActivitySchema).safeParse(row.activities)
-        return sum + (activities.success ? activities.data.filter((item) => item.status === "completed").length : 0)
+        return (
+          sum +
+          (activities.success
+            ? activities.data.filter((item) => item.status === "completed").length
+            : 0)
+        )
       }, 0),
     }
   },

@@ -12,9 +12,16 @@ export function PhrasebookMasterySummary({ counts }: { counts: PhrasebookCounts 
   return (
     <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5">
       {TILES.map((tile) => (
-        <div key={tile.key} className="rounded-2xl border border-border bg-card px-3 py-3 text-center shadow-sm dark:bg-slate-900/40">
-          <p className={`font-mono text-xl font-bold leading-none ${tile.className}`}>{counts[tile.key]}</p>
-          <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{tile.label}</p>
+        <div
+          key={tile.key}
+          className="rounded-2xl border border-border bg-card px-3 py-3 text-center shadow-sm dark:bg-slate-900/40"
+        >
+          <p className={`font-mono text-xl font-bold leading-none ${tile.className}`}>
+            {counts[tile.key]}
+          </p>
+          <p className="mt-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+            {tile.label}
+          </p>
         </div>
       ))}
     </div>

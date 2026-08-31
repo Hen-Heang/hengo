@@ -1,10 +1,6 @@
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
-import type {
-  EvaluationScore,
-  InterviewAnalytics,
-  CriterionScores,
-} from "@/lib/interview"
+import type { EvaluationScore, InterviewAnalytics, CriterionScores } from "@/lib/interview"
 import type { EnrichedDrillQuestion, SpeakingScores } from "@/lib/interview-drills"
 import type { InterviewMode } from "@/lib/interview-modes"
 import {
@@ -267,7 +263,10 @@ export const interviewApi = {
     return { topicId: data.topic_id, sections: data.sections, updatedAt: data.updated_at }
   },
 
-  saveScript: async (topicId: string, sections: Record<string, string>): Promise<InterviewScript> => {
+  saveScript: async (
+    topicId: string,
+    sections: Record<string, string>,
+  ): Promise<InterviewScript> => {
     const userId = requireUserId()
     const { data, error } = await supabase
       .from("kori_interview_scripts")
@@ -370,7 +369,7 @@ export const interviewApi = {
   /** A candidate's own extra question, beyond the seeded bank. */
   addCustomQuestion: async (
     topicId: string,
-    data: { questionKo: string; questionEn?: string; category?: QuestionCategory }
+    data: { questionKo: string; questionEn?: string; category?: QuestionCategory },
   ): Promise<QuestionBankItem> => {
     const userId = requireUserId()
     const { data: row, error } = await supabase
@@ -459,20 +458,22 @@ export const interviewApi = {
         existingRow
           ? { timesPracticed: existingRow.times_practiced, avgScore: existingRow.avg_score }
           : null,
-        averageScore(input.scores)
+        averageScore(input.scores),
       )
-      const { error: progressError } = await supabase.from("kori_interview_question_progress").upsert(
-        {
-          user_id: userId,
-          question_id: input.questionId,
-          times_practiced: next.timesPracticed,
-          avg_score: next.avgScore,
-          last_score: next.lastScore,
-          last_practiced_at: next.lastPracticedAt,
-          status: next.status,
-        },
-        { onConflict: "user_id,question_id" }
-      )
+      const { error: progressError } = await supabase
+        .from("kori_interview_question_progress")
+        .upsert(
+          {
+            user_id: userId,
+            question_id: input.questionId,
+            times_practiced: next.timesPracticed,
+            avg_score: next.avgScore,
+            last_score: next.lastScore,
+            last_practiced_at: next.lastPracticedAt,
+            status: next.status,
+          },
+          { onConflict: "user_id,question_id" },
+        )
       if (progressError) throw progressError
     }
 
@@ -508,7 +509,7 @@ export const interviewApi = {
       sourceType?: ScriptVersion["sourceType"]
       sections: Record<string, string>
       makeActive?: boolean
-    }
+    },
   ): Promise<ScriptVersion> => {
     const userId = requireUserId()
     if (data.makeActive) {
@@ -544,7 +545,7 @@ export const interviewApi = {
     const existing = await interviewApi.listScriptVersions(topicId)
     const toDeactivate = versionsToDeactivate(
       existing.map((v) => ({ id: v.id, isActive: v.isActive })),
-      versionId
+      versionId,
     )
     if (toDeactivate.length > 0) {
       const { error: deactivateError } = await supabase

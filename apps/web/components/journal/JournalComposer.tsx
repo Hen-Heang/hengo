@@ -9,7 +9,13 @@ import { Button } from "@/components/ui/button"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { TagEditor } from "@/components/ui/tag-editor"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage, goalsApi } from "@/lib/api"
@@ -124,7 +130,7 @@ function RatingPicker({
             "flex size-11 items-center justify-center rounded-lg border text-sm font-semibold transition-colors",
             value === n
               ? "border-primary/40 bg-primary/10 text-primary"
-              : "border-border text-muted-foreground hover:text-foreground"
+              : "border-border text-muted-foreground hover:text-foreground",
           )}
         >
           {n}
@@ -150,7 +156,8 @@ export function JournalComposer({
   const [saving, setSaving] = useState(false)
   const [submitAttempted, setSubmitAttempted] = useState(false)
 
-  const set = (patch: Partial<JournalComposerValues>) => setValues((prev) => ({ ...prev, ...patch }))
+  const set = (patch: Partial<JournalComposerValues>) =>
+    setValues((prev) => ({ ...prev, ...patch }))
 
   const userId = getUserId()
   const { data: goals = [] } = useQuery({
@@ -183,7 +190,10 @@ export function JournalComposer({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4 rounded-lg border border-border bg-card p-4 sm:p-5">
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 rounded-lg border border-border bg-card p-4 sm:p-5"
+    >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <DateTimePicker
           value={values.occurredAt}
@@ -203,18 +213,27 @@ export function JournalComposer({
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
         {DAILY_TEMPLATE_PROMPTS.filter((p) => p.key !== "tomorrow").map((prompt) => (
           <div key={prompt.key} className="space-y-1.5">
-            <label htmlFor={`journal-${prompt.key}`} className="text-sm font-medium text-muted-foreground">{prompt.label}</label>
+            <label
+              htmlFor={`journal-${prompt.key}`}
+              className="text-sm font-medium text-muted-foreground"
+            >
+              {prompt.label}
+            </label>
             <Textarea
               id={`journal-${prompt.key}`}
               value={values[prompt.key as "achievement" | "lesson" | "blocker"]}
-              onChange={(e) => set({ [prompt.key]: e.target.value } as Partial<JournalComposerValues>)}
+              onChange={(e) =>
+                set({ [prompt.key]: e.target.value } as Partial<JournalComposerValues>)
+              }
               placeholder={prompt.placeholder}
               className="min-h-20"
             />
           </div>
         ))}
         <div className="space-y-1.5 sm:col-span-2">
-          <label htmlFor="journal-tomorrow" className="text-sm font-medium text-muted-foreground">What should I do tomorrow?</label>
+          <label htmlFor="journal-tomorrow" className="text-sm font-medium text-muted-foreground">
+            What should I do tomorrow?
+          </label>
           <Textarea
             id="journal-tomorrow"
             value={values.tomorrow}
@@ -228,11 +247,21 @@ export function JournalComposer({
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div className="space-y-1.5">
           <span className="text-sm font-medium text-muted-foreground">Mood (optional)</span>
-          <RatingPicker name="Mood" value={values.mood} onChange={(mood) => set({ mood })} labels={MOOD_LABELS} />
+          <RatingPicker
+            name="Mood"
+            value={values.mood}
+            onChange={(mood) => set({ mood })}
+            labels={MOOD_LABELS}
+          />
         </div>
         <div className="space-y-1.5">
           <span className="text-sm font-medium text-muted-foreground">Energy (optional)</span>
-          <RatingPicker name="Energy" value={values.energy} onChange={(energy) => set({ energy })} labels={ENERGY_LABELS} />
+          <RatingPicker
+            name="Energy"
+            value={values.energy}
+            onChange={(energy) => set({ energy })}
+            labels={ENERGY_LABELS}
+          />
         </div>
       </div>
 
@@ -242,15 +271,23 @@ export function JournalComposer({
             type="button"
             className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
-            <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+            <ChevronDown
+              size={14}
+              className={cn("transition-transform", moreOpen && "rotate-180")}
+            />
             More (gratitude, notes, tags, goal/habit link)
           </button>
         </CollapsibleTrigger>
         <CollapsibleContent className="mt-3 space-y-3">
           <div className="space-y-1.5">
-              <label htmlFor="journal-gratitude" className="text-sm font-medium text-muted-foreground">Gratitude (optional)</label>
-              <Textarea
-                id="journal-gratitude"
+            <label
+              htmlFor="journal-gratitude"
+              className="text-sm font-medium text-muted-foreground"
+            >
+              Gratitude (optional)
+            </label>
+            <Textarea
+              id="journal-gratitude"
               value={values.gratitude}
               onChange={(e) => set({ gratitude: e.target.value })}
               placeholder="Something you're grateful for…"
@@ -258,9 +295,11 @@ export function JournalComposer({
             />
           </div>
           <div className="space-y-1.5">
-              <label htmlFor="journal-notes" className="text-sm font-medium text-muted-foreground">Other notes</label>
-              <Textarea
-                id="journal-notes"
+            <label htmlFor="journal-notes" className="text-sm font-medium text-muted-foreground">
+              Other notes
+            </label>
+            <Textarea
+              id="journal-notes"
               value={values.content}
               onChange={(e) => set({ content: e.target.value })}
               placeholder="Anything else, in markdown…"
@@ -268,7 +307,7 @@ export function JournalComposer({
             />
           </div>
           <div className="space-y-1.5">
-              <span className="text-sm font-medium text-muted-foreground">Tags</span>
+            <span className="text-sm font-medium text-muted-foreground">Tags</span>
             <TagEditor tags={values.tags} onChange={(tags) => set({ tags })} />
           </div>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -309,7 +348,9 @@ export function JournalComposer({
       </Collapsible>
 
       {submitAttempted && errors.overall && (
-        <p role="alert" className="text-sm text-destructive">{errors.overall}</p>
+        <p role="alert" className="text-sm text-destructive">
+          {errors.overall}
+        </p>
       )}
 
       <div className="flex items-center justify-end gap-2">

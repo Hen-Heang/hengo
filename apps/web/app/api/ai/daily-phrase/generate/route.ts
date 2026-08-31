@@ -26,7 +26,7 @@ export const POST = jsonAiRoute({
       "Prefer practical expressions used in standups, code reviews, deployments, reporting, and team chat.\n" +
       `Do NOT repeat any of these recently used phrases: ${avoid || "(none)"}\n\n` +
       "Rules:\n" +
-      "- \"phrase\" must be natural Korean a real Korean developer would actually say or write.\n" +
+      '- "phrase" must be natural Korean a real Korean developer would actually say or write.\n' +
       `- \"formality\" must be exactly one of ${FORMALITY_LABELS}.\n` +
       "- Provide 2-3 similar expressions. If none fit, return an empty array.\n" +
       "- All explanations must be in English.\n\n" +

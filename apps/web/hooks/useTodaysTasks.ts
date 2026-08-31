@@ -13,8 +13,7 @@ import type { Task } from "@/lib/tasks"
 // with KoriAI's REST api (tasksApi.range / goalsApi). Sharing + self-notification
 // side effects are dropped (deferred seams — see INTEGRATION.md).
 
-const selectionKey = (userId: number | string) =>
-  `dg_todays_tasks_selected_goals_v1:${userId}`
+const selectionKey = (userId: number | string) => `dg_todays_tasks_selected_goals_v1:${userId}`
 
 const startOfToday = (): Date => {
   const d = new Date()
@@ -46,8 +45,7 @@ const isDueTodayOrCarriedOver = (t: Task, today: Date): boolean => {
   return endOk || !t.completed
 }
 
-export const todaysTasksQueryKey = (userId?: string | null) =>
-  ["tasks", "today", userId] as const
+export const todaysTasksQueryKey = (userId?: string | null) => ["tasks", "today", userId] as const
 
 export function useTodaysTasks() {
   const userId = getUserId()
@@ -78,16 +76,17 @@ export function useTodaysTasks() {
 
   // All of the user's tasks up to end-of-today; filtering to what's visible is
   // derived client-side, so changing the goal selection never refetches.
-  const { data: rawTasks = [], isPending, isError } = useQuery({
+  const {
+    data: rawTasks = [],
+    isPending,
+    isError,
+  } = useQuery({
     queryKey: tasksKey,
     queryFn: () => tasksApi.range({ to: endOfTodayIso() }),
     enabled: userId != null,
   })
 
-  const availableGoals = useMemo(
-    () => goals.map((g) => ({ id: g.id, title: g.title })),
-    [goals]
-  )
+  const availableGoals = useMemo(() => goals.map((g) => ({ id: g.id, title: g.title })), [goals])
 
   const persistSelection = useCallback(
     (ids: string[]) => {
@@ -98,7 +97,7 @@ export function useTodaysTasks() {
         /* storage unavailable */
       }
     },
-    [userId]
+    [userId],
   )
 
   // Once goals are known, restore the saved selection (default: all goals).
@@ -129,7 +128,7 @@ export function useTodaysTasks() {
   const patchTasks = useCallback(
     (updater: (list: Task[]) => Task[]) =>
       queryClient.setQueryData<Task[]>(tasksKey, (prev) => updater(prev ?? [])),
-    [queryClient, tasksKey]
+    [queryClient, tasksKey],
   )
 
   const toggleGoal = useCallback(
@@ -140,7 +139,7 @@ export function useTodaysTasks() {
       setSelectedGoalIds(next)
       persistSelection(next)
     },
-    [selectedGoalIds, persistSelection]
+    [selectedGoalIds, persistSelection],
   )
 
   const toggleAll = useCallback(() => {
@@ -168,30 +167,32 @@ export function useTodaysTasks() {
         }
         return created
       } catch (e) {
-        toast.error("Could not add task", { description: getApiErrorMessage(e, "Please try again.") })
+        toast.error("Could not add task", {
+          description: getApiErrorMessage(e, "Please try again."),
+        })
         throw e
       }
     },
-    [patchTasks, selectedGoalIds, persistSelection]
+    [patchTasks, selectedGoalIds, persistSelection],
   )
 
   const handleToggleTaskCompletion = useCallback(
     async (taskId: string, currentStatus: boolean) => {
       patchTasks((prev) =>
-        prev.map((t) => (t.id === taskId ? { ...t, completed: !currentStatus } : t))
+        prev.map((t) => (t.id === taskId ? { ...t, completed: !currentStatus } : t)),
       )
       try {
         await tasksApi.update(taskId, { completed: !currentStatus })
       } catch (e) {
         patchTasks((prev) =>
-          prev.map((t) => (t.id === taskId ? { ...t, completed: currentStatus } : t))
+          prev.map((t) => (t.id === taskId ? { ...t, completed: currentStatus } : t)),
         )
         toast.error("Could not update task", {
           description: getApiErrorMessage(e, "Please try again."),
         })
       }
     },
-    [patchTasks]
+    [patchTasks],
   )
 
   const handleMarkAllCompleted = useCallback(async () => {
@@ -201,9 +202,7 @@ export function useTodaysTasks() {
     const ids = incomplete.map((t) => t.id)
     try {
       await Promise.all(ids.map((id) => tasksApi.update(id, { completed: true })))
-      patchTasks((prev) =>
-        prev.map((t) => (ids.includes(t.id) ? { ...t, completed: true } : t))
-      )
+      patchTasks((prev) => prev.map((t) => (ids.includes(t.id) ? { ...t, completed: true } : t)))
       setUndoneIds(ids)
       const n = ids.length
       toast.success("Tasks marked complete", {
@@ -225,9 +224,7 @@ export function useTodaysTasks() {
     const ids = undoneIds
     setUndoneIds([])
     if (undoTimer.current) clearTimeout(undoTimer.current)
-    patchTasks((prev) =>
-      prev.map((t) => (ids.includes(t.id) ? { ...t, completed: false } : t))
-    )
+    patchTasks((prev) => prev.map((t) => (ids.includes(t.id) ? { ...t, completed: false } : t)))
     try {
       await Promise.all(ids.map((id) => tasksApi.update(id, { completed: false })))
       toast.success("Undone", { description: "Tasks reverted to their previous state." })
@@ -240,9 +237,7 @@ export function useTodaysTasks() {
     async (taskId: string, title: string) => {
       const trimmed = title.trim()
       if (!trimmed) return
-      const before = queryClient
-        .getQueryData<Task[]>(tasksKey)
-        ?.find((t) => t.id === taskId)
+      const before = queryClient.getQueryData<Task[]>(tasksKey)?.find((t) => t.id === taskId)
       patchTasks((list) => list.map((t) => (t.id === taskId ? { ...t, title: trimmed } : t)))
       try {
         await tasksApi.update(taskId, { title: trimmed })
@@ -253,7 +248,7 @@ export function useTodaysTasks() {
         })
       }
     },
-    [queryClient, tasksKey, patchTasks]
+    [queryClient, tasksKey, patchTasks],
   )
 
   const deleteTask = useCallback(
@@ -269,7 +264,7 @@ export function useTodaysTasks() {
         })
       }
     },
-    [queryClient, tasksKey, patchTasks]
+    [queryClient, tasksKey, patchTasks],
   )
 
   const completedCount = useMemo(() => tasks.filter((t) => t.completed).length, [tasks])

@@ -12,12 +12,9 @@ import {
 } from "./daily-study-plan"
 
 describe("daily Korean study plan", () => {
-  it.each(["busy", "normal", "office"] as const)(
-    "generates the exact %s mode duration",
-    (mode) => {
-      expect(getModeDuration(mode)).toBe(MODE_TOTAL_MINUTES[mode])
-    },
-  )
+  it.each(["busy", "normal", "office"] as const)("generates the exact %s mode duration", (mode) => {
+    expect(getModeDuration(mode)).toBe(MODE_TOTAL_MINUTES[mode])
+  })
 
   it("uses the required Office Study Day schedule", () => {
     const schedule = generateModeSchedule("office")
@@ -46,7 +43,8 @@ describe("daily Korean study plan", () => {
   it("calculates completion and focused time without treating skips as completion", () => {
     const activities = generateModeSchedule("busy").map((activity, index) => ({
       ...activity,
-      status: index === 0 ? ("completed" as const) : index === 1 ? ("skipped" as const) : activity.status,
+      status:
+        index === 0 ? ("completed" as const) : index === 1 ? ("skipped" as const) : activity.status,
       completedSeconds: index === 0 ? 605 : 0,
     }))
     expect(calculateDailyProgress(activities)).toMatchObject({

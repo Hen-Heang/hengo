@@ -1,17 +1,13 @@
-"use client";
+"use client"
 
-import { AuiIf, useAuiState, ThreadPrimitive } from "@assistant-ui/react";
-import type { FC } from "react";
+import { AuiIf, useAuiState, ThreadPrimitive } from "@assistant-ui/react"
+import type { FC } from "react"
 
 export const ThreadFollowupSuggestions: FC = () => {
-  const suggestions = useAuiState((s) => s.thread.suggestions);
+  const suggestions = useAuiState((s) => s.thread.suggestions)
   return (
     <AuiIf
-      condition={(s) =>
-        !s.thread.isEmpty &&
-        !s.thread.isRunning &&
-        s.thread.suggestions.length > 0
-      }
+      condition={(s) => !s.thread.isEmpty && !s.thread.isRunning && s.thread.suggestions.length > 0}
     >
       <div className="aui-thread-followup-suggestions flex min-h-8 items-center justify-center gap-2">
         {suggestions.map((suggestion, idx) => (
@@ -27,5 +23,5 @@ export const ThreadFollowupSuggestions: FC = () => {
         ))}
       </div>
     </AuiIf>
-  );
-};
+  )
+}

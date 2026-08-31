@@ -48,7 +48,7 @@ export function DrillAnswerBox({
               "h-12 w-full rounded-2xl px-6 text-sm font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50 sm:w-auto sm:px-8",
               recording
                 ? "bg-rose-600 text-white shadow-rose-600/20 hover:bg-rose-700"
-                : "bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-700"
+                : "bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-700",
             )}
           >
             {recording ? (

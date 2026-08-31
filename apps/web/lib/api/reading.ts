@@ -88,9 +88,7 @@ export const readingApi = {
 
   // Per-unit progress (read/quiz state), server-backed so it syncs across devices.
   getProgress: async (): Promise<ReadingProgressRecord[]> => {
-    const { data, error } = await supabase
-      .from("kori_reading_progress")
-      .select("unit_id, entry")
+    const { data, error } = await supabase.from("kori_reading_progress").select("unit_id, entry")
     if (error) throw error
     return (data ?? []).map((r) => {
       const entry = r.entry as ReadingProgressEntry

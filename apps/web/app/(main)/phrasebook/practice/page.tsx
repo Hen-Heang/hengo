@@ -34,7 +34,8 @@ function PhrasebookPracticeInner() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const modeParam = searchParams.get("mode")
-  const mode: Mode = modeParam === "listen" || modeParam === "speak" || modeParam === "review" ? modeParam : "learn"
+  const mode: Mode =
+    modeParam === "listen" || modeParam === "speak" || modeParam === "review" ? modeParam : "learn"
   const collectionId = searchParams.get("collectionId") ?? undefined
   const romanizationPreference = useRomanizationPreference()
 
@@ -55,7 +56,9 @@ function PhrasebookPracticeInner() {
       try {
         let queue: PhraseCardWithProgress[]
         if (mode === "learn") {
-          queue = collectionId ? await phrasebookApi.getCardsForCollection(collectionId) : await phrasebookApi.getAllCards()
+          queue = collectionId
+            ? await phrasebookApi.getCardsForCollection(collectionId)
+            : await phrasebookApi.getAllCards()
         } else if (mode === "review") {
           const pool = await phrasebookApi.getPracticeQueue({ collectionId, limit: 30 })
           const due = pool.filter((c) => c.progress && isCardDue(c.progress.nextReviewAt))
@@ -107,11 +110,21 @@ function PhrasebookPracticeInner() {
 
   if (done) {
     return (
-      <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-5 pb-12 text-center">
-        <motion.div variants={itemVariants} className="flex flex-col items-center gap-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-10">
+      <motion.div
+        initial="hidden"
+        animate="visible"
+        variants={containerVariants}
+        className="space-y-5 pb-12 text-center"
+      >
+        <motion.div
+          variants={itemVariants}
+          className="flex flex-col items-center gap-3 rounded-3xl border border-emerald-500/20 bg-emerald-500/5 p-10"
+        >
           <PartyPopper size={36} className="text-emerald-600" />
           <h2 className="text-lg font-bold text-foreground">Session complete</h2>
-          <p className="text-sm text-muted-foreground">You practiced {cards.length} {cards.length === 1 ? "card" : "cards"}.</p>
+          <p className="text-sm text-muted-foreground">
+            You practiced {cards.length} {cards.length === 1 ? "card" : "cards"}.
+          </p>
           <div className="mt-3 flex gap-2.5">
             <Button variant="outline" onClick={() => router.push(exitHref)}>
               Back
@@ -127,10 +140,14 @@ function PhrasebookPracticeInner() {
     <div className="space-y-5 pb-12">
       <div className="flex items-center justify-between">
         <BackLink href={exitHref} label="Back" />
-        <h1 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">{MODE_TITLE[mode]}</h1>
+        <h1 className="text-sm font-bold uppercase tracking-wide text-muted-foreground">
+          {MODE_TITLE[mode]}
+        </h1>
       </div>
 
-      {mode === "learn" && <LearnModeView cards={cards} romanizationPreference={romanizationPreference} />}
+      {mode === "learn" && (
+        <LearnModeView cards={cards} romanizationPreference={romanizationPreference} />
+      )}
       {mode === "listen" && <ListeningModeView cards={cards} onExhausted={() => setDone(true)} />}
       {mode === "speak" && <SpeakingModeView cards={cards} onExhausted={() => setDone(true)} />}
       {mode === "review" && <ReviewModeView cards={cards} onExhausted={() => setDone(true)} />}

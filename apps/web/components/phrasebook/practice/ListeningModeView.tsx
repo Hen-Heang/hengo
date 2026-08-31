@@ -17,7 +17,10 @@ interface ListeningModeViewProps {
 
 const SPEEDS = [0.75, 1, 1.25] as const
 
-function answerOptions(card: PhraseCardWithProgress, pool: PhraseCardWithProgress[]): PhraseAnswerContent[] {
+function answerOptions(
+  card: PhraseCardWithProgress,
+  pool: PhraseCardWithProgress[],
+): PhraseAnswerContent[] {
   const correct = card.answers.find((a) => a.isRecommended) ?? card.answers[0]
   const distractors = shuffle(pool.filter((c) => c.id !== card.id))
     .slice(0, 3)
@@ -36,7 +39,8 @@ export function ListeningModeView({ cards, onExhausted }: ListeningModeViewProps
 
   const card = cards[index]
   const options = useMemo(() => (card ? answerOptions(card, cards) : []), [card, cards])
-  const correctKorean = card?.answers.find((a) => a.isRecommended)?.korean ?? card?.answers[0]?.korean
+  const correctKorean =
+    card?.answers.find((a) => a.isRecommended)?.korean ?? card?.answers[0]?.korean
 
   const play = useCallback(
     async (rate = 1) => {
@@ -93,7 +97,9 @@ export function ListeningModeView({ cards, onExhausted }: ListeningModeViewProps
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wide text-muted-foreground">
-        <span>{index + 1} / {cards.length}</span>
+        <span>
+          {index + 1} / {cards.length}
+        </span>
         <span>{card.situation}</span>
       </div>
 
@@ -132,7 +138,9 @@ export function ListeningModeView({ cards, onExhausted }: ListeningModeViewProps
             <Eye size={13} /> Reveal Korean text (doesn&apos;t complete this exercise)
           </button>
         ) : (
-          <p className="break-keep text-lg font-bold text-foreground [overflow-wrap:anywhere]">{card.question.korean}</p>
+          <p className="break-keep text-lg font-bold text-foreground [overflow-wrap:anywhere]">
+            {card.question.korean}
+          </p>
         )}
       </div>
 
@@ -163,9 +171,15 @@ export function ListeningModeView({ cards, onExhausted }: ListeningModeViewProps
                       : "border-border/40 bg-accent/5 opacity-50",
               )}
             >
-              <span className="min-w-0 font-semibold text-foreground [overflow-wrap:anywhere]">{option.korean}</span>
-              {answered && isCorrect && <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />}
-              {answered && isSelected && !isCorrect && <XCircle size={18} className="shrink-0 text-red-600" />}
+              <span className="min-w-0 font-semibold text-foreground [overflow-wrap:anywhere]">
+                {option.korean}
+              </span>
+              {answered && isCorrect && (
+                <CheckCircle2 size={18} className="shrink-0 text-emerald-600" />
+              )}
+              {answered && isSelected && !isCorrect && (
+                <XCircle size={18} className="shrink-0 text-red-600" />
+              )}
             </button>
           )
         })}
@@ -173,7 +187,8 @@ export function ListeningModeView({ cards, onExhausted }: ListeningModeViewProps
 
       {selected && (
         <Button className="h-14 w-full" onClick={next}>
-          {index + 1 >= cards.length ? "Finish" : "Next"} <ChevronRight size={18} className="ml-1" />
+          {index + 1 >= cards.length ? "Finish" : "Next"}{" "}
+          <ChevronRight size={18} className="ml-1" />
         </Button>
       )}
     </div>

@@ -108,7 +108,14 @@ describe("matchesMastery", () => {
 describe("filterVocab", () => {
   const words = [
     word({ id: "1", term: "회의", meaning: "meeting", mastery: 90, tags: ["work"] }),
-    word({ id: "2", term: "배포", meaning: "deployment", mastery: 30, pronunciation: "baepo", category: "Tech" }),
+    word({
+      id: "2",
+      term: "배포",
+      meaning: "deployment",
+      mastery: 30,
+      pronunciation: "baepo",
+      category: "Tech",
+    }),
     word({ id: "3", term: "출근", meaning: "going to work", mastery: 60, category: "Daily" }),
   ]
 

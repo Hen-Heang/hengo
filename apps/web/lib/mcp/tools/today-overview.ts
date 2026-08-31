@@ -16,7 +16,7 @@ export function registerTodayOverviewTool(server: McpServer, ctx: McpContext): v
       title: "Get today's overview",
       description:
         "Snapshot of the signed-in user's day: tasks due today (open ones first) and how many active goals " +
-        "they have. Use this as the default starting point for \"what should I do today\" style questions.",
+        'they have. Use this as the default starting point for "what should I do today" style questions.',
       inputSchema: z.object({ limit: z.number().int().min(1).max(50).default(20) }),
       outputSchema: z.object({
         today: z.string(),
@@ -25,7 +25,12 @@ export function registerTodayOverviewTool(server: McpServer, ctx: McpContext): v
         truncated: z.boolean(),
         activeGoalCount: z.number(),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "get_today_overview", async ({ limit }) => {
       const today = todayInAppTimezone()
@@ -42,7 +47,9 @@ export function registerTodayOverviewTool(server: McpServer, ctx: McpContext): v
       if (tasksRes.error) throw new Error("Could not load today's tasks.")
       if (goalsRes.error) throw new Error("Could not load goal counts.")
 
-      const tasks = (tasksRes.data ?? []).map((row) => toTaskSummary(row as Parameters<typeof toTaskSummary>[0], today))
+      const tasks = (tasksRes.data ?? []).map((row) =>
+        toTaskSummary(row as Parameters<typeof toTaskSummary>[0], today),
+      )
       const totalTasksToday = tasksRes.count ?? tasks.length
       const activeGoalCount = goalsRes.count ?? 0
       const truncated = totalTasksToday > tasks.length

@@ -68,7 +68,9 @@ export function ReviewModeView({ cards, onExhausted }: ReviewModeViewProps) {
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wide text-muted-foreground">
-        <span>{index + 1} / {cards.length}</span>
+        <span>
+          {index + 1} / {cards.length}
+        </span>
         <span>{card.situation}</span>
       </div>
 
@@ -96,8 +98,12 @@ export function ReviewModeView({ cards, onExhausted }: ReviewModeViewProps) {
           <div className="rounded-2xl border-2 border-[#58cc02]/40 bg-[#58cc02]/[0.06] p-5 text-center dark:bg-[#58cc02]/[0.08]">
             {recommended && (
               <>
-                <p className="break-keep text-xl font-bold text-foreground [overflow-wrap:anywhere]">{recommended.korean}</p>
-                <p className="mt-1 text-sm font-medium text-muted-foreground">{recommended.english}</p>
+                <p className="break-keep text-xl font-bold text-foreground [overflow-wrap:anywhere]">
+                  {recommended.korean}
+                </p>
+                <p className="mt-1 text-sm font-medium text-muted-foreground">
+                  {recommended.english}
+                </p>
               </>
             )}
             {card.answers.filter((a) => a !== recommended).length > 0 && (

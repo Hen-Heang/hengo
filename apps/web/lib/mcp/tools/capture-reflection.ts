@@ -32,7 +32,12 @@ export function registerCaptureReflectionTool(server: McpServer, ctx: McpContext
         reflection: z.object({ id: z.string(), occurredAt: z.string() }),
         created: z.boolean(),
       }),
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "write", "capture_reflection", async ({ content, mood, energy }) => {
       const { data: existing, error: dedupeError } = await ctx.db
@@ -45,7 +50,9 @@ export function registerCaptureReflectionTool(server: McpServer, ctx: McpContext
       if (dedupeError) throw new Error("Could not save the reflection.")
       if (existing) {
         return {
-          content: [{ type: "text" as const, text: "Already captured moments ago — no duplicate created." }],
+          content: [
+            { type: "text" as const, text: "Already captured moments ago — no duplicate created." },
+          ],
           structuredContent: {
             reflection: { id: existing.id as string, occurredAt: existing.occurred_at as string },
             created: false,

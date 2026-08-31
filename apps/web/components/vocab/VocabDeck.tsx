@@ -21,7 +21,7 @@ type VocabDeckProps = {
   viewMode?: VocabViewMode
   onUpdate?: (
     id: string,
-    data: { term: string; meaning: string; example?: string; pronunciation?: string }
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
   ) => void | Promise<void>
   onDelete?: (id: string) => void | Promise<void>
   /** When provided, the open deck offers an inline form that saves into this category. */
@@ -35,7 +35,13 @@ type VocabDeckProps = {
   onReviewDeck?: (category: string) => void
 }
 
-function DeckAddForm({ category, onAdd }: { category: string; onAdd: NonNullable<VocabDeckProps["onAdd"]> }) {
+function DeckAddForm({
+  category,
+  onAdd,
+}: {
+  category: string
+  onAdd: NonNullable<VocabDeckProps["onAdd"]>
+}) {
   const [open, setOpen] = useState(false)
   const [term, setTerm] = useState("")
   const [meaning, setMeaning] = useState("")
@@ -148,7 +154,17 @@ function masteryColor(mastery: number) {
   return "bg-red-500/10 text-red-500 dark:text-red-400"
 }
 
-export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false, viewMode = "list", onUpdate, onDelete, onAdd, onReviewDeck }: VocabDeckProps) {
+export function VocabDeck({
+  name,
+  items,
+  defaultOpen = false,
+  forceOpen = false,
+  viewMode = "list",
+  onUpdate,
+  onDelete,
+  onAdd,
+  onReviewDeck,
+}: VocabDeckProps) {
   const contentId = useId()
   const [open, setOpen] = useState(defaultOpen)
   const [expandedId, setExpandedId] = useState<string | null>(null)
@@ -161,10 +177,13 @@ export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false,
     ? Math.round(items.reduce((sum, w) => sum + w.mastery, 0) / items.length)
     : 0
   const dueCount = items.filter(
-    (w) => w.nextReview && new Date(w.nextReview).getTime() <= now
+    (w) => w.nextReview && new Date(w.nextReview).getTime() <= now,
   ).length
   // A taste of what's inside, so closed grid cards aren't just a name + number.
-  const preview = items.slice(0, 3).map((w) => w.term).join(" · ")
+  const preview = items
+    .slice(0, 3)
+    .map((w) => w.term)
+    .join(" · ")
 
   return (
     <div
@@ -197,7 +216,10 @@ export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false,
             </p>
           </div>
           {preview && (
-            <p className="line-clamp-1 w-full break-all text-xs font-medium text-muted-foreground" lang="ko">
+            <p
+              className="line-clamp-1 w-full break-all text-xs font-medium text-muted-foreground"
+              lang="ko"
+            >
               {preview}
             </p>
           )}
@@ -243,17 +265,14 @@ export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false,
             className="hidden h-1.5 w-16 shrink-0 overflow-hidden rounded-full bg-accent/20 sm:block sm:w-24"
             aria-hidden="true"
           >
-            <div
-              className="h-full rounded-full bg-teal-500"
-              style={{ width: `${avgMastery}%` }}
-            />
+            <div className="h-full rounded-full bg-teal-500" style={{ width: `${avgMastery}%` }} />
           </div>
           <ChevronDown
             size={18}
             strokeWidth={2.5}
             className={cn(
               "shrink-0 text-muted-foreground/40 transition-transform duration-200",
-              isOpen && "rotate-180"
+              isOpen && "rotate-180",
             )}
           />
         </button>
@@ -311,16 +330,25 @@ export function VocabDeck({ name, items, defaultOpen = false, forceOpen = false,
                     >
                       <div className="min-w-0 flex-1">
                         <div className="flex items-baseline gap-2">
-                          <span className="truncate text-xl font-semibold text-foreground sm:text-2xl">{item.term}</span>
+                          <span className="truncate text-xl font-semibold text-foreground sm:text-2xl">
+                            {item.term}
+                          </span>
                           {item.pronunciation ? (
                             <span className="hidden truncate text-sm italic text-muted-foreground sm:inline">
                               {item.pronunciation}
                             </span>
                           ) : null}
                         </div>
-                        <p className="truncate text-sm text-muted-foreground sm:text-base">{item.meaning}</p>
+                        <p className="truncate text-sm text-muted-foreground sm:text-base">
+                          {item.meaning}
+                        </p>
                       </div>
-                      <span className={cn("shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold", masteryColor(item.mastery))}>
+                      <span
+                        className={cn(
+                          "shrink-0 rounded-full px-2.5 py-1 font-mono text-[11px] font-semibold",
+                          masteryColor(item.mastery),
+                        )}
+                      >
                         {item.mastery}%
                       </span>
                     </button>

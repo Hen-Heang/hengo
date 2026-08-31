@@ -217,7 +217,10 @@ export const vocabApi = {
       .from("kori_vocab_cards")
       .select("term")
     if (existingError) throw existingError
-    const prepared = prepareVocabImport(text, (existingTerms ?? []).map((w) => w.term))
+    const prepared = prepareVocabImport(
+      text,
+      (existingTerms ?? []).map((w) => w.term),
+    )
     if (prepared.entries.length === 0) return []
     // Entries are cleaned "term — meaning" lines (the old backend parsed them
     // with AI); split on the first separator, meaning may be empty.
@@ -240,7 +243,13 @@ export const vocabApi = {
 
   update: async (
     id: string,
-    data: { term: string; meaning: string; example?: string; pronunciation?: string; category?: string },
+    data: {
+      term: string
+      meaning: string
+      example?: string
+      pronunciation?: string
+      category?: string
+    },
   ): Promise<VocabItem> => {
     const { data: row, error } = await supabase
       .from("kori_vocab_cards")

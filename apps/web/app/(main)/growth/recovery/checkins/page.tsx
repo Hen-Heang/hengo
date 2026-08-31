@@ -22,7 +22,12 @@ function CheckInsLoadingState() {
 
 export default function RecoveryCheckInsPage() {
   useSessionTimer("recovery")
-  const { habit, backHref, loading: habitsLoading, error: habitsError } = useRecoveryHabitFromParams()
+  const {
+    habit,
+    backHref,
+    loading: habitsLoading,
+    error: habitsError,
+  } = useRecoveryHabitFromParams()
   const {
     events,
     loading: eventsLoading,
@@ -45,11 +50,19 @@ export default function RecoveryCheckInsPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-xl pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-xl pb-12"
+    >
       <motion.div variants={itemVariants} className="mb-2">
         <BackLink href={backHref} label={habit.label} />
       </motion.div>
-      <motion.p variants={itemVariants} className="mb-4 text-sm font-semibold text-muted-foreground">
+      <motion.p
+        variants={itemVariants}
+        className="mb-4 text-sm font-semibold text-muted-foreground"
+      >
         {events.length} check-in{events.length === 1 ? "" : "s"}
       </motion.p>
       <CheckInsList

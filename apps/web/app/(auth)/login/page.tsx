@@ -4,17 +4,21 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { AlertCircle, Eye, EyeOff, Loader2, ArrowRight, MessagesSquare, BookOpen, Mic } from "lucide-react"
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+  MessagesSquare,
+  BookOpen,
+  Mic,
+} from "lucide-react"
 import { motion } from "motion/react"
 
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldContent,
-  FieldGroup,
-  FieldLabel,
-} from "@/components/ui/field"
+import { Field, FieldContent, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { authApi } from "@/lib/api"
 import { GoogleSignInButton } from "@/components/google-sign-in-button"
@@ -51,7 +55,13 @@ export default function LoginPage() {
         <div className="flex items-center justify-between lg:hidden">
           <Link href="/" className="group flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">
-              <Image src="/hengo-icon.png" alt="" width={36} height={36} className="h-full w-full" />
+              <Image
+                src="/hengo-icon.png"
+                alt=""
+                width={36}
+                height={36}
+                className="h-full w-full"
+              />
             </span>
             <span className="text-lg font-semibold tracking-tight text-foreground">Hengo</span>
           </Link>
@@ -98,8 +108,13 @@ export default function LoginPage() {
                 </Field>
                 <Field>
                   <div className="flex items-center justify-between">
-                    <FieldLabel className="text-sm font-medium text-foreground/80">Password</FieldLabel>
-                    <Link href="/forgot-password" className="text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400">
+                    <FieldLabel className="text-sm font-medium text-foreground/80">
+                      Password
+                    </FieldLabel>
+                    <Link
+                      href="/forgot-password"
+                      className="text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+                    >
                       Forgot password?
                     </Link>
                   </div>
@@ -173,7 +188,10 @@ export default function LoginPage() {
 
             <p className="mt-8 text-center text-sm text-muted-foreground">
               New to Hengo?{" "}
-              <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400">
+              <Link
+                href="/register"
+                className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
                 Create an account
               </Link>
             </p>
@@ -182,8 +200,14 @@ export default function LoginPage() {
 
         <p className="text-center text-xs leading-relaxed text-muted-foreground/80">
           By signing in, you agree to our{" "}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">Terms</Link> and{" "}
-          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">Privacy Policy</Link>.
+          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </main>
@@ -191,9 +215,24 @@ export default function LoginPage() {
 }
 
 const FEATURES = [
-  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean.", color: "text-sky-300" },
-  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms.", color: "text-amber-300" },
-  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback.", color: "text-violet-300" },
+  {
+    icon: MessagesSquare,
+    title: "AI conversation partner",
+    desc: "Practice standups and meetings in real workplace Korean.",
+    color: "text-sky-300",
+  },
+  {
+    icon: BookOpen,
+    title: "Developer vocabulary",
+    desc: "Spaced-repetition decks tuned to technical, on-the-job terms.",
+    color: "text-amber-300",
+  },
+  {
+    icon: Mic,
+    title: "Mock interviews",
+    desc: "Rehearse Korean tech interviews with instant feedback.",
+    color: "text-violet-300",
+  },
 ]
 
 function BrandPanel() {
@@ -224,7 +263,8 @@ function BrandPanel() {
             Master workplace Korean, built for engineers.
           </h2>
           <p className="text-sm leading-relaxed text-white/70">
-            Your personal AI tutor for thriving in Korean tech companies — from daily standups to code reviews.
+            Your personal AI tutor for thriving in Korean tech companies — from daily standups to
+            code reviews.
           </p>
         </div>
 

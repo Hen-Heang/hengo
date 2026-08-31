@@ -37,14 +37,14 @@ through Row Level Security, exactly like the rest of the app.
 
 ### Out of scope — deliberately
 
-| Excluded | Reason |
-|---|---|
-| `apps/api` (Spring Boot) | Root `AGENTS.md` forbids connecting `apps/web` to `apps/api`. Nothing in this design touches it. |
-| Recovery (`kori_focus_*`), journal reads, mood | Most sensitive data in the app. Tool names/descriptions render **inside** the chat client, so exposing this domain would put its vocabulary in a third-party UI. `capture_reflection` is a deliberate, narrow exception: it *writes* to the journal table but has no matching read tool, so the domain stays unreadable from MCP. |
-| Vocab review UI, corrections, interview, phrasebook (the structured system), chat history | No demonstrated need yet. Every added tool is added attack surface and prompt-injection surface. `capture_korean_phrase` writes a simple vocab card, not into the structured Phrasebook system. |
-| Delete tools of any kind | No MCP tool deletes a row. Deletion stays in the app UI. |
-| Goal/task sharing, invitations, `join_goal` (for joining), share codes | The share-code RPCs are `SECURITY DEFINER` and can read/join goals the caller is not a member of. Never called from MCP tool code — the one exception is `create_goal`'s own `join_goal(..., p_role: "creator")` call to self-join the goal it just created, always with `p_user_id` hard-coded to the verified caller. |
-| Any AI generation triggered from MCP | The calling client (Claude/ChatGPT) is already the model. Re-entering OpenAI from an MCP call burns quota and adds a second injection hop. |
+| Excluded                                                                                  | Reason                                                                                                                                                                                                                                                                                                                            |
+| ----------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `apps/api` (Spring Boot)                                                                  | Root `AGENTS.md` forbids connecting `apps/web` to `apps/api`. Nothing in this design touches it.                                                                                                                                                                                                                                  |
+| Recovery (`kori_focus_*`), journal reads, mood                                            | Most sensitive data in the app. Tool names/descriptions render **inside** the chat client, so exposing this domain would put its vocabulary in a third-party UI. `capture_reflection` is a deliberate, narrow exception: it _writes_ to the journal table but has no matching read tool, so the domain stays unreadable from MCP. |
+| Vocab review UI, corrections, interview, phrasebook (the structured system), chat history | No demonstrated need yet. Every added tool is added attack surface and prompt-injection surface. `capture_korean_phrase` writes a simple vocab card, not into the structured Phrasebook system.                                                                                                                                   |
+| Delete tools of any kind                                                                  | No MCP tool deletes a row. Deletion stays in the app UI.                                                                                                                                                                                                                                                                          |
+| Goal/task sharing, invitations, `join_goal` (for joining), share codes                    | The share-code RPCs are `SECURITY DEFINER` and can read/join goals the caller is not a member of. Never called from MCP tool code — the one exception is `create_goal`'s own `join_goal(..., p_role: "creator")` call to self-join the goal it just created, always with `p_user_id` hard-coded to the verified caller.           |
+| Any AI generation triggered from MCP                                                      | The calling client (Claude/ChatGPT) is already the model. Re-entering OpenAI from an MCP call burns quota and adds a second injection hop.                                                                                                                                                                                        |
 
 ### Non-goals
 
@@ -122,12 +122,12 @@ or `@/lib/auth-store`. See §5.
 
 ### 3.1 Roles
 
-| Role | Who |
-|---|---|
-| MCP client | Claude, and (where its constraints allow) ChatGPT |
+| Role                 | Who                                                             |
+| -------------------- | --------------------------------------------------------------- |
+| MCP client           | Claude, and (where its constraints allow) ChatGPT               |
 | Authorization server | **Supabase Auth OAuth 2.1 server** (beta) on the shared project |
-| Protected resource | `https://<prod-host>/mcp` served by `apps/web` |
-| Resource owner | The Hengo user |
+| Protected resource   | `https://<prod-host>/mcp` served by `apps/web`                  |
+| Resource owner       | The Hengo user                                                  |
 
 Supabase is the authorization server because every RLS policy in the project keys on
 `auth.uid()` over Supabase user rows.
@@ -136,22 +136,22 @@ Supabase is the authorization server because every RLS policy in the project key
 
 **Served by `apps/web`:**
 
-| Path | Purpose |
-|---|---|
-| `/.well-known/oauth-protected-resource` | RFC 9728 Protected Resource Metadata |
-| `/.well-known/oauth-protected-resource/mcp` | Same document at the RFC 9728 path-insertion location for resource `…/mcp`. **Both are served** — clients differ on which they request. |
-| `/.well-known/oauth-authorization-server` | RFC 8414 Authorization Server Metadata, mirrored (Supabase serves OIDC discovery but not this RFC 8414 shape — see `lib/mcp/metadata.ts`'s header). |
-| `/mcp` | The MCP endpoint itself (`app/mcp/route.ts`). |
-| `/oauth/consent` | The consent screen Supabase redirects users to (`app/(main)/oauth/consent/page.tsx`, §3.4). |
+| Path                                        | Purpose                                                                                                                                             |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/.well-known/oauth-protected-resource`     | RFC 9728 Protected Resource Metadata                                                                                                                |
+| `/.well-known/oauth-protected-resource/mcp` | Same document at the RFC 9728 path-insertion location for resource `…/mcp`. **Both are served** — clients differ on which they request.             |
+| `/.well-known/oauth-authorization-server`   | RFC 8414 Authorization Server Metadata, mirrored (Supabase serves OIDC discovery but not this RFC 8414 shape — see `lib/mcp/metadata.ts`'s header). |
+| `/mcp`                                      | The MCP endpoint itself (`app/mcp/route.ts`).                                                                                                       |
+| `/oauth/consent`                            | The consent screen Supabase redirects users to (`app/(main)/oauth/consent/page.tsx`, §3.4).                                                         |
 
 **Served by Supabase:**
 
-| Path | Purpose |
-|---|---|
-| `https://<ref>.supabase.co/.well-known/oauth-authorization-server/auth/v1` | AS metadata |
-| `https://<ref>.supabase.co/auth/v1/oauth/authorize` | Authorization |
-| `https://<ref>.supabase.co/auth/v1/oauth/token` | Token |
-| `https://<ref>.supabase.co/auth/v1/.well-known/jwks.json` | JWKS |
+| Path                                                                       | Purpose       |
+| -------------------------------------------------------------------------- | ------------- |
+| `https://<ref>.supabase.co/.well-known/oauth-authorization-server/auth/v1` | AS metadata   |
+| `https://<ref>.supabase.co/auth/v1/oauth/authorize`                        | Authorization |
+| `https://<ref>.supabase.co/auth/v1/oauth/token`                            | Token         |
+| `https://<ref>.supabase.co/auth/v1/.well-known/jwks.json`                  | JWKS          |
 
 ### 3.3 Flow
 
@@ -222,15 +222,15 @@ client ids go into `MCP_ALLOWED_CLIENT_IDS` (comma-separated — see §4.2).
 (`jose`), in order — any failure is a uniform 401 `invalid_token`, never distinguishing
 which check failed (so an unauthenticated caller can't probe the configuration):
 
-| Check | 
-|---|
-| Bearer token present |
+| Check                                                                                                                 |
+| --------------------------------------------------------------------------------------------------------------------- |
+| Bearer token present                                                                                                  |
 | Signature valid against the project JWKS (ES256/RS256 only — `alg: none` and symmetric algorithms are never accepted) |
-| `iss` matches `SUPABASE_OAUTH_ISSUER` |
-| `aud` matches `MCP_RESOURCE_URL` |
-| `exp` in the future (no clock-skew grace) |
-| `sub` present (becomes the verified user id) |
-| `client_id` present and in `MCP_ALLOWED_CLIENT_IDS` |
+| `iss` matches `SUPABASE_OAUTH_ISSUER`                                                                                 |
+| `aud` matches `MCP_RESOURCE_URL`                                                                                      |
+| `exp` in the future (no clock-skew grace)                                                                             |
+| `sub` present (becomes the verified user id)                                                                          |
+| `client_id` present and in `MCP_ALLOWED_CLIENT_IDS`                                                                   |
 
 **Audience.** The client sends the RFC 8707 `resource` parameter on authorize/token
 requests; a Supabase Custom Access Token Hook must echo it into `aud` for the token to
@@ -253,7 +253,7 @@ validate. Until that hook is configured for a given deployment, no token will pa
 2. **RLS is the authorization boundary for reads.** Read tools never add their own
    `.eq("user_id", …)` filter.
 3. **Ownership is an additional boundary for writes.** `goals`' SELECT policy (and,
-   through it, `tasks`') admits goal *members*, not just the owner — real for the
+   through it, `tasks`') admits goal _members_, not just the owner — real for the
    in-app collaboration flow, a confused-deputy hazard for an unattended agent.
    `lib/mcp/tools/ownership.ts`'s `isGoalOwnedBy` / `isTaskWritableBy` close this for
    every write tool: a goal or task merely shared with the caller is never writable
@@ -266,12 +266,12 @@ Supabase's OAuth server issues only the standard OIDC scope set — no custom
 `hengo.read` / `hengo.write` scopes are available. Authorization granularity is
 therefore:
 
-| Layer | Mechanism |
-|---|---|
-| Identity | `sub` claim → RLS |
-| Client identity | `client_id` claim, checked against `MCP_ALLOWED_CLIENT_IDS` |
-| Read vs write | `MCP_WRITE_ENABLED` — when not exactly `"true"`, the seven write tools are **not registered at all** (`lib/mcp/server.ts`); a client never sees `create_task` in `tools/list` when writes are off. |
-| Per-tool ownership | `lib/mcp/tools/ownership.ts`, applied by every write tool before it touches a row |
+| Layer              | Mechanism                                                                                                                                                                                          |
+| ------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Identity           | `sub` claim → RLS                                                                                                                                                                                  |
+| Client identity    | `client_id` claim, checked against `MCP_ALLOWED_CLIENT_IDS`                                                                                                                                        |
+| Read vs write      | `MCP_WRITE_ENABLED` — when not exactly `"true"`, the seven write tools are **not registered at all** (`lib/mcp/server.ts`); a client never sees `create_task` in `tools/list` when writes are off. |
+| Per-tool ownership | `lib/mcp/tools/ownership.ts`, applied by every write tool before it touches a row                                                                                                                  |
 
 ### 4.3 Shared goals
 
@@ -359,7 +359,7 @@ apps/web/
 - `@/lib/server/ai-limits` (rate limiting, reused as-is).
 
 **Forbidden:** `@/lib/api/*` and the `supabase` singleton binding — both are
-browser-bound and, imported server-side, fail *silently and wrongly* rather than
+browser-bound and, imported server-side, fail _silently and wrongly_ rather than
 throwing (an anonymous singleton query returns an empty set, not an error — a tool
 would report "you have no goals" instead of failing loudly). Every domain query is
 therefore re-implemented directly against the per-request client, using the
@@ -370,22 +370,22 @@ each `lib/mcp/tools/*.ts` file).
 
 ## 6. Tool set and gating
 
-| Tool | Kind | Tables | Registered when |
-|---|---|---|---|
-| `get_today_overview` | read | `tasks`, `goals` | `mcpContext` present |
-| `list_goals` | read | `goals`, `goal_stars`, `tasks`, `goal_key_results` | always (with context) |
-| `get_goal` | read | as above | always |
-| `list_tasks` | read | `tasks` | always |
-| `get_goal_tasks` | read | `tasks` | always |
-| `get_learning_progress` | read | `kori_activity_log`, `kori_vocab_cards`, `kori_corrections` | always |
-| `get_weekly_progress` | read | `kori_activity_log` | always |
-| `create_task` | write | `tasks` | `MCP_WRITE_ENABLED=true` |
-| `update_task` | write | `tasks` | `MCP_WRITE_ENABLED=true` |
-| `complete_task` | write | `tasks` | `MCP_WRITE_ENABLED=true` |
-| `create_goal` | write | `goals`, `goal_members` (via `join_goal`) | `MCP_WRITE_ENABLED=true` |
-| `update_goal` | write | `goals` | `MCP_WRITE_ENABLED=true` |
-| `capture_reflection` | write | `kori_journal_entries` | `MCP_WRITE_ENABLED=true` |
-| `capture_korean_phrase` | write | `kori_vocab_cards` | `MCP_WRITE_ENABLED=true` |
+| Tool                    | Kind  | Tables                                                      | Registered when          |
+| ----------------------- | ----- | ----------------------------------------------------------- | ------------------------ |
+| `get_today_overview`    | read  | `tasks`, `goals`                                            | `mcpContext` present     |
+| `list_goals`            | read  | `goals`, `goal_stars`, `tasks`, `goal_key_results`          | always (with context)    |
+| `get_goal`              | read  | as above                                                    | always                   |
+| `list_tasks`            | read  | `tasks`                                                     | always                   |
+| `get_goal_tasks`        | read  | `tasks`                                                     | always                   |
+| `get_learning_progress` | read  | `kori_activity_log`, `kori_vocab_cards`, `kori_corrections` | always                   |
+| `get_weekly_progress`   | read  | `kori_activity_log`                                         | always                   |
+| `create_task`           | write | `tasks`                                                     | `MCP_WRITE_ENABLED=true` |
+| `update_task`           | write | `tasks`                                                     | `MCP_WRITE_ENABLED=true` |
+| `complete_task`         | write | `tasks`                                                     | `MCP_WRITE_ENABLED=true` |
+| `create_goal`           | write | `goals`, `goal_members` (via `join_goal`)                   | `MCP_WRITE_ENABLED=true` |
+| `update_goal`           | write | `goals`                                                     | `MCP_WRITE_ENABLED=true` |
+| `capture_reflection`    | write | `kori_journal_entries`                                      | `MCP_WRITE_ENABLED=true` |
+| `capture_korean_phrase` | write | `kori_vocab_cards`                                          | `MCP_WRITE_ENABLED=true` |
 
 `get_hengo_server_info` (name/version/status/clock, no personal data) registers
 unconditionally, including with no `McpContext` at all.
@@ -529,14 +529,14 @@ No `idempotency_key` column exists on any of the four written-to tables (`tasks`
 `goals`, `kori_journal_entries`, `kori_vocab_cards`) — dedupe uses natural keys and a
 10-minute lookback window instead, implemented inline in each write tool:
 
-| Tool | Natural key | Result on match |
-|---|---|---|
-| `create_task` | `(user_id, title, start_date, goal_id)` | Returns the existing task, `created: false` |
-| `create_goal` | `(user_id, title)` | Returns the existing goal, `created: false` |
-| `capture_korean_phrase` | `(user_id, term, meaning)` | Returns the existing card, `created: false` |
-| `capture_reflection` | `(user_id, content)` | Returns the existing entry, `created: false` |
-| `complete_task` | read-then-compare (`resolveTaskStatus`) — the task id itself is the natural key | Returns the task unchanged, `changed: false`, no write issued |
-| `update_task` / `update_goal` | n/a — always at least one real field change (enforced by input validation) | n/a |
+| Tool                          | Natural key                                                                     | Result on match                                               |
+| ----------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------- |
+| `create_task`                 | `(user_id, title, start_date, goal_id)`                                         | Returns the existing task, `created: false`                   |
+| `create_goal`                 | `(user_id, title)`                                                              | Returns the existing goal, `created: false`                   |
+| `capture_korean_phrase`       | `(user_id, term, meaning)`                                                      | Returns the existing card, `created: false`                   |
+| `capture_reflection`          | `(user_id, content)`                                                            | Returns the existing entry, `created: false`                  |
+| `complete_task`               | read-then-compare (`resolveTaskStatus`) — the task id itself is the natural key | Returns the task unchanged, `changed: false`, no write issued |
+| `update_task` / `update_goal` | n/a — always at least one real field change (enforced by input validation)      | n/a                                                           |
 
 Best-effort: a check-then-insert has a race window, so two truly simultaneous
 identical calls can both insert. `idempotentHint: true` reflects this as delivered,
@@ -573,9 +573,9 @@ Shape only.
 Two new buckets in `lib/server/ai-limits.ts`'s `RATE_LIMIT_BUCKETS`, mapped from every
 `mcp.<tool>` feature name in `FEATURE_TO_BUCKET`:
 
-| Bucket | Limit | Applies to |
-|---|---|---|
-| `mcp_read` | 200/day | All seven read tools |
+| Bucket      | Limit   | Applies to            |
+| ----------- | ------- | --------------------- |
+| `mcp_read`  | 200/day | All seven read tools  |
 | `mcp_write` | 100/day | All seven write tools |
 
 Checked by `instrumentedTool` **before** the handler runs — an exhausted bucket never
@@ -593,15 +593,15 @@ Plain Vitest, colocated as `*.test.ts` (no vitest config file; defaults apply). 
 with `pnpm --dir apps/web test`, or a single file with `npx vitest run
 lib/mcp/config.test.ts` from `apps/web`.
 
-| File | Covers |
-|---|---|
-| `lib/mcp/config.test.ts` | Multi-client allowlist parsing/trimming/empty-rejection; `MCP_WRITE_ENABLED` default-false and case-insensitive `"true"` parsing; every required-env-var-missing case; URL/https validation. |
-| `lib/mcp/auth.test.ts` | Full authenticated pipeline through the real handler, real ES256 signatures over a locally generated key pair: missing/malformed/expired token, wrong signing key, wrong issuer, wrong audience, missing `client_id`, unapproved `client_id`, a second approved `client_id` succeeding (the "Claude vs ChatGPT" case), the RFC 9728 challenge shape, tool list hidden from unauthenticated callers. |
-| `lib/mcp/context.test.ts` | `buildMcpContext` derives `userId`/`clientId` from `AuthInfo` only, returns `null` without one, `writeEnabled` passthrough, fresh `requestId` per call. |
-| `lib/mcp/server.test.ts` | `tools/list` tool counts and gating: foundation-only with no context, +7 read tools with context and writes off, +7 write tools with writes on — absent, not erroring, when off. |
-| `lib/mcp/tools/index.test.ts` | Read/write tool registration + annotations; `list_goals` row mapping (`isOwner`/`isStarred`/`truncated`); `get_goal` not-found never distinguishes "doesn't exist" from "not yours"; `create_task` ownership refusal even where RLS's goal-member policy would allow the write; `complete_task` idempotency (no `.update()` call on an already-completed task); `capture_reflection` never returns content back; `create_task` dedupe (no `.insert()` call within the lookback window). |
-| `lib/mcp/tools/instrument.test.ts` | Success path writes both audit rows with the exact expected key sets (never a token, header, or stray field); rate-limit exhaustion never calls the handler; a thrown internal error never leaks its message, only a fixed sentence plus the request id. |
-| `lib/mcp/tools/test-support.ts` | Shared fakes (`fakeQuery`, `fakeDb`, `fakeContext`, `captureRegisteredTools`) — not itself a test file. |
+| File                               | Covers                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `lib/mcp/config.test.ts`           | Multi-client allowlist parsing/trimming/empty-rejection; `MCP_WRITE_ENABLED` default-false and case-insensitive `"true"` parsing; every required-env-var-missing case; URL/https validation.                                                                                                                                                                                                                                                                                            |
+| `lib/mcp/auth.test.ts`             | Full authenticated pipeline through the real handler, real ES256 signatures over a locally generated key pair: missing/malformed/expired token, wrong signing key, wrong issuer, wrong audience, missing `client_id`, unapproved `client_id`, a second approved `client_id` succeeding (the "Claude vs ChatGPT" case), the RFC 9728 challenge shape, tool list hidden from unauthenticated callers.                                                                                     |
+| `lib/mcp/context.test.ts`          | `buildMcpContext` derives `userId`/`clientId` from `AuthInfo` only, returns `null` without one, `writeEnabled` passthrough, fresh `requestId` per call.                                                                                                                                                                                                                                                                                                                                 |
+| `lib/mcp/server.test.ts`           | `tools/list` tool counts and gating: foundation-only with no context, +7 read tools with context and writes off, +7 write tools with writes on — absent, not erroring, when off.                                                                                                                                                                                                                                                                                                        |
+| `lib/mcp/tools/index.test.ts`      | Read/write tool registration + annotations; `list_goals` row mapping (`isOwner`/`isStarred`/`truncated`); `get_goal` not-found never distinguishes "doesn't exist" from "not yours"; `create_task` ownership refusal even where RLS's goal-member policy would allow the write; `complete_task` idempotency (no `.update()` call on an already-completed task); `capture_reflection` never returns content back; `create_task` dedupe (no `.insert()` call within the lookback window). |
+| `lib/mcp/tools/instrument.test.ts` | Success path writes both audit rows with the exact expected key sets (never a token, header, or stray field); rate-limit exhaustion never calls the handler; a thrown internal error never leaks its message, only a fixed sentence plus the request id.                                                                                                                                                                                                                                |
+| `lib/mcp/tools/test-support.ts`    | Shared fakes (`fakeQuery`, `fakeDb`, `fakeContext`, `captureRegisteredTools`) — not itself a test file.                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### Not covered by unit tests — manual, pre-release
 
@@ -653,10 +653,10 @@ dashboard — invalidates issued tokens without a deploy.
 
 ## 15. Known residual risks
 
-| # | Risk | Mitigation | Residual |
-|---|---|---|---|
-| R1 | **Audience confusion** if the Custom Access Token Hook (§3.6) isn't configured for a deployment — a token would fail the `aud` check entirely (fail closed), not be silently accepted for the wrong resource. | `aud` validation is unconditional in `SupabaseMcpTokenVerifier`. | None if the hook is configured before enabling writes; the endpoint simply serves nothing until then. |
-| R2 | **Prompt injection → tool invocation.** Task/goal/reflection text flows into the client's own context, whose system prompt this server doesn't control. | Read-only-by-default (`MCP_WRITE_ENABLED`); no delete tools; no overwrite of existing content; `MCP_SERVER_INSTRUCTIONS` frames tool output as data; §13's injection probe. | Cannot be eliminated server-side — blast radius is bounded by the small, non-destructive tool set. |
-| R3 | **Shared-project blast radius.** The OAuth server and every new table live on the project shared with Orbit/DailyGoalMap. | Manual client registration only (DCR off); `kori_mcp_audit` is a new, isolated table verified via `get_advisors` to add no new security lint. | Beta-stage Supabase feature on a shared project. |
-| R4 | **Idempotency race.** Check-then-insert can double-write under true concurrency. | Short (10 min) windows, natural keys, honest `created`/`changed` flags. | Closed only by a dedicated `idempotency_key` column + unique constraint, not built (would require a migration touching four already-shared tables — judged not worth it for v1; see §10). |
-| R5 | **Bulk read via iteration.** An agent can call `list_tasks`/`list_goals` repeatedly. | Bounded `limit`s; `mcp_read` bucket (200/day); every call audited. | Rate limit slows it; doesn't prevent a determined loop within quota. |
+| #   | Risk                                                                                                                                                                                                          | Mitigation                                                                                                                                                                  | Residual                                                                                                                                                                                  |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1  | **Audience confusion** if the Custom Access Token Hook (§3.6) isn't configured for a deployment — a token would fail the `aud` check entirely (fail closed), not be silently accepted for the wrong resource. | `aud` validation is unconditional in `SupabaseMcpTokenVerifier`.                                                                                                            | None if the hook is configured before enabling writes; the endpoint simply serves nothing until then.                                                                                     |
+| R2  | **Prompt injection → tool invocation.** Task/goal/reflection text flows into the client's own context, whose system prompt this server doesn't control.                                                       | Read-only-by-default (`MCP_WRITE_ENABLED`); no delete tools; no overwrite of existing content; `MCP_SERVER_INSTRUCTIONS` frames tool output as data; §13's injection probe. | Cannot be eliminated server-side — blast radius is bounded by the small, non-destructive tool set.                                                                                        |
+| R3  | **Shared-project blast radius.** The OAuth server and every new table live on the project shared with Orbit/DailyGoalMap.                                                                                     | Manual client registration only (DCR off); `kori_mcp_audit` is a new, isolated table verified via `get_advisors` to add no new security lint.                               | Beta-stage Supabase feature on a shared project.                                                                                                                                          |
+| R4  | **Idempotency race.** Check-then-insert can double-write under true concurrency.                                                                                                                              | Short (10 min) windows, natural keys, honest `created`/`changed` flags.                                                                                                     | Closed only by a dedicated `idempotency_key` column + unique constraint, not built (would require a migration touching four already-shared tables — judged not worth it for v1; see §10). |
+| R5  | **Bulk read via iteration.** An agent can call `list_tasks`/`list_goals` repeatedly.                                                                                                                          | Bounded `limit`s; `mcp_read` bucket (200/day); every call audited.                                                                                                          | Rate limit slows it; doesn't prevent a determined loop within quota.                                                                                                                      |

@@ -1,208 +1,328 @@
-import type { GoalTemplate } from '@/lib/goal-templates/types';
+import type { GoalTemplate } from "@/lib/goal-templates/types"
 
 export const healthFitnessTemplate: GoalTemplate = {
-  id: 'health-fitness-ai-agent',
-  name: '🤖 AI Health & Fitness Agent',
-  description: 'Complete AI-powered health and fitness goal with automated Google Calendar scheduling, workout tracking, meal planning, and progress monitoring',
-  icon: '🤖',
-  color: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-  category: 'health',
-  
+  id: "health-fitness-ai-agent",
+  name: "🤖 AI Health & Fitness Agent",
+  description:
+    "Complete AI-powered health and fitness goal with automated Google Calendar scheduling, workout tracking, meal planning, and progress monitoring",
+  icon: "🤖",
+  color: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  category: "health",
+
   sections: [
     {
-      id: 'basic-info',
-      title: 'Basic Information',
-      icon: '👤',
+      id: "basic-info",
+      title: "Basic Information",
+      icon: "👤",
       fields: [
-        { id: 'name', type: 'text', label: 'Name', placeholder: 'John Doe', required: true },
-        { id: 'age', type: 'number', label: 'Age', placeholder: '26', required: true, min: 1, max: 120 },
-        { id: 'birthYear', type: 'number', label: 'Birth Year', placeholder: '1999', required: true, min: 1900, max: 2024 },
-        { id: 'height', type: 'number', label: 'Height (cm)', placeholder: '172', required: true, min: 50, max: 300 },
-        { id: 'weight', type: 'number', label: 'Current Weight (kg)', placeholder: '56.80', required: true, step: 0.1, min: 20, max: 300 },
-        { id: 'weightGoal', type: 'text', label: 'Weight Goal Range (kg)', placeholder: '65-69', required: true },
-        { id: 'location', type: 'text', label: 'Location', placeholder: 'Busan, South Korea', required: true },
-        { id: 'occupation', type: 'text', label: 'Occupation', placeholder: 'Software Engineer', required: true },
-      ]
+        { id: "name", type: "text", label: "Name", placeholder: "John Doe", required: true },
+        {
+          id: "age",
+          type: "number",
+          label: "Age",
+          placeholder: "26",
+          required: true,
+          min: 1,
+          max: 120,
+        },
+        {
+          id: "birthYear",
+          type: "number",
+          label: "Birth Year",
+          placeholder: "1999",
+          required: true,
+          min: 1900,
+          max: 2024,
+        },
+        {
+          id: "height",
+          type: "number",
+          label: "Height (cm)",
+          placeholder: "172",
+          required: true,
+          min: 50,
+          max: 300,
+        },
+        {
+          id: "weight",
+          type: "number",
+          label: "Current Weight (kg)",
+          placeholder: "56.80",
+          required: true,
+          step: 0.1,
+          min: 20,
+          max: 300,
+        },
+        {
+          id: "weightGoal",
+          type: "text",
+          label: "Weight Goal Range (kg)",
+          placeholder: "65-69",
+          required: true,
+        },
+        {
+          id: "location",
+          type: "text",
+          label: "Location",
+          placeholder: "Busan, South Korea",
+          required: true,
+        },
+        {
+          id: "occupation",
+          type: "text",
+          label: "Occupation",
+          placeholder: "Software Engineer",
+          required: true,
+        },
+      ],
     },
     {
-      id: 'schedule',
-      title: 'Schedule Parameters',
-      icon: '📅',
+      id: "schedule",
+      title: "Schedule Parameters",
+      icon: "📅",
       fields: [
-        { id: 'workDays', type: 'text', label: 'Work Days', placeholder: 'Monday–Friday', required: true },
-        { id: 'workStart', type: 'time', label: 'Work Start Time', placeholder: '08:30 AM', required: true },
-        { id: 'workEnd', type: 'time', label: 'Work End Time', placeholder: '06:00 PM', required: true },
-        { id: 'breakStart', type: 'time', label: 'Break Start Time', placeholder: '11:30 AM', required: true },
-        { id: 'breakEnd', type: 'time', label: 'Break End Time', placeholder: '01:00 PM', required: true },
-        { id: 'gymWeekday', type: 'text', label: 'Gym Time (Weekdays)', placeholder: '9–11 PM', required: true },
-        { id: 'gymWeekend', type: 'text', label: 'Gym Time (Weekends)', placeholder: '5–7 PM', required: true },
-        { id: 'gymClosed', type: 'text', label: 'Gym Closed Days', placeholder: 'Mondays', required: false },
-        { id: 'weekendWake', type: 'time', label: 'Weekend Wake Time', placeholder: '11:30 AM', required: true },
-      ]
+        {
+          id: "workDays",
+          type: "text",
+          label: "Work Days",
+          placeholder: "Monday–Friday",
+          required: true,
+        },
+        {
+          id: "workStart",
+          type: "time",
+          label: "Work Start Time",
+          placeholder: "08:30 AM",
+          required: true,
+        },
+        {
+          id: "workEnd",
+          type: "time",
+          label: "Work End Time",
+          placeholder: "06:00 PM",
+          required: true,
+        },
+        {
+          id: "breakStart",
+          type: "time",
+          label: "Break Start Time",
+          placeholder: "11:30 AM",
+          required: true,
+        },
+        {
+          id: "breakEnd",
+          type: "time",
+          label: "Break End Time",
+          placeholder: "01:00 PM",
+          required: true,
+        },
+        {
+          id: "gymWeekday",
+          type: "text",
+          label: "Gym Time (Weekdays)",
+          placeholder: "9–11 PM",
+          required: true,
+        },
+        {
+          id: "gymWeekend",
+          type: "text",
+          label: "Gym Time (Weekends)",
+          placeholder: "5–7 PM",
+          required: true,
+        },
+        {
+          id: "gymClosed",
+          type: "text",
+          label: "Gym Closed Days",
+          placeholder: "Mondays",
+          required: false,
+        },
+        {
+          id: "weekendWake",
+          type: "time",
+          label: "Weekend Wake Time",
+          placeholder: "11:30 AM",
+          required: true,
+        },
+      ],
     },
     {
-      id: 'goals',
-      title: 'Fitness & Wellness Goals',
-      icon: '🎯',
+      id: "goals",
+      title: "Fitness & Wellness Goals",
+      icon: "🎯",
       fields: [
-        { 
-          id: 'fitnessGoals', 
-          type: 'list', 
-          label: 'Your Goals', 
-          placeholder: 'e.g., Lean bulk (gain muscle but stay aesthetic)', 
+        {
+          id: "fitnessGoals",
+          type: "list",
+          label: "Your Goals",
+          placeholder: "e.g., Lean bulk (gain muscle but stay aesthetic)",
           required: true,
           minItems: 1,
-          maxItems: 10
-        }
-      ]
+          maxItems: 10,
+        },
+      ],
     },
     {
-      id: 'diet',
-      title: 'Diet Preferences',
-      icon: '🍽️',
+      id: "diet",
+      title: "Diet Preferences",
+      icon: "🍽️",
       fields: [
-        { 
-          id: 'eatingPattern', 
-          type: 'text', 
-          label: 'Eating Pattern', 
-          placeholder: 'e.g., Light during daytime, heavy at evening',
-          helperText: 'Describe when and how you prefer to eat',
-          required: true
+        {
+          id: "eatingPattern",
+          type: "text",
+          label: "Eating Pattern",
+          placeholder: "e.g., Light during daytime, heavy at evening",
+          helperText: "Describe when and how you prefer to eat",
+          required: true,
         },
-        { 
-          id: 'availableFoods', 
-          type: 'textarea', 
-          label: 'Available Foods', 
-          placeholder: 'rice, eggs, chicken breast, steak, vegetables (broccoli, carrot, bok choy), oats, peanut butter, whey protein, creatine',
-          helperText: 'List all foods you commonly have access to',
-          required: true
+        {
+          id: "availableFoods",
+          type: "textarea",
+          label: "Available Foods",
+          placeholder:
+            "rice, eggs, chicken breast, steak, vegetables (broccoli, carrot, bok choy), oats, peanut butter, whey protein, creatine",
+          helperText: "List all foods you commonly have access to",
+          required: true,
         },
-        { 
-          id: 'beverages', 
-          type: 'text', 
-          label: 'Beverages', 
-          placeholder: 'coffee (1-2 cups daytime), sometimes beer/soju',
-          required: false
+        {
+          id: "beverages",
+          type: "text",
+          label: "Beverages",
+          placeholder: "coffee (1-2 cups daytime), sometimes beer/soju",
+          required: false,
         },
-        { 
-          id: 'restrictions', 
-          type: 'text', 
-          label: 'Dietary Restrictions / Allergies', 
-          placeholder: 'None, or list any restrictions',
-          required: false
+        {
+          id: "restrictions",
+          type: "text",
+          label: "Dietary Restrictions / Allergies",
+          placeholder: "None, or list any restrictions",
+          required: false,
         },
-        { 
-          id: 'proteinTarget', 
-          type: 'number', 
-          label: 'Daily Protein Target (grams)', 
-          placeholder: '150',
+        {
+          id: "proteinTarget",
+          type: "number",
+          label: "Daily Protein Target (grams)",
+          placeholder: "150",
           required: true,
           min: 0,
-          max: 500
+          max: 500,
         },
-      ]
+      ],
     },
     {
-      id: 'supplements',
-      title: 'Supplements',
-      icon: '💊',
+      id: "supplements",
+      title: "Supplements",
+      icon: "💊",
       fields: [
-        { 
-          id: 'supplements', 
-          type: 'compound', 
-          label: 'Your Supplements',
+        {
+          id: "supplements",
+          type: "compound",
+          label: "Your Supplements",
           required: false,
           minItems: 0,
           maxItems: 20,
           fields: [
-            { id: 'name', type: 'text', label: 'Supplement Name', placeholder: 'Creatine', required: true },
-            { id: 'timing', type: 'text', label: 'When to Take', placeholder: 'Morning with breakfast', required: true }
-          ]
-        }
-      ]
+            {
+              id: "name",
+              type: "text",
+              label: "Supplement Name",
+              placeholder: "Creatine",
+              required: true,
+            },
+            {
+              id: "timing",
+              type: "text",
+              label: "When to Take",
+              placeholder: "Morning with breakfast",
+              required: true,
+            },
+          ],
+        },
+      ],
     },
     {
-      id: 'lifestyle',
-      title: 'Lifestyle Notes',
-      icon: '📝',
+      id: "lifestyle",
+      title: "Lifestyle Notes",
+      icon: "📝",
       fields: [
-        { 
-          id: 'lifestyle', 
-          type: 'textarea', 
-          label: 'Special Considerations', 
-          placeholder: 'e.g., Sometimes skips gym or meals, needs balance between training and recovery, ADHD/anxiety considerations, insomnia history, etc.',
-          helperText: 'Add any factors that affect your schedule or routine',
-          required: false
-        }
-      ]
+        {
+          id: "lifestyle",
+          type: "textarea",
+          label: "Special Considerations",
+          placeholder:
+            "e.g., Sometimes skips gym or meals, needs balance between training and recovery, ADHD/anxiety considerations, insomnia history, etc.",
+          helperText: "Add any factors that affect your schedule or routine",
+          required: false,
+        },
+      ],
     },
     {
-      id: 'analysis',
-      title: 'Analysis Settings',
-      icon: '⚙️',
+      id: "analysis",
+      title: "Analysis Settings",
+      icon: "⚙️",
       fields: [
-        { 
-          id: 'pastDays', 
-          type: 'number', 
-          label: 'Days to Analyze (Past)', 
-          placeholder: '14',
+        {
+          id: "pastDays",
+          type: "number",
+          label: "Days to Analyze (Past)",
+          placeholder: "14",
           defaultValue: 14,
           required: true,
           min: 1,
-          max: 90
+          max: 90,
         },
-        { 
-          id: 'futureDays', 
-          type: 'number', 
-          label: 'Days to Preview (Future)', 
-          placeholder: '7',
+        {
+          id: "futureDays",
+          type: "number",
+          label: "Days to Preview (Future)",
+          placeholder: "7",
           defaultValue: 7,
           required: true,
           min: 1,
-          max: 30
+          max: 30,
         },
-      ]
-    }
+      ],
+    },
   ],
 
   generateDescription: (data: Record<string, unknown>) => {
-    const name = data.name as string || 'User';
-    const age = data.age as number || 0;
-    const weight = data.weight as number || 0;
-    const weightGoal = data.weightGoal as string || '';
-    const goals = (data.fitnessGoals as string[]) || [];
+    const name = (data.name as string) || "User"
+    const age = (data.age as number) || 0
+    const weight = (data.weight as number) || 0
+    const weightGoal = (data.weightGoal as string) || ""
+    const goals = (data.fitnessGoals as string[]) || []
 
-    return `AI-powered health & fitness goal for ${name} (${age}yo). Current: ${weight}kg → Target: ${weightGoal}kg. Goals: ${goals.join(', ')}. Includes automated Google Calendar scheduling, workout tracking, meal planning, and daily AI analysis.`;
+    return `AI-powered health & fitness goal for ${name} (${age}yo). Current: ${weight}kg → Target: ${weightGoal}kg. Goals: ${goals.join(", ")}. Includes automated Google Calendar scheduling, workout tracking, meal planning, and daily AI analysis.`
   },
 
   generatePrompt: (data: Record<string, unknown>) => {
-    const name = data.name as string || 'User';
-    const age = data.age as number || 0;
-    const birthYear = data.birthYear as number || 0;
-    const height = data.height as number || 0;
-    const weight = data.weight as number || 0;
-    const weightGoal = data.weightGoal as string || '';
-    const location = data.location as string || '';
-    const occupation = data.occupation as string || '';
-    const workDays = data.workDays as string || '';
-    const workStart = data.workStart as string || '';
-    const workEnd = data.workEnd as string || '';
-    const breakStart = data.breakStart as string || '';
-    const breakEnd = data.breakEnd as string || '';
-    const gymWeekday = data.gymWeekday as string || '';
-    const gymWeekend = data.gymWeekend as string || '';
-    const gymClosed = data.gymClosed as string || '';
-    const weekendWake = data.weekendWake as string || '';
-    const goals = (data.fitnessGoals as string[]) || [];
-    const eatingPattern = data.eatingPattern as string || '';
-    const availableFoods = data.availableFoods as string || '';
-    const beverages = data.beverages as string || '';
-    const restrictions = data.restrictions as string || 'None';
-    const proteinTarget = data.proteinTarget as number || 0;
-    const supplements = (data.supplements as Array<{ name: string; timing: string }>) || [];
-    const lifestyle = data.lifestyle as string || '';
-    const pastDays = data.pastDays as number || 14;
-    const futureDays = data.futureDays as number || 7;
+    const name = (data.name as string) || "User"
+    const age = (data.age as number) || 0
+    const birthYear = (data.birthYear as number) || 0
+    const height = (data.height as number) || 0
+    const weight = (data.weight as number) || 0
+    const weightGoal = (data.weightGoal as string) || ""
+    const location = (data.location as string) || ""
+    const occupation = (data.occupation as string) || ""
+    const workDays = (data.workDays as string) || ""
+    const workStart = (data.workStart as string) || ""
+    const workEnd = (data.workEnd as string) || ""
+    const breakStart = (data.breakStart as string) || ""
+    const breakEnd = (data.breakEnd as string) || ""
+    const gymWeekday = (data.gymWeekday as string) || ""
+    const gymWeekend = (data.gymWeekend as string) || ""
+    const gymClosed = (data.gymClosed as string) || ""
+    const weekendWake = (data.weekendWake as string) || ""
+    const goals = (data.fitnessGoals as string[]) || []
+    const eatingPattern = (data.eatingPattern as string) || ""
+    const availableFoods = (data.availableFoods as string) || ""
+    const beverages = (data.beverages as string) || ""
+    const restrictions = (data.restrictions as string) || "None"
+    const proteinTarget = (data.proteinTarget as number) || 0
+    const supplements = (data.supplements as Array<{ name: string; timing: string }>) || []
+    const lifestyle = (data.lifestyle as string) || ""
+    const pastDays = (data.pastDays as number) || 14
+    const futureDays = (data.futureDays as number) || 7
 
     return `👤 User Profile
  Name: ${name}
@@ -212,7 +332,7 @@ export const healthFitnessTemplate: GoalTemplate = {
  Location: ${location}
  Occupation: ${occupation}
  Goals:
-${goals.map(g => `   - ${g}`).join('\n')}
+${goals.map((g) => `   - ${g}`).join("\n")}
 
 Diet:
  Eating Pattern: ${eatingPattern}
@@ -222,10 +342,10 @@ Diet:
  Daily Protein Target: ~${proteinTarget}g
 
 Supplements:
-${supplements.length > 0 ? supplements.map(s => `   - ${s.name}: ${s.timing}`).join('\n') : '   - None'}
+${supplements.length > 0 ? supplements.map((s) => `   - ${s.name}: ${s.timing}`).join("\n") : "   - None"}
 
 Lifestyle:
- ${lifestyle || 'No special considerations'}
+ ${lifestyle || "No special considerations"}
 
 ⚙️ How You Work
 Pull Data:
@@ -251,7 +371,7 @@ Generate New Schedule for Tomorrow:
  Include:
    - Exercise: sets, reps, rest time.
    - Nutrition: meal suggestions based on available foods.
-   - Supplements: ${supplements.map(s => `${s.name} (${s.timing})`).join(', ')}.
+   - Supplements: ${supplements.map((s) => `${s.name} (${s.timing})`).join(", ")}.
    - Wellness: meditation, journaling, skincare (if not already planned).
 
 Write Schedule Back:
@@ -262,7 +382,7 @@ Write Schedule Back:
 
 📅 Example Behavior
  Yesterday: heavy chest/back workout + high-calorie dinner → Tomorrow: rest day with stretching + lighter meals.
- Skipped gym yesterday → Tomorrow: do the skipped workout at ${gymWeekday.split('–')[0]} (only if gym slot empty).
+ Skipped gym yesterday → Tomorrow: do the skipped workout at ${gymWeekday.split("–")[0]} (only if gym slot empty).
  Ate light yesterday → Tomorrow: bulk-focused meals.
  Bad sleep recorded → Tomorrow: reduce caffeine, magnesium evening, earlier bedtime.
  Already has events tomorrow at 10 AM → do not overwrite; suggest alternative time if needed.
@@ -276,7 +396,7 @@ Write Schedule Back:
  Get availability in a calendar in Google Calendar → check free/busy times.
 
 ✅ Rules
- Never schedule gym on ${gymClosed || 'closed days'} ${gymClosed ? '(gym closed)' : ''}. Suggest home workout/stretch instead.
+ Never schedule gym on ${gymClosed || "closed days"} ${gymClosed ? "(gym closed)" : ""}. Suggest home workout/stretch instead.
  Respect gym times (${gymWeekday} weekdays, ${gymWeekend} weekends).
  Avoid duplicate or overlapping events: check tomorrow's schedule first.
  Balance muscle groups (don't repeat same muscle back-to-back).
@@ -292,10 +412,10 @@ Write Schedule Back:
  When adding new events, always use the user's active calendar (main calendar ID).
  Always include:
    - Meals (with protein targets)
-   - Supplements (${supplements.map(s => s.name).join(', ') || 'none'})
+   - Supplements (${supplements.map((s) => s.name).join(", ") || "none"})
    - Gym or rest day (depending on recent workouts)
    - Bedtime event for sleep hygiene
- Never schedule gym on ${gymClosed || 'closed days'}.
+ Never schedule gym on ${gymClosed || "closed days"}.
  Always use ISO datetime format with timezone (e.g., 2025-08-20T21:00:00+09:00).
  When updating or moving an event, preserve the event ID.
  Use Delete event only if a duplicate exists.
@@ -306,7 +426,7 @@ When generating tomorrow's schedule, return events in this format:
 10:00 AM – Work block
 1:00 PM – Lunch: [balanced meal from available foods]
 6:00 PM – Snack: [snack from available foods]
-${gymWeekday.split('–')[0]} – Gym: [Muscle Groups] ([Exercise] [sets]x[reps], rest time)
+${gymWeekday.split("–")[0]} – Gym: [Muscle Groups] ([Exercise] [sets]x[reps], rest time)
 10:30 PM – Post-workout meal: [high-protein meal]
 11:30 PM – [Evening supplement] + relax (no phone, meditation)
 12:00 AM – Sleep
@@ -323,6 +443,6 @@ Add specific durations too (start–end time).
    ✅ Output a summary report to the user explaining what you've done.
    ✅ Include goal details or related context (e.g., "Added to main fitness calendar" or "Updated muscle recovery schedule").
    ✅ Mention which events were created, updated, or skipped due to conflicts.
-   ✅ Then use tools to do what user asked for.`;
-  }
-};
+   ✅ Then use tools to do what user asked for.`
+  },
+}

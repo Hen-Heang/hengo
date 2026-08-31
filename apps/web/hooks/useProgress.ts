@@ -31,23 +31,17 @@ export function useProgress() {
 
   const chartData = useMemo<ProgressPoint[]>(
     () => (Array.isArray(data?.chartData) ? data.chartData : []),
-    [data]
+    [data],
   )
 
-  const stats = useMemo<DashboardStats>(
-    () => ({ ...emptyStats, ...data?.stats }),
-    [data]
-  )
+  const stats = useMemo<DashboardStats>(() => ({ ...emptyStats, ...data?.stats }), [data])
 
   const dailyAverage = useMemo(
     () =>
       chartData.length
-        ? Math.round(
-            chartData.reduce((total, item) => total + item.minutes, 0) /
-              chartData.length
-          )
+        ? Math.round(chartData.reduce((total, item) => total + item.minutes, 0) / chartData.length)
         : 0,
-    [chartData]
+    [chartData],
   )
 
   return {

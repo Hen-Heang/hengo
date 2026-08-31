@@ -71,7 +71,9 @@ export function LearningMetricCard({
   const metric = goal.metadata?.learning_metric
   const [editing, setEditing] = useState(false)
   const [saving, setSaving] = useState(false)
-  const [draftSource, setDraftSource] = useState<LearningMetricSource>(metric?.source ?? "vocab_cards")
+  const [draftSource, setDraftSource] = useState<LearningMetricSource>(
+    metric?.source ?? "vocab_cards",
+  )
   const [draftFeature, setDraftFeature] = useState<string>(metric?.feature ?? "vocab")
   const [draftWindow, setDraftWindow] = useState<LearningMetricWindow>(metric?.window ?? "total")
   const [draftTarget, setDraftTarget] = useState<string>(String(metric?.targetCount ?? 20))
@@ -118,7 +120,8 @@ export function LearningMetricCard({
     })
   }
 
-  const pct = metric && count != null ? Math.min(100, Math.round((count / metric.targetCount) * 100)) : 0
+  const pct =
+    metric && count != null ? Math.min(100, Math.round((count / metric.targetCount) * 100)) : 0
 
   return (
     <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
@@ -157,14 +160,17 @@ export function LearningMetricCard({
         <>
           <p className="mt-3 text-xs font-medium text-muted-foreground">
             {sourceLabel(metric.source)}
-            {metric.source === "activity_sessions" && metric.feature ? ` · ${featureLabel(metric.feature)}` : ""}
+            {metric.source === "activity_sessions" && metric.feature
+              ? ` · ${featureLabel(metric.feature)}`
+              : ""}
             {" · "}
             {windowLabel(metric.window)}
           </p>
           <div className="mt-4 flex items-center justify-between text-xs font-medium">
             <span className="text-muted-foreground">Progress</span>
             <span className="tabular-nums text-foreground">
-              {countLoading ? <Loader2 size={12} className="inline animate-spin" /> : count ?? 0} / {metric.targetCount}
+              {countLoading ? <Loader2 size={12} className="inline animate-spin" /> : (count ?? 0)}{" "}
+              / {metric.targetCount}
             </span>
           </div>
           <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-foreground/5">
@@ -177,7 +183,10 @@ export function LearningMetricCard({
       ) : editing ? (
         <div className="mt-4 space-y-3 rounded-2xl border border-primary/30 bg-primary/[0.03] p-3">
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <Select value={draftSource} onValueChange={(v) => setDraftSource(v as LearningMetricSource)}>
+            <Select
+              value={draftSource}
+              onValueChange={(v) => setDraftSource(v as LearningMetricSource)}
+            >
               <SelectTrigger className="h-10">
                 <SelectValue />
               </SelectTrigger>
@@ -205,7 +214,10 @@ export function LearningMetricCard({
               </Select>
             )}
 
-            <Select value={draftWindow} onValueChange={(v) => setDraftWindow(v as LearningMetricWindow)}>
+            <Select
+              value={draftWindow}
+              onValueChange={(v) => setDraftWindow(v as LearningMetricWindow)}
+            >
               <SelectTrigger className="h-10">
                 <SelectValue />
               </SelectTrigger>
@@ -233,10 +245,14 @@ export function LearningMetricCard({
               onClick={save}
               disabled={saving || !draftTarget}
               className={cn(
-                "flex h-9 items-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:opacity-40"
+                "flex h-9 items-center gap-1.5 rounded-xl bg-primary px-4 text-xs font-bold uppercase tracking-wider text-primary-foreground transition-all hover:opacity-90 active:scale-95 disabled:opacity-40",
               )}
             >
-              {saving ? <Loader2 size={14} className="animate-spin" /> : <Sparkles size={14} strokeWidth={3} />}
+              {saving ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <Sparkles size={14} strokeWidth={3} />
+              )}
               Save
             </button>
             <button
@@ -251,7 +267,8 @@ export function LearningMetricCard({
       ) : (
         <div className="mt-4 flex flex-col items-start gap-3 rounded-2xl border border-dashed border-border bg-background/30 p-4">
           <p className="text-sm font-medium text-muted-foreground">
-            Link this goal to a real learning metric so progress reflects what you actually practiced, not just checked-off tasks.
+            Link this goal to a real learning metric so progress reflects what you actually
+            practiced, not just checked-off tasks.
           </p>
           <button
             type="button"

@@ -38,7 +38,12 @@ function ConnectionResultHandler() {
 
 export default function IntegrationsSettingsPage() {
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl space-y-6 pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-2xl space-y-6 pb-16"
+    >
       <Suspense>
         <ConnectionResultHandler />
       </Suspense>

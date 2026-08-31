@@ -149,7 +149,11 @@ function dedupKey(row: PhraseImportRow): string {
 // before validation runs.
 function coerceTags(value: unknown): string[] | undefined {
   if (Array.isArray(value)) return value.map(String)
-  if (typeof value === "string" && value.trim()) return value.split("|").map((t) => t.trim()).filter(Boolean)
+  if (typeof value === "string" && value.trim())
+    return value
+      .split("|")
+      .map((t) => t.trim())
+      .filter(Boolean)
   return undefined
 }
 
@@ -160,7 +164,10 @@ function coerceTags(value: unknown): string[] | undefined {
  * earlier in the same import batch. Nothing here writes anything — the
  * caller shows this preview and only imports validRows minus duplicateRows.
  */
-export function validateImportRows(rawRows: unknown[], existingKeys: Set<string> = new Set()): ImportPreview {
+export function validateImportRows(
+  rawRows: unknown[],
+  existingKeys: Set<string> = new Set(),
+): ImportPreview {
   const validRows: PhraseImportRow[] = []
   const invalidRows: ImportRowIssue[] = []
   const duplicateRows: number[] = []
@@ -169,11 +176,17 @@ export function validateImportRows(rawRows: unknown[], existingKeys: Set<string>
   rawRows.forEach((raw, index) => {
     const candidate =
       raw && typeof raw === "object"
-        ? { ...(raw as Record<string, unknown>), tags: coerceTags((raw as Record<string, unknown>).tags) }
+        ? {
+            ...(raw as Record<string, unknown>),
+            tags: coerceTags((raw as Record<string, unknown>).tags),
+          }
         : raw
     const result = phraseImportRowSchema.safeParse(candidate)
     if (!result.success) {
-      invalidRows.push({ index, errors: result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`) })
+      invalidRows.push({
+        index,
+        errors: result.error.issues.map((issue) => `${issue.path.join(".")}: ${issue.message}`),
+      })
       return
     }
     const key = dedupKey(result.data)
@@ -202,11 +215,11 @@ export function importableRows(preview: ImportPreview): PhraseImportRow[] {
 export function isRowComplete(row: PhraseImportRow): boolean {
   return Boolean(
     row.questionRomanization &&
-      row.questionEnglish &&
-      row.questionRegister &&
-      row.answerRomanization &&
-      row.answerEnglish &&
-      row.answerRegister,
+    row.questionEnglish &&
+    row.questionRegister &&
+    row.answerRomanization &&
+    row.answerEnglish &&
+    row.answerRegister,
   )
 }
 

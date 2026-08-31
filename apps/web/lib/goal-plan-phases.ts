@@ -57,10 +57,10 @@ export const phaseInputSchema = z
     end_date: z.string().regex(YMD, "Use a YYYY-MM-DD date").nullish(),
     status: z.enum(["planned", "active", "completed", "paused", "archived"]).optional(),
   })
-  .refine(
-    (v) => !v.start_date || !v.end_date || v.end_date >= v.start_date,
-    { message: "A phase can't end before it starts", path: ["end_date"] },
-  )
+  .refine((v) => !v.start_date || !v.end_date || v.end_date >= v.start_date, {
+    message: "A phase can't end before it starts",
+    path: ["end_date"],
+  })
 
 export type PhaseInput = z.infer<typeof phaseInputSchema>
 
@@ -157,7 +157,9 @@ export function milestonesToPhaseDrafts(
     .filter((m) => typeof m?.title === "string" && m.title.trim().length > 0)
     .map((m, i) => ({ ...m, title: m.title.trim(), due: toYmd(m.due_date), order: i }))
 
-  const dated = cleaned.filter((m) => m.due !== null).sort((a, b) => a.due!.localeCompare(b.due!) || a.order - b.order)
+  const dated = cleaned
+    .filter((m) => m.due !== null)
+    .sort((a, b) => a.due!.localeCompare(b.due!) || a.order - b.order)
   const undated = cleaned.filter((m) => m.due === null)
   const ordered = [...dated, ...undated]
 

@@ -54,7 +54,7 @@ export function splitIntoSentences(text: string): string[] {
  */
 export function scriptToRepeatSentences(
   topic: InterviewTopic,
-  sections: Record<string, string> | null
+  sections: Record<string, string> | null,
 ): RepeatSentence[] {
   const outline = topic.scriptOutline ?? []
   return outline.flatMap((section) => {
@@ -78,16 +78,11 @@ export function phrasesToRepeatSentences(phrases: PhraseEntry[]): RepeatSentence
 
 /** Strips punctuation/symbols so 좋아요! and 좋아요 compare equal. */
 function normalize(text: string): string {
-  return text
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, "")
+  return text.toLowerCase().replace(/[^\p{L}\p{N}]+/gu, "")
 }
 
 function tokenize(sentence: string): string[] {
-  return sentence
-    .split(/\s+/)
-    .map(normalize)
-    .filter(Boolean)
+  return sentence.split(/\s+/).map(normalize).filter(Boolean)
 }
 
 /** Classic Levenshtein distance, used for the spacing-tolerant similarity. */
@@ -103,7 +98,7 @@ function levenshtein(a: string, b: string): number {
       curr[j] = Math.min(
         prev[j] + 1,
         curr[j - 1] + 1,
-        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)
+        prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
       )
     }
     prev = curr
@@ -124,9 +119,7 @@ function lcsHits(target: string[], spoken: string[]): boolean[] {
   for (let i = n - 1; i >= 0; i--) {
     for (let j = m - 1; j >= 0; j--) {
       dp[i][j] =
-        target[i] === spoken[j]
-          ? dp[i + 1][j + 1] + 1
-          : Math.max(dp[i + 1][j], dp[i][j + 1])
+        target[i] === spoken[j] ? dp[i + 1][j + 1] + 1 : Math.max(dp[i + 1][j], dp[i][j + 1])
     }
   }
   const hits = new Array<boolean>(n).fill(false)
@@ -175,8 +168,7 @@ export function compareRepeat(target: string, spoken: string): RepeatComparison 
 
   const marks: RepeatWordMark[] = targetWords.map((word, i) => ({ word, hit: hits[i] }))
   const hitCount = hits.filter(Boolean).length
-  const wordAccuracy =
-    marks.length === 0 ? 0 : Math.round((hitCount / marks.length) * 100)
+  const wordAccuracy = marks.length === 0 ? 0 : Math.round((hitCount / marks.length) * 100)
 
   const grade: RepeatGrade =
     similarity >= 90 && wordAccuracy >= 90

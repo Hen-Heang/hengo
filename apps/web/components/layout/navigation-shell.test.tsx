@@ -110,14 +110,18 @@ describe("MobileBottomNav", () => {
 
   it("marks the current destination with aria-current", () => {
     setup("/practice")
-    const current = screen.getAllByRole("link").filter((el) => el.getAttribute("aria-current") === "page")
+    const current = screen
+      .getAllByRole("link")
+      .filter((el) => el.getAttribute("aria-current") === "page")
     expect(current).toHaveLength(1)
     expect(current[0].getAttribute("href")).toBe("/practice")
   })
 
   it("does not mark any tab current on a route outside the five destinations", () => {
     setup("/statistics")
-    expect(screen.queryAllByRole("link").filter((el) => el.getAttribute("aria-current") === "page")).toHaveLength(0)
+    expect(
+      screen.queryAllByRole("link").filter((el) => el.getAttribute("aria-current") === "page"),
+    ).toHaveLength(0)
   })
 
   it("keeps /home inside the shell as the first tab", () => {
@@ -153,7 +157,7 @@ describe("MoreNavigationSheet", () => {
         onOpenChange={onOpenChange}
         pathname={pathname}
         searchParams={undefined}
-      />
+      />,
     )
     return onOpenChange
   }
@@ -167,7 +171,9 @@ describe("MoreNavigationSheet", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
     expect(within(dialog).getByText("Ask Hengo")).toBeTruthy()
-    expect(within(dialog).getByText("Ask about your notes, goals, habits, and journal")).toBeTruthy()
+    expect(
+      within(dialog).getByText("Ask about your notes, goals, habits, and journal"),
+    ).toBeTruthy()
     const aiLink = within(dialog).getAllByRole("link")[0]
     expect(aiLink.getAttribute("href")).toBe("/chat?mode=memory")
   })
@@ -177,13 +183,17 @@ describe("MoreNavigationSheet", () => {
     const dialog = screen.getByRole("dialog")
     expect(within(dialog).getByRole("heading", { level: 3, name: "Memory" })).toBeTruthy()
     const memoryGroup = within(dialog).getByRole("navigation", { name: "Memory" })
-    expect(within(memoryGroup).getAllByRole("link").map((el) => el.textContent)).toEqual(["Notes", "Memories"])
+    expect(
+      within(memoryGroup)
+        .getAllByRole("link")
+        .map((el) => el.textContent),
+    ).toEqual(["Notes", "Memories"])
     const menu = within(dialog).getByRole("navigation", { name: "More" })
-    expect(within(menu).getAllByRole("link").map((el) => el.textContent)).toEqual([
-      "Calendar",
-      "History",
-      "Settings",
-    ])
+    expect(
+      within(menu)
+        .getAllByRole("link")
+        .map((el) => el.textContent),
+    ).toEqual(["Calendar", "History", "Settings"])
   })
 
   it("does not duplicate any Korean/Learn function, Goals sub-page, Progress route, or Ask Hengo in the menus", () => {
@@ -240,7 +250,11 @@ describe("MoreNavigationSheet", () => {
   it("puts Settings in the sheet instead of the mobile header, with no separate Account entry", () => {
     setup(true)
     const dialog = screen.getByRole("dialog")
-    expect(within(dialog).getByRole("link", { name: /settings/i }).getAttribute("href")).toBe("/settings")
+    expect(
+      within(dialog)
+        .getByRole("link", { name: /settings/i })
+        .getAttribute("href"),
+    ).toBe("/settings")
     expect(within(dialog).queryByRole("link", { name: /account/i })).toBeNull()
   })
 })
@@ -276,14 +290,18 @@ describe("MobileHeader", () => {
   })
 
   it("switches to Back | Title | More on a detail route", () => {
-    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />)
+    render(
+      <MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />,
+    )
     expect(screen.getByRole("button", { name: "Go back" })).toBeTruthy()
     expect(screen.getByRole("button", { name: "More actions" })).toBeTruthy()
     expect(screen.queryByRole("button", { name: /notifications/i })).toBeNull()
   })
 
   it("drops Quick Capture (Inbox) from the detail-page top-bar menu too", async () => {
-    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />)
+    render(
+      <MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />,
+    )
     fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
       button: 0,
       ctrlKey: false,
@@ -293,7 +311,9 @@ describe("MobileHeader", () => {
   })
 
   it("goes back through the router", () => {
-    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />)
+    render(
+      <MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />,
+    )
     fireEvent.click(screen.getByRole("button", { name: "Go back" }))
     expect(back).toHaveBeenCalledOnce()
   })
@@ -305,7 +325,11 @@ describe("MobileHeader", () => {
 
   it("labels the AI mode from the query, not just the pathname", () => {
     render(
-      <MobileHeader pathname="/chat" searchParams={{ mode: "corrections" }} onOpenSearch={vi.fn()} />
+      <MobileHeader
+        pathname="/chat"
+        searchParams={{ mode: "corrections" }}
+        onOpenSearch={vi.fn()}
+      />,
     )
     expect(screen.getByRole("heading", { name: "Corrections" })).toBeTruthy()
   })
@@ -321,7 +345,7 @@ describe("DesktopSidebar", () => {
         searchParams={searchParams}
         collapsed={collapsed}
         onToggleCollapsed={onToggle}
-      />
+      />,
     )
     return onToggle
   }
@@ -330,7 +354,13 @@ describe("DesktopSidebar", () => {
     setup("/practice", false)
     const nav = screen.getByRole("navigation", { name: "Primary" })
     const links = within(nav).getAllByRole("link")
-    expect(links.map((el) => el.textContent)).toEqual(["Today", "Vocabulary", "Practice", "Coach", "Study"])
+    expect(links.map((el) => el.textContent)).toEqual([
+      "Today",
+      "Vocabulary",
+      "Practice",
+      "Coach",
+      "Study",
+    ])
     expect(links.map((el) => el.getAttribute("href"))).toEqual([
       "/home",
       "/vocab",
@@ -396,7 +426,9 @@ describe("DesktopSidebar", () => {
 
   it("labels the expand action when collapsed", () => {
     setup("/practice", true)
-    expect(screen.getByRole("button", { name: "Expand sidebar" }).getAttribute("aria-expanded")).toBe("false")
+    expect(
+      screen.getByRole("button", { name: "Expand sidebar" }).getAttribute("aria-expanded"),
+    ).toBe("false")
   })
 
   it("keeps branding in the sidebar only once", () => {
@@ -428,7 +460,7 @@ describe("WorkspaceFlyout", () => {
         open={open}
         onOpenChange={onOpenChange}
         active
-      />
+      />,
     )
     return onOpenChange
   }
@@ -445,7 +477,7 @@ describe("WorkspaceFlyout", () => {
     expect(
       within(panel)
         .getAllByRole("link")
-        .map((el) => el.textContent)
+        .map((el) => el.textContent),
     ).toEqual(["Goals", "Inbox"])
   })
 
@@ -475,10 +507,14 @@ describe("WorkspaceFlyout", () => {
         open
         onOpenChange={vi.fn()}
         active
-      />
+      />,
     )
     const panel = screen.getByRole("navigation", { name: "Grow" })
-    expect(within(panel).getAllByRole("link").map((el) => el.textContent)).toEqual(["Progress"])
+    expect(
+      within(panel)
+        .getAllByRole("link")
+        .map((el) => el.textContent),
+    ).toEqual(["Progress"])
     expect(screen.getByText(/Coming soon:/)).toBeTruthy()
   })
 
@@ -492,7 +528,7 @@ describe("WorkspaceFlyout", () => {
         open
         onOpenChange={vi.fn()}
         active
-      />
+      />,
     )
     const panel = screen.getByRole("navigation", { name: "Learn" })
     expect(within(panel).queryAllByRole("link")).toHaveLength(0)
@@ -508,7 +544,7 @@ describe("WorkspaceFlyout", () => {
         open
         onOpenChange={vi.fn()}
         active
-      />
+      />,
     )
     const panel = screen.getByRole("navigation", { name: "Memory" })
     expect(within(panel).queryAllByRole("link")).toHaveLength(0)
@@ -563,7 +599,10 @@ describe("QuickSwitcher", () => {
   })
 
   it("surfaces a Recent group from locally stored destinations", async () => {
-    window.localStorage.setItem("hengo-recent-routes", JSON.stringify(["review-statistics", "learn-vocab"]))
+    window.localStorage.setItem(
+      "hengo-recent-routes",
+      JSON.stringify(["review-statistics", "learn-vocab"]),
+    )
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())

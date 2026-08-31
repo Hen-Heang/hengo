@@ -58,7 +58,11 @@ export function longestStreak(checkins: HabitCheckIn[]): number {
 }
 
 /** Completed days / days elapsed since `sinceDate` (inclusive), as 0–100. */
-export function consistencyPercent(checkins: HabitCheckIn[], sinceDate: string, now: Date = new Date()): number {
+export function consistencyPercent(
+  checkins: HabitCheckIn[],
+  sinceDate: string,
+  now: Date = new Date(),
+): number {
   const elapsedDays = daysBetween(sinceDate, toLocalDateString(now)) + 1
   if (elapsedDays <= 0) return 0
   const completed = completedDateSet(checkins).size

@@ -22,7 +22,7 @@ export const goalSchema = z.object({
       z.object({
         title: z.string().min(1, "Milestone title is required"),
         due_date: z.date().optional(),
-      })
+      }),
     )
     .optional(),
   template_id: z.string().optional(),

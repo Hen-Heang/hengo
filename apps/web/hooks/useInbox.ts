@@ -43,8 +43,7 @@ export function useInboxItem(id: string) {
 export function useInboxMutations() {
   const queryClient = useQueryClient()
   const userId = getUserId()
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: ["inbox", userId] })
+  const invalidateList = () => queryClient.invalidateQueries({ queryKey: ["inbox", userId] })
   const invalidateItem = (id: string) =>
     queryClient.invalidateQueries({ queryKey: inboxItemQueryKey(id) })
 
@@ -77,7 +76,8 @@ export function useInboxMutations() {
   })
 
   const togglePinned = useMutation({
-    mutationFn: ({ id, pinned }: { id: string; pinned: boolean }) => inboxApi.togglePinned(id, pinned),
+    mutationFn: ({ id, pinned }: { id: string; pinned: boolean }) =>
+      inboxApi.togglePinned(id, pinned),
     onSuccess: (_res, { id }) => {
       invalidateList()
       invalidateItem(id)
@@ -115,7 +115,8 @@ export function useInboxMutations() {
   })
 
   const convertToTask = useMutation({
-    mutationFn: ({ item, date }: { item: InboxItem; date: string }) => inboxApi.convertToTask(item, date),
+    mutationFn: ({ item, date }: { item: InboxItem; date: string }) =>
+      inboxApi.convertToTask(item, date),
     onSuccess: (_res, { item }) => {
       invalidateList()
       invalidateItem(item.id)

@@ -30,7 +30,13 @@ import { containerVariants, itemVariants } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import type { ListeningAttemptResult, ListeningLesson } from "@/lib/types"
 
-const FALLBACK_TOPICS = ["Daily Standup", "Code Review", "Team Meeting", "Bug Discussion", "Deployment"]
+const FALLBACK_TOPICS = [
+  "Daily Standup",
+  "Code Review",
+  "Team Meeting",
+  "Bug Discussion",
+  "Deployment",
+]
 
 const PLAYBACK_RATES = [
   { label: "Normal", rate: 1, icon: null },
@@ -48,11 +54,11 @@ export default function ListeningPage() {
 function ListeningPageContent() {
   const searchParams = useSearchParams()
   const initialTopic = searchParams.get("topic") ?? undefined
-  const { options: topics, selected: topic, setSelected: setTopic } = useChoices(
-    listeningApi.getTopics,
-    FALLBACK_TOPICS,
-    initialTopic
-  )
+  const {
+    options: topics,
+    selected: topic,
+    setSelected: setTopic,
+  } = useChoices(listeningApi.getTopics, FALLBACK_TOPICS, initialTopic)
   const [lesson, setLesson] = useState<ListeningLesson | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
@@ -159,7 +165,7 @@ function ListeningPageContent() {
     if (!lesson) return
     setSubmitting(true)
     try {
-      const ordered = lesson.quiz.map((_, i) => (answers[i] ?? -1))
+      const ordered = lesson.quiz.map((_, i) => answers[i] ?? -1)
       const res = await listeningApi.submitAttempt(lesson.id, ordered)
       setResult(res)
       void logActivity()
@@ -216,7 +222,10 @@ function ListeningPageContent() {
       {error && <ErrorBanner>{error}</ErrorBanner>}
 
       {loading && (
-        <motion.div variants={itemVariants} className="rounded-3xl border border-border bg-card p-7 dark:bg-slate-900/40">
+        <motion.div
+          variants={itemVariants}
+          className="rounded-3xl border border-border bg-card p-7 dark:bg-slate-900/40"
+        >
           <Skeleton className="h-5 w-1/3" />
           <Skeleton className="mt-4 h-16 w-full rounded-2xl" />
           <Skeleton className="mt-3 h-24 w-full rounded-2xl" />
@@ -267,7 +276,7 @@ function ListeningPageContent() {
                       "h-10 rounded-xl px-4 text-xs font-bold active:scale-95",
                       rate === r
                         ? "bg-foreground text-background"
-                        : "border border-border bg-background text-foreground hover:bg-accent"
+                        : "border border-border bg-background text-foreground hover:bg-accent",
                     )}
                   >
                     {Icon && <Icon size={14} className="mr-1.5" />} {label}
@@ -288,7 +297,10 @@ function ListeningPageContent() {
             {showTranscript && (
               <div className="mt-4 space-y-3">
                 {lesson.lines.map((line, i) => (
-                  <div key={i} className="rounded-2xl border border-border bg-background/60 px-4 py-3 dark:bg-white/4">
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-border bg-background/60 px-4 py-3 dark:bg-white/4"
+                  >
                     <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-muted-foreground/70">
                       {line.speaker}
                     </p>
@@ -330,11 +342,20 @@ function ListeningPageContent() {
                             onClick={() => setAnswers((prev) => ({ ...prev, [qi]: oi }))}
                             className={cn(
                               "flex w-full items-center justify-between gap-3 rounded-xl border px-4 py-3 text-left text-sm font-medium transition-all",
-                              isCorrect && "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
-                              isWrongChoice && "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
-                              !revealed && isChosen && "border-emerald-500/50 bg-emerald-500/5 text-foreground",
-                              !revealed && !isChosen && "border-border bg-background text-foreground hover:bg-accent",
-                              revealed && !isCorrect && !isWrongChoice && "border-border bg-background text-muted-foreground"
+                              isCorrect &&
+                                "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300",
+                              isWrongChoice &&
+                                "border-red-500/50 bg-red-500/10 text-red-700 dark:text-red-300",
+                              !revealed &&
+                                isChosen &&
+                                "border-emerald-500/50 bg-emerald-500/5 text-foreground",
+                              !revealed &&
+                                !isChosen &&
+                                "border-border bg-background text-foreground hover:bg-accent",
+                              revealed &&
+                                !isCorrect &&
+                                !isWrongChoice &&
+                                "border-border bg-background text-muted-foreground",
                             )}
                           >
                             <span>{opt}</span>
@@ -374,7 +395,9 @@ function ListeningPageContent() {
                       <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">
                         {result.score} / {result.total} correct · {result.accuracy}%
                       </p>
-                      <p className="text-xs font-medium text-muted-foreground">Saved to your progress.</p>
+                      <p className="text-xs font-medium text-muted-foreground">
+                        Saved to your progress.
+                      </p>
                     </div>
                   </div>
                   <Button

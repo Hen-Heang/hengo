@@ -212,12 +212,10 @@ export default function KoreanCoachListeningPage() {
               <p className="text-xs font-semibold uppercase tracking-[0.12em] text-primary">
                 Listening focus
               </p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-tight">
-                Listen before you read
-              </h1>
+              <h1 className="mt-2 text-3xl font-semibold tracking-tight">Listen before you read</h1>
               <p className="mt-3 leading-7 text-muted-foreground">
-                Hear a short Korean sentence, type what you understood, then reveal the
-                transcript and useful vocabulary. Each sentence has up to three replays.
+                Hear a short Korean sentence, type what you understood, then reveal the transcript
+                and useful vocabulary. Each sentence has up to three replays.
               </p>
             </div>
             <div className="rounded-xl border border-border/70 bg-muted/30 p-4">
@@ -230,7 +228,13 @@ export default function KoreanCoachListeningPage() {
               </div>
             </div>
             {error && <ErrorBanner>{error}</ErrorBanner>}
-            <Button type="button" size="lg" className="w-full" onClick={() => void start()} disabled={busy}>
+            <Button
+              type="button"
+              size="lg"
+              className="w-full"
+              onClick={() => void start()}
+              disabled={busy}
+            >
               {busy ? (
                 <LoaderCircle className="animate-spin motion-reduce:animate-none" />
               ) : (
@@ -405,9 +409,7 @@ export default function KoreanCoachListeningPage() {
               </p>
 
               <Button type="button" size="lg" className="w-full" onClick={next} disabled={busy}>
-                {index === LISTENING_CHALLENGES.length - 1
-                  ? "Finish session"
-                  : "Next sentence"}
+                {index === LISTENING_CHALLENGES.length - 1 ? "Finish session" : "Next sentence"}
                 <ArrowRight aria-hidden="true" />
               </Button>
             </div>

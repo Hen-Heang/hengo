@@ -8,7 +8,8 @@ import { useDebouncedValue } from "@/hooks/useDebouncedValue"
 
 export const notesQueryKey = (userId?: string | null) => ["notes", userId] as const
 export const noteQueryKey = (slug: string) => ["note", slug] as const
-export const noteSearchQueryKey = (userId?: string | null, query?: string) => ["notes-search", userId, query] as const
+export const noteSearchQueryKey = (userId?: string | null, query?: string) =>
+  ["notes-search", userId, query] as const
 
 // List of note metadata for the library/index page.
 export function useNotes() {
@@ -66,8 +67,7 @@ export function useNoteSearch(query: string, delayMs = 300) {
 export function useNoteMutations() {
   const queryClient = useQueryClient()
   const userId = getUserId()
-  const invalidateList = () =>
-    queryClient.invalidateQueries({ queryKey: notesQueryKey(userId) })
+  const invalidateList = () => queryClient.invalidateQueries({ queryKey: notesQueryKey(userId) })
 
   const create = useMutation({
     mutationFn: (data: NoteInput) => notesApi.create(data),
@@ -84,7 +84,8 @@ export function useNoteMutations() {
   })
 
   const togglePinned = useMutation({
-    mutationFn: ({ slug, pinned }: { slug: string; pinned: boolean }) => notesApi.togglePinned(slug, pinned),
+    mutationFn: ({ slug, pinned }: { slug: string; pinned: boolean }) =>
+      notesApi.togglePinned(slug, pinned),
     onSuccess: (_res, { slug }) => {
       invalidateList()
       queryClient.invalidateQueries({ queryKey: noteQueryKey(slug) })

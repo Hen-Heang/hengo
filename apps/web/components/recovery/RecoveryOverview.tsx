@@ -40,15 +40,37 @@ export function RecoveryOverview({
   plansCount: number
   duePlansCount: number
   triggersCount: number
-  onUpdateHabit: (data: { label: string; replacementBehavior?: string | null; recoveryStatement?: string | null; trackingMode?: TrackingMode }) => Promise<unknown>
+  onUpdateHabit: (data: {
+    label: string
+    replacementBehavior?: string | null
+    recoveryStatement?: string | null
+    trackingMode?: TrackingMode
+  }) => Promise<unknown>
   onDeleteHabit: () => Promise<unknown>
 }) {
   const neverLogged = daysSinceLastEvent === null
   const isQuietGap = daysSinceLastEvent !== null && daysSinceLastEvent > QUIET_GAP_DAYS
 
-  const sections: { href: string; label: string; icon: React.ElementType; count: number; due?: number }[] = [
-    { href: `/growth/recovery/checkins?habitId=${habit.id}`, label: "Check-ins", icon: History, count: checkinsCount },
-    { href: `/growth/recovery/plans?habitId=${habit.id}`, label: "Plans", icon: ClipboardList, count: plansCount, due: duePlansCount },
+  const sections: {
+    href: string
+    label: string
+    icon: React.ElementType
+    count: number
+    due?: number
+  }[] = [
+    {
+      href: `/growth/recovery/checkins?habitId=${habit.id}`,
+      label: "Check-ins",
+      icon: History,
+      count: checkinsCount,
+    },
+    {
+      href: `/growth/recovery/plans?habitId=${habit.id}`,
+      label: "Plans",
+      icon: ClipboardList,
+      count: plansCount,
+      due: duePlansCount,
+    },
     { href: "/growth/recovery/triggers", label: "Triggers", icon: Waypoints, count: triggersCount },
   ]
 
@@ -63,7 +85,9 @@ export function RecoveryOverview({
 
           {neverLogged ? (
             <>
-              <h1 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">Ready when you are</h1>
+              <h1 className="mt-2 text-2xl font-bold text-foreground sm:text-3xl">
+                Ready when you are
+              </h1>
               <p className="mt-2 text-sm text-muted-foreground">
                 Log a moment whenever something comes up — there&apos;s nothing to catch up on.
               </p>
@@ -130,9 +154,16 @@ export function RecoveryOverview({
                   {due} due
                 </span>
               )}
-              <Icon size={16} strokeWidth={2} className="text-muted-foreground/70 transition-transform group-hover:scale-110" />
+              <Icon
+                size={16}
+                strokeWidth={2}
+                className="text-muted-foreground/70 transition-transform group-hover:scale-110"
+              />
               <div>
-                <NumberTicker value={count} className="text-lg font-bold tracking-normal text-foreground" />
+                <NumberTicker
+                  value={count}
+                  className="text-lg font-bold tracking-normal text-foreground"
+                />
                 <p className="text-[11px] font-medium text-muted-foreground">{label}</p>
               </div>
             </Link>

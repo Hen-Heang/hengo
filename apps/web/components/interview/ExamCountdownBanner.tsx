@@ -34,7 +34,7 @@ export function ExamCountdownBanner() {
       return () => undefined
     },
     () => true,
-    () => false
+    () => false,
   )
   const [now, setNow] = useState(() => new Date())
 

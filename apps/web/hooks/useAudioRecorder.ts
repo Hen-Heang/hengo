@@ -3,10 +3,7 @@
 import { useCallback, useEffect, useReducer, useRef, useState } from "react"
 
 import { preferredRecorderMimeType, validateAudioInput } from "@/lib/korean-coach/audio"
-import {
-  INITIAL_RECORDING_STATE,
-  recordingReducer,
-} from "@/lib/korean-coach/recording-state"
+import { INITIAL_RECORDING_STATE, recordingReducer } from "@/lib/korean-coach/recording-state"
 
 const MAX_RECORDING_MS = 60_000
 
@@ -162,10 +159,7 @@ export function useAudioRecorder() {
 
   const markProcessing = useCallback(() => dispatch({ type: "PROCESS" }), [])
   const markSuccess = useCallback(() => dispatch({ type: "SUCCESS" }), [])
-  const markError = useCallback(
-    (message: string) => dispatch({ type: "FAIL", message }),
-    [],
-  )
+  const markError = useCallback((message: string) => dispatch({ type: "FAIL", message }), [])
 
   useEffect(() => {
     return () => {
@@ -193,4 +187,3 @@ export function useAudioRecorder() {
     markError,
   }
 }
-

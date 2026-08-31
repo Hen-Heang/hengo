@@ -13,7 +13,13 @@ interface RevealTextProps {
 }
 
 /** Hide/reveal control shared by Learn and Listening mode for English, romanization, and answers. */
-export function RevealText({ label, value, initiallyVisible, className, textClassName }: RevealTextProps) {
+export function RevealText({
+  label,
+  value,
+  initiallyVisible,
+  className,
+  textClassName,
+}: RevealTextProps) {
   const [visible, setVisible] = useState(initiallyVisible)
   if (!value) return null
 
@@ -28,7 +34,7 @@ export function RevealText({ label, value, initiallyVisible, className, textClas
       aria-label={`Reveal ${label}`}
       className={cn(
         "inline-flex min-h-9 items-center gap-1.5 rounded-full border border-dashed border-border px-3 py-1.5 text-xs font-semibold text-muted-foreground transition-colors hover:bg-accent hover:text-foreground",
-        className
+        className,
       )}
     >
       <Eye size={13} strokeWidth={2.5} />

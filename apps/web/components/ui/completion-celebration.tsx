@@ -105,7 +105,7 @@ export function CompletionCelebration({
         </motion.div>
       )}
     </AnimatePresence>,
-    document.body
+    document.body,
   )
 }
 

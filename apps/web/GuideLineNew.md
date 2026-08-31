@@ -8,13 +8,13 @@ The goal is not to teach textbook Korean.
 
 The goal is to help users:
 
-* Understand Korean coworkers
-* Speak naturally in meetings
-* Participate in daily standups
-* Understand technical discussions
-* Write professional Korean messages
-* Improve listening comprehension
-* Gain confidence in workplace communication
+- Understand Korean coworkers
+- Speak naturally in meetings
+- Participate in daily standups
+- Understand technical discussions
+- Write professional Korean messages
+- Improve listening comprehension
+- Gain confidence in workplace communication
 
 The platform should combine AI tutoring, workplace simulation, listening practice, speaking practice, vocabulary learning, and progress tracking.
 
@@ -24,17 +24,17 @@ The platform should combine AI tutoring, workplace simulation, listening practic
 
 Primary Users:
 
-* Foreign software engineers working in Korea
-* International students preparing for Korean tech jobs
-* Foreign professionals working in Korean companies
+- Foreign software engineers working in Korea
+- International students preparing for Korean tech jobs
+- Foreign professionals working in Korean companies
 
 Examples:
 
-* Backend Developers
-* Frontend Developers
-* QA Engineers
-* DevOps Engineers
-* Product Managers
+- Backend Developers
+- Frontend Developers
+- QA Engineers
+- DevOps Engineers
+- Product Managers
 
 ---
 
@@ -42,41 +42,40 @@ Examples:
 
 ## Frontend
 
-* Next.js 16 (App Router)
-* TypeScript
-* Tailwind CSS v4
-* Shadcn UI
-* React Query (TanStack Query)
-* React Hook Form
-* Zod
+- Next.js 16 (App Router)
+- TypeScript
+- Tailwind CSS v4
+- Shadcn UI
+- React Query (TanStack Query)
+- React Hook Form
+- Zod
 
 ## Backend
 
-* Java 21
-* Spring Boot 3
-* Spring Security
-* JWT Authentication
-* Spring Data JPA
-* PostgreSQL
-* Flyway Migration
+- Java 21
+- Spring Boot 3
+- Spring Security
+- JWT Authentication
+- Spring Data JPA
+- PostgreSQL
+- Flyway Migration
 
 ## AI Integration
 
-* OpenAI API
+- OpenAI API
 
 Use AI for:
 
-* Conversation simulation
-* Grammar correction
-* Workplace phrase explanation
-* Message generation
-* Pronunciation feedback
-* Learning recommendations
+- Conversation simulation
+- Grammar correction
+- Workplace phrase explanation
+- Message generation
+- Pronunciation feedback
+- Learning recommendations
 
 ## Infrastructure
 
-* GitHub Actions
-
+- GitHub Actions
 
 ---
 
@@ -86,14 +85,14 @@ This document is the original product vision/module list — kept for reference,
 re-synced module-by-module. Several modules below are already shipped under different
 names/routes than originally specced:
 
-* Module 2 (Vocabulary) → `/vocab` (decks, AI generation, textbook import, dictionary)
-* Module 3/9 (AI Coach / Workplace Analyzer) → `/chat` (Chat / Analyze / Generate tabs)
-* Module 4 (Daily Phrase) → `/daily-phrase`
-* Module 5 (Message Generator) → the "Generate" tab in `/chat`
-* Module 6 (Meeting Simulator) → `/scenarios` (roleplay scenarios that hand off into `/chat`)
-* Module 10 (Flashcards/SRS) → `/vocab` review sessions, plus the "Corrections" tab in `/chat` (SRS review of past corrections; `/mistakes` redirects there)
-* Module 11 (Progress Dashboard) → `/dashboard`
-* Exam Prep (`/interview`) and Foundations (`/learn` — beginner Hangul/grammar tracks) and
+- Module 2 (Vocabulary) → `/vocab` (decks, AI generation, textbook import, dictionary)
+- Module 3/9 (AI Coach / Workplace Analyzer) → `/chat` (Chat / Analyze / Generate tabs)
+- Module 4 (Daily Phrase) → `/daily-phrase`
+- Module 5 (Message Generator) → the "Generate" tab in `/chat`
+- Module 6 (Meeting Simulator) → `/scenarios` (roleplay scenarios that hand off into `/chat`)
+- Module 10 (Flashcards/SRS) → `/vocab` review sessions, plus the "Corrections" tab in `/chat` (SRS review of past corrections; `/mistakes` redirects there)
+- Module 11 (Progress Dashboard) → `/dashboard`
+- Exam Prep (`/interview`) and Foundations (`/learn` — beginner Hangul/grammar tracks) and
   Dev Notes (`/notes` — a personal study knowledge library) are newer additions not in the
   original module list above.
 
@@ -108,22 +107,22 @@ nav), Module 8 (Speaking Practice), Module 12 (Achievements — page exists, hid
 
 Features:
 
-* Register
-* Login
-* Logout
-* Refresh Token
-* Forgot Password
-* Profile Management
+- Register
+- Login
+- Logout
+- Refresh Token
+- Forgot Password
+- Profile Management
 
 User Profile:
 
-* Name
-* Country
-* Native Language
-* Korean Level
-* Occupation
-* Years of Experience
-* Learning Goal
+- Name
+- Country
+- Native Language
+- Korean Level
+- Occupation
+- Years of Experience
+- Learning Goal
 
 ---
 
@@ -135,40 +134,40 @@ Vocabulary Categories:
 
 Examples:
 
-* 안녕하세요
-* 감사합니다
-* 죄송합니다
+- 안녕하세요
+- 감사합니다
+- 죄송합니다
 
 ### Workplace
 
 Examples:
 
-* 회의
-* 일정
-* 보고
-* 확인
+- 회의
+- 일정
+- 보고
+- 확인
 
 ### Developer Vocabulary
 
 Examples:
 
-* 배포
-* 서버
-* 데이터베이스
-* API
-* 프론트엔드
-* 백엔드
-* 오류
+- 배포
+- 서버
+- 데이터베이스
+- API
+- 프론트엔드
+- 백엔드
+- 오류
 
 Vocabulary Data:
 
-* Korean
-* English Translation
-* Khmer Translation
-* Pronunciation
-* Example Sentence
-* Audio
-* Difficulty Level
+- Korean
+- English Translation
+- Khmer Translation
+- Pronunciation
+- Example Sentence
+- Audio
+- Difficulty Level
 
 ---
 
@@ -184,11 +183,11 @@ User can ask:
 
 AI should:
 
-* Explain meaning
-* Explain grammar
-* Explain politeness level
-* Provide workplace examples
-* Provide developer examples
+- Explain meaning
+- Explain grammar
+- Explain politeness level
+- Provide workplace examples
+- Provide developer examples
 
 ---
 
@@ -208,15 +207,15 @@ I will check and get back to you.
 
 Explain:
 
-* When to use
-* Formality level
-* Similar expressions
+- When to use
+- Formality level
+- Similar expressions
 
 Allow:
 
-* Save phrase
-* Add to flashcards
-* Mark as learned
+- Save phrase
+- Add to flashcards
+- Mark as learned
 
 ---
 
@@ -236,18 +235,18 @@ AI generates:
 
 Explain:
 
-* Formality
-* Natural usage
-* Recommended situations
+- Formality
+- Natural usage
+- Recommended situations
 
 Categories:
 
-* Reporting Progress
-* Asking Questions
-* Requesting Help
-* Meeting Communication
-* Deployment Updates
-* Bug Reports
+- Reporting Progress
+- Asking Questions
+- Requesting Help
+- Meeting Communication
+- Deployment Updates
+- Bug Reports
 
 ---
 
@@ -267,9 +266,9 @@ User responds.
 
 AI:
 
-* Correct grammar
-* Improve wording
-* Score answer
+- Correct grammar
+- Improve wording
+- Score answer
 
 ---
 
@@ -309,24 +308,24 @@ Generate workplace conversations.
 
 Topics:
 
-* Daily Standup
-* Code Review
-* Team Meeting
-* Bug Discussion
-* Deployment
+- Daily Standup
+- Code Review
+- Team Meeting
+- Bug Discussion
+- Deployment
 
 Features:
 
-* AI-generated audio
-* Slow speed
-* Normal speed
-* Transcript
-* Quiz
+- AI-generated audio
+- Slow speed
+- Normal speed
+- Transcript
+- Quiz
 
 Track:
 
-* Listening accuracy
-* Completion rate
+- Listening accuracy
+- Completion rate
 
 ---
 
@@ -344,9 +343,9 @@ Workflow:
 
 Feedback:
 
-* Pronunciation
-* Missing words
-* Grammar mistakes
+- Pronunciation
+- Missing words
+- Grammar mistakes
 
 ---
 
@@ -354,10 +353,10 @@ Feedback:
 
 User pastes:
 
-* Slack messages
-* KakaoTalk messages
-* Meeting notes
-* Team chat messages
+- Slack messages
+- KakaoTalk messages
+- Meeting notes
+- Team chat messages
 
 Example:
 
@@ -365,10 +364,10 @@ Example:
 
 AI explains:
 
-* Literal meaning
-* Natural meaning
-* Business context
-* Politeness level
+- Literal meaning
+- Natural meaning
+- Business context
+- Politeness level
 
 This feature should be extremely detailed.
 
@@ -378,18 +377,18 @@ This feature should be extremely detailed.
 
 Modes:
 
-* Korean → English
-* English → Korean
-* Korean → Khmer
-* Audio → Meaning
+- Korean → English
+- English → Korean
+- Korean → Khmer
+- Audio → Meaning
 
 Implement Spaced Repetition System (SRS).
 
 Difficulty:
 
-* Easy
-* Medium
-* Hard
+- Easy
+- Medium
+- Hard
 
 Review scheduling should adapt automatically.
 
@@ -399,19 +398,19 @@ Review scheduling should adapt automatically.
 
 Display:
 
-* Current Streak
-* Weekly Learning Time
-* Vocabulary Learned
-* Listening Score
-* Speaking Score
-* Meeting Simulation Score
-* AI Conversation Score
+- Current Streak
+- Weekly Learning Time
+- Vocabulary Learned
+- Listening Score
+- Speaking Score
+- Meeting Simulation Score
+- AI Conversation Score
 
 Charts:
 
-* Daily Progress
-* Weekly Progress
-* Monthly Progress
+- Daily Progress
+- Weekly Progress
+- Monthly Progress
 
 ---
 
@@ -511,13 +510,13 @@ Validation
 
 Implement:
 
-* Global Exception Handler
-* API Response Wrapper
-* Logging
-* Audit Fields
-* Pagination
-* Sorting
-* Search
+- Global Exception Handler
+- API Response Wrapper
+- Logging
+- Audit Fields
+- Pagination
+- Sorting
+- Search
 
 ---
 
@@ -525,20 +524,20 @@ Implement:
 
 Use:
 
-* Responsive Design
-* Dark Mode
-* Mobile First Design
-* Clean Dashboard Layout
-* Professional SaaS UI
+- Responsive Design
+- Dark Mode
+- Mobile First Design
+- Clean Dashboard Layout
+- Professional SaaS UI
 
 Design System (keep every screen consistent):
 
-* One radius — `rounded-2xl` for cards and inputs (no arbitrary radii)
-* Calm elevation — borders + subtle `shadow-sm`; no heavy drop shadows or decorative glows
-* `lucide-react` icons at `strokeWidth={2}`; a single blue accent on neutral surfaces, semantic colors only for status
-* Typographic hierarchy — bold only for page titles and key numbers; semibold card titles; medium/muted labels; sentence case (no `uppercase tracking-wide` eyebrows)
-* Icon-only controls where meaning is obvious (view toggles, pagination); text for primary actions and navigation
-* Brand: **Hengo** — logo at `public/hengo-icon.png`
+- One radius — `rounded-2xl` for cards and inputs (no arbitrary radii)
+- Calm elevation — borders + subtle `shadow-sm`; no heavy drop shadows or decorative glows
+- `lucide-react` icons at `strokeWidth={2}`; a single blue accent on neutral surfaces, semantic colors only for status
+- Typographic hierarchy — bold only for page titles and key numbers; semibold card titles; medium/muted labels; sentence case (no `uppercase tracking-wide` eyebrows)
+- Icon-only controls where meaning is obvious (view toggles, pagination); text for primary actions and navigation
+- Brand: **Hengo** — logo at `public/hengo-icon.png`
 
 Pages:
 
@@ -582,12 +581,12 @@ Create specialized AI roles:
 
 The AI should:
 
-* Explain grammar simply
-* Use workplace examples
-* Use developer examples
-* Focus on practical communication
-* Avoid textbook-only explanations
-* Teach natural Korean used in Korean companies
+- Explain grammar simply
+- Use workplace examples
+- Use developer examples
+- Focus on practical communication
+- Avoid textbook-only explanations
+- Teach natural Korean used in Korean companies
 
 ---
 
@@ -595,32 +594,32 @@ The AI should:
 
 Phase 1
 
-* Authentication
-* Vocabulary System
-* Flashcards
-* Dashboard
+- Authentication
+- Vocabulary System
+- Flashcards
+- Dashboard
 
 Phase 2
 
-* Daily Phrase
-* AI Coach
-* Message Generator
+- Daily Phrase
+- AI Coach
+- Message Generator
 
 Phase 3
 
-* Meeting Simulator
-* Listening Practice
+- Meeting Simulator
+- Listening Practice
 
 Phase 4
 
-* Speaking Practice
-* Pronunciation Feedback
+- Speaking Practice
+- Pronunciation Feedback
 
 Phase 5
 
-* Achievements
-* Gamification
-* Learning Recommendations
+- Achievements
+- Gamification
+- Learning Recommendations
 
 ---
 
@@ -628,9 +627,9 @@ Phase 5
 
 The user should become confident enough to:
 
-* Participate in Korean daily standups
-* Understand team meetings
-* Explain technical work in Korean
-* Communicate naturally with Korean coworkers
-* Write professional workplace messages
-* Improve listening and speaking ability for real-world software engineering work in Korea
+- Participate in Korean daily standups
+- Understand team meetings
+- Explain technical work in Korean
+- Communicate naturally with Korean coworkers
+- Write professional workplace messages
+- Improve listening and speaking ability for real-world software engineering work in Korea

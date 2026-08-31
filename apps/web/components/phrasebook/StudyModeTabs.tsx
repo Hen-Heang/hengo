@@ -17,7 +17,13 @@ const TABS: { id: StudyMode; label: string; icon: typeof MessagesSquare }[] = [
  * `?mode=` query param) — same reasoning as GoalsHubNav's tab bar, but real
  * buttons instead of links since both modes live on a single page/route.
  */
-export function StudyModeTabs({ mode, onChange }: { mode: StudyMode; onChange: (mode: StudyMode) => void }) {
+export function StudyModeTabs({
+  mode,
+  onChange,
+}: {
+  mode: StudyMode
+  onChange: (mode: StudyMode) => void
+}) {
   return (
     <nav aria-label="Study sections" className="no-scrollbar -mx-1 overflow-x-auto px-1">
       <ul className="inline-flex min-w-full gap-1 rounded-lg bg-foreground/5 p-1">

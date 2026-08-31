@@ -38,10 +38,7 @@ describe("weather topic prep", () => {
     expect(weather.prep!.keyPhrases.length).toBeGreaterThan(0)
     expect(weather.prep!.sampleQuestions.length).toBeGreaterThan(0)
     // Every phrase/question carries both Korean and English.
-    for (const entry of [
-      ...weather.prep!.keyPhrases,
-      ...weather.prep!.sampleQuestions,
-    ]) {
+    for (const entry of [...weather.prep!.keyPhrases, ...weather.prep!.sampleQuestions]) {
       expect(entry.ko.trim()).not.toBe("")
       expect(entry.en.trim()).not.toBe("")
     }
@@ -130,10 +127,7 @@ describe("buildInterviewSystemPrompt", () => {
   })
 
   it("exam mode is Korean-only: no feedback or English tags requested", () => {
-    const prompt = buildInterviewSystemPrompt(
-      getInterviewTopic("weather"),
-      INTERVIEW_MODES.exam
-    )
+    const prompt = buildInterviewSystemPrompt(getInterviewTopic("weather"), INTERVIEW_MODES.exam)
     expect(prompt).toContain("[QUESTION_KO]")
     expect(prompt).not.toContain("[QUESTION_EN]")
     expect(prompt).not.toContain("[FEEDBACK]")
@@ -146,7 +140,7 @@ describe("buildInterviewSystemPrompt", () => {
     const prompt = buildInterviewSystemPrompt(
       getInterviewTopic("weather"),
       INTERVIEW_MODES.exam,
-      sampled
+      sampled,
     )
     expect(prompt).toContain("unexpected everyday interview question")
     for (const q of sampled) {
@@ -172,9 +166,7 @@ describe("parseExaminerTurn", () => {
     ].join("\n")
 
     const turn = parseExaminerTurn(raw)
-    expect(turn.feedback).toBe(
-      "Good vocabulary, but try to speak with more confidence."
-    )
+    expect(turn.feedback).toBe("Good vocabulary, but try to speak with more confidence.")
     expect(turn.questionKo).toBe("한국 여름 날씨는 어때요?")
     expect(turn.questionEn).toBe("How is the summer weather in Korea?")
   })

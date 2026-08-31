@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  sampleUnexpectedQuestions,
-  UNEXPECTED_QUESTIONS,
-} from "./interview-unexpected"
+import { sampleUnexpectedQuestions, UNEXPECTED_QUESTIONS } from "./interview-unexpected"
 
 // Simple deterministic LCG so sampling is reproducible in tests.
 function seededRng(seed: number): () => number {

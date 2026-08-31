@@ -29,7 +29,12 @@ const MODE_ACTIONS = [
   { mode: "learn", label: "Learn", icon: BookOpen, className: "bg-sky-600 hover:bg-sky-500" },
   { mode: "listen", label: "Listen", icon: Headphones, className: "bg-blue-600 hover:bg-blue-500" },
   { mode: "speak", label: "Speak", icon: Mic, className: "bg-violet-600 hover:bg-violet-500" },
-  { mode: "review", label: "Review Due", icon: RotateCcw, className: "bg-emerald-600 hover:bg-emerald-500" },
+  {
+    mode: "review",
+    label: "Review Due",
+    icon: RotateCcw,
+    className: "bg-emerald-600 hover:bg-emerald-500",
+  },
 ] as const
 
 export default function PhraseCollectionPage() {
@@ -66,9 +71,13 @@ export default function PhraseCollectionPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [collectionId])
 
-  const masteredCount = useMemo(() => cards.filter((c) => c.progress?.state === "mastered").length, [cards])
+  const masteredCount = useMemo(
+    () => cards.filter((c) => c.progress?.state === "mastered").length,
+    [cards],
+  )
   const dueCount = useMemo(
-    () => cards.filter((c) => c.progress && c.progress.nextReviewAt <= new Date().toISOString()).length,
+    () =>
+      cards.filter((c) => c.progress && c.progress.nextReviewAt <= new Date().toISOString()).length,
     [cards],
   )
   const progress = cards.length > 0 ? Math.round((masteredCount / cards.length) * 100) : 0
@@ -78,7 +87,9 @@ export default function PhraseCollectionPage() {
     try {
       await phrasebookApi.setActive(card.id, false)
     } catch (err) {
-      toast.error("Could not archive this card", { description: getApiErrorMessage(err, "Please try again.") })
+      toast.error("Could not archive this card", {
+        description: getApiErrorMessage(err, "Please try again."),
+      })
       load()
     }
   }
@@ -91,7 +102,9 @@ export default function PhraseCollectionPage() {
     try {
       await phrasebookApi.deleteCard(target.id)
     } catch (err) {
-      toast.error("Could not delete this card", { description: getApiErrorMessage(err, "Please try again.") })
+      toast.error("Could not delete this card", {
+        description: getApiErrorMessage(err, "Please try again."),
+      })
       load()
     }
   }
@@ -116,22 +129,37 @@ export default function PhraseCollectionPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6 pb-12"
+    >
       <motion.div variants={itemVariants}>
         <BackLink href="/phrasebook" label="Phrasebook" />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-3xl border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40 sm:p-6">
+      <motion.div
+        variants={itemVariants}
+        className="rounded-3xl border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40 sm:p-6"
+      >
         <Badge variant="outline" className="mb-2 uppercase">
           {collection.category}
         </Badge>
         <h1 className="text-2xl font-bold tracking-tight text-foreground">{collection.titleEn}</h1>
         <p className="mt-0.5 text-base font-medium text-muted-foreground">{collection.titleKo}</p>
-        {collection.description && <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{collection.description}</p>}
+        {collection.description && (
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {collection.description}
+          </p>
+        )}
 
         <div className="mt-4 flex items-center gap-3">
           <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-accent/40">
-            <div className="h-full rounded-full bg-emerald-500 transition-all" style={{ width: `${progress}%` }} />
+            <div
+              className="h-full rounded-full bg-emerald-500 transition-all"
+              style={{ width: `${progress}%` }}
+            />
           </div>
           <span className="shrink-0 text-xs font-bold text-muted-foreground">
             {masteredCount}/{cards.length} mastered · {dueCount} due
@@ -144,7 +172,9 @@ export default function PhraseCollectionPage() {
               key={mode}
               className={className}
               disabled={cards.length === 0}
-              onClick={() => router.push(`/phrasebook/practice?mode=${mode}&collectionId=${collectionId}`)}
+              onClick={() =>
+                router.push(`/phrasebook/practice?mode=${mode}&collectionId=${collectionId}`)
+              }
             >
               <Icon size={14} className="mr-1.5" /> {label}
             </Button>
@@ -171,7 +201,10 @@ export default function PhraseCollectionPage() {
         )}
       </motion.div>
 
-      <AlertDialog open={Boolean(deleteTarget)} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+      <AlertDialog
+        open={Boolean(deleteTarget)}
+        onOpenChange={(open) => !open && setDeleteTarget(null)}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this card?</AlertDialogTitle>

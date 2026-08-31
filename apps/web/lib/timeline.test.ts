@@ -16,7 +16,13 @@ import {
 describe("fromTask", () => {
   it("returns null for an incomplete task", () => {
     expect(
-      fromTask({ id: "1", description: "desc", completed: false, start_date: "2026-07-01", end_date: "2026-07-01" })
+      fromTask({
+        id: "1",
+        description: "desc",
+        completed: false,
+        start_date: "2026-07-01",
+        end_date: "2026-07-01",
+      }),
     ).toBeNull()
   })
 
@@ -30,22 +36,47 @@ describe("fromTask", () => {
       end_date: "2026-07-02",
       goal_id: "g1",
     })
-    expect(entry).toMatchObject({ kind: "task", title: "Ship feature", occurredAt: "2026-07-02", href: "/goals/g1/tasks" })
+    expect(entry).toMatchObject({
+      kind: "task",
+      title: "Ship feature",
+      occurredAt: "2026-07-02",
+      href: "/goals/g1/tasks",
+    })
   })
 
   it("falls back to the description when there's no title", () => {
-    const entry = fromTask({ id: "1", description: "A long task description", completed: true, start_date: "2026-07-01", end_date: "2026-07-01" })
+    const entry = fromTask({
+      id: "1",
+      description: "A long task description",
+      completed: true,
+      start_date: "2026-07-01",
+      end_date: "2026-07-01",
+    })
     expect(entry?.title).toBe("A long task description")
   })
 })
 
 describe("fromHabitCheckin", () => {
   it("returns null for an uncompleted day", () => {
-    expect(fromHabitCheckin({ id: "1", habitId: "h1", habitLabel: "Read", date: "2026-07-01", completed: false })).toBeNull()
+    expect(
+      fromHabitCheckin({
+        id: "1",
+        habitId: "h1",
+        habitLabel: "Read",
+        date: "2026-07-01",
+        completed: false,
+      }),
+    ).toBeNull()
   })
 
   it("maps a completed check-in", () => {
-    const entry = fromHabitCheckin({ id: "1", habitId: "h1", habitLabel: "Read", date: "2026-07-01", completed: true })
+    const entry = fromHabitCheckin({
+      id: "1",
+      habitId: "h1",
+      habitLabel: "Read",
+      date: "2026-07-01",
+      completed: true,
+    })
     expect(entry).toMatchObject({ kind: "habit_checkin", title: "Read — checked in" })
   })
 })
@@ -73,19 +104,44 @@ describe("buildHengoSessionEntries", () => {
 
 describe("fromJournalEntry", () => {
   it("falls back to achievement when title and content are both empty (the daily-template case)", () => {
-    const entry = fromJournalEntry({ id: "1", occurredAt: "2026-07-26T00:00:00.000Z", content: "", achievement: "Shipped the feature" })
+    const entry = fromJournalEntry({
+      id: "1",
+      occurredAt: "2026-07-26T00:00:00.000Z",
+      content: "",
+      achievement: "Shipped the feature",
+    })
     expect(entry.title).toBe("Shipped the feature")
   })
 
   it("prefers title, then content, over achievement", () => {
-    expect(fromJournalEntry({ id: "1", occurredAt: "2026-07-26T00:00:00.000Z", title: "My day", content: "", achievement: "x" }).title).toBe("My day")
-    expect(fromJournalEntry({ id: "1", occurredAt: "2026-07-26T00:00:00.000Z", content: "Free-form notes", achievement: "x" }).title).toBe("Free-form notes")
+    expect(
+      fromJournalEntry({
+        id: "1",
+        occurredAt: "2026-07-26T00:00:00.000Z",
+        title: "My day",
+        content: "",
+        achievement: "x",
+      }).title,
+    ).toBe("My day")
+    expect(
+      fromJournalEntry({
+        id: "1",
+        occurredAt: "2026-07-26T00:00:00.000Z",
+        content: "Free-form notes",
+        achievement: "x",
+      }).title,
+    ).toBe("Free-form notes")
   })
 })
 
 describe("fromManualActivity / fromRecoveryCheckin", () => {
   it("carries category into tags", () => {
-    const entry = fromManualActivity({ id: "1", occurredAt: "2026-07-01T09:00:00.000Z", label: "Went for a run", category: "exercise" })
+    const entry = fromManualActivity({
+      id: "1",
+      occurredAt: "2026-07-01T09:00:00.000Z",
+      label: "Went for a run",
+      category: "exercise",
+    })
     expect(entry.tags).toEqual(["exercise"])
   })
 
@@ -99,7 +155,15 @@ describe("fromManualActivity / fromRecoveryCheckin", () => {
 describe("buildTimeline", () => {
   it("merges all sources and sorts newest first", () => {
     const entries = buildTimeline({
-      tasks: [{ id: "t1", description: "d", completed: true, start_date: "2026-07-01", end_date: "2026-07-01" }],
+      tasks: [
+        {
+          id: "t1",
+          description: "d",
+          completed: true,
+          start_date: "2026-07-01",
+          end_date: "2026-07-01",
+        },
+      ],
       journalEntries: [{ id: "j1", occurredAt: "2026-07-05T00:00:00.000Z", content: "reflection" }],
     })
     expect(entries.map((e) => e.kind)).toEqual(["journal", "task"])
@@ -107,7 +171,15 @@ describe("buildTimeline", () => {
 
   it("excludes incomplete tasks", () => {
     const entries = buildTimeline({
-      tasks: [{ id: "t1", description: "d", completed: false, start_date: "2026-07-01", end_date: "2026-07-01" }],
+      tasks: [
+        {
+          id: "t1",
+          description: "d",
+          completed: false,
+          start_date: "2026-07-01",
+          end_date: "2026-07-01",
+        },
+      ],
     })
     expect(entries).toHaveLength(0)
   })
@@ -116,7 +188,12 @@ describe("buildTimeline", () => {
 describe("filterTimelineEntries", () => {
   const entries: TimelineEntry[] = [
     { id: "1", kind: "task", occurredAt: "2026-07-01T00:00:00.000Z", title: "Ship feature" },
-    { id: "2", kind: "journal", occurredAt: "2026-07-01T00:00:00.000Z", title: "Reflection on Korean practice" },
+    {
+      id: "2",
+      kind: "journal",
+      occurredAt: "2026-07-01T00:00:00.000Z",
+      title: "Reflection on Korean practice",
+    },
   ]
 
   it("filters by kind", () => {
@@ -131,7 +208,13 @@ describe("filterTimelineEntries", () => {
 describe("groupTimelineByDay", () => {
   it("groups entries by local day, newest day first", () => {
     const entries: TimelineEntry[] = [
-      { id: "1", kind: "hengo_session", occurredAt: "2026-07-02T09:00:00.000Z", title: "5 min", durationMinutes: 5 },
+      {
+        id: "1",
+        kind: "hengo_session",
+        occurredAt: "2026-07-02T09:00:00.000Z",
+        title: "5 min",
+        durationMinutes: 5,
+      },
       { id: "2", kind: "manual_activity", occurredAt: "2026-07-01T09:00:00.000Z", title: "Ran 5k" },
     ]
     const summary = groupTimelineByDay(entries)

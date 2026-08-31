@@ -33,7 +33,7 @@ export function GrowthTabs() {
               "flex min-h-11 flex-1 items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring/70",
               active
                 ? "bg-emerald-500/12 text-emerald-700 ring-1 ring-emerald-500/20 dark:bg-emerald-400/10 dark:text-emerald-400 dark:ring-emerald-400/20"
-                : "text-muted-foreground/70 hover:text-foreground"
+                : "text-muted-foreground/70 hover:text-foreground",
             )}
           >
             <Icon size={16} strokeWidth={active ? 2.5 : 2} className="shrink-0" />

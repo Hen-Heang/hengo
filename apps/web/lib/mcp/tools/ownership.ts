@@ -13,7 +13,11 @@
 // to `false` here for exactly the same reason.
 import type { SupabaseClient } from "@supabase/supabase-js"
 
-export async function isGoalOwnedBy(db: SupabaseClient, goalId: string, userId: string): Promise<boolean> {
+export async function isGoalOwnedBy(
+  db: SupabaseClient,
+  goalId: string,
+  userId: string,
+): Promise<boolean> {
   const { data, error } = await db.from("goals").select("user_id").eq("id", goalId).maybeSingle()
   if (error || !data) return false
   return data.user_id === userId

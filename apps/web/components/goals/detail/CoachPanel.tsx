@@ -27,10 +27,7 @@ interface CoachPanelProps {
 export function CoachPanel({ isOpen, goalId, goalTitle, onClose, onDraftPlan }: CoachPanelProps) {
   return (
     <Sheet open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <SheetContent
-        side="right"
-        className="flex w-full flex-col gap-0 p-0 sm:max-w-lg"
-      >
+      <SheetContent side="right" className="flex w-full flex-col gap-0 p-0 sm:max-w-lg">
         <SheetHeader className="border-b border-border/60 px-5 py-4">
           <SheetTitle className="flex items-center gap-2 text-base">
             <Sparkles className="h-4 w-4 text-violet-500" /> AI coach

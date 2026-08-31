@@ -1,14 +1,7 @@
 "use client"
 
 import { useSyncExternalStore } from "react"
-import {
-  Area,
-  AreaChart,
-  CartesianGrid,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-} from "recharts"
+import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis } from "recharts"
 
 import type { ProgressPoint } from "@/lib/types"
 import { formatDuration } from "@/lib/utils"
@@ -22,17 +15,17 @@ export function ProgressChart({ data }: { data: ProgressPoint[] }) {
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     () => true,
-    () => false
+    () => false,
   )
 
   return (
     <div className="overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40 lg:p-10">
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs font-medium text-cyan-600 dark:text-cyan-400">
-            Activity
-          </p>
-          <h3 className="mt-1 text-base font-semibold tracking-tight text-foreground sm:text-lg">Weekly progress</h3>
+          <p className="text-xs font-medium text-cyan-600 dark:text-cyan-400">Activity</p>
+          <h3 className="mt-1 text-base font-semibold tracking-tight text-foreground sm:text-lg">
+            Weekly progress
+          </h3>
         </div>
         <div className="rounded-full bg-cyan-500/10 px-3 py-1 text-[11px] font-medium text-cyan-700 dark:text-cyan-300 ring-1 ring-cyan-500/20">
           Last 7 days
@@ -42,10 +35,7 @@ export function ProgressChart({ data }: { data: ProgressPoint[] }) {
       <div className="mt-8 h-64 min-w-0 w-full sm:h-72 lg:h-80">
         {mounted ? (
           <ResponsiveContainer width="100%" height="100%">
-            <AreaChart
-              data={data}
-              margin={{ left: -20, right: 8, top: 10, bottom: 0 }}
-            >
+            <AreaChart data={data} margin={{ left: -20, right: 8, top: 10, bottom: 0 }}>
               <defs>
                 <linearGradient id="minutesFill" x1="0" x2="0" y1="0" y2="1">
                   <stop offset="5%" stopColor="var(--color-primary)" stopOpacity={0.2} />
@@ -74,9 +64,16 @@ export function ProgressChart({ data }: { data: ProgressPoint[] }) {
                   color: "var(--color-popover-foreground)",
                   boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
                   padding: "12px 16px",
-                  backdropFilter: "blur(8px)"
+                  backdropFilter: "blur(8px)",
                 }}
-                labelStyle={{ fontWeight: "900", marginBottom: "4px", color: "var(--color-foreground)", textTransform: "uppercase", fontSize: "10px", letterSpacing: "0.1em" }}
+                labelStyle={{
+                  fontWeight: "900",
+                  marginBottom: "4px",
+                  color: "var(--color-foreground)",
+                  textTransform: "uppercase",
+                  fontSize: "10px",
+                  letterSpacing: "0.1em",
+                }}
                 itemStyle={{ padding: 0, fontSize: "14px", fontWeight: "bold" }}
                 formatter={(value) => [formatDuration(Number(value)), "Activity"]}
               />

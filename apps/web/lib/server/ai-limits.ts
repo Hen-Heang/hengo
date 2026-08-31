@@ -9,7 +9,10 @@ export const RATE_LIMIT_BUCKETS = {
   structured: { limit: 50, description: "AI grading / generation requests" },
   tts: { limit: 50, description: "Text-to-speech requests" },
   transcription: { limit: 50, description: "Speech transcription requests" },
-  large_generation: { limit: 20, description: "Large content generation (vocab sets, listening lessons)" },
+  large_generation: {
+    limit: 20,
+    description: "Large content generation (vocab sets, listening lessons)",
+  },
   mcp_read: { limit: 200, description: "MCP connector reads" },
   mcp_write: { limit: 100, description: "MCP connector writes" },
 } as const
@@ -139,6 +142,9 @@ export async function recordUsage(db: SupabaseClient, record: UsageRecord): Prom
       error_code: record.errorCode ?? null,
     })
   } catch (err) {
-    console.error("[ai-usage] failed to record usage:", err instanceof Error ? err.message : "unknown error")
+    console.error(
+      "[ai-usage] failed to record usage:",
+      err instanceof Error ? err.message : "unknown error",
+    )
   }
 }

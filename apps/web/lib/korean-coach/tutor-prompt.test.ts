@@ -26,4 +26,3 @@ describe("Korean tutor prompt", () => {
     expect(prompt).toContain("Balance communication success")
   })
 })
-

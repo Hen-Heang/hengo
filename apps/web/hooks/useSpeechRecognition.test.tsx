@@ -20,9 +20,7 @@ class MockSpeechRecognition {
   interimResults = false
   lang = ""
   onstart: (() => void) | null = null
-  onresult:
-    | ((event: { results: ArrayLike<MockResult>; resultIndex: number }) => void)
-    | null = null
+  onresult: ((event: { results: ArrayLike<MockResult>; resultIndex: number }) => void) | null = null
   onend: (() => void) | null = null
   onerror: ((event: { error?: string }) => void) | null = null
   start = vi.fn()
@@ -56,9 +54,7 @@ describe("useSpeechRecognition", () => {
   })
 
   it("keeps a multi-sentence answer across browser silence restarts", () => {
-    const { result } = renderHook(() =>
-      useSpeechRecognition({ lang: "ko-KR", continuous: true })
-    )
+    const { result } = renderHook(() => useSpeechRecognition({ lang: "ko-KR", continuous: true }))
     const recognition = MockSpeechRecognition.instances[0]
 
     expect(recognition.lang).toBe("ko-KR")
@@ -87,16 +83,12 @@ describe("useSpeechRecognition", () => {
     act(() => {
       stoppedTranscript = result.current.stop()
     })
-    expect(stoppedTranscript).toBe(
-      "저는 개발자입니다 한국에서 열심히 준비했습니다"
-    )
+    expect(stoppedTranscript).toBe("저는 개발자입니다 한국에서 열심히 준비했습니다")
     expect(result.current.status).toBe("finished")
   })
 
   it("keeps the final interim words when Stop is pressed", () => {
-    const { result } = renderHook(() =>
-      useSpeechRecognition({ lang: "ko-KR", continuous: true })
-    )
+    const { result } = renderHook(() => useSpeechRecognition({ lang: "ko-KR", continuous: true }))
     const recognition = MockSpeechRecognition.instances[0]
 
     act(() => {
@@ -121,9 +113,7 @@ describe("useSpeechRecognition", () => {
   })
 
   it("ignores a late result after reset instead of polluting the next answer", () => {
-    const { result } = renderHook(() =>
-      useSpeechRecognition({ lang: "ko-KR", continuous: true })
-    )
+    const { result } = renderHook(() => useSpeechRecognition({ lang: "ko-KR", continuous: true }))
     const recognition = MockSpeechRecognition.instances[0]
 
     act(() => {
@@ -140,9 +130,7 @@ describe("useSpeechRecognition", () => {
   })
 
   it("stops microphone capture before prompt audio starts", () => {
-    const { result } = renderHook(() =>
-      useSpeechRecognition({ lang: "ko-KR", continuous: true })
-    )
+    const { result } = renderHook(() => useSpeechRecognition({ lang: "ko-KR", continuous: true }))
     const recognition = MockSpeechRecognition.instances[0]
 
     act(() => {

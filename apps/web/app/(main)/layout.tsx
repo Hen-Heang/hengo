@@ -17,9 +17,7 @@ import { sectionRoutePrefixes } from "@/lib/navigation"
 
 const TRACKED_WORKSPACES = Object.keys(sectionRoutePrefixes) as WorkspaceId[]
 
-export default function MainLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export default function MainLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   const pathname = usePathname()
   const router = useRouter()
   const [showOnboarding, setShowOnboarding] = useState(false)
@@ -30,7 +28,7 @@ export default function MainLayout({
       return () => undefined
     },
     () => true,
-    () => false
+    () => false,
   )
 
   useEffect(() => {
@@ -43,7 +41,9 @@ export default function MainLayout({
   // can deep-link back into whatever the user was actually doing.
   useEffect(() => {
     const workspace = TRACKED_WORKSPACES.find((id) =>
-      sectionRoutePrefixes[id].some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+      sectionRoutePrefixes[id].some(
+        (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+      ),
     )
     if (workspace) recordLastVisited(workspace, pathname)
   }, [pathname])

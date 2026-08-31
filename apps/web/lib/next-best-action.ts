@@ -63,7 +63,8 @@ const compareTasks = (a: Task, b: Task): number => {
   const bDue = dueKey(b) ?? "9999-12-31"
   return (
     aDue.localeCompare(bDue) ||
-    (IMPACT_RANK[a.impact_level ?? "medium"] ?? 1) - (IMPACT_RANK[b.impact_level ?? "medium"] ?? 1) ||
+    (IMPACT_RANK[a.impact_level ?? "medium"] ?? 1) -
+      (IMPACT_RANK[b.impact_level ?? "medium"] ?? 1) ||
     (a.title ?? "").localeCompare(b.title ?? "") ||
     a.id.localeCompare(b.id)
   )
@@ -104,10 +105,16 @@ export function selectNextBestAction(input: NextBestActionInput): NextBestAction
 
   const candidates: [NextActionRule, Task | null][] = [
     ["overdue_high_impact", pick(open.filter((t) => t.impact_level === "high" && isOverdue(t)))],
-    ["at_risk_key_result", pick(open.filter((t) => t.key_result_id && atRiskKrIds.has(t.key_result_id)))],
+    [
+      "at_risk_key_result",
+      pick(open.filter((t) => t.key_result_id && atRiskKrIds.has(t.key_result_id))),
+    ],
     ["active_phase", pick(open.filter((t) => t.phase_id && activePhaseIds.has(t.phase_id)))],
     ["nearest_deadline", pick(open.filter((t) => dueKey(t) !== null))],
-    ["unscheduled_high_impact", pick(open.filter((t) => t.impact_level === "high" && !isScheduled(t)))],
+    [
+      "unscheduled_high_impact",
+      pick(open.filter((t) => t.impact_level === "high" && !isScheduled(t))),
+    ],
     ["earliest_scheduled", pick(open.filter(isScheduled))],
   ]
 

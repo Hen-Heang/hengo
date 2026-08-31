@@ -2,14 +2,7 @@
 // (src/utils/parseYMD.ts, taskDateUtils.ts, timeGrid.ts). No Supabase / router
 // coupling — these are date math + time-grid layout used by the calendar views.
 
-import {
-  addDays,
-  format,
-  isValid,
-  parseISO,
-  subDays,
-  format as formatDateFn,
-} from "date-fns"
+import { addDays, format, isValid, parseISO, subDays, format as formatDateFn } from "date-fns"
 import type { Task } from "@/lib/tasks"
 
 const DATE_ONLY_RE = /^\d{4}-\d{2}-\d{2}$/
@@ -56,9 +49,8 @@ export const getTaskDateKey = (raw?: string | null): string | null => {
   return parsed ? format(parsed, "yyyy-MM-dd") : null
 }
 
-export const getTaskAnchorDate = (task: {
-  start_date?: string | null
-}): Date => parseYMD(getTaskDateKey(task.start_date)) || new Date()
+export const getTaskAnchorDate = (task: { start_date?: string | null }): Date =>
+  parseYMD(getTaskDateKey(task.start_date)) || new Date()
 
 /** Tasks that overlap the given calendar day, sorted by daily start time. */
 export const filterTasksByDate = (tasks: Task[], date: Date): Task[] => {
@@ -98,7 +90,7 @@ export const getPreviousDay = (date: Date): Date => subDays(date, 1)
 
 export const formatTaskDateRange = (
   startDateValue?: string | null,
-  endDateValue?: string | null
+  endDateValue?: string | null,
 ): string => {
   if (!startDateValue) return "-"
   const startDate = parseISO(startDateValue)
@@ -121,7 +113,7 @@ export const formatTaskTime = (timeValue?: string | null): string => {
 export const formatTaskTimeRange = (
   startTime?: string | null,
   endTime?: string | null,
-  isAnytime?: boolean | null
+  isAnytime?: boolean | null,
 ): string => {
   if (isAnytime) return "Anytime"
   if (!startTime) return "-"
@@ -145,8 +137,7 @@ export const parseHHMMToMinutes = (value?: string | null): number | null => {
 }
 
 /** Tolerant variant for form fields: invalid/empty maps to 0. */
-export const hhmmToMinutes = (value?: string | null): number =>
-  parseHHMMToMinutes(value) ?? 0
+export const hhmmToMinutes = (value?: string | null): number => parseHHMMToMinutes(value) ?? 0
 
 export const minutesToHHMM = (n: number): string =>
   `${String(Math.floor(n / 60)).padStart(2, "0")}:${String(n % 60).padStart(2, "0")}`
@@ -157,9 +148,7 @@ export const minutesToHHMM = (n: number): string =>
  */
 export const bumpEndAfterStart = (start: string, end: string): string => {
   const s = hhmmToMinutes(start)
-  return s >= hhmmToMinutes(end)
-    ? minutesToHHMM(Math.min(s + 60, MINUTES_IN_DAY - 1))
-    : end
+  return s >= hhmmToMinutes(end) ? minutesToHHMM(Math.min(s + 60, MINUTES_IN_DAY - 1)) : end
 }
 
 export interface TaskTimeBounds {
@@ -186,10 +175,7 @@ export const getTaskTimeBounds = (task: Task): TaskTimeBounds => {
   }
 
   const clampedStart = Math.max(0, Math.min(startMin, MINUTES_IN_DAY))
-  const clampedEnd = Math.max(
-    clampedStart + MIN_BLOCK_MINUTES,
-    Math.min(endMin, MINUTES_IN_DAY)
-  )
+  const clampedEnd = Math.max(clampedStart + MIN_BLOCK_MINUTES, Math.min(endMin, MINUTES_IN_DAY))
   return { isAllDay: false, startMin: clampedStart, endMin: clampedEnd }
 }
 
@@ -225,7 +211,7 @@ export const layoutDayTasks = (tasks: Task[]): PositionedTask[] => {
       let span = 1
       for (let l = t.lane + 1; l < lanes; l++) {
         const blocked = cluster.some(
-          (o) => o !== t && o.lane === l && o.startMin < t.endMin && o.endMin > t.startMin
+          (o) => o !== t && o.lane === l && o.startMin < t.endMin && o.endMin > t.startMin,
         )
         if (blocked) break
         span++
@@ -247,7 +233,14 @@ export const layoutDayTasks = (tasks: Task[]): PositionedTask[] => {
     let lane = laneEnds.findIndex((end) => end <= ev.startMin)
     if (lane === -1) lane = laneEnds.length
 
-    cluster.push({ task: ev.task, startMin: ev.startMin, endMin: ev.endMin, lane, lanes: 1, span: 1 })
+    cluster.push({
+      task: ev.task,
+      startMin: ev.startMin,
+      endMin: ev.endMin,
+      lane,
+      lanes: 1,
+      span: 1,
+    })
     clusterEnd = Math.max(clusterEnd, ev.endMin)
   }
   if (cluster.length) flush()

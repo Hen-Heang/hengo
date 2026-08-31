@@ -21,7 +21,7 @@ export function useSidebarState() {
   const collapsed = useSyncExternalStore(
     subscribe,
     readSidebarCollapsed,
-    () => false // server / first paint: expanded
+    () => false, // server / first paint: expanded
   )
 
   const toggle = useCallback(() => {

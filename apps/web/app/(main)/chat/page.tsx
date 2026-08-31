@@ -3,7 +3,18 @@
 import { Suspense, useCallback, useEffect, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import { AlertCircle, BrainCircuit, ChevronLeft, History, MessageCircle, PanelLeft, RotateCcw, ScanText, Settings2, Wand2 } from "lucide-react"
+import {
+  AlertCircle,
+  BrainCircuit,
+  ChevronLeft,
+  History,
+  MessageCircle,
+  PanelLeft,
+  RotateCcw,
+  ScanText,
+  Settings2,
+  Wand2,
+} from "lucide-react"
 import { motion } from "motion/react"
 
 import { ChatWindow } from "@/components/chat/ChatWindow"
@@ -52,9 +63,12 @@ function ChatPageContent() {
   const queryMode = searchParams.get("mode")
   const [mode, setMode] = useState<AiMode>(
     !initialDraft &&
-      (queryMode === "analyze" || queryMode === "generate" || queryMode === "corrections" || queryMode === "memory")
+      (queryMode === "analyze" ||
+        queryMode === "generate" ||
+        queryMode === "corrections" ||
+        queryMode === "memory")
       ? (queryMode as AiMode)
-      : "chat"
+      : "chat",
   )
 
   // Keep the URL in sync with the active mode, so refreshing, sharing a link,
@@ -71,13 +85,22 @@ function ChatPageContent() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mode])
 
-  const { conversations, isLoading: conversationsLoading, rename, remove, refresh } =
-    useConversations()
+  const {
+    conversations,
+    isLoading: conversationsLoading,
+    rename,
+    remove,
+    refresh,
+  } = useConversations()
 
   const [conversationId, setConversationId] = useState<string | null>(null)
   const [bootstrapped, setBootstrapped] = useState(Boolean(deepLinkConversationId))
   const [error, setError] = useState("")
-  const [scenarioContext, setScenarioContext] = useState<{ scenarioId: string; goal: string; title: string } | null>(null)
+  const [scenarioContext, setScenarioContext] = useState<{
+    scenarioId: string
+    goal: string
+    title: string
+  } | null>(null)
 
   // Deep-linked scenario conversation: resume it directly, skip the normal
   // "most recent or new" bootstrap entirely.
@@ -100,7 +123,12 @@ function ChatPageContent() {
       .then((conv) => {
         if (!active || !conv.scenarioId) return
         return scenarioApi.getById(conv.scenarioId).then((scenario) => {
-          if (active) setScenarioContext({ scenarioId: scenario.id, goal: scenario.goal, title: scenario.title })
+          if (active)
+            setScenarioContext({
+              scenarioId: scenario.id,
+              goal: scenario.goal,
+              title: scenario.title,
+            })
         })
       })
       .catch(() => {
@@ -146,7 +174,15 @@ function ChatPageContent() {
         void refresh()
       })
       .catch(() => setError("Failed to start conversation. Please refresh."))
-  }, [mode, conversationId, conversationsLoading, bootstrapped, conversations, initialDraft, refresh])
+  }, [
+    mode,
+    conversationId,
+    conversationsLoading,
+    bootstrapped,
+    conversations,
+    initialDraft,
+    refresh,
+  ])
 
   const startNewChat = useCallback(async () => {
     setIsStartingNewChat(true)
@@ -177,7 +213,7 @@ function ChatPageContent() {
         setBootstrapped(false)
       }
     },
-    [remove, conversationId]
+    [remove, conversationId],
   )
 
   const sidebarProps = {
@@ -209,7 +245,9 @@ function ChatPageContent() {
           </div>
           <div>
             <h3 className="text-lg font-bold text-foreground">Connection Error</h3>
-            <p className="mt-2 text-sm font-medium text-muted-foreground leading-relaxed">{error}</p>
+            <p className="mt-2 text-sm font-medium text-muted-foreground leading-relaxed">
+              {error}
+            </p>
           </div>
           <Button
             type="button"
@@ -270,7 +308,9 @@ function ChatPageContent() {
                   aria-label={label}
                   className={cn(
                     "relative min-h-11 min-w-11 items-center gap-1.5 overflow-hidden rounded-lg border-0 px-2.5 text-xs font-semibold shadow-none transition-colors active:scale-95 sm:px-3.5",
-                    active ? "bg-transparent text-white hover:bg-transparent hover:text-white" : "text-muted-foreground hover:bg-background/60 hover:text-foreground"
+                    active
+                      ? "bg-transparent text-white hover:bg-transparent hover:text-white"
+                      : "text-muted-foreground hover:bg-background/60 hover:text-foreground",
                   )}
                 >
                   {active && (
@@ -351,8 +391,8 @@ function ChatPageContent() {
                 <div>
                   <h1 className="text-xl font-semibold text-foreground">Ask Hengo</h1>
                   <p className="mt-1 text-sm text-muted-foreground">
-                    Answers come only from your own notes, journal, goals, and activity — never invented. Every claim
-                    links back to where it came from.
+                    Answers come only from your own notes, journal, goals, and activity — never
+                    invented. Every claim links back to where it came from.
                   </p>
                 </div>
                 <Button asChild variant="outline" size="sm" className="shrink-0">

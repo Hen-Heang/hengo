@@ -50,7 +50,7 @@ export function mergeBusyRanges(ranges: TimeRange[]): TimeRange[] {
 export function computeFreeWindows(
   busy: TimeRange[],
   dayBounds: TimeRange = DEFAULT_DAY_BOUNDS,
-  options: { minWindowMinutes?: number; maxTotalMinutes?: number } = {}
+  options: { minWindowMinutes?: number; maxTotalMinutes?: number } = {},
 ): TimeRange[] {
   const minWindow = options.minWindowMinutes ?? 15
   const merged = mergeBusyRanges(busy)
@@ -94,7 +94,7 @@ export function taskBusyRanges(tasks: Task[]): TimeRange[] {
 export function isoRangeToDayMinutes(
   startIso: string,
   endIso: string,
-  date: Date
+  date: Date,
 ): TimeRange | null {
   const dayStart = new Date(date)
   dayStart.setHours(0, 0, 0, 0)
@@ -113,7 +113,7 @@ export function isoRangeToDayMinutes(
 
 export function googleBusyRangesForDay(
   busy: { start: string; end: string }[],
-  date: Date
+  date: Date,
 ): TimeRange[] {
   return busy
     .map((b) => isoRangeToDayMinutes(b.start, b.end, date))

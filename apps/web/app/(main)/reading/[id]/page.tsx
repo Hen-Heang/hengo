@@ -97,7 +97,7 @@ export default function ReadingUnitPage() {
   const progressMap = useSyncExternalStore(
     subscribeReadingProgress,
     getReadingProgress,
-    getReadingProgressServerSnapshot
+    getReadingProgressServerSnapshot,
   )
   const progress = (unit && progressMap[unit.id]) || { status: "not_started" as const }
 
@@ -134,7 +134,10 @@ export default function ReadingUnitPage() {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-24 text-center">
         <p className="text-lg font-bold text-foreground">Unit not found.</p>
-        <Link href="/phrasebook?mode=reading" className="text-sm font-bold text-emerald-600 hover:underline">
+        <Link
+          href="/phrasebook?mode=reading"
+          className="text-sm font-bold text-emerald-600 hover:underline"
+        >
           Back to Reading Units
         </Link>
       </div>
@@ -189,11 +192,18 @@ export default function ReadingUnitPage() {
     try {
       for (const v of unit.vocab) {
         if (next.has(v.term)) continue
-        await vocabApi.save({ term: v.term, meaning: v.meaning, example: v.example, category: "Reading" })
+        await vocabApi.save({
+          term: v.term,
+          meaning: v.meaning,
+          example: v.example,
+          category: "Reading",
+        })
         next.add(v.term)
         setSavedWords(new Set(next))
       }
-      setVocabMessage("All words added to your flashcards — they will appear in your vocab reviews.")
+      setVocabMessage(
+        "All words added to your flashcards — they will appear in your vocab reviews.",
+      )
     } catch (err) {
       setVocabMessage(getApiErrorMessage(err, "Could not save all words."))
     } finally {
@@ -203,10 +213,7 @@ export default function ReadingUnitPage() {
 
   function handleSubmitQuiz() {
     if (!unit) return
-    const correct = unit.quiz.reduce(
-      (acc, q, i) => acc + (answers[i] === q.answerIndex ? 1 : 0),
-      0
-    )
+    const correct = unit.quiz.reduce((acc, q, i) => acc + (answers[i] === q.answerIndex ? 1 : 0), 0)
     setScore(correct)
     setSubmitted(true)
     void markUnitQuizResult(unit.id, correct, unit.quiz.length)
@@ -321,7 +328,11 @@ export default function ReadingUnitPage() {
       <motion.section variants={itemVariants} className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <BookOpenText size={16} strokeWidth={2.5} className="text-emerald-600 dark:text-emerald-400" />
+            <BookOpenText
+              size={16}
+              strokeWidth={2.5}
+              className="text-emerald-600 dark:text-emerald-400"
+            />
             <h3 className="text-base font-bold tracking-tight text-foreground">Read</h3>
             <span className="hidden text-[11px] font-bold text-muted-foreground/60 sm:inline">
               Tap any word to look it up · tap 🔊 to listen
@@ -332,7 +343,11 @@ export default function ReadingUnitPage() {
             onClick={() => setAllTranslations((v) => !v)}
             className="inline-flex shrink-0 items-center gap-1.5 py-2 text-xs font-bold text-emerald-600 hover:underline dark:text-emerald-400"
           >
-            {allTranslations ? <EyeOff size={13} strokeWidth={3} /> : <Eye size={13} strokeWidth={3} />}
+            {allTranslations ? (
+              <EyeOff size={13} strokeWidth={3} />
+            ) : (
+              <Eye size={13} strokeWidth={3} />
+            )}
             {allTranslations ? "Hide all translations" : "Show all translations"}
           </button>
         </div>
@@ -362,12 +377,16 @@ export default function ReadingUnitPage() {
                     type="button"
                     onClick={() => handleSaveSentence(i, p.korean, p.english)}
                     disabled={savedSentences.has(i) || savingSentence === i}
-                    title={savedSentences.has(i) ? "Saved to your Vocab deck" : "Save this sentence to your Vocab deck"}
+                    title={
+                      savedSentences.has(i)
+                        ? "Saved to your Vocab deck"
+                        : "Save this sentence to your Vocab deck"
+                    }
                     className={cn(
                       "mt-1 shrink-0 rounded-xl p-1.5 transition-all active:scale-90",
                       savedSentences.has(i)
                         ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                        : "text-muted-foreground hover:bg-accent hover:text-foreground",
                     )}
                   >
                     {savingSentence === i ? (
@@ -408,95 +427,104 @@ export default function ReadingUnitPage() {
 
       {/* ── Vocabulary section ── */}
       {unit.vocab.length > 0 && (
-      <motion.section variants={itemVariants} className="space-y-3">
-        <div className="flex flex-wrap items-center justify-between gap-2 px-1">
-          <div className="flex items-center gap-2">
-            <BookmarkPlus size={16} strokeWidth={2.5} className="text-emerald-600 dark:text-emerald-400" />
-            <h3 className="text-base font-bold tracking-tight text-foreground">
-              Key Vocabulary <span className="text-muted-foreground/50">({unit.vocab.length})</span>
-            </h3>
+        <motion.section variants={itemVariants} className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 px-1">
+            <div className="flex items-center gap-2">
+              <BookmarkPlus
+                size={16}
+                strokeWidth={2.5}
+                className="text-emerald-600 dark:text-emerald-400"
+              />
+              <h3 className="text-base font-bold tracking-tight text-foreground">
+                Key Vocabulary{" "}
+                <span className="text-muted-foreground/50">({unit.vocab.length})</span>
+              </h3>
+            </div>
+            <Button
+              type="button"
+              onClick={handleSaveAll}
+              disabled={savingAll || savedWords.size === unit.vocab.length}
+              className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold uppercase tracking-wider text-white hover:bg-emerald-500 active:scale-95"
+            >
+              {savingAll ? (
+                <Loader2 size={13} className="mr-1.5 animate-spin" />
+              ) : (
+                <BookmarkPlus size={13} className="mr-1.5" strokeWidth={3} />
+              )}
+              {savedWords.size === unit.vocab.length ? "All saved" : "Save all to flashcards"}
+            </Button>
           </div>
-          <Button
-            type="button"
-            onClick={handleSaveAll}
-            disabled={savingAll || savedWords.size === unit.vocab.length}
-            className="h-9 rounded-xl bg-emerald-600 px-4 text-xs font-bold uppercase tracking-wider text-white hover:bg-emerald-500 active:scale-95"
-          >
-            {savingAll ? (
-              <Loader2 size={13} className="mr-1.5 animate-spin" />
-            ) : (
-              <BookmarkPlus size={13} className="mr-1.5" strokeWidth={3} />
-            )}
-            {savedWords.size === unit.vocab.length ? "All saved" : "Save all to flashcards"}
-          </Button>
-        </div>
 
-        {vocabMessage && (
-          <p className="px-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">{vocabMessage}</p>
-        )}
+          {vocabMessage && (
+            <p className="px-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              {vocabMessage}
+            </p>
+          )}
 
-        <div className="grid gap-2 sm:grid-cols-2">
-          {unit.vocab.map((v, vi) => {
-            const saved = savedWords.has(v.term)
-            return (
-              <div
-                key={v.term}
-                className="flex items-start justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 dark:bg-white/4"
-              >
-                <div className="min-w-0">
-                  <div className="flex items-center gap-1.5">
-                    {/* Numbered so a word is referenceable ("vocab 5"), matching
-                        the reading points and quiz numbering. */}
-                    <span
-                      aria-label={`Word ${vi + 1}`}
-                      className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-md bg-emerald-500/10 px-1 text-[11px] font-bold tabular-nums text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400"
-                    >
-                      {vi + 1}
-                    </span>
-                    <p className="font-extrabold text-foreground">{v.term}</p>
-                    <SpeakButton text={v.term} />
-                  </div>
-                  <p className="mt-0.5 text-sm font-medium text-muted-foreground">{v.meaning}</p>
-                  {v.example && (
-                    <p className="mt-1 text-xs font-medium italic text-muted-foreground/60">
-                      {v.example}
-                    </p>
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleSaveWord(v.term, v.meaning, v.example)}
-                  disabled={saved || savingWord === v.term}
-                  title={saved ? "Saved to flashcards" : "Save to flashcards"}
-                  className={cn(
-                    "mt-1 shrink-0 rounded-xl border p-2 transition-all active:scale-90",
-                    saved
-                      ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
-                      : "border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-                  )}
+          <div className="grid gap-2 sm:grid-cols-2">
+            {unit.vocab.map((v, vi) => {
+              const saved = savedWords.has(v.term)
+              return (
+                <div
+                  key={v.term}
+                  className="flex items-start justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 dark:bg-white/4"
                 >
-                  {savingWord === v.term ? (
-                    <Loader2 size={14} className="animate-spin" />
-                  ) : saved ? (
-                    <CheckCircle2 size={14} strokeWidth={2.5} />
-                  ) : (
-                    <BookmarkPlus size={14} strokeWidth={2.5} />
-                  )}
-                </button>
-              </div>
-            )
-          })}
-        </div>
-      </motion.section>
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      {/* Numbered so a word is referenceable ("vocab 5"), matching
+                        the reading points and quiz numbering. */}
+                      <span
+                        aria-label={`Word ${vi + 1}`}
+                        className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-md bg-emerald-500/10 px-1 text-[11px] font-bold tabular-nums text-emerald-600 ring-1 ring-emerald-500/20 dark:text-emerald-400"
+                      >
+                        {vi + 1}
+                      </span>
+                      <p className="font-extrabold text-foreground">{v.term}</p>
+                      <SpeakButton text={v.term} />
+                    </div>
+                    <p className="mt-0.5 text-sm font-medium text-muted-foreground">{v.meaning}</p>
+                    {v.example && (
+                      <p className="mt-1 text-xs font-medium italic text-muted-foreground/60">
+                        {v.example}
+                      </p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleSaveWord(v.term, v.meaning, v.example)}
+                    disabled={saved || savingWord === v.term}
+                    title={saved ? "Saved to flashcards" : "Save to flashcards"}
+                    className={cn(
+                      "mt-1 shrink-0 rounded-xl border p-2 transition-all active:scale-90",
+                      saved
+                        ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                        : "border-border text-muted-foreground hover:bg-accent hover:text-foreground",
+                    )}
+                  >
+                    {savingWord === v.term ? (
+                      <Loader2 size={14} className="animate-spin" />
+                    ) : saved ? (
+                      <CheckCircle2 size={14} strokeWidth={2.5} />
+                    ) : (
+                      <BookmarkPlus size={14} strokeWidth={2.5} />
+                    )}
+                  </button>
+                </div>
+              )
+            })}
+          </div>
+        </motion.section>
       )}
 
       {/* ── Quiz section ── */}
       <motion.section variants={itemVariants} className="space-y-3">
         <div className="flex items-center gap-2 px-1">
-          <GraduationCap size={16} strokeWidth={2.5} className="text-emerald-600 dark:text-emerald-400" />
-          <h3 className="text-base font-bold tracking-tight text-foreground">
-            Comprehension Quiz
-          </h3>
+          <GraduationCap
+            size={16}
+            strokeWidth={2.5}
+            className="text-emerald-600 dark:text-emerald-400"
+          />
+          <h3 className="text-base font-bold tracking-tight text-foreground">Comprehension Quiz</h3>
           <span className="text-[11px] font-bold text-muted-foreground/60">
             {unit.quiz.length > 0 ? "Pass to complete the unit" : "No quiz in this unit"}
           </span>
@@ -505,8 +533,8 @@ export default function ReadingUnitPage() {
         {unit.quiz.length === 0 ? (
           <div className="flex flex-col items-start gap-3 rounded-[1.8rem] border border-border bg-card p-5 dark:bg-slate-900/40 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm font-medium text-muted-foreground">
-              This unit has no quiz — mark it as completed once you have finished reading.
-              You can add questions any time with the edit button above.
+              This unit has no quiz — mark it as completed once you have finished reading. You can
+              add questions any time with the edit button above.
             </p>
             {progress.status === "completed" ? (
               <span className="inline-flex shrink-0 items-center gap-1.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
@@ -528,106 +556,122 @@ export default function ReadingUnitPage() {
           </div>
         ) : (
           <>
-        {submitted && (
-          <div
-            className={cn(
-              "flex items-center justify-between rounded-[1.8rem] border p-5",
-              passed
-                ? "border-emerald-500/30 bg-emerald-500/5"
-                : "border-amber-500/30 bg-amber-500/5"
-            )}
-          >
-            <div className="flex items-center gap-3">
-              {passed ? (
-                <CheckCircle2 size={24} strokeWidth={2.5} className="text-emerald-600 dark:text-emerald-400" />
-              ) : (
-                <RotateCcw size={24} strokeWidth={2.5} className="text-amber-600 dark:text-amber-400" />
-              )}
-              <div>
-                <p className="text-base font-bold text-foreground">
-                  {score}/{unit.quiz.length} correct
-                </p>
-                <p className="text-xs font-bold text-muted-foreground">
-                  {passed
-                    ? "Unit completed! The vocabulary you saved will come back in your reviews."
-                    : "Almost there — re-read the text above and try again."}
-                </p>
-              </div>
-            </div>
-            <Button
-              type="button"
-              onClick={handleRetryQuiz}
-              className="h-9 rounded-xl border border-border bg-background px-4 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-accent active:scale-95"
-            >
-              <RotateCcw size={13} className="mr-1.5" strokeWidth={3} /> Retry
-            </Button>
-          </div>
-        )}
-
-        <div className="space-y-3">
-          {unit.quiz.map((q, qi) => {
-            const selected = answers[qi]
-            return (
+            {submitted && (
               <div
-                key={qi}
-                className="rounded-[1.8rem] border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
-              >
-                <p className="font-extrabold text-foreground">
-                  <span className="mr-2 text-muted-foreground/50">Q{qi + 1}.</span>
-                  {q.question}
-                </p>
-                <div className="mt-3 grid gap-2 sm:grid-cols-2">
-                  {q.options.map((opt, oi) => {
-                    const isSelected = selected === oi
-                    const isCorrect = submitted && oi === q.answerIndex
-                    const isWrongPick = submitted && isSelected && oi !== q.answerIndex
-                    return (
-                      <button
-                        key={oi}
-                        type="button"
-                        disabled={submitted}
-                        onClick={() => setAnswers((prev) => ({ ...prev, [qi]: oi }))}
-                        className={cn(
-                          "flex items-center justify-between gap-2 rounded-xl border px-4 py-2.5 text-left text-sm font-bold transition-all active:scale-[0.98]",
-                          isCorrect
-                            ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
-                            : isWrongPick
-                              ? "border-destructive/40 bg-destructive/5 text-destructive"
-                              : isSelected
-                                ? "border-emerald-500/50 bg-emerald-500/5 text-foreground"
-                                : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground"
-                        )}
-                      >
-                        <span>{opt}</span>
-                        {isCorrect && <CheckCircle2 size={15} strokeWidth={3} className="shrink-0" />}
-                        {isWrongPick && <XCircle size={15} strokeWidth={3} className="shrink-0" />}
-                      </button>
-                    )
-                  })}
-                </div>
-                {submitted && q.explanation && (
-                  <div className="mt-3 flex items-start gap-2 rounded-xl bg-accent/50 p-3 text-xs font-medium leading-relaxed text-muted-foreground">
-                    <Lightbulb size={13} strokeWidth={2.5} className="mt-0.5 shrink-0 text-amber-500" />
-                    {q.explanation}
-                  </div>
+                className={cn(
+                  "flex items-center justify-between rounded-[1.8rem] border p-5",
+                  passed
+                    ? "border-emerald-500/30 bg-emerald-500/5"
+                    : "border-amber-500/30 bg-amber-500/5",
                 )}
+              >
+                <div className="flex items-center gap-3">
+                  {passed ? (
+                    <CheckCircle2
+                      size={24}
+                      strokeWidth={2.5}
+                      className="text-emerald-600 dark:text-emerald-400"
+                    />
+                  ) : (
+                    <RotateCcw
+                      size={24}
+                      strokeWidth={2.5}
+                      className="text-amber-600 dark:text-amber-400"
+                    />
+                  )}
+                  <div>
+                    <p className="text-base font-bold text-foreground">
+                      {score}/{unit.quiz.length} correct
+                    </p>
+                    <p className="text-xs font-bold text-muted-foreground">
+                      {passed
+                        ? "Unit completed! The vocabulary you saved will come back in your reviews."
+                        : "Almost there — re-read the text above and try again."}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  type="button"
+                  onClick={handleRetryQuiz}
+                  className="h-9 rounded-xl border border-border bg-background px-4 text-xs font-bold uppercase tracking-wider text-foreground hover:bg-accent active:scale-95"
+                >
+                  <RotateCcw size={13} className="mr-1.5" strokeWidth={3} /> Retry
+                </Button>
               </div>
-            )
-          })}
-        </div>
+            )}
 
-        {!submitted && (
-          <Button
-            type="button"
-            onClick={handleSubmitQuiz}
-            disabled={!allAnswered}
-            className="h-11 w-full rounded-2xl bg-emerald-600 text-xs font-bold uppercase tracking-wide text-white hover:bg-emerald-500 active:scale-[0.99] sm:w-auto sm:px-8"
-          >
-            {allAnswered
-              ? "Submit answers"
-              : `Answer all questions (${Object.keys(answers).length}/${unit.quiz.length})`}
-          </Button>
-        )}
+            <div className="space-y-3">
+              {unit.quiz.map((q, qi) => {
+                const selected = answers[qi]
+                return (
+                  <div
+                    key={qi}
+                    className="rounded-[1.8rem] border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
+                  >
+                    <p className="font-extrabold text-foreground">
+                      <span className="mr-2 text-muted-foreground/50">Q{qi + 1}.</span>
+                      {q.question}
+                    </p>
+                    <div className="mt-3 grid gap-2 sm:grid-cols-2">
+                      {q.options.map((opt, oi) => {
+                        const isSelected = selected === oi
+                        const isCorrect = submitted && oi === q.answerIndex
+                        const isWrongPick = submitted && isSelected && oi !== q.answerIndex
+                        return (
+                          <button
+                            key={oi}
+                            type="button"
+                            disabled={submitted}
+                            onClick={() => setAnswers((prev) => ({ ...prev, [qi]: oi }))}
+                            className={cn(
+                              "flex items-center justify-between gap-2 rounded-xl border px-4 py-2.5 text-left text-sm font-bold transition-all active:scale-[0.98]",
+                              isCorrect
+                                ? "border-emerald-500/50 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300"
+                                : isWrongPick
+                                  ? "border-destructive/40 bg-destructive/5 text-destructive"
+                                  : isSelected
+                                    ? "border-emerald-500/50 bg-emerald-500/5 text-foreground"
+                                    : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+                            )}
+                          >
+                            <span>{opt}</span>
+                            {isCorrect && (
+                              <CheckCircle2 size={15} strokeWidth={3} className="shrink-0" />
+                            )}
+                            {isWrongPick && (
+                              <XCircle size={15} strokeWidth={3} className="shrink-0" />
+                            )}
+                          </button>
+                        )
+                      })}
+                    </div>
+                    {submitted && q.explanation && (
+                      <div className="mt-3 flex items-start gap-2 rounded-xl bg-accent/50 p-3 text-xs font-medium leading-relaxed text-muted-foreground">
+                        <Lightbulb
+                          size={13}
+                          strokeWidth={2.5}
+                          className="mt-0.5 shrink-0 text-amber-500"
+                        />
+                        {q.explanation}
+                      </div>
+                    )}
+                  </div>
+                )
+              })}
+            </div>
+
+            {!submitted && (
+              <Button
+                type="button"
+                onClick={handleSubmitQuiz}
+                disabled={!allAnswered}
+                className="h-11 w-full rounded-2xl bg-emerald-600 text-xs font-bold uppercase tracking-wide text-white hover:bg-emerald-500 active:scale-[0.99] sm:w-auto sm:px-8"
+              >
+                {allAnswered
+                  ? "Submit answers"
+                  : `Answer all questions (${Object.keys(answers).length}/${unit.quiz.length})`}
+              </Button>
+            )}
           </>
         )}
       </motion.section>

@@ -11,7 +11,11 @@ describe("calculateUpdatedMastery", () => {
   it("trends upward over repeated strong attempts", () => {
     let mastery = 20
     for (let i = 0; i < 8; i++) {
-      mastery = calculateUpdatedMastery({ currentMastery: mastery, attemptScore: 95, attemptCount: i })
+      mastery = calculateUpdatedMastery({
+        currentMastery: mastery,
+        attemptScore: 95,
+        attemptCount: i,
+      })
     }
     expect(mastery).toBeGreaterThan(70)
   })
@@ -19,7 +23,11 @@ describe("calculateUpdatedMastery", () => {
   it("trends downward over repeated weak attempts", () => {
     let mastery = 80
     for (let i = 0; i < 8; i++) {
-      mastery = calculateUpdatedMastery({ currentMastery: mastery, attemptScore: 10, attemptCount: i })
+      mastery = calculateUpdatedMastery({
+        currentMastery: mastery,
+        attemptScore: 10,
+        attemptCount: i,
+      })
     }
     expect(mastery).toBeLessThan(40)
   })
@@ -27,7 +35,11 @@ describe("calculateUpdatedMastery", () => {
   it("never exceeds 100 or drops below 0", () => {
     let mastery = 0
     for (let i = 0; i < 20; i++) {
-      mastery = calculateUpdatedMastery({ currentMastery: mastery, attemptScore: 100, attemptCount: i })
+      mastery = calculateUpdatedMastery({
+        currentMastery: mastery,
+        attemptScore: 100,
+        attemptCount: i,
+      })
     }
     expect(mastery).toBeLessThanOrEqual(100)
 
@@ -39,14 +51,28 @@ describe("calculateUpdatedMastery", () => {
   })
 
   it("clamps out-of-range inputs instead of producing invalid output", () => {
-    const next = calculateUpdatedMastery({ currentMastery: 150, attemptScore: -20, attemptCount: 5 })
+    const next = calculateUpdatedMastery({
+      currentMastery: 150,
+      attemptScore: -20,
+      attemptCount: 5,
+    })
     expect(next).toBeGreaterThanOrEqual(0)
     expect(next).toBeLessThanOrEqual(100)
   })
 
   it("weighs a hard-difficulty attempt more than an easy one", () => {
-    const hard = calculateUpdatedMastery({ currentMastery: 50, attemptScore: 90, attemptCount: 5, difficulty: "hard" })
-    const easy = calculateUpdatedMastery({ currentMastery: 50, attemptScore: 90, attemptCount: 5, difficulty: "easy" })
+    const hard = calculateUpdatedMastery({
+      currentMastery: 50,
+      attemptScore: 90,
+      attemptCount: 5,
+      difficulty: "hard",
+    })
+    const easy = calculateUpdatedMastery({
+      currentMastery: 50,
+      attemptScore: 90,
+      attemptCount: 5,
+      difficulty: "easy",
+    })
     expect(hard).toBeGreaterThan(easy)
   })
 

@@ -67,10 +67,12 @@ export function validateInboxItemInput(input: {
   const errors: InboxValidationErrors = {}
   const content = input.content.trim()
   if (!content) errors.content = "Write or dictate something to capture."
-  else if (content.length > MAX_CONTENT_LENGTH) errors.content = `Keep it under ${MAX_CONTENT_LENGTH} characters.`
+  else if (content.length > MAX_CONTENT_LENGTH)
+    errors.content = `Keep it under ${MAX_CONTENT_LENGTH} characters.`
 
   const title = input.title?.trim()
-  if (title && title.length > MAX_TITLE_LENGTH) errors.title = `Keep the title under ${MAX_TITLE_LENGTH} characters.`
+  if (title && title.length > MAX_TITLE_LENGTH)
+    errors.title = `Keep the title under ${MAX_TITLE_LENGTH} characters.`
 
   return errors
 }
@@ -158,7 +160,10 @@ export interface NoteConversionPayload {
 }
 
 /** Builds the note payload for an inbox → note conversion. Pure — no Supabase calls. */
-export function buildNoteConversionPayload(item: InboxItem, existingSlugs: string[] = []): NoteConversionPayload {
+export function buildNoteConversionPayload(
+  item: InboxItem,
+  existingSlugs: string[] = [],
+): NoteConversionPayload {
   const title = item.title?.trim() || item.content.slice(0, 60).trim() || "Untitled note"
   const slug = dedupeSlug(slugifyInboxTitle(title), existingSlugs)
   return {

@@ -101,7 +101,12 @@ export const skillsApi = {
       })
       if (error) throw error
     } catch (err) {
-      console.warn("[skills] failed to record skill event", input.skillCode, input.sourceFeature, err)
+      console.warn(
+        "[skills] failed to record skill event",
+        input.skillCode,
+        input.sourceFeature,
+        err,
+      )
     }
   },
 }

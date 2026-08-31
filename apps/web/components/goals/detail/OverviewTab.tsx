@@ -101,7 +101,9 @@ export function OverviewTab({
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-medium text-muted-foreground">
               <span className="inline-flex items-center gap-1">
                 <Clock size={12} />
-                {nextAction.effortMinutes > 0 ? formatMinutes(nextAction.effortMinutes) : "No estimate"}
+                {nextAction.effortMinutes > 0
+                  ? formatMinutes(nextAction.effortMinutes)
+                  : "No estimate"}
               </span>
               {nextAction.keyResult && (
                 <span className="inline-flex items-center gap-1">

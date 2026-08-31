@@ -112,7 +112,10 @@ export const scenarioSessionsApi = {
     if (error) throw error
     if (!session) return 0
     const nextCount = session.user_turn_count + 1
-    await supabase.from("kori_scenario_sessions").update({ user_turn_count: nextCount }).eq("id", session.id)
+    await supabase
+      .from("kori_scenario_sessions")
+      .update({ user_turn_count: nextCount })
+      .eq("id", session.id)
     return nextCount
   },
 

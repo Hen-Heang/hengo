@@ -8,7 +8,7 @@ test.use({
 
 async function expectNoDocumentOverflow(page: Page) {
   const overflow = await page.evaluate(
-    () => document.documentElement.scrollWidth - document.documentElement.clientWidth
+    () => document.documentElement.scrollWidth - document.documentElement.clientWidth,
   )
   expect(overflow, "document-level horizontal overflow").toBeLessThanOrEqual(1)
 }
@@ -78,7 +78,7 @@ test.describe("authenticated second-brain journey at 428 × 926", () => {
     await page.goto("/review/morning")
     await expect(page.getByRole("link", { name: "Morning" })).toHaveAttribute(
       "aria-current",
-      "page"
+      "page",
     )
     await expectNoDocumentOverflow(page)
     expect(browserErrors).toEqual([])

@@ -11,19 +11,19 @@ Hengo is a client-side SPA over Supabase (`lib/supabase.ts`, single browser clie
 of `app/api/ai/*` route handlers — see `CLAUDE.md` for the full architecture. Before adding anything
 new, this is what already exists that the second-brain features build on or must not duplicate:
 
-| Capability | Already exists as | Notes |
-|---|---|---|
-| Notes | `kori_notes` table, `lib/api/notes.ts` (`notesApi`), `/notes` pages | Slug-keyed, `tags text[]`, `category`, `icon`. No FTS, no goal/task relations, no pin, no source URL. Phase 2 extends this additively. |
-| Goals / tasks | Orbit's shared `goals` / `tasks` tables, `lib/api/goals.ts` (`goalsApi`, `tasksApi`) | Reused as-is; `tasksApi.create` needs `start_date`/`end_date`. Inbox → Task conversion goes through this. |
-| Habits | `kori_habits`, `lib/api/habits.ts` | Generic daily check-off. |
-| Recovery | `kori_focus_*` tables, `lib/api/recovery.ts`, `lib/recovery.ts` | Domain-neutral by design — timeline aggregation must keep this wording constraint. |
-| Activity log | `kori_activity_log`, `lib/api/progress.ts` | Per-feature session duration; this is *time spent in Hengo*, not a manual real-life activity log — Phase 3 must keep these visually distinct (spec requirement). |
-| Push / Telegram | `kori_push_subscriptions`, `kori_telegram_links`, `lib/api/push.ts`, `kori-send-push` / `kori-send-telegram` Edge Functions | Fan-out already handles "one channel failing doesn't block the other" (`kori_dispatch_push`, per README §12). Phase 4 reuses this instead of building new delivery. |
-| Scheduled reminders | `pg_cron` jobs calling `kori_send_reviews_due_reminders` etc., each with its own once-a-day dedupe stamp on `kori_profiles` | Pattern to imitate for generic reminders' idempotency, not touch. |
-| Command palette | `components/app/quick-switcher.tsx` (⌘K / `/`) | Global keyboard shortcut is already claimed; Quick Capture must be an entry *inside* this dialog, not a second global listener (confirmed no other conflict-free combo is registry-tracked — several features register their own page-scoped `keydown` handlers). |
-| Speech-to-text | `hooks/useSpeechRecognition.ts` (browser Web Speech API, `ko-KR` default, no server round-trip) | Reused as-is for Quick Capture voice input — no new OpenAI cost, already proven at 6 call sites. The separate MediaRecorder+Whisper pattern (`hooks/useAudioRecorder.ts`, Korean Coach) is server-side and not needed here. |
-| Nav | `lib/navigation.ts`, single source of truth for sidebar/rail/bottom-bar/more-sheet/quick-switcher | `growth-journal` is already a stubbed `soon` entry — Phase 3 fills it in rather than adding a new one. |
-| Migration conventions | `supabase/migrations/*.sql` | Lowercase SQL, `create table if not exists`, `(select auth.uid())` (subselect form) in RLS policies, named `if not exists` indexes, `check (jsonb_typeof(x) = 'object')` guards on jsonb columns, enum-like columns via `check (col in (...))` not Postgres enums, **no DB trigger for `updated_at`** — the app sets it on write. |
+| Capability            | Already exists as                                                                                                           | Notes                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | --------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Notes                 | `kori_notes` table, `lib/api/notes.ts` (`notesApi`), `/notes` pages                                                         | Slug-keyed, `tags text[]`, `category`, `icon`. No FTS, no goal/task relations, no pin, no source URL. Phase 2 extends this additively.                                                                                                                                                                                            |
+| Goals / tasks         | Orbit's shared `goals` / `tasks` tables, `lib/api/goals.ts` (`goalsApi`, `tasksApi`)                                        | Reused as-is; `tasksApi.create` needs `start_date`/`end_date`. Inbox → Task conversion goes through this.                                                                                                                                                                                                                         |
+| Habits                | `kori_habits`, `lib/api/habits.ts`                                                                                          | Generic daily check-off.                                                                                                                                                                                                                                                                                                          |
+| Recovery              | `kori_focus_*` tables, `lib/api/recovery.ts`, `lib/recovery.ts`                                                             | Domain-neutral by design — timeline aggregation must keep this wording constraint.                                                                                                                                                                                                                                                |
+| Activity log          | `kori_activity_log`, `lib/api/progress.ts`                                                                                  | Per-feature session duration; this is _time spent in Hengo_, not a manual real-life activity log — Phase 3 must keep these visually distinct (spec requirement).                                                                                                                                                                  |
+| Push / Telegram       | `kori_push_subscriptions`, `kori_telegram_links`, `lib/api/push.ts`, `kori-send-push` / `kori-send-telegram` Edge Functions | Fan-out already handles "one channel failing doesn't block the other" (`kori_dispatch_push`, per README §12). Phase 4 reuses this instead of building new delivery.                                                                                                                                                               |
+| Scheduled reminders   | `pg_cron` jobs calling `kori_send_reviews_due_reminders` etc., each with its own once-a-day dedupe stamp on `kori_profiles` | Pattern to imitate for generic reminders' idempotency, not touch.                                                                                                                                                                                                                                                                 |
+| Command palette       | `components/app/quick-switcher.tsx` (⌘K / `/`)                                                                              | Global keyboard shortcut is already claimed; Quick Capture must be an entry _inside_ this dialog, not a second global listener (confirmed no other conflict-free combo is registry-tracked — several features register their own page-scoped `keydown` handlers).                                                                 |
+| Speech-to-text        | `hooks/useSpeechRecognition.ts` (browser Web Speech API, `ko-KR` default, no server round-trip)                             | Reused as-is for Quick Capture voice input — no new OpenAI cost, already proven at 6 call sites. The separate MediaRecorder+Whisper pattern (`hooks/useAudioRecorder.ts`, Korean Coach) is server-side and not needed here.                                                                                                       |
+| Nav                   | `lib/navigation.ts`, single source of truth for sidebar/rail/bottom-bar/more-sheet/quick-switcher                           | `growth-journal` is already a stubbed `soon` entry — Phase 3 fills it in rather than adding a new one.                                                                                                                                                                                                                            |
+| Migration conventions | `supabase/migrations/*.sql`                                                                                                 | Lowercase SQL, `create table if not exists`, `(select auth.uid())` (subselect form) in RLS policies, named `if not exists` indexes, `check (jsonb_typeof(x) = 'object')` guards on jsonb columns, enum-like columns via `check (col in (...))` not Postgres enums, **no DB trigger for `updated_at`** — the app sets it on write. |
 
 No existing implementation of inbox capture, journal, universal reminders, AI memory/retrieval, or
 daily/weekly review surfaces was found anywhere in the repo (`app/`, `components/`, `lib/`, `hooks/`).
@@ -122,7 +122,7 @@ kori_notes (existing table, new columns)
 
 Backfill was automatic: a `not null default 'technical'` column addition backfills every existing row
 without a separate `UPDATE` (verified live — the one pre-existing note came back `note_type: 'technical'`
-after the migration ran). `category`/`icon` keep their original columns and meaning; the *app layer* is
+after the migration ran). `category`/`icon` keep their original columns and meaning; the _app layer_ is
 what changed — the editor now lets `category` and `icon` vary independently instead of always mirroring
 one into the other, and `lib/inbox.ts`'s inbox→note conversion was updated to populate the new `noteType`
 field (via a type→noteType map) instead of misusing `category` for it, since Phase 1 shipped before this
@@ -158,7 +158,7 @@ kori_manual_activities
 
 Every column on `kori_journal_entries` except `id`/`user_id`/`created_at`/`updated_at` is nullable —
 `content` defaults to `''` rather than being required, since the app-layer validation
-(`lib/journal.ts`'s `validateJournalEntryInput`) only requires *some* field to be non-empty, never any
+(`lib/journal.ts`'s `validateJournalEntryInput`) only requires _some_ field to be non-empty, never any
 one specific field, matching "Do not make every field mandatory."
 
 `/timeline` is a client-side, pure-function merge (`lib/timeline.ts`'s `buildTimeline`) of six
@@ -203,13 +203,13 @@ kori_reminders
   that does).
 - **The same algorithm is re-implemented in SQL** (`kori_next_reminder_run`, `stable`, no table access)
   since a `pg_cron` job can't call into the Next.js codebase — this is a genuine dual-implementation
-  reality, documented rather than hidden. To minimize drift risk, the *client* calls this exact SQL
+  reality, documented rather than hidden. To minimize drift risk, the _client_ calls this exact SQL
   function via `supabase.rpc()` for its live "Next: ..." preview (`lib/api/reminders.ts`'s
   `previewNextRun`), so the UI's preview and the server's actual dispatch timing can never disagree with
   each other, even if the JS and SQL implementations ever drift from one another.
 - **Dispatch** (`kori_dispatch_reminders`, `pg_cron` `* * * * *`, matching the existing `kori_send_*`
   jobs' cadence): selects `where status = 'active' and next_run_at <= now()` with `for update skip
-  locked` (safe against the job somehow overlapping itself), re-verifies `entity_id` ownership per
+locked` (safe against the job somehow overlapping itself), re-verifies `entity_id` ownership per
   `entity_type` before every send (a reminder whose linked row was deleted gets `cancelled` with a
   reason, never retried forever), dispatches via `kori_dispatch_push`, then advances `next_run_at` (via
   `kori_next_reminder_run`) or marks `completed` for one-time reminders — all inside the same
@@ -222,7 +222,7 @@ kori_reminders
 - **Two live-only corrections** were applied as immediate follow-ups after the main migration (both are
   now folded into the migration file itself so a fresh replay is already correct, but they weren't caught
   until inspecting the live result):
-  1. `create or replace function` with an *added parameter* does not replace a Postgres function — it
+  1. `create or replace function` with an _added parameter_ does not replace a Postgres function — it
      creates a second overload, since function identity includes parameter types. The first apply left
      **two** `kori_dispatch_push` functions coexisting (the untouched 4-arg original, and the new 5-arg
      one) — the 3 existing study-reminder call sites were silently still resolving to the old,
@@ -233,8 +233,8 @@ kori_reminders
   2. `kori_dispatch_push`, `kori_dispatch_reminders`, and `kori_next_reminder_run` were all left
      executable by `anon`/`authenticated` by Postgres's default (`GRANT EXECUTE` to `PUBLIC` on
      creation) — unlike the existing `kori_send_*_reminders`, which already have execute revoked.
-     `kori_dispatch_push` takes an arbitrary `p_user_id`, so left open it would have let *anyone* spam
-     push/Telegram messages to *any* user via the public REST RPC endpoint. Locked both dispatch
+     `kori_dispatch_push` takes an arbitrary `p_user_id`, so left open it would have let _anyone_ spam
+     push/Telegram messages to _any_ user via the public REST RPC endpoint. Locked both dispatch
      functions down to internal-only (invoked by `pg_cron`-as-`postgres`, which bypasses grants, or by
      other `SECURITY DEFINER` functions); `kori_next_reminder_run` was narrowed to `authenticated`-only
      (still needed for the client-side preview, no reason to leave it open to `anon`).
@@ -272,7 +272,7 @@ kori_memory_candidates
   explicitly tells the model everything inside is data from the user's own stored notes/messages, never
   instructions to follow, and to flag (not obey) anything that reads like an embedded command.
 - **Citations are resolved server-side, not trusted from the model.** The model returns `citedIndexes`
-  (integers into the retrieved-items array it was shown); the route filters those against the *actual*
+  (integers into the retrieved-items array it was shown); the route filters those against the _actual_
   `items` array length before turning them into `sources` in the response — the model can reference an
   item it saw, but can never fabricate a source that wasn't actually retrieved.
 - **The memory-approval loop is real, not cosmetic.** Every fact the model notices lands in
@@ -323,6 +323,7 @@ AI route with no table access of its own:
 ## 4. Implementation checklist
 
 ### Phase 1 — Quick Capture Inbox ✅
+
 - [x] Migration: `kori_inbox_items` (RLS, indexes, generated `tsvector` search column)
 - [x] `lib/inbox.ts` — types, validation, filter/search predicates, conversion payload builders (pure, tested)
 - [x] `lib/api/inbox.ts` — `inboxApi` (list/get/create/update/remove/convertToNote/convertToTask/convertToJournal-stub)
@@ -352,79 +353,82 @@ AI route with no table access of its own:
   test row was deleted so the account was left clean.
 
 ### Phase 2 — Notes → Knowledge Library ✅
+
 - [x] Migration: additive `kori_notes` columns (RLS untouched — no new policy needed), generated
-  `tsvector` search column, indexes
+      `tsvector` search column, indexes
 - [x] `lib/slug.ts`, `lib/tags.ts` — shared pure helpers extracted from `lib/inbox.ts` (slug generation
-  + dedup, tag parsing) so Notes and Inbox don't duplicate the same logic; `lib/inbox.ts` now delegates
-  to them (existing Phase 1 tests re-verified unchanged)
+  - dedup, tag parsing) so Notes and Inbox don't duplicate the same logic; `lib/inbox.ts` now delegates
+    to them (existing Phase 1 tests re-verified unchanged)
 - [x] `lib/notes.ts` — `NoteType`/`NoteMeta`/`Note`/`NoteInput` types (moved here from `lib/api/notes.ts`,
-  matching the `lib/tasks.ts` + `lib/api/goals.ts` split), validation, metadata filter/sort (pure, tested)
+      matching the `lib/tasks.ts` + `lib/api/goals.ts` split), validation, metadata filter/sort (pure, tested)
 - [x] `lib/api/notes.ts` — extended row mapping, `search()` (server-side FTS via `.textSearch`, bounded
-  to 50 rows — never an unbounded client-side content scan), `togglePinned()`
+      to 50 rows — never an unbounded client-side content scan), `togglePinned()`
 - [x] `hooks/useNotes.ts` — extended mutations; new `useNoteSearch(query)` (debounced via new
-  `hooks/useDebouncedValue.ts`)
+      `hooks/useDebouncedValue.ts`)
 - [x] `components/notes/NoteEditor.tsx` — note type select, category field decoupled from icon, chip-based
-  multi-tag editor, source URL field, pin toggle, Write/Preview tabs (reuses `renderMarkdown`), autosave
-  draft protection (localStorage, restorable/discardable banner)
+      multi-tag editor, source URL field, pin toggle, Write/Preview tabs (reuses `renderMarkdown`), autosave
+      draft protection (localStorage, restorable/discardable banner)
 - [x] `components/notes/NoteView.tsx`, `NoteCard.tsx`, `NoteActions.tsx` — pin toggle, note type badge,
-  created/updated timestamps, source URL link, tag chips
+      created/updated timestamps, source URL link, tag chips
 - [x] `components/notes/NoteSearch.tsx` — note type + pinned filters; server-side content search when a
-  query is typed, metadata-only client filter otherwise
+      query is typed, metadata-only client filter otherwise
 - [x] Existing note URLs/slugs untouched; the one pre-existing note kept working throughout
 - [ ] **Known gap:** `goal_id`/`task_id` are modeled and wired end-to-end at the data/API layer, but the
-  editor has no goal/task picker yet — only `inbox_item_id` is ever set today (automatically, by the
-  Inbox → Note conversion in Phase 1). Manually linking a note to a goal or task from the Notes UI is
-  deferred rather than half-built; the schema is ready for it whenever it's picked up.
+      editor has no goal/task picker yet — only `inbox_item_id` is ever set today (automatically, by the
+      Inbox → Note conversion in Phase 1). Manually linking a note to a goal or task from the Notes UI is
+      deferred rather than half-built; the schema is ready for it whenever it's picked up.
 
 ### Phase 3 — Journal + Timeline ✅
+
 - [x] Migration: `kori_journal_entries` + `kori_manual_activities` (two new tables, owner-only RLS,
-  generated `tsvector` search on journal entries)
+      generated `tsvector` search on journal entries)
 - [x] `lib/date-utils.ts` — shared browser-local date helpers (`toLocalDateString`, `localRangeFor`,
-  `shiftAnchorDate`, `formatRangeLabel`) so Timeline doesn't add a third copy of the date-bucketing
-  logic already duplicated between `lib/habits.ts` and `lib/api/progress.ts`
+      `shiftAnchorDate`, `formatRangeLabel`) so Timeline doesn't add a third copy of the date-bucketing
+      logic already duplicated between `lib/habits.ts` and `lib/api/progress.ts`
 - [x] `lib/journal.ts` — types, the four-prompt daily template (`buildEntryFromTemplate`), validation
-  (nothing individually mandatory, but not a completely blank entry), filter/sort (pure, tested)
+      (nothing individually mandatory, but not a completely blank entry), filter/sort (pure, tested)
 - [x] `lib/timeline.ts` — `TimelineEntry`/`TimelineKind`, one normalizer per source, `buildHengoSessionEntries`
-  (merges many `kori_activity_log` rows into one "N min in X" entry per day+feature),
-  `buildTimeline`/`filterTimelineEntries`/`groupTimelineByDay` (pure, tested)
+      (merges many `kori_activity_log` rows into one "N min in X" entry per day+feature),
+      `buildTimeline`/`filterTimelineEntries`/`groupTimelineByDay` (pure, tested)
 - [x] `lib/api/journal.ts`, `lib/api/manual-activities.ts` — CRUD following the `notesApi`/`inboxApi` pattern
 - [x] Additive range-query extensions: `progressApi.getActivityLog`, `habitsApi.getCheckinsInRange`,
-  `recoveryApi.getDailyCheckInsInRange` — none of the existing per-item query functions were touched
+      `recoveryApi.getDailyCheckInsInRange` — none of the existing per-item query functions were touched
 - [x] Inbox → Journal conversion upgraded from the Phase 1 stub (which only stamped status) to actually
-  create a `kori_journal_entries` row, now that the table exists (`lib/inbox.ts`'s
-  `buildJournalConversionPayload`, `lib/api/inbox.ts`'s `convertToJournal`)
+      create a `kori_journal_entries` row, now that the table exists (`lib/inbox.ts`'s
+      `buildJournalConversionPayload`, `lib/api/inbox.ts`'s `convertToJournal`)
 - [x] `hooks/useJournal.ts`, `useManualActivities.ts`, `useTimeline.ts` (composes six independent,
-  date-bounded queries and runs them through `buildTimeline`)
+      date-bounded queries and runs them through `buildTimeline`)
 - [x] `components/journal/*` — `JournalComposer` (daily template + mood/energy pickers + collapsible
-  gratitude/tags/goal-habit link), `JournalEntryCard`; `components/ui/tag-editor.tsx` extracted from
-  `NoteEditor.tsx` so Notes and Journal share one chip-tag editor instead of two copies
+      gratitude/tags/goal-habit link), `JournalEntryCard`; `components/ui/tag-editor.tsx` extracted from
+      `NoteEditor.tsx` so Notes and Journal share one chip-tag editor instead of two copies
 - [x] `components/timeline/*` — `TimelineFilters` (day/week/month + type + search), `DailySummaryCard`,
-  `TimelineEntryRow`, `LogActivityDialog` (the manual-activity capture entry point)
+      `TimelineEntryRow`, `LogActivityDialog` (the manual-activity capture entry point)
 - [x] `app/(main)/growth/journal/page.tsx`, `app/(main)/timeline/page.tsx`
 - [x] Nav: `soon` removed from `growth-journal`; new `progress-timeline` item added to the Progress workspace
 - [x] **Known gap:** Manual activities can only be logged from the Timeline page's "Log activity" dialog —
-  Inbox's existing `activity` item type does not yet convert into a `kori_manual_activities` row (unlike
-  `note`/`task`/`journal`, which all have real conversions). Wiring that up would need a small additive
-  change to `kori_inbox_items.converted_to_type`'s check constraint; deferred to keep this phase scoped
-  to what the mission explicitly asked for.
+      Inbox's existing `activity` item type does not yet convert into a `kori_manual_activities` row (unlike
+      `note`/`task`/`journal`, which all have real conversions). Wiring that up would need a small additive
+      change to `kori_inbox_items.converted_to_type`'s check constraint; deferred to keep this phase scoped
+      to what the mission explicitly asked for.
 
 ### Phase 4 — Universal Reminders ✅
+
 - [x] Migration: `kori_reminders` (new table), `kori_next_reminder_run` (new SQL mirror of the JS
-  recurrence engine), `kori_dispatch_push` extended with a backward-compatible optional 5th parameter,
-  `kori_dispatch_reminders` (new per-minute dispatch loop), `pg_cron` job `kori-universal-reminders`
+      recurrence engine), `kori_dispatch_push` extended with a backward-compatible optional 5th parameter,
+      `kori_dispatch_reminders` (new per-minute dispatch loop), `pg_cron` job `kori-universal-reminders`
 - [x] `lib/reminders.ts` — types, `computeNextRunAt` (DST-safe recurrence via `@date-fns/tz`'s `TZDate`),
-  `describeRecurrence`, validation (pure, tested — daily/weekly/weekdays, month rollover, DST boundaries)
+      `describeRecurrence`, validation (pure, tested — daily/weekly/weekdays, month rollover, DST boundaries)
 - [x] `lib/api/reminders.ts` — `remindersApi` (list/create/pause/resume/cancel/snooze/remove),
-  `previewNextRun()` (calls the *same* SQL function via `supabase.rpc()` so the client preview and the
-  server's actual dispatch timing can never disagree)
+      `previewNextRun()` (calls the _same_ SQL function via `supabase.rpc()` so the client preview and the
+      server's actual dispatch timing can never disagree)
 - [x] `hooks/useReminders.ts`, `components/reminders/ReminderDialog.tsx` + `ReminderButton.tsx` + `ReminderRow.tsx`
 - [x] Wired the bell-icon entry point onto Habits (`HabitCard.tsx`, "stretched link" pattern so the icon
-  stays independently clickable inside an otherwise fully-clickable card), Notes, Inbox items, and a
-  standalone "Daily reminder" section on the Journal page (`entityType: "journal_prompt"`, no `entityId`)
+      stays independently clickable inside an otherwise fully-clickable card), Notes, Inbox items, and a
+      standalone "Daily reminder" section on the Journal page (`entityType: "journal_prompt"`, no `entityId`)
 - [x] `app/(main)/settings/reminders/page.tsx` — Active/Paused/Completed-cancelled management view
 - [x] **Known gap:** inline reminder buttons on Tasks/Goals detail pages were deliberately deferred —
-  those pages are more complex and higher-regression-risk than Habits/Notes/Inbox/Journal, so wiring
-  them in was left for a future pass rather than rushed into this one.
+      those pages are more complex and higher-regression-risk than Habits/Notes/Inbox/Journal, so wiring
+      them in was left for a future pass rather than rushed into this one.
 
 ### Phase 4 — Verification performed
 
@@ -444,44 +448,46 @@ AI route with no table access of its own:
   regressed them. Test data cleaned up afterward.
 
 ### Phase 5 — Ask Hengo ✅
+
 - [x] Migration: `kori_memory_candidates` (new table, owner-only RLS, no functions)
 - [x] `lib/memory.ts` — types, `validateMemoryCandidateInput`, `sanitizeSearchQuery` (strips tsquery-unsafe
-  characters, caps length), filter/sort helpers, shared `memoryCandidateFromRow` mapper (pure, tested)
+      characters, caps length), filter/sort helpers, shared `memoryCandidateFromRow` mapper (pure, tested)
 - [x] `lib/server/memory-retrieval.ts` — `retrieveMemoryContext` (9 parallel bounded queries: FTS over
-  notes/inbox/journal, approved memories, goals, corrections, recent journal entries, completed tasks,
-  manual activities) and `formatRetrievedContext` (the `<user_data>`-wrapped prompt block)
+      notes/inbox/journal, approved memories, goals, corrections, recent journal entries, completed tasks,
+      manual activities) and `formatRetrievedContext` (the `<user_data>`-wrapped prompt block)
 - [x] `app/api/ai/memory/ask/route.ts` — custom handler (not `jsonAiRoute`, since it needs a
-  post-`generateObject` step to persist proposed memories) with citation resolution and prompt-injection
-  mitigation in the system prompt
+      post-`generateObject` step to persist proposed memories) with citation resolution and prompt-injection
+      mitigation in the system prompt
 - [x] `lib/api/memory.ts` — `memoryApi` (ask/listCandidates/create/approve/update/reject/archive/remove)
 - [x] `hooks/useMemory.ts` — `useMemoryCandidates`, `useMemoryMutations`, `useAskHengo`
 - [x] `components/memory/*` — `AskHengoChat` (Q&A with example prompts, citations, groundedness label,
-  inline "review new memories" prompt), `MemoryCandidateCard` (approve/edit/reject/archive/restore/delete,
-  branching by status), `AddMemoryDialog` (manual "tell Hengo something" entry point)
+      inline "review new memories" prompt), `MemoryCandidateCard` (approve/edit/reject/archive/restore/delete,
+      branching by status), `AddMemoryDialog` (manual "tell Hengo something" entry point)
 - [x] `app/(main)/ask-hengo/page.tsx`, `app/(main)/ask-hengo/memories/page.tsx`
 - [x] Nav: `Ask Hengo` added to the AI Coach workspace in `lib/navigation.ts`
 - [x] Rate limiting/usage logging: `ask_hengo` feature added to the `structured` bucket in
-  `lib/server/ai-limits.ts`, `ask_hengo` added to `hooks/useLogActivity.ts`'s `ActivityFeature` union so
-  time-in-Ask-Hengo shows up on the Timeline like every other feature
+      `lib/server/ai-limits.ts`, `ask_hengo` added to `hooks/useLogActivity.ts`'s `ActivityFeature` union so
+      time-in-Ask-Hengo shows up on the Timeline like every other feature
 
 ### Phase 6 — Daily/Weekly Review ✅
+
 - [x] No migration needed (see §3 above) — purely additive UI + one AI route over existing data.
 - [x] `lib/review.ts` — predicates and summary builders (pure, tested): `isReminderDueToday`,
-  `remindersDueToday`, `goalsNeedingAttention`, `buildMorningBrief` + `formatMorningBriefContext`,
-  `buildEveningReviewSummary` + `formatEveningReviewContext`, `buildHabitWeeklyCompletion`,
-  `localWeekDates`, `buildWeeklyReviewSummary` + `formatWeeklyReviewContext`
+      `remindersDueToday`, `goalsNeedingAttention`, `buildMorningBrief` + `formatMorningBriefContext`,
+      `buildEveningReviewSummary` + `formatEveningReviewContext`, `buildHabitWeeklyCompletion`,
+      `localWeekDates`, `buildWeeklyReviewSummary` + `formatWeeklyReviewContext`
 - [x] `app/api/ai/review/summarize/route.ts`, `lib/api/review.ts`, `hooks/useReviewSummary.ts` (a cached
-  `useQuery`, not a mutation — one summary per exact context string, so it doesn't re-hit the model on
-  every re-render or tab revisit); `review_summary` added to the `structured` rate-limit bucket
+      `useQuery`, not a mutation — one summary per exact context string, so it doesn't re-hit the model on
+      every re-render or tab revisit); `review_summary` added to the `structured` rate-limit bucket
 - [x] `components/review/*` — `ReviewTabs`, `MorningBriefView`, `EveningReviewView` (reuses
-  `TimelineEntryRow`), `WeeklyReviewView`, `ReviewSummaryCard` (shared loading/error/summary display)
+      `TimelineEntryRow`), `WeeklyReviewView`, `ReviewSummaryCard` (shared loading/error/summary display)
 - [x] `app/(main)/review/{morning,evening,weekly}/page.tsx` — each composes existing hooks
-  (`useTodaysTasks`, `useHabits`, `useGoals`, `useReminders`, `useTimeline`, plus one inline
-  `habitsApi.getCheckinsInRange` query per page) and feeds them through the matching `lib/review.ts`
-  builder
+      (`useTodaysTasks`, `useHabits`, `useGoals`, `useReminders`, `useTimeline`, plus one inline
+      `habitsApi.getCheckinsInRange` query per page) and feeds them through the matching `lib/review.ts`
+      builder
 - [x] Nav: `progress-review` added to the Progress workspace, `href: "/review/morning"`, matched against
-  `/review` so Evening/Weekly also light it up; `"review"` added to `useLogActivity`'s `ActivityFeature`
-  union so time spent across all three pages rolls up on the Timeline like every other feature
+      `/review` so Evening/Weekly also light it up; `"review"` added to `useLogActivity`'s `ActivityFeature`
+      union so time spent across all three pages rolls up on the Timeline like every other feature
 
 ### Phase 6 — Verification performed
 
@@ -534,8 +540,7 @@ AI route with no table access of its own:
 - Migration applied to the live Supabase project after explicit user confirmation; `get_advisors` showed
   no new findings; both new tables confirmed present with RLS enabled via `list_tables`.
 - Manual browser verification against real data, across both new pages:
-  - **Journal**: saved a real entry through the daily-template composer (achievement + mood 3 + energy
-    4) — found and fixed a real bug this way (after a successful save the form correctly reset to blank,
+  - **Journal**: saved a real entry through the daily-template composer (achievement + mood 3 + energy 4) — found and fixed a real bug this way (after a successful save the form correctly reset to blank,
     but a stale `submitAttempted` flag made the freshly-emptied form immediately flash the "write
     something" validation message even though the save had succeeded; fixed by resetting the flag
     alongside the form values). Confirmed the saved entry displays correctly with mood/energy badges.
@@ -592,7 +597,7 @@ AI route with no table access of its own:
   the migration itself (`revoke all ... from anon`, `create policy ... using ((select auth.uid()) = user_id)`).
 - No service key is introduced anywhere; inbox reads/writes go through the browser Supabase client like
   every other `lib/api/*` domain, so RLS is enforced identically.
-- **RLS is not end-to-end encryption.** Row-level security means *other users* cannot read your rows
+- **RLS is not end-to-end encryption.** Row-level security means _other users_ cannot read your rows
   through the app's normal query paths; it does not mean the data is encrypted at rest in a way that's
   unreadable to database administrators or in the event of infrastructure compromise. Hengo's Settings
   page should say this plainly once a "Privacy" section exists (Phase 5/6 UI work) rather than implying
@@ -640,7 +645,7 @@ should be needed.
   corrective follow-ups applied live and folded back into that file — see §3 Phase 4).
 - `20260726160000_ask_hengo_memory.sql` (Phase 5) has also been applied to the live project after explicit
   confirmation. Nothing further to run for Phases 1–5.
-- If these migrations are ever replayed against a *different* environment (a fresh project, a CI/staging
+- If these migrations are ever replayed against a _different_ environment (a fresh project, a CI/staging
   database), apply them via `supabase db push` or the Supabase SQL editor, in filename order. No new
   environment variables, Edge Functions, or extensions are required for any phase so far — all are pure
   Postgres + RLS (`tsvector`/GIN are built in, `pg_cron` was already enabled for the existing study

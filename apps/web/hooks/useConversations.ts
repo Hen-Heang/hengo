@@ -16,8 +16,7 @@ export interface Conversation {
   updatedAt?: string
 }
 
-export const conversationsQueryKey = (userId?: string | null) =>
-  ["conversations", userId] as const
+export const conversationsQueryKey = (userId?: string | null) => ["conversations", userId] as const
 
 /**
  * Chat history list (backend already exposes GET /chat/conversations with paging)
@@ -37,7 +36,7 @@ export function useConversations() {
 
   const refresh = useCallback(
     () => queryClient.invalidateQueries({ queryKey: key }),
-    [queryClient, key]
+    [queryClient, key],
   )
 
   const rename = useCallback(
@@ -46,7 +45,7 @@ export function useConversations() {
       if (!trimmed) return
       const before = queryClient.getQueryData<Conversation[]>(key)
       queryClient.setQueryData<Conversation[]>(key, (list) =>
-        (list ?? []).map((c) => (c.id === id ? { ...c, title: trimmed } : c))
+        (list ?? []).map((c) => (c.id === id ? { ...c, title: trimmed } : c)),
       )
       try {
         await chatApi.renameConversation(id, trimmed)
@@ -57,14 +56,14 @@ export function useConversations() {
         })
       }
     },
-    [queryClient, key]
+    [queryClient, key],
   )
 
   const remove = useCallback(
     async (id: string) => {
       const before = queryClient.getQueryData<Conversation[]>(key)
       queryClient.setQueryData<Conversation[]>(key, (list) =>
-        (list ?? []).filter((c) => c.id !== id)
+        (list ?? []).filter((c) => c.id !== id),
       )
       try {
         await chatApi.deleteConversation(id)
@@ -76,7 +75,7 @@ export function useConversations() {
         })
       }
     },
-    [queryClient, key]
+    [queryClient, key],
   )
 
   return { conversations, isLoading: isPending, rename, remove, refresh }

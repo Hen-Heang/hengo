@@ -31,7 +31,7 @@ self.addEventListener("push", (event) => {
         client.postMessage({ type: "push-received", payload: data })
       }
       await self.registration.showNotification(title, options)
-    })()
+    })(),
   )
 })
 
@@ -48,6 +48,6 @@ self.addEventListener("notificationclick", (event) => {
         }
       }
       if (self.clients.openWindow) return self.clients.openWindow(url)
-    })()
+    })(),
   )
 })

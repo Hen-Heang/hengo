@@ -1,21 +1,10 @@
 "use client"
 
-import {
-  AlertTriangle,
-  Calendar,
-  CheckCircle2,
-  Clock,
-  Target,
-  Timer,
-} from "lucide-react"
+import { AlertTriangle, Calendar, CheckCircle2, Clock, Target, Timer } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import {
-  type GoalDeadlineInfo,
-  getDeadlineStatusIcon,
-  getDeadlineStatusStyling,
-} from "@/lib/goals"
+import { type GoalDeadlineInfo, getDeadlineStatusIcon, getDeadlineStatusStyling } from "@/lib/goals"
 
 // Ported from Orbit components/ui/deadline-status-badge.tsx. The optional
 // progress bar is inlined (no separate Progress primitive needed).
@@ -51,7 +40,7 @@ export function DeadlineStatusBadge({
         className={cn(
           "flex items-center gap-1.5 rounded-full backdrop-blur-sm transition-all duration-200",
           styling.badgeColor,
-          sizeClasses[size]
+          sizeClasses[size],
         )}
       >
         <IconComponent className={cn(iconSizes[size], styling.iconColor)} />

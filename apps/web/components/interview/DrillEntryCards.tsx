@@ -31,8 +31,7 @@ const DRILLS = [
 
 const TONE_STYLES = {
   blue: "flex h-10 w-10 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600",
-  violet:
-    "flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600",
+  violet: "flex h-10 w-10 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600",
   emerald:
     "flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600",
 } as const

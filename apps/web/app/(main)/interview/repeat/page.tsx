@@ -151,9 +151,7 @@ export default function RepeatDrillPage() {
       setProgress((prev) => {
         const existing = prev[sentence.id]
         const best =
-          existing && existing.best.similarity >= comparison.similarity
-            ? existing.best
-            : comparison
+          existing && existing.best.similarity >= comparison.similarity ? existing.best : comparison
         return { ...prev, [sentence.id]: { tries: (existing?.tries ?? 0) + 1, best } }
       })
       void logActivity()
@@ -268,9 +266,7 @@ export default function RepeatDrillPage() {
       avgSimilarity:
         attempted.length === 0
           ? 0
-          : Math.round(
-              attempted.reduce((sum, p) => sum + p.best.similarity, 0) / attempted.length
-            ),
+          : Math.round(attempted.reduce((sum, p) => sum + p.best.similarity, 0) / attempted.length),
     }
     try {
       window.localStorage.setItem(LAST_SESSION_KEY, JSON.stringify(summary))
@@ -318,7 +314,7 @@ export default function RepeatDrillPage() {
               "rounded-[1.5rem] border p-5 text-left transition-all active:scale-[0.99] sm:rounded-3xl",
               source === "script"
                 ? "border-emerald-500/60 bg-emerald-500/5 shadow-md"
-                : "border-border bg-card shadow-sm hover:shadow-md dark:bg-slate-900/40"
+                : "border-border bg-card shadow-sm hover:shadow-md dark:bg-slate-900/40",
             )}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
@@ -335,7 +331,7 @@ export default function RepeatDrillPage() {
               "rounded-[1.5rem] border p-5 text-left transition-all active:scale-[0.99] sm:rounded-3xl",
               source === "phrases"
                 ? "border-emerald-500/60 bg-emerald-500/5 shadow-md"
-                : "border-border bg-card shadow-sm hover:shadow-md dark:bg-slate-900/40"
+                : "border-border bg-card shadow-sm hover:shadow-md dark:bg-slate-900/40",
             )}
           >
             <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600">
@@ -352,8 +348,8 @@ export default function RepeatDrillPage() {
           <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4">
             <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-600" />
             <p className="text-sm font-medium leading-relaxed text-foreground/90">
-              This drill needs the browser&apos;s speech recognition — open it in Chrome
-              (or Safari) to speak your repeats.
+              This drill needs the browser&apos;s speech recognition — open it in Chrome (or Safari)
+              to speak your repeats.
             </p>
           </div>
         )}
@@ -427,7 +423,7 @@ export default function RepeatDrillPage() {
                         className={cn(
                           mark.hit
                             ? "text-foreground"
-                            : "text-rose-600 underline decoration-rose-400 decoration-2 underline-offset-4 dark:text-rose-400"
+                            : "text-rose-600 underline decoration-rose-400 decoration-2 underline-offset-4 dark:text-rose-400",
                         )}
                       >
                         {mark.word}{" "}
@@ -476,9 +472,7 @@ export default function RepeatDrillPage() {
           { label: "Tries here", value: String(progress[sentence?.id ?? ""]?.tries ?? 0) },
           {
             label: "Perfect",
-            value: String(
-              Object.values(progress).filter((p) => p.best.grade === "perfect").length
-            ),
+            value: String(Object.values(progress).filter((p) => p.best.grade === "perfect").length),
           },
         ]}
         actions={
@@ -506,7 +500,7 @@ export default function RepeatDrillPage() {
                     className={cn(
                       mark.hit
                         ? "text-emerald-600 dark:text-emerald-400"
-                        : "text-rose-600 underline decoration-rose-400 decoration-2 underline-offset-4 dark:text-rose-400"
+                        : "text-rose-600 underline decoration-rose-400 decoration-2 underline-offset-4 dark:text-rose-400",
                     )}
                   >
                     {mark.word}{" "}
@@ -572,7 +566,7 @@ export default function RepeatDrillPage() {
                     "h-12 w-full rounded-2xl px-6 text-sm font-bold text-white shadow-lg transition-all active:scale-95 sm:h-14",
                     result.grade === "perfect"
                       ? "bg-emerald-600 shadow-emerald-600/20 hover:bg-emerald-700"
-                      : "bg-foreground text-background"
+                      : "bg-foreground text-background",
                   )}
                 >
                   {index + 1 >= items.length ? (
@@ -596,12 +590,16 @@ export default function RepeatDrillPage() {
                     "flex h-20 w-20 items-center justify-center rounded-full text-white shadow-lg transition-all active:scale-95",
                     listening
                       ? "animate-pulse bg-rose-600 shadow-rose-600/30"
-                      : "bg-emerald-600 shadow-emerald-600/30 hover:bg-emerald-700"
+                      : "bg-emerald-600 shadow-emerald-600/30 hover:bg-emerald-700",
                   )}
                 >
                   {listening ? <Square size={28} /> : <Mic size={28} />}
                 </button>
-                <p role="status" aria-live="polite" className="text-sm font-bold text-muted-foreground">
+                <p
+                  role="status"
+                  aria-live="polite"
+                  className="text-sm font-bold text-muted-foreground"
+                >
                   {listening
                     ? "Repeat the sentence — pauses are okay, it grades a moment after you finish."
                     : "Tap to hear it again and repeat"}

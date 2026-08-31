@@ -25,7 +25,10 @@ function kstHour(iso: string): number {
 /** Most recent event's timestamp across any kind. Null if never logged. */
 export function lastEventTimestamp(events: RecoveryEvent[]): string | null {
   if (events.length === 0) return null
-  return events.reduce((latest, e) => (e.occurredAt > latest ? e.occurredAt : latest), events[0].occurredAt)
+  return events.reduce(
+    (latest, e) => (e.occurredAt > latest ? e.occurredAt : latest),
+    events[0].occurredAt,
+  )
 }
 
 /** Primary metric: days since the most recent event of any kind, in this habit. Null if never logged. */
@@ -49,7 +52,10 @@ export interface ElapsedBreakdown {
  * duration, clamped to zero if `now` is somehow before `sinceIso`.
  */
 export function elapsedBreakdown(sinceIso: string, now: Date = new Date()): ElapsedBreakdown {
-  const totalSeconds = Math.max(0, Math.floor((now.getTime() - new Date(sinceIso).getTime()) / 1000))
+  const totalSeconds = Math.max(
+    0,
+    Math.floor((now.getTime() - new Date(sinceIso).getTime()) / 1000),
+  )
   return {
     days: Math.floor(totalSeconds / 86_400),
     hours: Math.floor((totalSeconds % 86_400) / 3_600),
@@ -60,11 +66,16 @@ export function elapsedBreakdown(sinceIso: string, now: Date = new Date()): Elap
 
 /** Secondary metric: urges logged and survived. Grows even on a day with a slip. */
 export function rodeOutCount(events: RecoveryEvent[], since?: Date): number {
-  return events.filter((e) => e.rodeOut === true && (!since || new Date(e.occurredAt) >= since)).length
+  return events.filter((e) => e.rodeOut === true && (!since || new Date(e.occurredAt) >= since))
+    .length
 }
 
 /** Tertiary metric: the streak chip. Counts from the last slip, or from start if there hasn't been one. */
-export function daysSince(startedAt: string, lastSlipAt: string | null, now: Date = new Date()): number {
+export function daysSince(
+  startedAt: string,
+  lastSlipAt: string | null,
+  now: Date = new Date(),
+): number {
   const anchor = lastSlipAt ?? startedAt
   return kstDayNumber(now.toISOString()) - kstDayNumber(anchor)
 }
@@ -142,7 +153,8 @@ function zonedParts(iso: string, timeZone = DEFAULT_TIME_ZONE) {
     hourCycle: "h23",
     weekday: "short",
   }).formatToParts(new Date(iso))
-  const value = (type: Intl.DateTimeFormatPartTypes) => parts.find((part) => part.type === type)?.value ?? ""
+  const value = (type: Intl.DateTimeFormatPartTypes) =>
+    parts.find((part) => part.type === type)?.value ?? ""
   return {
     date: `${value("year")}-${value("month")}-${value("day")}`,
     hour: Number(value("hour")),
@@ -156,7 +168,10 @@ function dayNumber(date: string): number {
 }
 
 function dayDifference(fromIso: string, toIso: string, timeZone = DEFAULT_TIME_ZONE): number {
-  return Math.max(0, dayNumber(zonedParts(toIso, timeZone).date) - dayNumber(zonedParts(fromIso, timeZone).date))
+  return Math.max(
+    0,
+    dayNumber(zonedParts(toIso, timeZone).date) - dayNumber(zonedParts(fromIso, timeZone).date),
+  )
 }
 
 function targetEvents(events: RecoveryEvent[], habitId?: string): RecoveryEvent[] {
@@ -186,7 +201,12 @@ export function bestRecoveryStreak(
   habitId?: string,
 ): number {
   const slips = targetEvents(events, habitId)
-    .filter((event) => event.kind === "slip" && event.occurredAt >= startedAt && event.occurredAt <= now.toISOString())
+    .filter(
+      (event) =>
+        event.kind === "slip" &&
+        event.occurredAt >= startedAt &&
+        event.occurredAt <= now.toISOString(),
+    )
     .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
   let anchor = startedAt
   let best = 0
@@ -211,7 +231,9 @@ export function recoveryDaysThisMonth(
     if (!date.startsWith(month)) continue
     byDay.set(date, [...(byDay.get(date) ?? []), event])
   }
-  return [...byDay.values()].filter((dayEvents) => !dayEvents.some((event) => event.kind === "slip")).length
+  return [...byDay.values()].filter(
+    (dayEvents) => !dayEvents.some((event) => event.kind === "slip"),
+  ).length
 }
 
 export function averageUrgeIntensity(events: RecoveryEvent[], habitId?: string): number | null {
@@ -241,7 +263,11 @@ export function highestRiskTimeRange(
   }
   let result: RiskWindow | null = null
   for (const [startHour, count] of counts) {
-    if (!result || count > result.count || (count === result.count && startHour < result.startHour)) {
+    if (
+      !result ||
+      count > result.count ||
+      (count === result.count && startHour < result.startHour)
+    ) {
       result = { startHour, endHour: (startHour + 2) % 24, count }
     }
   }
@@ -255,14 +281,18 @@ export interface CopingEffectiveness {
   successRate: number
 }
 
-export function copingEffectiveness(events: RecoveryEvent[], habitId?: string): CopingEffectiveness[] {
+export function copingEffectiveness(
+  events: RecoveryEvent[],
+  habitId?: string,
+): CopingEffectiveness[] {
   const actions = new Map<string, { attempts: number; successful: number }>()
   for (const event of targetEvents(events, habitId)) {
     const action = event.actionTaken?.trim()
     if (!action) continue
     const current = actions.get(action) ?? { attempts: 0, successful: 0 }
     current.attempts += 1
-    if (event.rodeOut === true || event.kind === "win" || event.healthyActionCompleted === true) current.successful += 1
+    if (event.rodeOut === true || event.kind === "win" || event.healthyActionCompleted === true)
+      current.successful += 1
     actions.set(action, current)
   }
   return [...actions.entries()]
@@ -271,17 +301,29 @@ export function copingEffectiveness(events: RecoveryEvent[], habitId?: string): 
       ...value,
       successRate: Math.round((value.successful / value.attempts) * 100),
     }))
-    .sort((a, b) => b.successRate - a.successRate || b.attempts - a.attempts || a.action.localeCompare(b.action))
+    .sort(
+      (a, b) =>
+        b.successRate - a.successRate ||
+        b.attempts - a.attempts ||
+        a.action.localeCompare(b.action),
+    )
 }
 
 export function returnTimesAfterLapses(events: RecoveryEvent[], habitId?: string): number[] {
-  const ordered = targetEvents(events, habitId).slice().sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
+  const ordered = targetEvents(events, habitId)
+    .slice()
+    .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
   const returns: number[] = []
   ordered.forEach((event, index) => {
     if (event.kind !== "slip") return
     const next = ordered.slice(index + 1).find((candidate) => candidate.kind !== "slip")
     if (!next) return
-    returns.push(Math.max(0, (new Date(next.occurredAt).getTime() - new Date(event.occurredAt).getTime()) / 3_600_000))
+    returns.push(
+      Math.max(
+        0,
+        (new Date(next.occurredAt).getTime() - new Date(event.occurredAt).getTime()) / 3_600_000,
+      ),
+    )
   })
   return returns
 }
@@ -306,7 +348,10 @@ export function checkInCompletionPercent(
   const threshold = recentDateThreshold(now, days, timeZone)
   const completedDays = new Set(
     checkIns
-      .filter((checkIn) => (!habitId || checkIn.habitId === habitId) && dayNumber(checkIn.date) >= threshold)
+      .filter(
+        (checkIn) =>
+          (!habitId || checkIn.habitId === habitId) && dayNumber(checkIn.date) >= threshold,
+      )
       .map((checkIn) => checkIn.date),
   )
   return Math.min(100, Math.round((completedDays.size / days) * 100))
@@ -365,17 +410,61 @@ export function recoveryMomentum(
   const recentEvents = targetEvents(events, habitId).filter(
     (event) => dayNumber(zonedParts(event.occurredAt, timeZone).date) >= threshold,
   )
-  const checkInPoints = Math.round((checkInCompletionPercent(checkIns, 7, now, timeZone, habitId) / 100) * 25)
-  const managedPoints = Math.min(25, recentEvents.filter((event) => event.rodeOut === true || event.kind === "win").length * 5)
-  const actionPoints = Math.min(20, recentEvents.filter((event) => event.healthyActionCompleted === true).length * 4)
-  const reflectionPoints = Math.min(15, recentEvents.filter((event) => event.kind === "slip" && Boolean(event.note?.trim())).length * 5)
-  const fastReturnPoints = Math.min(15, returnTimesAfterLapses(recentEvents, habitId).filter((hours) => hours <= 24).length * 5)
+  const checkInPoints = Math.round(
+    (checkInCompletionPercent(checkIns, 7, now, timeZone, habitId) / 100) * 25,
+  )
+  const managedPoints = Math.min(
+    25,
+    recentEvents.filter((event) => event.rodeOut === true || event.kind === "win").length * 5,
+  )
+  const actionPoints = Math.min(
+    20,
+    recentEvents.filter((event) => event.healthyActionCompleted === true).length * 4,
+  )
+  const reflectionPoints = Math.min(
+    15,
+    recentEvents.filter((event) => event.kind === "slip" && Boolean(event.note?.trim())).length * 5,
+  )
+  const fastReturnPoints = Math.min(
+    15,
+    returnTimesAfterLapses(recentEvents, habitId).filter((hours) => hours <= 24).length * 5,
+  )
   const factors: RecoveryMomentumFactor[] = [
-    { key: "check_ins", label: "Check-ins", points: checkInPoints, maximum: 25, explanation: "Up to 25 points for showing up across the last seven days." },
-    { key: "managed_urges", label: "Managed moments", points: managedPoints, maximum: 25, explanation: "5 points for each moment managed, up to 25." },
-    { key: "healthy_actions", label: "Healthy actions", points: actionPoints, maximum: 20, explanation: "4 points for each completed replacement action, up to 20." },
-    { key: "honest_reflections", label: "Honest reflections", points: reflectionPoints, maximum: 15, explanation: "Honest reflection only adds points; reporting a slip never removes them." },
-    { key: "fast_returns", label: "Fast returns", points: fastReturnPoints, maximum: 15, explanation: "5 points for returning to the plan within 24 hours, up to 15." },
+    {
+      key: "check_ins",
+      label: "Check-ins",
+      points: checkInPoints,
+      maximum: 25,
+      explanation: "Up to 25 points for showing up across the last seven days.",
+    },
+    {
+      key: "managed_urges",
+      label: "Managed moments",
+      points: managedPoints,
+      maximum: 25,
+      explanation: "5 points for each moment managed, up to 25.",
+    },
+    {
+      key: "healthy_actions",
+      label: "Healthy actions",
+      points: actionPoints,
+      maximum: 20,
+      explanation: "4 points for each completed replacement action, up to 20.",
+    },
+    {
+      key: "honest_reflections",
+      label: "Honest reflections",
+      points: reflectionPoints,
+      maximum: 15,
+      explanation: "Honest reflection only adds points; reporting a slip never removes them.",
+    },
+    {
+      key: "fast_returns",
+      label: "Fast returns",
+      points: fastReturnPoints,
+      maximum: 15,
+      explanation: "5 points for returning to the plan within 24 hours, up to 15.",
+    },
   ]
   return { score: factors.reduce((sum, factor) => sum + factor.points, 0), factors }
 }

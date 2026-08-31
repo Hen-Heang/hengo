@@ -55,7 +55,7 @@ export default function ScenariosPage() {
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(scenarios.map((s) => s.category)))],
-    [scenarios]
+    [scenarios],
   )
 
   const visible = category === "All" ? scenarios : scenarios.filter((s) => s.category === category)
@@ -77,7 +77,12 @@ export default function ScenariosPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-12 sm:space-y-7">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6 pb-12 sm:space-y-7"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Scenarios"
@@ -94,9 +99,7 @@ export default function ScenariosPage() {
         variants={itemVariants}
         className="rounded-lg border border-border bg-card p-4 shadow-sm dark:bg-slate-900/40 sm:p-5"
       >
-        <label className="text-sm font-semibold text-foreground">
-          Category
-        </label>
+        <label className="text-sm font-semibold text-foreground">Category</label>
         <ChipSelect options={categories} value={category} onChange={setCategory} className="mt-3" />
       </motion.div>
 
@@ -164,7 +167,10 @@ export default function ScenariosPage() {
                   </div>
                   <Badge
                     variant="outline"
-                    className={cn("border px-2.5 py-1 text-xs font-semibold", LEVEL_BADGE[scenario.level])}
+                    className={cn(
+                      "border px-2.5 py-1 text-xs font-semibold",
+                      LEVEL_BADGE[scenario.level],
+                    )}
                   >
                     {scenario.level}
                   </Badge>
@@ -182,7 +188,9 @@ export default function ScenariosPage() {
                     <p className="text-xs font-medium text-muted-foreground">
                       Conversation starter
                     </p>
-                    <p className="mt-1 text-sm leading-6 text-foreground">{scenario.introMessage}</p>
+                    <p className="mt-1 text-sm leading-6 text-foreground">
+                      {scenario.introMessage}
+                    </p>
                   </div>
                 )}
 
@@ -217,9 +225,12 @@ export default function ScenariosPage() {
           <Drama size={32} className="mx-auto text-muted-foreground/50" strokeWidth={2} />
           {scenarios.length === 0 ? (
             <>
-              <p className="mt-3 text-sm font-bold text-foreground">You haven&apos;t created any scenarios yet</p>
+              <p className="mt-3 text-sm font-bold text-foreground">
+                You haven&apos;t created any scenarios yet
+              </p>
               <p className="mt-1 text-sm text-muted-foreground">
-                Practice your own topic instead — describe a situation and jump straight into a guided AI conversation.
+                Practice your own topic instead — describe a situation and jump straight into a
+                guided AI conversation.
               </p>
               <Button
                 type="button"
@@ -232,7 +243,9 @@ export default function ScenariosPage() {
             </>
           ) : (
             <>
-              <p className="mt-3 text-sm font-bold text-foreground">No scenarios in this category</p>
+              <p className="mt-3 text-sm font-bold text-foreground">
+                No scenarios in this category
+              </p>
               <p className="mt-1 text-sm text-muted-foreground">Try a different category filter.</p>
               <Button
                 type="button"

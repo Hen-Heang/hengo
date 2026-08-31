@@ -62,7 +62,9 @@ export function MoreNavigationSheet({
             href={askHengoItem.href}
             onClick={close}
             aria-current={
-              isNavigationItemActive({ pathname, searchParams, item: askHengoItem }) ? "page" : undefined
+              isNavigationItemActive({ pathname, searchParams, item: askHengoItem })
+                ? "page"
+                : undefined
             }
             className="flex min-h-14 items-center gap-3 rounded-lg border border-border bg-accent/40 px-4 py-3.5 outline-none transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring"
           >
@@ -70,14 +72,22 @@ export function MoreNavigationSheet({
               <BrainCircuit size={20} strokeWidth={2.2} />
             </span>
             <span className="min-w-0 flex-1">
-              <span className="block truncate text-[15px] font-semibold text-foreground">Ask Hengo</span>
-              <span className="block truncate text-xs text-muted-foreground">{askHengoItem.description}</span>
+              <span className="block truncate text-[15px] font-semibold text-foreground">
+                Ask Hengo
+              </span>
+              <span className="block truncate text-xs text-muted-foreground">
+                {askHengoItem.description}
+              </span>
             </span>
             <ChevronRight size={18} aria-hidden className="shrink-0 text-muted-foreground" />
           </Link>
 
           {moreGroups.map((group) => (
-            <section key={group.id} aria-labelledby={group.label ? `more-${group.id}` : undefined} className="pt-4">
+            <section
+              key={group.id}
+              aria-labelledby={group.label ? `more-${group.id}` : undefined}
+              className="pt-4"
+            >
               {group.label && (
                 <h3
                   id={`more-${group.id}`}
@@ -94,7 +104,9 @@ export function MoreNavigationSheet({
                     variant="list"
                     active={isNavigationItemActive({ pathname, searchParams, item })}
                     onNavigate={close}
-                    trailing={<ChevronRight size={16} aria-hidden className="shrink-0 opacity-40" />}
+                    trailing={
+                      <ChevronRight size={16} aria-hidden className="shrink-0 opacity-40" />
+                    }
                   />
                 ))}
               </nav>

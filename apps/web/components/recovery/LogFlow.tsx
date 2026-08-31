@@ -48,7 +48,13 @@ export function LogFlow({
     if (intensity == null || submitting) return
     setSubmitting(true)
     try {
-      await onSubmit({ intensity, triggerId, emotion, kind: outcome.kind, rodeOut: outcome.rodeOut })
+      await onSubmit({
+        intensity,
+        triggerId,
+        emotion,
+        kind: outcome.kind,
+        rodeOut: outcome.rodeOut,
+      })
     } finally {
       setSubmitting(false)
     }
@@ -63,7 +69,7 @@ export function LogFlow({
             key={s}
             className={cn(
               "h-1.5 rounded-full transition-all",
-              s === step ? "w-6 bg-blue-600" : "w-1.5 bg-border"
+              s === step ? "w-6 bg-blue-600" : "w-1.5 bg-border",
             )}
           />
         ))}
@@ -72,8 +78,15 @@ export function LogFlow({
       {/* Controls anchored to the bottom of the screen for one-handed reach */}
       <div className="mt-auto flex flex-col gap-6 px-4 pb-[max(2rem,env(safe-area-inset-bottom))] pt-10 sm:px-6">
         {step === "intensity" && (
-          <motion.div key="intensity" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            <p className="text-center text-sm font-semibold text-muted-foreground">How strong is it right now?</p>
+          <motion.div
+            key="intensity"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            <p className="text-center text-sm font-semibold text-muted-foreground">
+              How strong is it right now?
+            </p>
             <div className="flex items-center justify-center gap-3">
               {[1, 2, 3, 4, 5].map((n) => (
                 <button
@@ -87,7 +100,7 @@ export function LogFlow({
                     "flex size-14 items-center justify-center rounded-2xl border text-lg font-bold transition-all active:scale-95 sm:size-16",
                     intensity === n
                       ? "border-blue-500/40 bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                      : "border-border bg-card text-foreground hover:bg-accent"
+                      : "border-border bg-card text-foreground hover:bg-accent",
                   )}
                 >
                   {n}
@@ -98,14 +111,23 @@ export function LogFlow({
         )}
 
         {step === "trigger" && (
-          <motion.div key="trigger" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            <p className="text-center text-sm font-semibold text-muted-foreground">What led up to it?</p>
+          <motion.div
+            key="trigger"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            <p className="text-center text-sm font-semibold text-muted-foreground">
+              What led up to it?
+            </p>
             <ChipSelect
               className="justify-center"
               options={[...triggers.map((t) => t.label), "Skip"]}
               value={triggers.find((t) => t.id === triggerId)?.label ?? ""}
               onChange={(label) => {
-                setTriggerId(label === "Skip" ? undefined : triggers.find((t) => t.label === label)?.id)
+                setTriggerId(
+                  label === "Skip" ? undefined : triggers.find((t) => t.label === label)?.id,
+                )
                 advance()
               }}
             />
@@ -113,8 +135,15 @@ export function LogFlow({
         )}
 
         {step === "emotion" && (
-          <motion.div key="emotion" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
-            <p className="text-center text-sm font-semibold text-muted-foreground">What are you feeling?</p>
+          <motion.div
+            key="emotion"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-4"
+          >
+            <p className="text-center text-sm font-semibold text-muted-foreground">
+              What are you feeling?
+            </p>
             <ChipSelect
               className="justify-center"
               options={[...EMOTIONS, "Skip"]}
@@ -128,8 +157,15 @@ export function LogFlow({
         )}
 
         {step === "outcome" && (
-          <motion.div key="outcome" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-            <p className="text-center text-sm font-semibold text-muted-foreground">What happened?</p>
+          <motion.div
+            key="outcome"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="space-y-3"
+          >
+            <p className="text-center text-sm font-semibold text-muted-foreground">
+              What happened?
+            </p>
             {OUTCOMES.map((outcome) => (
               <button
                 key={outcome.label}
@@ -141,7 +177,7 @@ export function LogFlow({
                   outcome.kind === "slip"
                     ? "border-amber-500/30 bg-amber-500/5 text-amber-700 hover:bg-amber-500/10 dark:text-amber-400"
                     : "border-border bg-card text-foreground hover:bg-accent",
-                  submitting && "pointer-events-none opacity-50"
+                  submitting && "pointer-events-none opacity-50",
                 )}
               >
                 {outcome.label}

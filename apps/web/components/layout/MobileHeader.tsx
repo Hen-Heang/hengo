@@ -98,7 +98,12 @@ export function MobileHeader({
         </DropdownMenu>
       ) : (
         <>
-          <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
+          <button
+            type="button"
+            onClick={onOpenSearch}
+            aria-label="Search"
+            className={ACTION_BUTTON}
+          >
             <Search size={20} />
           </button>
           <Link href="/settings" aria-label="Settings" className={ACTION_BUTTON}>

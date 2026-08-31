@@ -1,11 +1,5 @@
 export type RecordingPhase =
-  | "idle"
-  | "requesting-permission"
-  | "recording"
-  | "recorded"
-  | "processing"
-  | "success"
-  | "error"
+  "idle" | "requesting-permission" | "recording" | "recorded" | "processing" | "success" | "error"
 
 export interface RecordingState {
   phase: RecordingPhase
@@ -49,4 +43,3 @@ export function recordingReducer(state: RecordingState, action: RecordingAction)
       return INITIAL_RECORDING_STATE
   }
 }
-

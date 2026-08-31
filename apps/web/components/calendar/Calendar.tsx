@@ -2,7 +2,15 @@
 
 import Link from "next/link"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import { addDays, addMonths, endOfMonth, endOfWeek, startOfDay, startOfMonth, startOfWeek } from "date-fns"
+import {
+  addDays,
+  addMonths,
+  endOfMonth,
+  endOfWeek,
+  startOfDay,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns"
 import { AlertCircle, ChevronLeft, ChevronRight, CloudOff, LoaderCircle, Plus } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { toast } from "sonner"
@@ -107,7 +115,10 @@ export function Calendar({
     queryFn: () => goalsApi.list(),
     enabled: !goalId && userId != null,
   })
-  const availableGoals = useMemo(() => allGoals.map((g) => ({ id: g.id, title: g.title })), [allGoals])
+  const availableGoals = useMemo(
+    () => allGoals.map((g) => ({ id: g.id, title: g.title })),
+    [allGoals],
+  )
   const goalTitleById = useMemo(() => {
     const map: Record<string, string> = {}
     availableGoals.forEach((g) => {
@@ -140,13 +151,11 @@ export function Calendar({
   // ── Google Calendar (Settings > Integrations) — personal calendar only,
   // never for a goal-scoped board. Hengo tasks remain usable when Google is
   // disconnected or temporarily unavailable.
-  const {
-    connected: googleConnected,
-    error: googleIntegrationError,
-  } = useGoogleCalendarIntegration()
+  const { connected: googleConnected, error: googleIntegrationError } =
+    useGoogleCalendarIntegration()
   const googleRange = useMemo(
     () => getGoogleEventRange(effectiveView, selectedDate),
-    [effectiveView, selectedDate]
+    [effectiveView, selectedDate],
   )
   const {
     events: googleEvents,
@@ -167,19 +176,19 @@ export function Calendar({
 
   const getTasksForDate = useCallback(
     (date: Date) => filterTasksByDate(mergedTasks, date),
-    [mergedTasks]
+    [mergedTasks],
   )
 
   const currentDateTasks = useMemo(
     () => getTasksForDate(selectedDate),
-    [getTasksForDate, selectedDate]
+    [getTasksForDate, selectedDate],
   )
 
   // ── Free time (Phase 8) — always the raw Hengo tasks for the day, never
   // mergedTasks/googleTasks, which would double-count Google busy time.
   const hengoTasksForSelectedDate = useMemo(
     () => filterTasksByDate(tasks, selectedDate),
-    [tasks, selectedDate]
+    [tasks, selectedDate],
   )
   const focusWindows = useAvailableFocusWindows({
     date: selectedDate,
@@ -219,14 +228,12 @@ export function Calendar({
       if (currentDateTasks.length === 0) return
       setSelectedTaskIndex((idx) => {
         const nextIdx =
-          dir === "next"
-            ? Math.min(idx + 1, currentDateTasks.length - 1)
-            : Math.max(idx - 1, 0)
+          dir === "next" ? Math.min(idx + 1, currentDateTasks.length - 1) : Math.max(idx - 1, 0)
         setSelectedTask(currentDateTasks[nextIdx] ?? null)
         return nextIdx
       })
     },
-    [currentDateTasks]
+    [currentDateTasks],
   )
 
   // Keyboard left/right navigates tasks (when not typing).
@@ -317,7 +324,7 @@ export function Calendar({
     description: string,
     date: Date,
     _time?: string,
-    range?: TaskRangePayload
+    range?: TaskRangePayload,
   ) => {
     try {
       await create({
@@ -325,8 +332,8 @@ export function Calendar({
         description,
         start_date: toIso(range?.start_date ?? date)!,
         end_date: toIso(range?.end_date ?? date)!,
-        daily_start_time: range?.is_anytime ? null : range?.daily_start_time ?? null,
-        daily_end_time: range?.is_anytime ? null : range?.daily_end_time ?? null,
+        daily_start_time: range?.is_anytime ? null : (range?.daily_start_time ?? null),
+        daily_end_time: range?.is_anytime ? null : (range?.daily_end_time ?? null),
         is_anytime: range?.is_anytime ?? false,
         duration_minutes: range?.duration_minutes ?? null,
         color: range?.color ?? null,
@@ -345,7 +352,7 @@ export function Calendar({
     description: string,
     date: Date,
     _time?: string,
-    range?: TaskRangePayload & { start_date?: Date | null; end_date?: Date | null }
+    range?: TaskRangePayload & { start_date?: Date | null; end_date?: Date | null },
   ) => {
     try {
       const updated = await update(taskId, {
@@ -370,7 +377,8 @@ export function Calendar({
   }
 
   const handleToggleTaskCompletion = async (taskId: string) => {
-    const task = tasks.find((t) => t.id === taskId) ?? (selectedTask?.id === taskId ? selectedTask : null)
+    const task =
+      tasks.find((t) => t.id === taskId) ?? (selectedTask?.id === taskId ? selectedTask : null)
     if (!task) return
     if (isExternalTask(task)) {
       toast.error("Google Calendar events are read-only in Hengo")
@@ -383,7 +391,8 @@ export function Calendar({
     try {
       await update(taskId, { completed: nextCompleted })
     } catch (err) {
-      if (selectedTask?.id === taskId) setSelectedTask({ ...selectedTask, completed: task.completed })
+      if (selectedTask?.id === taskId)
+        setSelectedTask({ ...selectedTask, completed: task.completed })
       toast.error(getApiErrorMessage(err, "Couldn't update the task"))
     }
   }
@@ -447,7 +456,7 @@ export function Calendar({
   // to disambiguate.
   const taskScopeLabel = (t: Task | null): string => {
     if (!t || goalId) return scopeTitle
-    return t.goal_id ? goalTitleById[t.goal_id] ?? "Goal task" : "Personal task"
+    return t.goal_id ? (goalTitleById[t.goal_id] ?? "Goal task") : "Personal task"
   }
 
   // ── Sidebar (desktop) ─────────────────────────────────────────────────────
@@ -460,11 +469,7 @@ export function Calendar({
         )}
       >
         {fullBleed ? (
-          <Button
-            size="sm"
-            className="h-10 gap-2 rounded-xl px-4 text-sm"
-            onClick={openAddDialog}
-          >
+          <Button size="sm" className="h-10 gap-2 rounded-xl px-4 text-sm" onClick={openAddDialog}>
             <Plus className="h-4 w-4" />
             Create task
           </Button>
@@ -506,7 +511,8 @@ export function Calendar({
             <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-xs font-semibold tabular-nums text-muted-foreground">
-            {String(selectedTaskIndex + 1).padStart(2, "0")} / {String(currentDateTasks.length).padStart(2, "0")}
+            {String(selectedTaskIndex + 1).padStart(2, "0")} /{" "}
+            {String(currentDateTasks.length).padStart(2, "0")}
           </span>
           <Button
             variant="ghost"
@@ -522,19 +528,20 @@ export function Calendar({
     </div>
   )
 
-  const sourceToolbar = !goalId && googleConnected ? (
-    <div className="flex min-w-0 items-center gap-1.5">
-      {isGoogleEventsFetching && (
-        <span
-          className="flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground"
-          aria-label="Refreshing Google Calendar"
-        >
-          <LoaderCircle className="h-4 w-4 animate-spin" />
-        </span>
-      )}
-      <CalendarSourceFilter value={effectiveSourceFilter} onChange={setSourceFilter} />
-    </div>
-  ) : undefined
+  const sourceToolbar =
+    !goalId && googleConnected ? (
+      <div className="flex min-w-0 items-center gap-1.5">
+        {isGoogleEventsFetching && (
+          <span
+            className="flex h-8 w-8 shrink-0 items-center justify-center text-muted-foreground"
+            aria-label="Refreshing Google Calendar"
+          >
+            <LoaderCircle className="h-4 w-4 animate-spin" />
+          </span>
+        )}
+        <CalendarSourceFilter value={effectiveSourceFilter} onChange={setSourceFilter} />
+      </div>
+    ) : undefined
 
   const googleUnavailable = Boolean(
     !goalId && (googleIntegrationError || (googleConnected && googleEventsError)),
@@ -630,9 +637,7 @@ export function Calendar({
     <motion.div
       className={cn(
         "relative flex h-full w-full flex-col overflow-hidden",
-        fullBleed
-          ? "bg-background"
-          : "rounded-xl border border-border/60 bg-background/50",
+        fullBleed ? "bg-background" : "rounded-xl border border-border/60 bg-background/50",
       )}
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}

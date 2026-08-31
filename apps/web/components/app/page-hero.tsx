@@ -37,7 +37,7 @@ export function PageHero({
       className={cn(
         "relative overflow-hidden rounded-lg border border-border/70 bg-card/90 shadow-sm shadow-slate-950/5 dark:bg-slate-900/70",
         isCompact ? "p-4 sm:p-5" : "p-5 sm:p-6",
-        className
+        className,
       )}
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
@@ -51,7 +51,7 @@ export function PageHero({
         <div
           className={cn(
             "flex flex-col lg:flex-row lg:items-start lg:justify-between",
-            isCompact ? "gap-4" : "gap-5"
+            isCompact ? "gap-4" : "gap-5",
           )}
         >
           <div className="max-w-3xl">
@@ -61,9 +61,7 @@ export function PageHero({
             <h1
               className={cn(
                 "font-semibold leading-tight tracking-[-0.025em] text-foreground",
-                isCompact
-                  ? "mt-2 text-2xl sm:text-[1.75rem]"
-                  : "mt-2.5 text-[1.75rem] sm:text-3xl"
+                isCompact ? "mt-2 text-2xl sm:text-[1.75rem]" : "mt-2.5 text-[1.75rem] sm:text-3xl",
               )}
             >
               {title}
@@ -88,7 +86,7 @@ export function PageHero({
                 const tileClass = cn(
                   "min-h-11 min-w-0 rounded-md border border-border/60 bg-background/55 px-3 py-2.5 text-left dark:bg-white/[0.035] sm:min-w-28",
                   tappable &&
-                    "transition-[border-color,background-color,transform] hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98]"
+                    "transition-[border-color,background-color,transform] hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98]",
                 )
                 const inner = (
                   <>
@@ -109,7 +107,12 @@ export function PageHero({
                 }
                 if (stat.onClick) {
                   return (
-                    <button key={stat.label} type="button" onClick={stat.onClick} className={tileClass}>
+                    <button
+                      key={stat.label}
+                      type="button"
+                      onClick={stat.onClick}
+                      className={tileClass}
+                    >
                       {inner}
                     </button>
                   )

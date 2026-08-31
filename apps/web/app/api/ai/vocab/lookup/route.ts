@@ -18,7 +18,7 @@ export const POST = jsonAiRoute({
     `Define the Korean word or phrase "${word}" for a developer learning workplace Korean.\n` +
     "Rules:\n" +
     "- The example must be simple enough for a beginner-intermediate learner.\n" +
-    "- Set hanja to null (not the string \"null\") for native Korean or loan words; give the hanja root only if the word is Sino-Korean.\n\n" +
+    '- Set hanja to null (not the string "null") for native Korean or loan words; give the hanja root only if the word is Sino-Korean.\n\n' +
     "Give a concise English definition (1-6 words), one natural workplace example sentence with its translation, " +
     "and the hanja.",
 })

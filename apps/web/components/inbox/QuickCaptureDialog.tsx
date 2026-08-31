@@ -17,13 +17,24 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage, goalsApi, integrationsApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import { useInboxMutations } from "@/hooks/useInbox"
-import { INBOX_ITEM_TYPES, parseTagsInput, validateInboxItemInput, type InboxItemType } from "@/lib/inbox"
+import {
+  INBOX_ITEM_TYPES,
+  parseTagsInput,
+  validateInboxItemInput,
+  type InboxItemType,
+} from "@/lib/inbox"
 import { QUICK_CAPTURE_OPEN_EVENT } from "@/lib/quick-capture-bus"
 import { useSpeechRecognition } from "@/hooks/useSpeechRecognition"
 import { cn } from "@/lib/utils"
@@ -166,7 +177,10 @@ export function QuickCaptureDialog() {
 
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-5 py-4">
             <div className="flex items-center gap-2">
-              <Select value={itemType} onValueChange={(value) => setItemType(value as InboxItemType)}>
+              <Select
+                value={itemType}
+                onValueChange={(value) => setItemType(value as InboxItemType)}
+              >
                 <SelectTrigger className="w-44" aria-label="Capture type">
                   <SelectValue />
                 </SelectTrigger>
@@ -219,10 +233,15 @@ export function QuickCaptureDialog() {
                 placeholder="What's on your mind? An idea, a task, a Korean phrase, a bug you just fixed…"
                 aria-label="Content"
                 aria-invalid={submitAttempted && Boolean(errors.content)}
-                className={cn("min-h-32", submitAttempted && errors.content && "border-destructive")}
+                className={cn(
+                  "min-h-32",
+                  submitAttempted && errors.content && "border-destructive",
+                )}
               />
               {speech.error && <p className="text-xs text-destructive">{speech.error}</p>}
-              {submitAttempted && errors.content && <p className="text-xs text-destructive">{errors.content}</p>}
+              {submitAttempted && errors.content && (
+                <p className="text-xs text-destructive">{errors.content}</p>
+              )}
             </div>
 
             <Collapsible open={moreOpen} onOpenChange={setMoreOpen}>
@@ -231,7 +250,10 @@ export function QuickCaptureDialog() {
                   type="button"
                   className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
                 >
-                  <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+                  <ChevronDown
+                    size={14}
+                    className={cn("transition-transform", moreOpen && "rotate-180")}
+                  />
                   More options
                 </button>
               </CollapsibleTrigger>
@@ -244,10 +266,18 @@ export function QuickCaptureDialog() {
                 />
 
                 <div className="space-y-1.5">
-                  <label htmlFor="quick-capture-event-at" className="text-sm font-medium text-muted-foreground">
+                  <label
+                    htmlFor="quick-capture-event-at"
+                    className="text-sm font-medium text-muted-foreground"
+                  >
                     Event or activity time
                   </label>
-                  <DateTimePicker id="quick-capture-event-at" value={eventAt} onChange={setEventAt} granularity="minute" />
+                  <DateTimePicker
+                    id="quick-capture-event-at"
+                    value={eventAt}
+                    onChange={setEventAt}
+                    granularity="minute"
+                  />
                 </div>
 
                 <div className="space-y-1.5">
@@ -278,7 +308,11 @@ export function QuickCaptureDialog() {
                         Hengo stays the source of truth; Notion receives a copy.
                       </p>
                     </div>
-                    <Switch checked={syncToNotion} onCheckedChange={setSyncToNotion} aria-label="Copy capture to Notion" />
+                    <Switch
+                      checked={syncToNotion}
+                      onCheckedChange={setSyncToNotion}
+                      aria-label="Copy capture to Notion"
+                    />
                   </div>
                 )}
               </CollapsibleContent>
@@ -286,8 +320,15 @@ export function QuickCaptureDialog() {
           </div>
 
           <DialogFooter className="gap-2 border-t border-border bg-muted/30 px-5 py-3">
-            <p className="mr-auto hidden text-xs text-muted-foreground sm:block">⌘/Ctrl + Enter to capture</p>
-            <Button type="button" variant="outline" size="sm" onClick={() => handleOpenChange(false)}>
+            <p className="mr-auto hidden text-xs text-muted-foreground sm:block">
+              ⌘/Ctrl + Enter to capture
+            </p>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => handleOpenChange(false)}
+            >
               Cancel
             </Button>
             <Button type="submit" size="sm" disabled={saving || Object.keys(errors).length > 0}>

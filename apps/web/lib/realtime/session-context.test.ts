@@ -92,7 +92,9 @@ describe("buildRealtimeInstructions", () => {
   })
 
   it("falls back to a neutral learner name and includes the level rules", () => {
-    const text = buildRealtimeInstructions(baseInput({ learnerName: "the learner", level: "ADVANCED" }))
+    const text = buildRealtimeInstructions(
+      baseInput({ learnerName: "the learner", level: "ADVANCED" }),
+    )
     expect(text).toContain("for the learner")
     expect(text).toContain(VOICE_LEVELS.ADVANCED.instructions.slice(0, 24))
   })

@@ -4,7 +4,10 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AlertCircle, ArrowLeft, CheckCircle2, Loader2, Send } from "lucide-react"
 
 import { AnswerFrameHint } from "@/components/interview/AnswerFrameHint"
-import { CorrectionRetryPanel, PRONUNCIATION_DISCLAIMER } from "@/components/interview/CorrectionRetryPanel"
+import {
+  CorrectionRetryPanel,
+  PRONUNCIATION_DISCLAIMER,
+} from "@/components/interview/CorrectionRetryPanel"
 import { ExamPracticeDashboard } from "@/components/interview/ExamPracticeDashboard"
 import { ListeningQuestionCard } from "@/components/interview/ListeningQuestionCard"
 import { QuestionBankBrowser } from "@/components/interview/QuestionBankBrowser"
@@ -127,9 +130,12 @@ export default function SpeakingDrillPage() {
   }, [loadDashboard])
 
   const currentQuestion = queue[index]
-  const currentRun = runs.find((run) => (run.question.id ?? run.question.ko) === (currentQuestion?.id ?? currentQuestion?.ko))
+  const currentRun = runs.find(
+    (run) => (run.question.id ?? run.question.ko) === (currentQuestion?.id ?? currentQuestion?.ko),
+  )
   const firstAttempt = currentRun?.attempts[0]
-  const retryAttempt = currentRun && currentRun.attempts.length > 1 ? currentRun.attempts.at(-1) : undefined
+  const retryAttempt =
+    currentRun && currentRun.attempts.length > 1 ? currentRun.attempts.at(-1) : undefined
 
   function launchQueue(nextQueue: DrillQuestion[], nextMode: PracticeMode) {
     const unique = uniqueQueue(nextQueue).slice(0, DRILL_SIZE)
@@ -163,7 +169,10 @@ export default function SpeakingDrillPage() {
     }
     const selected = selectTodaysQueue(questions, progress, difficulty, DRILL_SIZE, storedIds)
     try {
-      window.localStorage.setItem(storageKey, JSON.stringify(selected.map((question) => question.id)))
+      window.localStorage.setItem(
+        storageKey,
+        JSON.stringify(selected.map((question) => question.id)),
+      )
     } catch {
       // The pure deterministic order still remains stable when storage is unavailable.
     }
@@ -176,7 +185,8 @@ export default function SpeakingDrillPage() {
       return item && item.timesPracticed > 0 && item.status !== "strong"
     })
     const selected = selectFocusQueue(weakPool, progress, DRILL_SIZE)
-    const fallback = selected.length > 0 ? selected : mostDifficultQuestions(questions, progress, DRILL_SIZE)
+    const fallback =
+      selected.length > 0 ? selected : mostDifficultQuestions(questions, progress, DRILL_SIZE)
     if (fallback.length === 0) {
       setError("Complete Today's 5 to begin identifying your weak questions.")
       return
@@ -187,22 +197,29 @@ export default function SpeakingDrillPage() {
   function startAiRandom() {
     const staticQueue = buildDrillQueue()
     launchQueue(staticQueue, "ai")
-    interviewApi.drillQuestions({
-      kind: "speaking",
-      count: DRILL_SIZE,
-      complexityHint: "natural weather-interview phrasing for a beginner answer of 2-3 sentences",
-      styleExamples: pickStyleExamples(),
-      avoid: staticQueue.map((question) => question.ko),
-    }).then(({ questions: generated }) => {
-      if (generated.length === 0) return
-      setQueue((current) => uniqueQueue(replaceUnseenTail(
-        current,
-        generated.map((question) => ({ ko: question.ko, en: question.en })),
-        indexRef.current + 1,
-      )))
-    }).catch(() => {
-      // Static questions provide a complete offline-safe AI-mode fallback.
-    })
+    interviewApi
+      .drillQuestions({
+        kind: "speaking",
+        count: DRILL_SIZE,
+        complexityHint: "natural weather-interview phrasing for a beginner answer of 2-3 sentences",
+        styleExamples: pickStyleExamples(),
+        avoid: staticQueue.map((question) => question.ko),
+      })
+      .then(({ questions: generated }) => {
+        if (generated.length === 0) return
+        setQueue((current) =>
+          uniqueQueue(
+            replaceUnseenTail(
+              current,
+              generated.map((question) => ({ ko: question.ko, en: question.en })),
+              indexRef.current + 1,
+            ),
+          ),
+        )
+      })
+      .catch(() => {
+        // Static questions provide a complete offline-safe AI-mode fallback.
+      })
   }
 
   async function submitAnswer() {
@@ -223,10 +240,16 @@ export default function SpeakingDrillPage() {
       setRuns((currentRuns) => {
         const key = currentQuestion.id ?? currentQuestion.ko
         const existing = currentRuns.find((run) => (run.question.id ?? run.question.ko) === key)
-        if (!existing) return [...currentRuns, { question: currentQuestion, attempts: [attempt], skippedRetry: false }]
-        return currentRuns.map((run) => (run.question.id ?? run.question.ko) === key
-          ? { ...run, attempts: [...run.attempts, attempt] }
-          : run)
+        if (!existing)
+          return [
+            ...currentRuns,
+            { question: currentQuestion, attempts: [attempt], skippedRetry: false },
+          ]
+        return currentRuns.map((run) =>
+          (run.question.id ?? run.question.ko) === key
+            ? { ...run, attempts: [...run.attempts, attempt] }
+            : run,
+        )
       })
       setIsRetrying(false)
       await interviewApi.saveAnswer({
@@ -247,7 +270,12 @@ export default function SpeakingDrillPage() {
       }
       void logActivity()
     } catch (submitError) {
-      setError(getApiErrorMessage(submitError, "Could not score or save this answer. Your transcript is preserved - try again."))
+      setError(
+        getApiErrorMessage(
+          submitError,
+          "Could not score or save this answer. Your transcript is preserved - try again.",
+        ),
+      )
     } finally {
       setIsScoring(false)
     }
@@ -265,11 +293,14 @@ export default function SpeakingDrillPage() {
 
   function nextQuestion() {
     if (!currentQuestion) return
-    setRuns((currentRuns) => currentRuns.map((run) =>
-      (run.question.id ?? run.question.ko) === (currentQuestion.id ?? currentQuestion.ko) && run.attempts.length === 1
-        ? { ...run, skippedRetry: true }
-        : run,
-    ))
+    setRuns((currentRuns) =>
+      currentRuns.map((run) =>
+        (run.question.id ?? run.question.ko) === (currentQuestion.id ?? currentQuestion.ko) &&
+        run.attempts.length === 1
+          ? { ...run, skippedRetry: true }
+          : run,
+      ),
+    )
     setIsRetrying(false)
     stopSpeechAudio()
     speech.reset()
@@ -290,11 +321,14 @@ export default function SpeakingDrillPage() {
     const allAttempts = runs.flatMap((run) => run.attempts)
     const averages = averageSpeakingScores(allAttempts.map((attempt) => attempt.result.scores))
     try {
-      window.localStorage.setItem(LAST_SESSION_KEY, JSON.stringify({
-        finishedAt: new Date().toISOString(),
-        answered: runs.length,
-        averages,
-      }))
+      window.localStorage.setItem(
+        LAST_SESSION_KEY,
+        JSON.stringify({
+          finishedAt: new Date().toISOString(),
+          answered: runs.length,
+          averages,
+        }),
+      )
     } catch {
       // Summary still renders for this session.
     }
@@ -310,7 +344,14 @@ export default function SpeakingDrillPage() {
   }, [isScoring, retryCycle, speech.status, speech.supported, speech.transcript])
 
   if (phase === "bank") {
-    return <QuestionBankBrowser questions={questions} progress={progress} onBack={() => setPhase("dashboard")} onPractice={(selected) => launchQueue(selected.map(toDrillQuestion), "selected")} />
+    return (
+      <QuestionBankBrowser
+        questions={questions}
+        progress={progress}
+        onBack={() => setPhase("dashboard")}
+        onPractice={(selected) => launchQueue(selected.map(toDrillQuestion), "selected")}
+      />
+    )
   }
 
   if (phase === "dashboard") {
@@ -344,15 +385,41 @@ export default function SpeakingDrillPage() {
         <Card className="rounded-2xl border-blue-500/25 shadow-sm">
           <CardContent className="p-6 text-center sm:p-8">
             <CheckCircle2 className="mx-auto size-10 text-blue-600" />
-            <h1 className="mt-4 text-2xl font-bold text-foreground">Today&apos;s practice is complete</h1>
-            <p className="mt-2 text-sm text-muted-foreground">You completed {runs.length} questions and retried {retried}. Your stable-question progress has been updated.</p>
+            <h1 className="mt-4 text-2xl font-bold text-foreground">
+              Today&apos;s practice is complete
+            </h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              You completed {runs.length} questions and retried {retried}. Your stable-question
+              progress has been updated.
+            </p>
             <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              <div className="rounded-xl bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Questions</p><p className="mt-1 text-xl font-bold">{runs.length}</p></div>
-              <div className="rounded-xl bg-muted/40 p-3"><p className="text-xs text-muted-foreground">Speaking estimate</p><p className="mt-1 text-xl font-bold">{averages?.speaking.toFixed(1) ?? "\u2014"}</p></div>
-              <div className="col-span-2 rounded-xl bg-muted/40 p-3 sm:col-span-1"><p className="text-xs text-muted-foreground">Retries</p><p className="mt-1 text-xl font-bold">{retried}</p></div>
+              <div className="rounded-xl bg-muted/40 p-3">
+                <p className="text-xs text-muted-foreground">Questions</p>
+                <p className="mt-1 text-xl font-bold">{runs.length}</p>
+              </div>
+              <div className="rounded-xl bg-muted/40 p-3">
+                <p className="text-xs text-muted-foreground">Speaking estimate</p>
+                <p className="mt-1 text-xl font-bold">
+                  {averages?.speaking.toFixed(1) ?? "\u2014"}
+                </p>
+              </div>
+              <div className="col-span-2 rounded-xl bg-muted/40 p-3 sm:col-span-1">
+                <p className="text-xs text-muted-foreground">Retries</p>
+                <p className="mt-1 text-xl font-bold">{retried}</p>
+              </div>
             </div>
-            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">{PRONUNCIATION_DISCLAIMER}</p>
-            <Button onClick={() => { setPhase("dashboard"); void loadDashboard() }} className="mt-6 h-12 w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700 sm:w-auto sm:px-8">Back to exam dashboard</Button>
+            <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+              {PRONUNCIATION_DISCLAIMER}
+            </p>
+            <Button
+              onClick={() => {
+                setPhase("dashboard")
+                void loadDashboard()
+              }}
+              className="mt-6 h-12 w-full rounded-xl bg-blue-600 text-white hover:bg-blue-700 sm:w-auto sm:px-8"
+            >
+              Back to exam dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -363,10 +430,42 @@ export default function SpeakingDrillPage() {
     <div className="mx-auto max-w-3xl space-y-4 pb-32 sm:pb-16">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Button variant="ghost" onClick={() => { stopSpeechAudio(); speech.reset(); setPhase("dashboard") }} className="-ml-3 rounded-xl"><ArrowLeft className="mr-2 size-4" />End drill</Button>
-          <div className="mt-1 flex flex-wrap items-center gap-2"><Badge variant="outline">{mode === "today" ? "Today's 5" : mode === "ai" ? "AI Random" : mode === "weak" ? "Weak review" : "Selected questions"}</Badge><span className="text-sm text-muted-foreground">{index + 1} / {queue.length}</span></div>
+          <Button
+            variant="ghost"
+            onClick={() => {
+              stopSpeechAudio()
+              speech.reset()
+              setPhase("dashboard")
+            }}
+            className="-ml-3 rounded-xl"
+          >
+            <ArrowLeft className="mr-2 size-4" />
+            End drill
+          </Button>
+          <div className="mt-1 flex flex-wrap items-center gap-2">
+            <Badge variant="outline">
+              {mode === "today"
+                ? "Today's 5"
+                : mode === "ai"
+                  ? "AI Random"
+                  : mode === "weak"
+                    ? "Weak review"
+                    : "Selected questions"}
+            </Badge>
+            <span className="text-sm text-muted-foreground">
+              {index + 1} / {queue.length}
+            </span>
+          </div>
         </div>
-        <div className="h-2 w-32 overflow-hidden rounded-full bg-muted" aria-label={`${index + 1} of ${queue.length} questions`}><div className="h-full bg-blue-600 transition-[width] motion-reduce:transition-none" style={{ width: `${((index + 1) / queue.length) * 100}%` }} /></div>
+        <div
+          className="h-2 w-32 overflow-hidden rounded-full bg-muted"
+          aria-label={`${index + 1} of ${queue.length} questions`}
+        >
+          <div
+            className="h-full bg-blue-600 transition-[width] motion-reduce:transition-none"
+            style={{ width: `${((index + 1) / queue.length) * 100}%` }}
+          />
+        </div>
       </div>
 
       {currentQuestion ? (
@@ -402,15 +501,38 @@ export default function SpeakingDrillPage() {
               onDetectedTranscript={setDetectedTranscript}
               stateLabel={stateLabel}
             />
-            {error ? <div role="alert" aria-live="assertive" className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"><AlertCircle className="mt-0.5 size-4 shrink-0" />{error}</div> : null}
+            {error ? (
+              <div
+                role="alert"
+                aria-live="assertive"
+                className="flex items-start gap-2 rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-sm text-destructive"
+              >
+                <AlertCircle className="mt-0.5 size-4 shrink-0" />
+                {error}
+              </div>
+            ) : null}
           </CardContent>
         </Card>
       )}
 
       {!firstAttempt || isRetrying ? (
         <div className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-20 rounded-2xl border border-border bg-background/95 p-2 shadow-lg backdrop-blur sm:bottom-4">
-          <Button onClick={submitAnswer} disabled={!speech.transcript.trim() || isScoring || audioPlaying} className="h-12 w-full rounded-xl bg-blue-600 font-semibold text-white hover:bg-blue-700">
-            {isScoring ? <><Loader2 className="mr-2 size-4 animate-spin" />Scoring</> : <><Send className="mr-2 size-4" />Submit confirmed transcript</>}
+          <Button
+            onClick={submitAnswer}
+            disabled={!speech.transcript.trim() || isScoring || audioPlaying}
+            className="h-12 w-full rounded-xl bg-blue-600 font-semibold text-white hover:bg-blue-700"
+          >
+            {isScoring ? (
+              <>
+                <Loader2 className="mr-2 size-4 animate-spin" />
+                Scoring
+              </>
+            ) : (
+              <>
+                <Send className="mr-2 size-4" />
+                Submit confirmed transcript
+              </>
+            )}
           </Button>
         </div>
       ) : null}

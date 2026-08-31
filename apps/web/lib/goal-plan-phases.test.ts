@@ -94,7 +94,9 @@ describe("legacy milestone conversion", () => {
   })
 
   it("marks done milestones as completed phases", () => {
-    const [draft] = milestonesToPhaseDrafts([{ title: "Kickoff", due_date: "2026-07-05", done: true }])
+    const [draft] = milestonesToPhaseDrafts([
+      { title: "Kickoff", due_date: "2026-07-05", done: true },
+    ])
     expect(draft.status).toBe("completed")
   })
 

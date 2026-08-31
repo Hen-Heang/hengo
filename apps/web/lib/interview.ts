@@ -192,24 +192,96 @@ const WEATHER_VOCAB_DETAILS: Record<
   string,
   Pick<VocabEntry, "priority" | "exampleKo" | "exampleEn">
 > = {
-  "덥다": { priority: "core", exampleKo: "한국의 여름은 매우 덥습니다.", exampleEn: "Summer in Korea is very hot." },
-  "습하다": { priority: "core", exampleKo: "비가 온 뒤에는 날씨가 더 습합니다.", exampleEn: "After it rains, the weather is more humid." },
-  "무덥다": { priority: "core", exampleKo: "장마철에는 날씨가 무척 무덥습니다.", exampleEn: "The weather is very muggy during the rainy season." },
-  "장마": { priority: "core", exampleKo: "장마 때는 비가 많이 옵니다.", exampleEn: "It rains a lot during jangma." },
-  "습도": { priority: "core", exampleKo: "습도가 높아서 더 덥게 느껴집니다.", exampleEn: "It feels hotter because the humidity is high." },
-  "기온": { priority: "core", exampleKo: "낮 기온이 35도까지 올랐습니다.", exampleEn: "The daytime temperature rose to 35 degrees." },
-  "열대야": { priority: "core", exampleKo: "열대야 때문에 잠을 잘 못 잤습니다.", exampleEn: "I could not sleep well because of the hot night." },
-  "땀이 나다": { priority: "core", exampleKo: "출근할 때 땀이 많이 납니다.", exampleEn: "I sweat a lot on my commute." },
-  "시원하다": { priority: "core", exampleKo: "시원한 곳에서 쉬면 좋습니다.", exampleEn: "It is good to rest in a cool place." },
-  "수분 섭취": { priority: "core", exampleKo: "갈증이 없어도 수분을 섭취해야 합니다.", exampleEn: "You should drink fluids even when you are not thirsty." },
-  "온열질환": { priority: "core", exampleKo: "폭염에는 온열질환을 조심해야 합니다.", exampleEn: "You must be careful of heat-related illness during a heat wave." },
-  "건기": { priority: "core", exampleKo: "캄보디아에는 건기와 우기가 있습니다.", exampleEn: "Cambodia has a dry season and a wet season." },
-  "우기": { priority: "core", exampleKo: "우기에는 비가 자주 옵니다.", exampleEn: "It rains often during the wet season." },
-  "사계절": { priority: "core", exampleKo: "한국은 사계절이 뚜렷합니다.", exampleEn: "Korea has four distinct seasons." },
-  "차이점": { priority: "core", exampleKo: "가장 큰 차이점은 계절입니다.", exampleEn: "The biggest difference is the seasons." },
-  "반면에": { priority: "core", exampleKo: "한국은 사계절이 있는 반면에 캄보디아는 두 계절이 있습니다.", exampleEn: "Korea has four seasons, whereas Cambodia has two." },
-  "적응하다": { priority: "core", exampleKo: "한국의 습한 여름에 적응하고 있습니다.", exampleEn: "I am adapting to Korea's humid summer." },
-  "익숙해지다": { priority: "core", exampleKo: "지금은 더위에 조금 익숙해졌습니다.", exampleEn: "Now I have gotten a little used to the heat." },
+  덥다: {
+    priority: "core",
+    exampleKo: "한국의 여름은 매우 덥습니다.",
+    exampleEn: "Summer in Korea is very hot.",
+  },
+  습하다: {
+    priority: "core",
+    exampleKo: "비가 온 뒤에는 날씨가 더 습합니다.",
+    exampleEn: "After it rains, the weather is more humid.",
+  },
+  무덥다: {
+    priority: "core",
+    exampleKo: "장마철에는 날씨가 무척 무덥습니다.",
+    exampleEn: "The weather is very muggy during the rainy season.",
+  },
+  장마: {
+    priority: "core",
+    exampleKo: "장마 때는 비가 많이 옵니다.",
+    exampleEn: "It rains a lot during jangma.",
+  },
+  습도: {
+    priority: "core",
+    exampleKo: "습도가 높아서 더 덥게 느껴집니다.",
+    exampleEn: "It feels hotter because the humidity is high.",
+  },
+  기온: {
+    priority: "core",
+    exampleKo: "낮 기온이 35도까지 올랐습니다.",
+    exampleEn: "The daytime temperature rose to 35 degrees.",
+  },
+  열대야: {
+    priority: "core",
+    exampleKo: "열대야 때문에 잠을 잘 못 잤습니다.",
+    exampleEn: "I could not sleep well because of the hot night.",
+  },
+  "땀이 나다": {
+    priority: "core",
+    exampleKo: "출근할 때 땀이 많이 납니다.",
+    exampleEn: "I sweat a lot on my commute.",
+  },
+  시원하다: {
+    priority: "core",
+    exampleKo: "시원한 곳에서 쉬면 좋습니다.",
+    exampleEn: "It is good to rest in a cool place.",
+  },
+  "수분 섭취": {
+    priority: "core",
+    exampleKo: "갈증이 없어도 수분을 섭취해야 합니다.",
+    exampleEn: "You should drink fluids even when you are not thirsty.",
+  },
+  온열질환: {
+    priority: "core",
+    exampleKo: "폭염에는 온열질환을 조심해야 합니다.",
+    exampleEn: "You must be careful of heat-related illness during a heat wave.",
+  },
+  건기: {
+    priority: "core",
+    exampleKo: "캄보디아에는 건기와 우기가 있습니다.",
+    exampleEn: "Cambodia has a dry season and a wet season.",
+  },
+  우기: {
+    priority: "core",
+    exampleKo: "우기에는 비가 자주 옵니다.",
+    exampleEn: "It rains often during the wet season.",
+  },
+  사계절: {
+    priority: "core",
+    exampleKo: "한국은 사계절이 뚜렷합니다.",
+    exampleEn: "Korea has four distinct seasons.",
+  },
+  차이점: {
+    priority: "core",
+    exampleKo: "가장 큰 차이점은 계절입니다.",
+    exampleEn: "The biggest difference is the seasons.",
+  },
+  반면에: {
+    priority: "core",
+    exampleKo: "한국은 사계절이 있는 반면에 캄보디아는 두 계절이 있습니다.",
+    exampleEn: "Korea has four seasons, whereas Cambodia has two.",
+  },
+  적응하다: {
+    priority: "core",
+    exampleKo: "한국의 습한 여름에 적응하고 있습니다.",
+    exampleEn: "I am adapting to Korea's humid summer.",
+  },
+  익숙해지다: {
+    priority: "core",
+    exampleKo: "지금은 더위에 조금 익숙해졌습니다.",
+    exampleEn: "Now I have gotten a little used to the heat.",
+  },
 }
 
 const WEATHER_ANSWER_FRAMES: AnswerFrame[] = [
@@ -219,7 +291,8 @@ const WEATHER_ANSWER_FRAMES: AnswerFrame[] = [
     patternKo: "___은/는 ___습니다. 특히 ___습니다.",
     patternEn: "___ is ___. In particular, ___.",
     exampleKo: "한국의 여름은 덥고 습합니다. 특히 장마철에 습도가 높습니다.",
-    exampleEn: "Korean summer is hot and humid. In particular, humidity is high during the rainy season.",
+    exampleEn:
+      "Korean summer is hot and humid. In particular, humidity is high during the rainy season.",
   },
   {
     label: "Compare two countries",
@@ -251,7 +324,8 @@ const WEATHER_ANSWER_FRAMES: AnswerFrame[] = [
     patternKo: "___(으)ㄴ 적이 있습니다. 그때 ___습니다.",
     patternEn: "I have experienced ___. At that time, ___.",
     exampleKo: "열대야 때문에 잠을 잘 못 잔 적이 있습니다. 그때 아침에 많이 피곤했습니다.",
-    exampleEn: "I once could not sleep well because of a hot night. I was very tired the next morning.",
+    exampleEn:
+      "I once could not sleep well because of a hot night. I was very tired the next morning.",
   },
   {
     label: "Show adaptation",
@@ -268,48 +342,66 @@ const WEATHER_CORE_ANSWERS: Record<
   Pick<PracticeQuestion, "answerKo" | "answerEn" | "keywords">
 > = {
   "한국의 여름 날씨는 어때요?": {
-    answerKo: "한국의 여름은 덥고 습합니다. 특히 장마철에는 습도가 높아서 실제 기온보다 더 덥게 느껴집니다.",
-    answerEn: "Korean summer is hot and humid. Especially during the rainy season, the high humidity makes it feel hotter than the actual temperature.",
+    answerKo:
+      "한국의 여름은 덥고 습합니다. 특히 장마철에는 습도가 높아서 실제 기온보다 더 덥게 느껴집니다.",
+    answerEn:
+      "Korean summer is hot and humid. Especially during the rainy season, the high humidity makes it feel hotter than the actual temperature.",
     keywords: ["덥고 습하다", "장마철", "습도"],
   },
   "캄보디아의 날씨와 어떻게 달라요?": {
-    answerKo: "한국은 사계절이 있는 반면에 캄보디아는 건기와 우기가 있습니다. 캄보디아는 일 년 내내 덥지만 한국은 계절별 기온 차이가 큽니다.",
-    answerEn: "Korea has four seasons, whereas Cambodia has a dry and a wet season. Cambodia is hot all year, but Korea's temperature changes greatly by season.",
+    answerKo:
+      "한국은 사계절이 있는 반면에 캄보디아는 건기와 우기가 있습니다. 캄보디아는 일 년 내내 덥지만 한국은 계절별 기온 차이가 큽니다.",
+    answerEn:
+      "Korea has four seasons, whereas Cambodia has a dry and a wet season. Cambodia is hot all year, but Korea's temperature changes greatly by season.",
     keywords: ["사계절", "건기와 우기", "기온 차이"],
   },
   "한국 여름과 캄보디아 여름 중에서 어디가 더 더워요?": {
-    answerKo: "실제 기온은 캄보디아가 더 높을 때가 많습니다. 하지만 한국은 습도가 높아서 체감상 더 힘들게 느껴질 때도 있습니다.",
-    answerEn: "The actual temperature is often higher in Cambodia. However, Korea's high humidity can sometimes make the heat feel harder to bear.",
+    answerKo:
+      "실제 기온은 캄보디아가 더 높을 때가 많습니다. 하지만 한국은 습도가 높아서 체감상 더 힘들게 느껴질 때도 있습니다.",
+    answerEn:
+      "The actual temperature is often higher in Cambodia. However, Korea's high humidity can sometimes make the heat feel harder to bear.",
     keywords: ["실제 기온", "습도", "체감상"],
   },
   "장마철에 대해 어떻게 생각해요?": {
-    answerKo: "장마철에는 습도가 높고 갑자기 비가 많이 와서 불편합니다. 그래서 외출할 때 우산을 챙기고 날씨 예보를 확인합니다.",
-    answerEn: "The rainy season is inconvenient because humidity is high and heavy rain can start suddenly. So I carry an umbrella and check the forecast before going out.",
+    answerKo:
+      "장마철에는 습도가 높고 갑자기 비가 많이 와서 불편합니다. 그래서 외출할 때 우산을 챙기고 날씨 예보를 확인합니다.",
+    answerEn:
+      "The rainy season is inconvenient because humidity is high and heavy rain can start suddenly. So I carry an umbrella and check the forecast before going out.",
     keywords: ["습도", "비가 많이 오다", "우산"],
   },
   "더운 날씨가 건강에 어떤 영향을 줘요?": {
-    answerKo: "날씨가 더우면 땀을 많이 흘리고 쉽게 피곤해집니다. 수분을 충분히 섭취하지 않으면 탈수 증상이나 온열질환이 생길 수 있습니다.",
-    answerEn: "In hot weather, I sweat a lot and get tired easily. Without enough fluids, dehydration symptoms or heat-related illness can occur.",
+    answerKo:
+      "날씨가 더우면 땀을 많이 흘리고 쉽게 피곤해집니다. 수분을 충분히 섭취하지 않으면 탈수 증상이나 온열질환이 생길 수 있습니다.",
+    answerEn:
+      "In hot weather, I sweat a lot and get tired easily. Without enough fluids, dehydration symptoms or heat-related illness can occur.",
     keywords: ["땀", "피곤하다", "온열질환"],
   },
   "더위를 이기기 위해서 무엇을 해요?": {
-    answerKo: "물을 자주 마시고 시원한 곳에서 충분히 쉽니다. 가장 더운 시간대에는 야외 활동을 줄이려고 합니다.",
-    answerEn: "I drink water often and rest enough in a cool place. I try to reduce outdoor activity during the hottest hours.",
+    answerKo:
+      "물을 자주 마시고 시원한 곳에서 충분히 쉽니다. 가장 더운 시간대에는 야외 활동을 줄이려고 합니다.",
+    answerEn:
+      "I drink water often and rest enough in a cool place. I try to reduce outdoor activity during the hottest hours.",
     keywords: ["물을 마시다", "시원한 곳", "휴식"],
   },
   "한국에 와서 날씨 때문에 힘들었던 적이 있어요?": {
-    answerKo: "네, 열대야 때문에 잠을 잘 못 잔 적이 있습니다. 그때 아침에 많이 피곤했지만 지금은 조금씩 적응하고 있습니다.",
-    answerEn: "Yes, I once could not sleep well because of a hot night. I was very tired in the morning, but now I am gradually adapting.",
+    answerKo:
+      "네, 열대야 때문에 잠을 잘 못 잔 적이 있습니다. 그때 아침에 많이 피곤했지만 지금은 조금씩 적응하고 있습니다.",
+    answerEn:
+      "Yes, I once could not sleep well because of a hot night. I was very tired in the morning, but now I am gradually adapting.",
     keywords: ["열대야", "잠을 못 자다", "적응하다"],
   },
   "여름에 건강을 지키기 위해서 어떻게 해요?": {
-    answerKo: "갈증이 나지 않아도 물을 규칙적으로 마십니다. 또 햇볕을 피하고 더운 시간에는 휴식하려고 합니다.",
-    answerEn: "I drink water regularly even when I am not thirsty. I also avoid direct sunlight and try to rest during hot hours.",
+    answerKo:
+      "갈증이 나지 않아도 물을 규칙적으로 마십니다. 또 햇볕을 피하고 더운 시간에는 휴식하려고 합니다.",
+    answerEn:
+      "I drink water regularly even when I am not thirsty. I also avoid direct sunlight and try to rest during hot hours.",
     keywords: ["규칙적으로", "햇볕을 피하다", "휴식"],
   },
   "캄보디아의 건기와 우기에 대해 설명해 줄 수 있어요?": {
-    answerKo: "캄보디아의 건기는 보통 11월부터 4월까지이고, 우기는 5월부터 10월까지입니다. 가장 더운 시기는 보통 우기가 시작되기 전입니다.",
-    answerEn: "Cambodia's dry season is generally November to April, and its wet season is May to October. The hottest time is usually just before the wet season begins.",
+    answerKo:
+      "캄보디아의 건기는 보통 11월부터 4월까지이고, 우기는 5월부터 10월까지입니다. 가장 더운 시기는 보통 우기가 시작되기 전입니다.",
+    answerEn:
+      "Cambodia's dry season is generally November to April, and its wet season is May to October. The hottest time is usually just before the wet season begins.",
     keywords: ["건기", "우기", "5월부터 10월"],
   },
 }
@@ -624,11 +716,26 @@ const WEATHER_PREP: InterviewPrep = {
     },
     // From TalkToMeInKorean "1100 Short & Useful Korean Phrases" (Pattern 024 example).
     { ko: "날씨 어떤 것 같아요?", en: "What do you think about the weather?" },
-    { ko: "냉방병을 예방하기 위해 어떤 노력을 하고 있어요?", en: "What efforts are you making to prevent air-conditioning sickness?" },
-    { ko: "한국과 캄보디아 중 어느 쪽이 건강에 더 나쁘다고 생각해요?", en: "Which do you think is worse for health — Korean or Cambodian weather?" },
-    { ko: "한국 여름에 가장 힘들었던 건강 문제는 무엇이었어요?", en: "What was the most difficult health issue you faced during Korean summer?" },
-    { ko: "캄보디아에서는 더운 날씨에 어떻게 대처했어요?", en: "How did you cope with the hot weather in Cambodia?" },
-    { ko: "습도가 높을 때 일상생활에 어떤 변화가 생겼어요?", en: "What changes happened in your daily life when humidity was high?" },
+    {
+      ko: "냉방병을 예방하기 위해 어떤 노력을 하고 있어요?",
+      en: "What efforts are you making to prevent air-conditioning sickness?",
+    },
+    {
+      ko: "한국과 캄보디아 중 어느 쪽이 건강에 더 나쁘다고 생각해요?",
+      en: "Which do you think is worse for health — Korean or Cambodian weather?",
+    },
+    {
+      ko: "한국 여름에 가장 힘들었던 건강 문제는 무엇이었어요?",
+      en: "What was the most difficult health issue you faced during Korean summer?",
+    },
+    {
+      ko: "캄보디아에서는 더운 날씨에 어떻게 대처했어요?",
+      en: "How did you cope with the hot weather in Cambodia?",
+    },
+    {
+      ko: "습도가 높을 때 일상생활에 어떤 변화가 생겼어요?",
+      en: "What changes happened in your daily life when humidity was high?",
+    },
     ...WEATHER_SCRIPT_FOLLOW_UPS,
     // Follow-up territory the examiner can reach from the topic: tropical
     // nights, the KDCA heat rules, and Korean summer food culture. Each model
@@ -733,7 +840,8 @@ const WEATHER_PREP: InterviewPrep = {
       publisher: "질병관리청 (KDCA)",
       title: "2026 폭염 대비 건강수칙",
       url: "https://www.kdca.go.kr/bbs/kdca/263/306758/download.do",
-      usedFor: "Staying cool, drinking water regularly, sun protection, rest, and heat-illness response",
+      usedFor:
+        "Staying cool, drinking water regularly, sun protection, rest, and heat-illness response",
     },
     {
       publisher: "기상청 (KMA)",
@@ -834,7 +942,8 @@ const WORKPLACE_QA_PREP: InterviewPrep = {
 export const INTERVIEW_TOPICS: InterviewTopic[] = [
   {
     id: "weather",
-    label: "Differences between Korean summer weather and Cambodian weather, and their effects on daily life and health",
+    label:
+      "Differences between Korean summer weather and Cambodian weather, and their effects on daily life and health",
     labelKo: "한국 여름 날씨와 캄보디아 날씨의 차이와 생활·건강에 미치는 영향",
     description:
       "Compare summer weather in Korea and Cambodia and how it affects daily life and health.",
@@ -878,9 +987,7 @@ export const INTERVIEW_TOPICS: InterviewTopic[] = [
 ]
 
 export function getInterviewTopic(id: string): InterviewTopic {
-  return (
-    INTERVIEW_TOPICS.find((topic) => topic.id === id) ?? INTERVIEW_TOPICS[0]
-  )
+  return INTERVIEW_TOPICS.find((topic) => topic.id === id) ?? INTERVIEW_TOPICS[0]
 }
 
 // ── Q&A preparation ───────────────────────────────────────────────────────
@@ -928,7 +1035,7 @@ export function buildScriptDocument(
   topic: InterviewTopic,
   values: Record<string, string>,
   /** Candidate-added sections, appended after the fixed exam outline. */
-  extraSections: { id: string; title: string }[] = []
+  extraSections: { id: string; title: string }[] = [],
 ): string {
   const blocks: string[] = [topic.labelKo, ""]
 
@@ -983,7 +1090,7 @@ function responseFormatRules(mode: InterviewModeConfig): string {
 export function buildInterviewSystemPrompt(
   topic: InterviewTopic,
   mode: InterviewModeConfig = INTERVIEW_MODES.practice,
-  unexpected: UnexpectedQuestion[] = []
+  unexpected: UnexpectedQuestion[] = [],
 ): string {
   const unexpectedBlock =
     unexpected.length > 0
@@ -1022,7 +1129,7 @@ export function buildInterviewSystemPrompt(
  */
 export function buildAnswerMessage(
   answer: string,
-  mode: InterviewModeConfig = INTERVIEW_MODES.practice
+  mode: InterviewModeConfig = INTERVIEW_MODES.practice,
 ): string {
   const reminder = mode.showFeedback
     ? "[Give brief feedback on that answer, then ask the next question. Use the required format.]"
@@ -1044,10 +1151,7 @@ export interface ExaminerTurn {
 export function parseExaminerTurn(raw: string): ExaminerTurn {
   const text = (raw ?? "").trim()
 
-  const feedback = extractSection(text, FEEDBACK_TAG, [
-    QUESTION_KO_TAG,
-    QUESTION_EN_TAG,
-  ])
+  const feedback = extractSection(text, FEEDBACK_TAG, [QUESTION_KO_TAG, QUESTION_EN_TAG])
   const questionKo = extractSection(text, QUESTION_KO_TAG, [QUESTION_EN_TAG])
   const questionEn = extractSection(text, QUESTION_EN_TAG, [])
 
@@ -1189,11 +1293,7 @@ export function parseEvaluation(raw: string): InterviewEvaluation {
   return { scores, summary, advice }
 }
 
-function extractSection(
-  text: string,
-  startTag: string,
-  endTags: string[]
-): string {
+function extractSection(text: string, startTag: string, endTags: string[]): string {
   const startIndex = text.indexOf(startTag)
   if (startIndex === -1) {
     return ""

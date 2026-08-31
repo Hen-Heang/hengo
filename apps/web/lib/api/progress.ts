@@ -1,4 +1,11 @@
-import type { Achievement, AchievementSummary, DashboardStats, FeatureActivity, LevelInfo, ProgressPoint } from "@/lib/types"
+import type {
+  Achievement,
+  AchievementSummary,
+  DashboardStats,
+  FeatureActivity,
+  LevelInfo,
+  ProgressPoint,
+} from "@/lib/types"
 import type { LearningMetric } from "@/lib/goals"
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
@@ -60,17 +67,116 @@ type Counts = {
 }
 
 const CATALOG: Array<Achievement & { met: (c: Counts) => boolean }> = [
-  { code: "FIRST_WORD", title: "First Word", description: "Save your first vocabulary word", icon: "BookOpen", category: "Vocabulary", xp: 10, unlocked: false, met: (c) => c.wordsSaved >= 1 },
-  { code: "WORD_COLLECTOR", title: "Word Collector", description: "Save 50 vocabulary words", icon: "Library", category: "Vocabulary", xp: 50, unlocked: false, met: (c) => c.wordsSaved >= 50 },
-  { code: "LEXICON_MASTER", title: "Lexicon Master", description: "Save 200 vocabulary words", icon: "GraduationCap", category: "Vocabulary", xp: 150, unlocked: false, met: (c) => c.wordsSaved >= 200 },
-  { code: "FIRST_CHAT", title: "First Conversation", description: "Start a conversation with the AI tutor", icon: "MessagesSquare", category: "Conversation", xp: 10, unlocked: false, met: (c) => c.conversations >= 1 },
-  { code: "STREAK_3", title: "Warming Up", description: "Practice 3 days in a row", icon: "Flame", category: "Consistency", xp: 30, unlocked: false, met: (c) => c.streakDays >= 3 },
-  { code: "STREAK_7", title: "One Week Strong", description: "Practice 7 days in a row", icon: "Flame", category: "Consistency", xp: 70, unlocked: false, met: (c) => c.streakDays >= 7 },
-  { code: "STREAK_30", title: "Habit Formed", description: "Practice 30 days in a row", icon: "Trophy", category: "Consistency", xp: 300, unlocked: false, met: (c) => c.streakDays >= 30 },
-  { code: "MISTAKE_LEARNER", title: "Learning from Mistakes", description: "Collect 10 corrections", icon: "CheckCheck", category: "Grammar", xp: 40, unlocked: false, met: (c) => c.corrections >= 10 },
-  { code: "FOUNDATION_BUILDER", title: "Foundation Builder", description: "Complete 5 foundation lessons", icon: "Blocks", category: "Foundations", xp: 50, unlocked: false, met: (c) => c.lessonsCompleted >= 5 },
-  { code: "HABIT_STARTED", title: "New Beginning", description: "Start your first Growth habit", icon: "Sparkles", category: "Growth", xp: 10, unlocked: false, met: (c) => c.habitsStarted >= 1 },
-  { code: "HABIT_MONTH", title: "One Month In", description: "Reach a 30-day streak on any habit", icon: "Flame", category: "Growth", xp: 100, unlocked: false, met: (c) => c.bestHabitStreak >= 30 },
+  {
+    code: "FIRST_WORD",
+    title: "First Word",
+    description: "Save your first vocabulary word",
+    icon: "BookOpen",
+    category: "Vocabulary",
+    xp: 10,
+    unlocked: false,
+    met: (c) => c.wordsSaved >= 1,
+  },
+  {
+    code: "WORD_COLLECTOR",
+    title: "Word Collector",
+    description: "Save 50 vocabulary words",
+    icon: "Library",
+    category: "Vocabulary",
+    xp: 50,
+    unlocked: false,
+    met: (c) => c.wordsSaved >= 50,
+  },
+  {
+    code: "LEXICON_MASTER",
+    title: "Lexicon Master",
+    description: "Save 200 vocabulary words",
+    icon: "GraduationCap",
+    category: "Vocabulary",
+    xp: 150,
+    unlocked: false,
+    met: (c) => c.wordsSaved >= 200,
+  },
+  {
+    code: "FIRST_CHAT",
+    title: "First Conversation",
+    description: "Start a conversation with the AI tutor",
+    icon: "MessagesSquare",
+    category: "Conversation",
+    xp: 10,
+    unlocked: false,
+    met: (c) => c.conversations >= 1,
+  },
+  {
+    code: "STREAK_3",
+    title: "Warming Up",
+    description: "Practice 3 days in a row",
+    icon: "Flame",
+    category: "Consistency",
+    xp: 30,
+    unlocked: false,
+    met: (c) => c.streakDays >= 3,
+  },
+  {
+    code: "STREAK_7",
+    title: "One Week Strong",
+    description: "Practice 7 days in a row",
+    icon: "Flame",
+    category: "Consistency",
+    xp: 70,
+    unlocked: false,
+    met: (c) => c.streakDays >= 7,
+  },
+  {
+    code: "STREAK_30",
+    title: "Habit Formed",
+    description: "Practice 30 days in a row",
+    icon: "Trophy",
+    category: "Consistency",
+    xp: 300,
+    unlocked: false,
+    met: (c) => c.streakDays >= 30,
+  },
+  {
+    code: "MISTAKE_LEARNER",
+    title: "Learning from Mistakes",
+    description: "Collect 10 corrections",
+    icon: "CheckCheck",
+    category: "Grammar",
+    xp: 40,
+    unlocked: false,
+    met: (c) => c.corrections >= 10,
+  },
+  {
+    code: "FOUNDATION_BUILDER",
+    title: "Foundation Builder",
+    description: "Complete 5 foundation lessons",
+    icon: "Blocks",
+    category: "Foundations",
+    xp: 50,
+    unlocked: false,
+    met: (c) => c.lessonsCompleted >= 5,
+  },
+  {
+    code: "HABIT_STARTED",
+    title: "New Beginning",
+    description: "Start your first Growth habit",
+    icon: "Sparkles",
+    category: "Growth",
+    xp: 10,
+    unlocked: false,
+    met: (c) => c.habitsStarted >= 1,
+  },
+  {
+    code: "HABIT_MONTH",
+    title: "One Month In",
+    description: "Reach a 30-day streak on any habit",
+    icon: "Flame",
+    category: "Growth",
+    xp: 100,
+    unlocked: false,
+    met: (c) => c.bestHabitStreak >= 30,
+  },
 ]
 
 const LEVELS = [
@@ -126,7 +232,13 @@ async function getHabitCounts(): Promise<{ habitsStarted: number; bestHabitStrea
 
   let bestHabitStreak = 0
   for (const rows of byHabit.values()) {
-    const asCheckins = rows.map((r) => ({ id: r.date, habitId: "", date: r.date, completed: r.completed, createdAt: r.date }))
+    const asCheckins = rows.map((r) => ({
+      id: r.date,
+      habitId: "",
+      date: r.date,
+      completed: r.completed,
+      createdAt: r.date,
+    }))
     bestHabitStreak = Math.max(bestHabitStreak, longestStreak(asCheckins))
   }
   return { habitsStarted: habitIds.length, bestHabitStreak }
@@ -159,9 +271,7 @@ export const achievementsApi = {
     // Sync unlocked rows with current counts first, so XP/level always
     // reflect real activity instead of whatever was last recorded.
     await achievementsApi.check()
-    const { data, error } = await supabase
-      .from("kori_achievements")
-      .select("code, unlocked_at")
+    const { data, error } = await supabase.from("kori_achievements").select("code, unlocked_at")
     if (error) throw error
     const unlockedAt = new Map((data ?? []).map((a) => [a.code, a.unlocked_at as string]))
     const achievements: Achievement[] = CATALOG.map(({ met: _met, ...a }) => ({
@@ -206,16 +316,38 @@ export const progressApi = {
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString()
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
 
-    const [activityWeek, vocabCount, correctionsWeek, correctionsToday, dueVocab, dueCorrections, dates] =
-      await Promise.all([
-        supabase.from("kori_activity_log").select("duration_ms, created_at").gte("created_at", weekAgo),
-        supabase.from("kori_vocab_cards").select("id", { count: "exact", head: true }),
-        supabase.from("kori_corrections").select("id", { count: "exact", head: true }).gte("created_at", weekAgo),
-        supabase.from("kori_corrections").select("id", { count: "exact", head: true }).gte("created_at", startOfToday),
-        supabase.from("kori_vocab_cards").select("id", { count: "exact", head: true }).lte("next_review", now.toISOString()),
-        supabase.from("kori_corrections").select("id", { count: "exact", head: true }).lte("next_review_date", now.toISOString()),
-        getActivityDates(),
-      ])
+    const [
+      activityWeek,
+      vocabCount,
+      correctionsWeek,
+      correctionsToday,
+      dueVocab,
+      dueCorrections,
+      dates,
+    ] = await Promise.all([
+      supabase
+        .from("kori_activity_log")
+        .select("duration_ms, created_at")
+        .gte("created_at", weekAgo),
+      supabase.from("kori_vocab_cards").select("id", { count: "exact", head: true }),
+      supabase
+        .from("kori_corrections")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", weekAgo),
+      supabase
+        .from("kori_corrections")
+        .select("id", { count: "exact", head: true })
+        .gte("created_at", startOfToday),
+      supabase
+        .from("kori_vocab_cards")
+        .select("id", { count: "exact", head: true })
+        .lte("next_review", now.toISOString()),
+      supabase
+        .from("kori_corrections")
+        .select("id", { count: "exact", head: true })
+        .lte("next_review_date", now.toISOString()),
+      getActivityDates(),
+    ])
 
     const weekRows = activityWeek.data ?? []
     const weeklyMinutes = Math.round(weekRows.reduce((s, r) => s + (r.duration_ms ?? 0), 0) / 60000)
@@ -300,9 +432,9 @@ export const progressApi = {
   // Bounded, dated raw rows for the Timeline aggregator (lib/timeline.ts) —
   // distinct from getFeatureBreakdown (which sums into totals, dropping
   // created_at) and getActivityDates (which drops feature and duration).
-  getActivityLog: async (params: { from?: string; to?: string } = {}): Promise<
-    { feature: string; durationMs: number; createdAt: string }[]
-  > => {
+  getActivityLog: async (
+    params: { from?: string; to?: string } = {},
+  ): Promise<{ feature: string; durationMs: number; createdAt: string }[]> => {
     let query = supabase.from("kori_activity_log").select("feature, duration_ms, created_at")
     if (params.from) query = query.gte("created_at", params.from)
     if (params.to) query = query.lte("created_at", params.to)
@@ -339,7 +471,8 @@ export const progressApi = {
 
     let query = supabase.from(table).select("id", { count: "exact", head: true })
     if (metric.source === "foundation_lessons") query = query.eq("completed", true)
-    if (metric.source === "activity_sessions" && metric.feature) query = query.eq("feature", metric.feature)
+    if (metric.source === "activity_sessions" && metric.feature)
+      query = query.eq("feature", metric.feature)
     if (since) query = query.gte("created_at", since)
 
     const { count, error } = await query

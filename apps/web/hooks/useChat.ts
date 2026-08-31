@@ -22,7 +22,9 @@ type UseChatOptions = {
 function titleFromMessage(content: string): string {
   const normalized = content.replace(/\s+/g, " ").trim()
   const MAX_LENGTH = 48
-  return normalized.length > MAX_LENGTH ? `${normalized.slice(0, MAX_LENGTH).trimEnd()}…` : normalized
+  return normalized.length > MAX_LENGTH
+    ? `${normalized.slice(0, MAX_LENGTH).trimEnd()}…`
+    : normalized
 }
 
 type ResponseLanguage = "auto" | "english" | "korean"
@@ -68,7 +70,9 @@ function buildMessageForApi(
   }
 
   if (isTechnical) {
-    instructions.push("I am a software developer. Use technical and workplace Korean terms (IT terminology, office honorifics) where appropriate. Explain advanced terms in a developer-friendly way.")
+    instructions.push(
+      "I am a software developer. Use technical and workplace Korean terms (IT terminology, office honorifics) where appropriate. Explain advanced terms in a developer-friendly way.",
+    )
   }
 
   if (instructions.length === 0) return content
@@ -76,7 +80,12 @@ function buildMessageForApi(
   return `${content}\n\n[Response preference: ${instructions.join(" ")}]`
 }
 
-export function useChat({ conversationId, initialMessages = [], onConversationTitled, scenario }: UseChatOptions) {
+export function useChat({
+  conversationId,
+  initialMessages = [],
+  onConversationTitled,
+  scenario,
+}: UseChatOptions) {
   const [messages, setMessages] = useState(conversationId ? [] : initialMessages)
   const [draft, setDraft] = useState("")
   const [responseLanguage, setResponseLanguage] = useState<ResponseLanguage>("auto")
@@ -244,7 +253,7 @@ export function useChat({ conversationId, initialMessages = [], onConversationTi
       const chunk = pending
       pending = ""
       setMessages((current) =>
-        current.map((m) => (m.id === streamingId ? { ...m, content: m.content + chunk } : m))
+        current.map((m) => (m.id === streamingId ? { ...m, content: m.content + chunk } : m)),
       )
     }
 
@@ -262,7 +271,7 @@ export function useChat({ conversationId, initialMessages = [], onConversationTi
         (assistantMessageId) => {
           flush()
           setMessages((current) =>
-            current.map((m) => (m.id === streamingId ? { ...m, id: assistantMessageId } : m))
+            current.map((m) => (m.id === streamingId ? { ...m, id: assistantMessageId } : m)),
           )
         },
         controller.signal,

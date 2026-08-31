@@ -9,7 +9,13 @@ import {
 
 describe("Korean Coach audio validation", () => {
   it("accepts supported browser and OpenAI transcription formats", () => {
-    for (const type of ["audio/webm;codecs=opus", "audio/mp4", "audio/mpeg", "audio/wav", "audio/ogg"]) {
+    for (const type of [
+      "audio/webm;codecs=opus",
+      "audio/mp4",
+      "audio/mpeg",
+      "audio/wav",
+      "audio/ogg",
+    ]) {
       expect(isSupportedAudioMimeType(type)).toBe(true)
     }
     expect(isSupportedAudioMimeType("audio/aac")).toBe(false)
@@ -18,9 +24,9 @@ describe("Korean Coach audio validation", () => {
 
   it("rejects empty, too-short, too-large, and unsupported recordings", () => {
     expect(validateAudioInput({ size: 0, type: "audio/webm" }).code).toBe("empty_audio")
-    expect(
-      validateAudioInput({ size: 5_000, type: "audio/webm", durationMs: 200 }).code,
-    ).toBe("recording_too_short")
+    expect(validateAudioInput({ size: 5_000, type: "audio/webm", durationMs: 200 }).code).toBe(
+      "recording_too_short",
+    )
     expect(
       validateAudioInput({ size: KOREAN_COACH_MAX_AUDIO_BYTES + 1, type: "audio/webm" }).code,
     ).toBe("audio_too_large")
@@ -34,4 +40,3 @@ describe("Korean Coach audio validation", () => {
     expect(preferredRecorderMimeType(() => false)).toBeNull()
   })
 })
-

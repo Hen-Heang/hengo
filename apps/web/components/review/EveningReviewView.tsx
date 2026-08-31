@@ -11,7 +11,13 @@ import { formatEveningReviewContext, type EveningReviewSummary } from "@/lib/rev
 import type { TimelineEntry } from "@/lib/timeline"
 import { itemVariants } from "@/lib/motion"
 
-export function EveningReviewView({ summary, entries }: { summary: EveningReviewSummary; entries: TimelineEntry[] }) {
+export function EveningReviewView({
+  summary,
+  entries,
+}: {
+  summary: EveningReviewSummary
+  entries: TimelineEntry[]
+}) {
   const context = formatEveningReviewContext(summary)
   const ai = useReviewSummary("evening", context)
 
@@ -23,7 +29,12 @@ export function EveningReviewView({ summary, entries }: { summary: EveningReview
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <ReviewSummaryCard summary={ai.summary} focusSuggestion={ai.focusSuggestion} loading={ai.loading} error={ai.error} />
+        <ReviewSummaryCard
+          summary={ai.summary}
+          focusSuggestion={ai.focusSuggestion}
+          loading={ai.loading}
+          error={ai.error}
+        />
       </motion.div>
 
       <motion.div variants={itemVariants} className="grid grid-cols-3 gap-3">
@@ -54,7 +65,10 @@ export function EveningReviewView({ summary, entries }: { summary: EveningReview
             Journal entry
           </div>
           {!summary.journalDone && (
-            <Link href="/growth/journal" className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline">
+            <Link
+              href="/growth/journal"
+              className="inline-flex min-h-11 items-center rounded-lg text-sm font-medium text-primary hover:underline"
+            >
               Write one →
             </Link>
           )}

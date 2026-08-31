@@ -20,7 +20,12 @@ const PHASE_TOPIC_RANGES: Record<string, { start: number; count: number; title: 
 }
 
 // Derive which phase is currently active (first incomplete, or last)
-function getCurrentPhase(completed: Set<string>): { num: number; title: string; phasePct: number; overallPct: number } {
+function getCurrentPhase(completed: Set<string>): {
+  num: number
+  title: string
+  phasePct: number
+  overallPct: number
+} {
   let current = { num: 1, title: "Java Foundations", phasePct: 0 }
 
   const entries = Object.entries(PHASE_TOPIC_RANGES)
@@ -29,7 +34,7 @@ function getCurrentPhase(completed: Set<string>): { num: number; title: string; 
     // Count topics for this phase by checking IDs p{n}-t{n}
     const phaseNum = i + 1
     const ids = Array.from({ length: info.count }, (_, j) => `p${phaseNum}-t${j + 1}`)
-    const done = ids.filter(id => completed.has(id)).length
+    const done = ids.filter((id) => completed.has(id)).length
     const pct = Math.round((done / info.count) * 100)
 
     if (done < info.count) {
@@ -54,7 +59,7 @@ export function RoadmapTeaser({ className }: { className?: string }) {
       return () => window.removeEventListener("storage", callback)
     },
     () => window.localStorage.getItem(STORAGE_KEY) ?? "",
-    () => ""
+    () => "",
   )
 
   const data = useMemo(() => {
@@ -73,7 +78,7 @@ export function RoadmapTeaser({ className }: { className?: string }) {
       href="/roadmap"
       className={cn(
         "group flex items-center gap-4 rounded-2xl border border-border bg-card p-5 shadow-sm transition-colors hover:border-violet-500/40 dark:bg-slate-900/40",
-        className
+        className,
       )}
     >
       {/* Icon */}

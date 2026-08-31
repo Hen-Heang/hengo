@@ -37,12 +37,7 @@ const goalTypes: { value: GoalType; label: string }[] = [
   { value: "education", label: "Education Goal" },
 ]
 
-export function EditGoalSlidePanel({
-  isOpen,
-  goal,
-  onClose,
-  onSuccess,
-}: EditGoalSlidePanelProps) {
+export function EditGoalSlidePanel({ isOpen, goal, onClose, onSuccess }: EditGoalSlidePanelProps) {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [startDate, setStartDate] = useState<Date>(new Date())
@@ -145,7 +140,11 @@ export function EditGoalSlidePanel({
                   <h2 className="truncate text-xl font-bold">Edit Goal</h2>
                 </div>
                 <Button onClick={handleSave} disabled={isLoading || !title.trim()} size="sm">
-                  {isLoading ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Save className="h-3.5 w-3.5" />}
+                  {isLoading ? (
+                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  ) : (
+                    <Save className="h-3.5 w-3.5" />
+                  )}
                   Save
                 </Button>
               </div>
@@ -193,7 +192,10 @@ export function EditGoalSlidePanel({
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description" className="flex items-center gap-2 text-sm font-medium">
+                <Label
+                  htmlFor="description"
+                  className="flex items-center gap-2 text-sm font-medium"
+                >
                   <FileText className="h-4 w-4" /> Description
                 </Label>
                 <Textarea
@@ -260,10 +262,19 @@ export function EditGoalSlidePanel({
             {/* Footer */}
             <div className="flex-shrink-0 border-t border-border/60 px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-6 sm:pb-4">
               <div className="flex gap-3">
-                <Button variant="outline" onClick={handleCancel} disabled={isLoading} className="flex-1">
+                <Button
+                  variant="outline"
+                  onClick={handleCancel}
+                  disabled={isLoading}
+                  className="flex-1"
+                >
                   Cancel
                 </Button>
-                <Button onClick={handleSave} disabled={isLoading || !title.trim()} className="flex-1">
+                <Button
+                  onClick={handleSave}
+                  disabled={isLoading || !title.trim()}
+                  className="flex-1"
+                >
                   {isLoading ? (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" /> Saving...

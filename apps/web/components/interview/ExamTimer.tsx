@@ -56,7 +56,7 @@ export function ExamTimer({
           ? "animate-pulse bg-rose-500/15 text-rose-600 dark:text-rose-400"
           : warning
             ? "bg-amber-500/15 text-amber-700 dark:text-amber-400"
-            : "bg-accent/40 text-foreground"
+            : "bg-accent/40 text-foreground",
       )}
     >
       <TimerIcon size={15} strokeWidth={2.5} />

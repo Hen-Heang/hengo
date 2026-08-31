@@ -122,11 +122,21 @@ function CopyButton({ text }: { text: string }) {
     >
       <AnimatePresence mode="wait" initial={false}>
         {copied ? (
-          <motion.span key="check" initial={{ scale: 0.6 }} animate={{ scale: 1 }} exit={{ scale: 0.6 }}>
+          <motion.span
+            key="check"
+            initial={{ scale: 0.6 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.6 }}
+          >
             <Check size={13} className="text-green-500" strokeWidth={2.5} />
           </motion.span>
         ) : (
-          <motion.span key="copy" initial={{ scale: 0.6 }} animate={{ scale: 1 }} exit={{ scale: 0.6 }}>
+          <motion.span
+            key="copy"
+            initial={{ scale: 0.6 }}
+            animate={{ scale: 1 }}
+            exit={{ scale: 0.6 }}
+          >
             <Copy size={13} strokeWidth={2.5} />
           </motion.span>
         )}
@@ -153,7 +163,9 @@ function GrammarTracker({
     return (
       <div className="flex flex-col items-center gap-3 py-10 text-center">
         <Brain size={36} className="text-muted-foreground/60" strokeWidth={1.5} />
-        <p className="text-sm font-bold text-muted-foreground">No patterns yet — keep correcting!</p>
+        <p className="text-sm font-bold text-muted-foreground">
+          No patterns yet — keep correcting!
+        </p>
       </div>
     )
   }
@@ -186,17 +198,23 @@ function GrammarTracker({
             transition={{ delay: i * 0.04 }}
             className={cn(
               "w-full space-y-1.5 rounded-xl px-2 py-1.5 text-left transition-colors",
-              isActive ? "bg-blue-500/8 ring-1 ring-blue-500/20" : "hover:bg-accent/50"
+              isActive ? "bg-blue-500/8 ring-1 ring-blue-500/20" : "hover:bg-accent/50",
             )}
           >
             <div className="flex items-center justify-between gap-3">
-              <span className="text-[13px] font-bold leading-snug text-foreground/80 line-clamp-2">{point}</span>
-              <span className={cn(
-                "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold",
-                count >= 4 ? "bg-red-500/10 text-red-600 dark:text-red-400" :
-                count >= 2 ? "bg-amber-500/10 text-amber-600 dark:text-amber-400" :
-                "bg-slate-500/10 text-slate-500"
-              )}>
+              <span className="text-[13px] font-bold leading-snug text-foreground/80 line-clamp-2">
+                {point}
+              </span>
+              <span
+                className={cn(
+                  "shrink-0 rounded-full px-2.5 py-1 text-xs font-bold",
+                  count >= 4
+                    ? "bg-red-500/10 text-red-600 dark:text-red-400"
+                    : count >= 2
+                      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
+                      : "bg-slate-500/10 text-slate-500",
+                )}
+              >
                 ×{count}
               </span>
             </div>
@@ -207,10 +225,13 @@ function GrammarTracker({
                 transition={{ duration: 0.6, ease: "easeOut", delay: i * 0.04 + 0.1 }}
                 className={cn(
                   "h-full rounded-full",
-                  isActive ? "bg-blue-500" :
-                  count >= 4 ? "bg-red-500" :
-                  count >= 2 ? "bg-amber-500" :
-                  "bg-slate-400"
+                  isActive
+                    ? "bg-blue-500"
+                    : count >= 4
+                      ? "bg-red-500"
+                      : count >= 2
+                        ? "bg-amber-500"
+                        : "bg-slate-400",
                 )}
               />
             </div>
@@ -281,7 +302,10 @@ function PracticeCalendar({
       {/* Weekday headers */}
       <div className="grid grid-cols-7 gap-1">
         {weekdays.map((d) => (
-          <div key={d} className="py-1 text-center text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          <div
+            key={d}
+            className="py-1 text-center text-[11px] font-bold uppercase tracking-wide text-muted-foreground"
+          >
             {d}
           </div>
         ))}
@@ -304,7 +328,7 @@ function PracticeCalendar({
                   ? "bg-blue-500 text-white shadow-md shadow-blue-500/20"
                   : isToday
                     ? "ring-2 ring-blue-500/40 text-blue-600 font-bold"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
               )}
             >
               {day}
@@ -359,7 +383,11 @@ function FilterBar({
     <div className="space-y-3">
       {/* Search */}
       <div className="relative">
-        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40" strokeWidth={2.5} />
+        <Search
+          size={14}
+          className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground/40"
+          strokeWidth={2.5}
+        />
         <input
           type="text"
           value={search}
@@ -390,7 +418,7 @@ function FilterBar({
               "shrink-0 rounded-full px-3 py-1 text-[12px] font-bold transition-colors",
               ratingFilter === f.key
                 ? "bg-blue-500 text-white shadow-sm"
-                : "bg-accent/50 text-muted-foreground hover:bg-accent"
+                : "bg-accent/50 text-muted-foreground hover:bg-accent",
             )}
           >
             {f.label}
@@ -409,7 +437,7 @@ function FilterBar({
               "shrink-0 rounded-full px-3 py-1 text-[12px] font-bold transition-colors",
               sortKey === s.key
                 ? "bg-violet-500 text-white shadow-sm"
-                : "bg-accent/50 text-muted-foreground hover:bg-accent"
+                : "bg-accent/50 text-muted-foreground hover:bg-accent",
             )}
           >
             {s.label}
@@ -457,10 +485,8 @@ export default function HistoryPage() {
       .history(100)
       .then((data) =>
         setCorrections(
-          Array.isArray(data)
-            ? data.map((c) => ({ ...c, explanation: c.explanation ?? "" }))
-            : []
-        )
+          Array.isArray(data) ? data.map((c) => ({ ...c, explanation: c.explanation ?? "" })) : [],
+        ),
       )
       .catch(() => setCorrections([]))
       .finally(() => setLoadingCorrections(false))
@@ -468,7 +494,10 @@ export default function HistoryPage() {
 
   // Fetch streak
   useEffect(() => {
-    progressApi.getStreak().then((s) => setStreak(s.streakDays)).catch(() => {})
+    progressApi
+      .getStreak()
+      .then((s) => setStreak(s.streakDays))
+      .catch(() => {})
   }, [])
 
   function prevMonth() {
@@ -489,8 +518,12 @@ export default function HistoryPage() {
       .then((days) => {
         if (!cancelled) setActiveDays(new Set(days.map((d) => Number(d.slice(8)))))
       })
-      .catch(() => { if (!cancelled) setActiveDays(new Set()) })
-    return () => { cancelled = true }
+      .catch(() => {
+        if (!cancelled) setActiveDays(new Set())
+      })
+    return () => {
+      cancelled = true
+    }
   }, [calendarMonth])
 
   function handleTagClick(tag: string) {
@@ -532,7 +565,7 @@ export default function HistoryPage() {
         (c) =>
           c.originalText.toLowerCase().includes(q) ||
           c.correctedText.toLowerCase().includes(q) ||
-          c.explanation.toLowerCase().includes(q)
+          c.explanation.toLowerCase().includes(q),
       )
     }
 
@@ -571,7 +604,10 @@ export default function HistoryPage() {
     <motion.div
       initial="hidden"
       animate="visible"
-      variants={{ hidden: { opacity: 0 }, visible: { opacity: 1, transition: { staggerChildren: 0.03 } } }}
+      variants={{
+        hidden: { opacity: 0 },
+        visible: { opacity: 1, transition: { staggerChildren: 0.03 } },
+      }}
       className="space-y-6 pb-12 sm:space-y-8 sm:pb-16"
     >
       <motion.div variants={itemVariants}>
@@ -598,7 +634,6 @@ export default function HistoryPage() {
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_300px] lg:gap-6">
         {/* ── Left column ── */}
         <div className="space-y-6 min-w-0">
-
           {/* Grammar Patterns */}
           <motion.div variants={itemVariants}>
             <Card className="overflow-hidden rounded-[1.8rem] border-border bg-card shadow-xl dark:bg-slate-900/40 sm:rounded-[2.2rem] lg:rounded-3xl">
@@ -662,7 +697,10 @@ export default function HistoryPage() {
               {loadingCorrections ? (
                 <div className="space-y-3">
                   {[1, 2, 3, 4].map((i) => (
-                    <div key={i} className="overflow-hidden rounded-[1.5rem] border border-border bg-card px-5 py-4 shadow-sm dark:bg-slate-900/40 sm:rounded-3xl sm:px-6 sm:py-5">
+                    <div
+                      key={i}
+                      className="overflow-hidden rounded-[1.5rem] border border-border bg-card px-5 py-4 shadow-sm dark:bg-slate-900/40 sm:rounded-3xl sm:px-6 sm:py-5"
+                    >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 space-y-2">
                           <Skeleton className="h-3 w-24" />
@@ -678,7 +716,9 @@ export default function HistoryPage() {
                 <div className="flex flex-col items-center gap-3 rounded-[1.5rem] border border-border bg-card px-4 py-10 text-center sm:rounded-3xl sm:py-12">
                   <ScrollText size={36} className="text-muted-foreground/60" strokeWidth={1.5} />
                   <p className="text-sm font-bold text-muted-foreground">No corrections yet</p>
-                  <p className="text-xs text-muted-foreground">Go to AI Coach and ask it to correct your Korean — it&apos;ll show up here.</p>
+                  <p className="text-xs text-muted-foreground">
+                    Go to AI Coach and ask it to correct your Korean — it&apos;ll show up here.
+                  </p>
                 </div>
               ) : filtered.length === 0 ? (
                 <div className="flex flex-col items-center gap-3 rounded-[1.5rem] border border-border bg-card px-4 py-8 text-center sm:rounded-3xl">
@@ -686,7 +726,11 @@ export default function HistoryPage() {
                   <p className="text-sm font-bold text-muted-foreground">No matches</p>
                   <button
                     type="button"
-                    onClick={() => { setSearch(""); setRatingFilter("all"); setActiveTag(null) }}
+                    onClick={() => {
+                      setSearch("")
+                      setRatingFilter("all")
+                      setActiveTag(null)
+                    }}
                     className="text-xs font-bold text-blue-500 hover:underline"
                   >
                     Clear filters
@@ -743,7 +787,7 @@ export default function HistoryPage() {
                                 onClick={() => setExpandedId(isExpanded ? null : entry.id)}
                                 className={cn(
                                   "rounded-lg p-1.5 text-muted-foreground/40 transition-transform duration-200",
-                                  isExpanded ? "rotate-90" : "rotate-0"
+                                  isExpanded ? "rotate-90" : "rotate-0",
                                 )}
                               >
                                 <ArrowRight size={16} strokeWidth={2.5} />
@@ -776,28 +820,45 @@ export default function HistoryPage() {
                                   <div className="grid gap-3 sm:grid-cols-2">
                                     <div className="rounded-2xl bg-red-500/5 p-4">
                                       <div className="mb-2 flex items-center justify-between">
-                                        <p className="text-[9px] font-bold uppercase tracking-wide text-red-500/60">Original</p>
+                                        <p className="text-[9px] font-bold uppercase tracking-wide text-red-500/60">
+                                          Original
+                                        </p>
                                         <CopyButton text={entry.originalText} />
                                       </div>
-                                      <p className="text-sm font-medium leading-relaxed text-foreground/70">{entry.originalText}</p>
+                                      <p className="text-sm font-medium leading-relaxed text-foreground/70">
+                                        {entry.originalText}
+                                      </p>
                                     </div>
                                     <div className="rounded-2xl bg-blue-500/5 p-4">
                                       <div className="mb-2 flex items-center justify-between">
-                                        <p className="text-[9px] font-bold uppercase tracking-wide text-blue-600/60">Corrected</p>
+                                        <p className="text-[9px] font-bold uppercase tracking-wide text-blue-600/60">
+                                          Corrected
+                                        </p>
                                         <div className="flex items-center gap-1">
                                           <CopyButton text={entry.correctedText} />
-                                          <SpeakButton text={entry.correctedText} className="h-7 w-7 rounded-lg" />
+                                          <SpeakButton
+                                            text={entry.correctedText}
+                                            className="h-7 w-7 rounded-lg"
+                                          />
                                         </div>
                                       </div>
-                                      <p className="text-sm font-bold leading-relaxed text-foreground">{entry.correctedText}</p>
+                                      <p className="text-sm font-bold leading-relaxed text-foreground">
+                                        {entry.correctedText}
+                                      </p>
                                     </div>
                                   </div>
 
                                   {/* English translation */}
                                   {entry.englishTranslation && (
                                     <div className="flex items-start gap-2 rounded-2xl bg-sky-500/5 px-4 py-3">
-                                      <Languages size={13} className="mt-0.5 shrink-0 text-sky-500" strokeWidth={2.5} />
-                                      <p className="text-[13px] font-bold text-sky-700 dark:text-sky-300">{entry.englishTranslation}</p>
+                                      <Languages
+                                        size={13}
+                                        className="mt-0.5 shrink-0 text-sky-500"
+                                        strokeWidth={2.5}
+                                      />
+                                      <p className="text-[13px] font-bold text-sky-700 dark:text-sky-300">
+                                        {entry.englishTranslation}
+                                      </p>
                                     </div>
                                   )}
 
@@ -813,7 +874,7 @@ export default function HistoryPage() {
                                             "rounded-full border px-3 py-1 text-[12px] font-bold transition-colors",
                                             activeTag === p.trim()
                                               ? "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                                              : "border-border bg-accent/30 text-foreground/70 hover:bg-accent"
+                                              : "border-border bg-accent/30 text-foreground/70 hover:bg-accent",
                                           )}
                                         >
                                           {p}
@@ -823,7 +884,9 @@ export default function HistoryPage() {
                                   )}
 
                                   {/* Explanation */}
-                                  <p className="text-[13px] font-medium leading-relaxed text-muted-foreground">{entry.explanation}</p>
+                                  <p className="text-[13px] font-medium leading-relaxed text-muted-foreground">
+                                    {entry.explanation}
+                                  </p>
                                 </div>
                               </motion.div>
                             )}

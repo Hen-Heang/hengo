@@ -21,7 +21,12 @@ function PlansLoadingState() {
 
 export default function RecoveryPlansPage() {
   useSessionTimer("recovery")
-  const { habit, backHref, loading: habitsLoading, error: habitsError } = useRecoveryHabitFromParams()
+  const {
+    habit,
+    backHref,
+    loading: habitsLoading,
+    error: habitsError,
+  } = useRecoveryHabitFromParams()
   const {
     plans,
     duePlans,
@@ -46,11 +51,22 @@ export default function RecoveryPlansPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-xl pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-xl pb-12"
+    >
       <motion.div variants={itemVariants} className="mb-2">
         <BackLink href={backHref} label={habit.label} />
       </motion.div>
-      <PlansList plans={plans} duePlans={duePlans} onReview={reviewPlan} onUpdate={updatePlan} onDelete={deletePlan} />
+      <PlansList
+        plans={plans}
+        duePlans={duePlans}
+        onReview={reviewPlan}
+        onUpdate={updatePlan}
+        onDelete={deletePlan}
+      />
     </motion.div>
   )
 }

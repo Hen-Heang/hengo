@@ -4,7 +4,12 @@ export const koreanCoachLevelSchema = z.enum(["beginner", "lower-intermediate", 
 export const koreanScenarioCategorySchema = z.enum(["workplace", "daily"])
 export const correctionStrictnessSchema = z.enum(["gentle", "balanced", "detailed"])
 export const romanizationModeSchema = z.enum(["always", "on-request", "never"])
-export const koreanLearningGoalSchema = z.enum(["workplace", "daily-life", "presentation", "general"])
+export const koreanLearningGoalSchema = z.enum([
+  "workplace",
+  "daily-life",
+  "presentation",
+  "general",
+])
 export const speechSpeedSchema = z.union([z.literal(0.75), z.literal(1), z.literal(1.25)])
 export const koreanCoachPracticeModeSchema = z.enum(["speaking", "listening"])
 
@@ -105,7 +110,10 @@ export const koreanSessionSummarySchema = z.object({
   strongPoint: z.string().trim().max(500),
   recommendedImprovement: z.string().trim().max(500),
   mistakesSaved: z.number().int().min(0).max(100),
-  suggestedNextScenarioId: z.string().regex(/^[a-z0-9-]+$/).nullable(),
+  suggestedNextScenarioId: z
+    .string()
+    .regex(/^[a-z0-9-]+$/)
+    .nullable(),
 })
 
 export type KoreanCoachLevel = z.infer<typeof koreanCoachLevelSchema>

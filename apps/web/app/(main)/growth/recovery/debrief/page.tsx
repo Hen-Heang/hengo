@@ -30,14 +30,20 @@ export default function RecoveryDebriefPage() {
 
   if (habitsLoading) return null
   const error = habitsError || eventsError || plansError
-  if (error || !habit) return <div className="mx-auto max-w-lg pt-10"><ErrorBanner>{error || "Create a private recovery plan first."}</ErrorBanner></div>
+  if (error || !habit)
+    return (
+      <div className="mx-auto max-w-lg pt-10">
+        <ErrorBanner>{error || "Create a private recovery plan first."}</ErrorBanner>
+      </div>
+    )
 
   return (
     <div className="pb-12">
       <DebriefForm
         onSave={async ({ reflection, ifText, thenText }) => {
           if (context.eventId && reflection) await annotateEvent(context.eventId, reflection)
-          if (ifText && thenText) await addPlan({ ifText, thenText, sourceEventId: context.eventId })
+          if (ifText && thenText)
+            await addPlan({ ifText, thenText, sourceEventId: context.eventId })
           sessionStorage.removeItem("hengo-recovery-debrief")
           router.push("/growth/recovery")
         }}

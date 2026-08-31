@@ -7,10 +7,7 @@ import { SpeakButton } from "@/components/ui/SpeakButton"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import type { SpeakingCheckResponse } from "@/lib/api/interview"
-import {
-  SPEAKING_SCORE_KEYS,
-  SPEAKING_SCORE_LABELS,
-} from "@/lib/interview-drills"
+import { SPEAKING_SCORE_KEYS, SPEAKING_SCORE_LABELS } from "@/lib/interview-drills"
 import { cn } from "@/lib/utils"
 
 /**
@@ -52,7 +49,7 @@ export function SpeakingScoreCard({ result }: { result: SpeakingCheckResponse })
                         ? "text-emerald-600 dark:text-emerald-400"
                         : score >= 3
                           ? "text-foreground"
-                          : "text-rose-600 dark:text-rose-400"
+                          : "text-rose-600 dark:text-rose-400",
                     )}
                   >
                     {score}

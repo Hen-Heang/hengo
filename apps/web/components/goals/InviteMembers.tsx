@@ -129,14 +129,19 @@ export function InviteMembers({ goalId, onInvited }: InviteMembersProps) {
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-foreground">{name}</p>
                   {user.email && user.displayName && (
-                    <p className="truncate text-xs font-medium text-muted-foreground">{user.email}</p>
+                    <p className="truncate text-xs font-medium text-muted-foreground">
+                      {user.email}
+                    </p>
                   )}
                 </div>
               </div>
               <Button
                 size="sm"
                 variant={invited ? "secondary" : "outline"}
-                className={cn("h-9 shrink-0 rounded-lg font-bold", invited && "text-emerald-600 dark:text-emerald-400")}
+                className={cn(
+                  "h-9 shrink-0 rounded-lg font-bold",
+                  invited && "text-emerald-600 dark:text-emerald-400",
+                )}
                 disabled={pendingId === user.id || invited}
                 onClick={() => handleInvite(user)}
               >

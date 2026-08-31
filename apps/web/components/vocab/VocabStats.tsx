@@ -16,8 +16,20 @@ type VocabStatsProps = {
 
 const BUCKETS = [
   { key: "weak", label: "Weak", bar: "bg-red-500", text: "text-red-500", dot: "bg-red-500" },
-  { key: "learning", label: "Learning", bar: "bg-amber-500", text: "text-amber-600 dark:text-amber-400", dot: "bg-amber-500" },
-  { key: "mastered", label: "Mastered", bar: "bg-emerald-500", text: "text-emerald-600 dark:text-emerald-400", dot: "bg-emerald-500" },
+  {
+    key: "learning",
+    label: "Learning",
+    bar: "bg-amber-500",
+    text: "text-amber-600 dark:text-amber-400",
+    dot: "bg-amber-500",
+  },
+  {
+    key: "mastered",
+    label: "Mastered",
+    bar: "bg-emerald-500",
+    text: "text-emerald-600 dark:text-emerald-400",
+    dot: "bg-emerald-500",
+  },
 ] as const
 
 export function VocabStats({ words, dueCount }: VocabStatsProps) {
@@ -58,7 +70,9 @@ export function VocabStats({ words, dueCount }: VocabStatsProps) {
         <div className="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="app-kicker">Deck health</p>
-            <h3 className="mt-1 text-base font-semibold text-foreground sm:text-lg">How your memory is developing</h3>
+            <h3 className="mt-1 text-base font-semibold text-foreground sm:text-lg">
+              How your memory is developing
+            </h3>
           </div>
           <p className="text-sm text-muted-foreground">Based on {stats.total} saved words</p>
         </div>
@@ -82,15 +96,33 @@ export function VocabStats({ words, dueCount }: VocabStatsProps) {
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3">
             {tiles.map(({ label, value, helper, icon: Icon, accent, iconBg }) => (
-              <div key={label} className="min-w-0 rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4">
-                <div className={cn("flex size-7 items-center justify-center rounded-lg sm:size-8", iconBg, accent)}>
+              <div
+                key={label}
+                className="min-w-0 rounded-2xl border border-border/60 bg-background/60 p-3 sm:p-4"
+              >
+                <div
+                  className={cn(
+                    "flex size-7 items-center justify-center rounded-lg sm:size-8",
+                    iconBg,
+                    accent,
+                  )}
+                >
                   <Icon size={15} strokeWidth={2.25} />
                 </div>
-                <p className={cn("mt-2.5 font-mono text-xl font-semibold tracking-tight sm:mt-3 sm:text-2xl", accent)}>
+                <p
+                  className={cn(
+                    "mt-2.5 font-mono text-xl font-semibold tracking-tight sm:mt-3 sm:text-2xl",
+                    accent,
+                  )}
+                >
                   {value}
                 </p>
-                <p className="mt-1 text-[11px] font-semibold leading-tight text-foreground sm:text-xs">{label}</p>
-                <p className="mt-0.5 hidden text-[11px] leading-4 text-muted-foreground sm:block">{helper}</p>
+                <p className="mt-1 text-[11px] font-semibold leading-tight text-foreground sm:text-xs">
+                  {label}
+                </p>
+                <p className="mt-0.5 hidden text-[11px] leading-4 text-muted-foreground sm:block">
+                  {helper}
+                </p>
               </div>
             ))}
           </div>
@@ -102,28 +134,28 @@ export function VocabStats({ words, dueCount }: VocabStatsProps) {
             role="img"
             aria-label={`${stats.weak} weak, ${stats.learning} learning, ${stats.mastered} mastered`}
           >
-          {BUCKETS.map(({ key, bar }) => {
-            const count = stats[key]
-            if (count === 0) return null
-            return (
-              <motion.div
-                key={key}
-                initial={{ width: 0 }}
-                animate={{ width: `${(count / stats.total) * 100}%` }}
-                transition={{ duration: 0.8, ease: "easeOut" }}
-                className={cn("h-full", bar)}
-              />
-            )
-          })}
+            {BUCKETS.map(({ key, bar }) => {
+              const count = stats[key]
+              if (count === 0) return null
+              return (
+                <motion.div
+                  key={key}
+                  initial={{ width: 0 }}
+                  animate={{ width: `${(count / stats.total) * 100}%` }}
+                  transition={{ duration: 0.8, ease: "easeOut" }}
+                  className={cn("h-full", bar)}
+                />
+              )
+            })}
           </div>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5">
-          {BUCKETS.map(({ key, label, text, dot }) => (
-            <div key={key} className="flex items-center gap-1.5">
-              <span className={cn("h-2 w-2 rounded-full", dot)} />
-              <span className="text-xs font-bold text-muted-foreground">{label}</span>
-              <span className={cn("text-xs font-bold tabular-nums", text)}>{stats[key]}</span>
-            </div>
-          ))}
+            {BUCKETS.map(({ key, label, text, dot }) => (
+              <div key={key} className="flex items-center gap-1.5">
+                <span className={cn("h-2 w-2 rounded-full", dot)} />
+                <span className="text-xs font-bold text-muted-foreground">{label}</span>
+                <span className={cn("text-xs font-bold tabular-nums", text)}>{stats[key]}</span>
+              </div>
+            ))}
           </div>
         </div>
       </CardContent>

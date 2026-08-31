@@ -121,10 +121,7 @@ export default function ListeningDrillPage() {
       : ""
     if (!withAnswer && speech.status === "listening") speech.stop()
     setRevealed(true)
-    setResults((prev) => [
-      ...prev,
-      { question, answer },
-    ])
+    setResults((prev) => [...prev, { question, answer }])
     void logActivity()
   }
 
@@ -332,8 +329,8 @@ export default function ListeningDrillPage() {
         >
           <AlertCircle size={18} className="mt-0.5 shrink-0 text-amber-600" />
           <p className="text-sm font-medium leading-relaxed text-foreground/90">
-            AI question generation is unavailable — drilling from the prepared question pool.
-            Word notes and grammar tips are off for this session.
+            AI question generation is unavailable — drilling from the prepared question pool. Word
+            notes and grammar tips are off for this session.
           </p>
         </motion.div>
       )}

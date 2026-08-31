@@ -40,7 +40,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "What are you currently working on?",
       register: "formal",
     },
-    questionVariants: ["지금 뭐 하고 계세요?", "지금 어떤 일을 하고 계세요?", "지금 무슨 일을 하고 계세요?"],
+    questionVariants: [
+      "지금 뭐 하고 계세요?",
+      "지금 어떤 일을 하고 계세요?",
+      "지금 무슨 일을 하고 계세요?",
+    ],
     answers: [
       {
         korean: "저는 현재 API 개발을 하고 있습니다.",
@@ -57,7 +61,7 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
         isRecommended: false,
       },
     ],
-    usageNote: "Answer template: 현재 ___ 작업을 하고 있습니다. (\"I am currently working on ___.\")",
+    usageNote: 'Answer template: 현재 ___ 작업을 하고 있습니다. ("I am currently working on ___.")',
     vocabulary: [
       { korean: "현재", english: "currently" },
       { korean: "작업", english: "task / work" },
@@ -77,7 +81,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "By when can it be completed?",
       register: "formal",
     },
-    questionVariants: ["언제까지 끝낼 수 있어요?", "언제쯤 끝날 것 같아요?", "이 작업은 언제 완료될까요?"],
+    questionVariants: [
+      "언제까지 끝낼 수 있어요?",
+      "언제쯤 끝날 것 같아요?",
+      "이 작업은 언제 완료될까요?",
+    ],
     answers: [
       {
         korean: "오늘 안에 완료하겠습니다.",
@@ -114,11 +122,16 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "Are there any difficulties?",
       register: "formal",
     },
-    questionVariants: ["혹시 어려운 부분이 있어요?", "모르는 부분이 있어요?", "막히는 부분이 있나요?"],
+    questionVariants: [
+      "혹시 어려운 부분이 있어요?",
+      "모르는 부분이 있어요?",
+      "막히는 부분이 있나요?",
+    ],
     answers: [
       {
         korean: "네, 이 부분이 조금 어려운 것 같습니다. 혹시 여쭤봐도 될까요?",
-        romanization: "ne, i bubuni jogeum eoryeoun geot gatseumnida. hoksi yeojjwobwado doelkkayo?",
+        romanization:
+          "ne, i bubuni jogeum eoryeoun geot gatseumnida. hoksi yeojjwobwado doelkkayo?",
         english: "Yes, this part seems a little difficult. May I ask you about it?",
         register: "formal",
         isRecommended: true,
@@ -151,7 +164,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "Do you need any help?",
       register: "formal",
     },
-    questionVariants: ["도와드릴까요?", "혹시 도움이 필요하면 말씀해 주세요.", "제가 도와드릴 부분이 있을까요?"],
+    questionVariants: [
+      "도와드릴까요?",
+      "혹시 도움이 필요하면 말씀해 주세요.",
+      "제가 도와드릴 부분이 있을까요?",
+    ],
     answers: [
       {
         korean: "네, 이 부분을 조금 도와주시면 감사하겠습니다.",
@@ -162,7 +179,8 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       },
       {
         korean: "감사합니다. 우선 혼자 해보고, 필요하면 다시 말씀드리겠습니다.",
-        romanization: "gamsahamnida. useon honja haebogo, pillyohamyeon dasi malsseumdeurigesseumnida.",
+        romanization:
+          "gamsahamnida. useon honja haebogo, pillyohamyeon dasi malsseumdeurigesseumnida.",
         english: "Thank you. I will try it myself first and let you know if I need help.",
         register: "formal",
         isRecommended: true,
@@ -186,7 +204,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "Who is responsible for this task?",
       register: "formal",
     },
-    questionVariants: ["지금 이 작업은 누가 담당하고 있나요?", "이 업무는 누가 맡고 있나요?", "이거 누가 하고 있어요?"],
+    questionVariants: [
+      "지금 이 작업은 누가 담당하고 있나요?",
+      "이 업무는 누가 맡고 있나요?",
+      "이거 누가 하고 있어요?",
+    ],
     answers: [
       {
         korean: "제가 담당하고 있습니다.",
@@ -194,7 +216,7 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
         english: "I am responsible for it.",
         register: "formal",
         isRecommended: true,
-        usageNote: "Note: this describes an ongoing role, not \"I will take responsibility for it.\"",
+        usageNote: 'Note: this describes an ongoing role, not "I will take responsibility for it."',
       },
       {
         korean: "제가 맡고 있습니다.",
@@ -209,11 +231,12 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
         english: "Henry is responsible for it.",
         register: "formal",
         isRecommended: false,
-        usageNote: "님 here is a respectful name suffix, not a literal \"Mr./Ms.\" title in every context.",
+        usageNote:
+          '님 here is a respectful name suffix, not a literal "Mr./Ms." title in every context.',
       },
     ],
     usageNote:
-      "Do not translate 제가 담당하고 있습니다 as \"I will take responsibility for it\" — it describes an existing role.",
+      'Do not translate 제가 담당하고 있습니다 as "I will take responsibility for it" — it describes an existing role.',
     vocabulary: [
       { korean: "담당하다", english: "to be in charge of" },
       { korean: "맡다", english: "to take charge of" },
@@ -232,7 +255,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "When is the deadline for this task?",
       register: "formal",
     },
-    questionVariants: ["마감일이 언제예요?", "언제까지 끝내야 할까요?", "이 업무는 언제까지 완료해야 하나요?"],
+    questionVariants: [
+      "마감일이 언제예요?",
+      "언제까지 끝내야 할까요?",
+      "이 업무는 언제까지 완료해야 하나요?",
+    ],
     answers: [
       {
         korean: "마감일은 이번 주 금요일입니다.",
@@ -312,19 +339,26 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "What is your schedule today?",
       register: "formal",
     },
-    questionVariants: ["오늘 업무 일정이 어떻게 돼요?", "오늘 일정 좀 알려 주세요.", "오늘 어떤 업무를 하실 예정인가요?"],
+    questionVariants: [
+      "오늘 업무 일정이 어떻게 돼요?",
+      "오늘 일정 좀 알려 주세요.",
+      "오늘 어떤 업무를 하실 예정인가요?",
+    ],
     answers: [
       {
         korean: "오전에는 회의가 있고, 오후에는 개발 업무에 집중할 예정입니다.",
         romanization: "ojeoneneun hoeuiga itgo, ohueneun gaebal eommue jipjunghal yejeongimnida.",
-        english: "I have a meeting in the morning, and I plan to focus on development work in the afternoon.",
+        english:
+          "I have a meeting in the morning, and I plan to focus on development work in the afternoon.",
         register: "formal",
         isRecommended: true,
       },
       {
         korean: "오전 10시에는 상품팀과 회의가 있고, 오후에는 개발 업무에 집중할 예정입니다.",
-        romanization: "ojeon yeol-sieneun sangpumtimgwa hoeuiga itgo, ohueneun gaebal eommue jipjunghal yejeongimnida.",
-        english: "I have a meeting with the product team at 10 a.m., and I plan to focus on development work in the afternoon.",
+        romanization:
+          "ojeon yeol-sieneun sangpumtimgwa hoeuiga itgo, ohueneun gaebal eommue jipjunghal yejeongimnida.",
+        english:
+          "I have a meeting with the product team at 10 a.m., and I plan to focus on development work in the afternoon.",
         register: "formal",
         isRecommended: false,
       },
@@ -349,7 +383,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "Have you received all the necessary information?",
       register: "formal",
     },
-    questionVariants: ["필요한 내용은 다 확인하셨어요?", "더 필요한 정보는 없으실까요?", "업무에 필요한 자료는 모두 받으셨나요?"],
+    questionVariants: [
+      "필요한 내용은 다 확인하셨어요?",
+      "더 필요한 정보는 없으실까요?",
+      "업무에 필요한 자료는 모두 받으셨나요?",
+    ],
     answers: [
       {
         korean: "네, 필요한 정보는 모두 확인했습니다.",
@@ -361,7 +399,8 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       {
         korean: "네, 모두 확인했고 지금은 더 필요한 정보가 없습니다.",
         romanization: "ne, modu hwaginhaetgo jigeumeun deo pillyohan jeongboga eopseumnida.",
-        english: "Yes, I checked everything, and I do not need any additional information right now.",
+        english:
+          "Yes, I checked everything, and I do not need any additional information right now.",
         register: "formal",
         isRecommended: false,
       },
@@ -392,7 +431,11 @@ const WORKPLACE_CARDS: PhraseSeedCard[] = [
       english: "Could you give me some feedback?",
       register: "formal",
     },
-    questionVariants: ["혹시 이 부분에 대해 피드백을 해주실 수 있을까요?", "혹시 이거 검토해 주실 수 있을까요?", "이 부분을 한번 확인해 주실 수 있을까요?"],
+    questionVariants: [
+      "혹시 이 부분에 대해 피드백을 해주실 수 있을까요?",
+      "혹시 이거 검토해 주실 수 있을까요?",
+      "이 부분을 한번 확인해 주실 수 있을까요?",
+    ],
     answers: [
       {
         korean: "네, 확인 후 피드백 드리겠습니다.",
@@ -454,7 +497,8 @@ const DAILY_CARDS: PhraseSeedCard[] = [
         isRecommended: false,
       },
     ],
-    usageNote: "A server will usually ask this as soon as you sit down or when you're ready to order.",
+    usageNote:
+      "A server will usually ask this as soon as you sit down or when you're ready to order.",
     vocabulary: [
       { korean: "주문하다", english: "to order" },
       { korean: "하나", english: "one (counter)" },
@@ -773,7 +817,8 @@ export const SEED_PACKS: PhraseSeedCollection[] = [
     sourceKey: "daily-life-essentials",
     titleKo: "한국 생활 필수 질문과 답변",
     titleEn: "Daily Life Essentials",
-    description: "Everyday Korean questions and answers for restaurants, taxis, hospitals, and daily conversation.",
+    description:
+      "Everyday Korean questions and answers for restaurants, taxis, hospitals, and daily conversation.",
     category: "daily",
     seedVersion: 1,
     cards: DAILY_CARDS,
@@ -818,9 +863,15 @@ export function planSeedUpsert(
   const collectionBySourceKey = new Map(
     existingCollections.filter((c) => c.sourceKey).map((c) => [c.sourceKey as string, c]),
   )
-  const cardSourceKeys = new Set(existingCards.filter((c) => c.sourceKey).map((c) => c.sourceKey as string))
+  const cardSourceKeys = new Set(
+    existingCards.filter((c) => c.sourceKey).map((c) => c.sourceKey as string),
+  )
 
-  const plan: SeedPlan = { collectionsToInsert: [], collectionsToBumpVersion: [], cardsToInsert: [] }
+  const plan: SeedPlan = {
+    collectionsToInsert: [],
+    collectionsToBumpVersion: [],
+    cardsToInsert: [],
+  }
 
   for (const pack of packs) {
     const existingCollection = collectionBySourceKey.get(pack.sourceKey)
@@ -831,7 +882,10 @@ export function planSeedUpsert(
     }
 
     if (existingCollection.seedVersion < pack.seedVersion) {
-      plan.collectionsToBumpVersion.push({ id: existingCollection.id, seedVersion: pack.seedVersion })
+      plan.collectionsToBumpVersion.push({
+        id: existingCollection.id,
+        seedVersion: pack.seedVersion,
+      })
     }
 
     for (const card of pack.cards) {
@@ -844,5 +898,9 @@ export function planSeedUpsert(
 }
 
 export function isSeedPlanEmpty(plan: SeedPlan): boolean {
-  return plan.collectionsToInsert.length === 0 && plan.collectionsToBumpVersion.length === 0 && plan.cardsToInsert.length === 0
+  return (
+    plan.collectionsToInsert.length === 0 &&
+    plan.collectionsToBumpVersion.length === 0 &&
+    plan.cardsToInsert.length === 0
+  )
 }

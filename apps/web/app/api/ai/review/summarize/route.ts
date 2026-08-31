@@ -39,5 +39,6 @@ export const POST = jsonAiRoute({
   outputSchema,
   system: REVIEW_SYSTEM,
   feature: "review_summary",
-  buildPrompt: (input) => `Write ${REVIEW_LABELS[input.reviewType]} for this data:\n\n${input.context}`,
+  buildPrompt: (input) =>
+    `Write ${REVIEW_LABELS[input.reviewType]} for this data:\n\n${input.context}`,
 })

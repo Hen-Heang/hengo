@@ -23,10 +23,34 @@ import { containerVariants, itemVariants } from "@/lib/motion"
 import { cn } from "@/lib/utils"
 import type { LearnTrack } from "@/lib/types"
 
-const TRACKS: Array<{ key: LearnTrack; label: string; icon: typeof Type; blurb: string; count: number }> = [
-  { key: "survival", label: "Survival", icon: LifeBuoy, blurb: "Phrases for your first day", count: seedLessonsByTrack("survival").length },
-  { key: "alphabet", label: "Alphabet", icon: Type, blurb: "Read & write Hangul from zero", count: seedLessonsByTrack("alphabet").length },
-  { key: "grammar", label: "Grammar", icon: SpellCheck2, blurb: "Build basic sentences", count: seedLessonsByTrack("grammar").length },
+const TRACKS: Array<{
+  key: LearnTrack
+  label: string
+  icon: typeof Type
+  blurb: string
+  count: number
+}> = [
+  {
+    key: "survival",
+    label: "Survival",
+    icon: LifeBuoy,
+    blurb: "Phrases for your first day",
+    count: seedLessonsByTrack("survival").length,
+  },
+  {
+    key: "alphabet",
+    label: "Alphabet",
+    icon: Type,
+    blurb: "Read & write Hangul from zero",
+    count: seedLessonsByTrack("alphabet").length,
+  },
+  {
+    key: "grammar",
+    label: "Grammar",
+    icon: SpellCheck2,
+    blurb: "Build basic sentences",
+    count: seedLessonsByTrack("grammar").length,
+  },
 ]
 
 /**
@@ -80,27 +104,34 @@ export function FoundationsHome() {
                 "flex min-h-11 items-center gap-3 rounded-lg border p-4 text-left transition-all active:scale-[0.99]",
                 active
                   ? "border-blue-500/40 bg-blue-500/10 shadow-sm"
-                  : "border-border bg-card hover:bg-accent/40 dark:bg-slate-900/40"
+                  : "border-border bg-card hover:bg-accent/40 dark:bg-slate-900/40",
               )}
             >
               <div
                 className={cn(
                   "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg",
-                  active ? "bg-blue-600 text-white" : "bg-accent text-muted-foreground"
+                  active ? "bg-blue-600 text-white" : "bg-accent text-muted-foreground",
                 )}
               >
                 <Icon size={22} strokeWidth={2.5} />
               </div>
               <div className="min-w-0">
                 <div className="flex items-center gap-2">
-                  <p className={cn("text-base font-semibold", active ? "text-blue-700 dark:text-blue-300" : "text-foreground")}>
+                  <p
+                    className={cn(
+                      "text-base font-semibold",
+                      active ? "text-blue-700 dark:text-blue-300" : "text-foreground",
+                    )}
+                  >
                     {label}
                   </p>
                   <span className="rounded-full bg-background/70 px-2 py-0.5 text-xs font-medium text-muted-foreground">
                     {count} lessons
                   </span>
                 </div>
-                <p title={blurb} className="truncate text-sm text-muted-foreground">{blurb}</p>
+                <p title={blurb} className="truncate text-sm text-muted-foreground">
+                  {blurb}
+                </p>
               </div>
             </button>
           )
@@ -130,10 +161,14 @@ export function FoundationsHome() {
                         "flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-semibold",
                         lesson.completed
                           ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                          : "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                          : "bg-blue-500/10 text-blue-600 dark:text-blue-400",
                       )}
                     >
-                      {lesson.completed ? <CheckCircle2 size={20} strokeWidth={2.5} /> : lesson.order}
+                      {lesson.completed ? (
+                        <CheckCircle2 size={20} strokeWidth={2.5} />
+                      ) : (
+                        lesson.order
+                      )}
                     </div>
                     <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-medium text-muted-foreground">
                       {lesson.level}
@@ -158,7 +193,9 @@ export function FoundationsHome() {
                     <span
                       className={cn(
                         "inline-flex items-center gap-1.5 text-xs font-semibold",
-                        lesson.completed ? "text-emerald-600 dark:text-emerald-400" : "text-blue-600 dark:text-blue-400"
+                        lesson.completed
+                          ? "text-emerald-600 dark:text-emerald-400"
+                          : "text-blue-600 dark:text-blue-400",
                       )}
                     >
                       <Languages size={13} strokeWidth={2.5} /> {lesson.progress}%
@@ -175,7 +212,9 @@ export function FoundationsHome() {
               className="rounded-lg border border-dashed border-border bg-card/40 p-6 text-center sm:col-span-2"
             >
               <p className="text-sm font-semibold text-foreground">No lessons in this track yet</p>
-              <p className="mt-1 text-sm text-muted-foreground">Check back soon — more lessons are on the way.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Check back soon — more lessons are on the way.
+              </p>
             </motion.div>
           )}
         </motion.div>

@@ -72,7 +72,10 @@ type SessionEntry =
 // recharts-backed; deferred so the page paints before the chart chunk loads.
 const ScoreTrend = dynamic(
   () => import("@/components/interview/ScoreTrend").then((m) => m.ScoreTrend),
-  { ssr: false, loading: () => <div className="h-48 w-full animate-pulse rounded-3xl bg-muted/20" /> }
+  {
+    ssr: false,
+    loading: () => <div className="h-48 w-full animate-pulse rounded-3xl bg-muted/20" />,
+  },
 )
 
 const containerVariants = {
@@ -168,10 +171,13 @@ export default function InterviewPage() {
     }
   }, [])
 
-  useEffect(() => () => {
-    sessionActiveRef.current = false
-    stopSpeechAudio()
-  }, [])
+  useEffect(
+    () => () => {
+      sessionActiveRef.current = false
+      stopSpeechAudio()
+    },
+    [],
+  )
 
   // Streams one examiner turn, then parses it into question + feedback and
   // speaks the Korean question aloud.
@@ -194,15 +200,12 @@ export default function InterviewPage() {
           setStreamingText(buffer)
         },
         () => {},
-        () => {}
+        () => {},
       )
 
       const turn = parseExaminerTurn(buffer)
       setCurrent(turn)
-      setEntries((prev) => [
-        ...prev,
-        { id: crypto.randomUUID(), kind: "examiner", turn },
-      ])
+      setEntries((prev) => [...prev, { id: crypto.randomUUID(), kind: "examiner", turn }])
       setQuestionCount((count) => count + 1)
       setStreamingText("")
       void logActivity()
@@ -225,7 +228,7 @@ export default function InterviewPage() {
     try {
       const data = await chatApi.createConversation(
         `Mock Interview (${cfg.label}) · ${topic.label}`,
-        "FREE_CHAT"
+        "FREE_CHAT",
       )
       conversationRef.current = data.id
       sessionStartRef.current = Date.now()
@@ -251,10 +254,7 @@ export default function InterviewPage() {
     const answer = (speech.status === "listening" ? speech.stop() : speech.transcript).trim()
     if (!answer || isExaminerThinking) return
 
-    setEntries((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), kind: "answer", text: answer },
-    ])
+    setEntries((prev) => [...prev, { id: crypto.randomUUID(), kind: "answer", text: answer }])
     speech.reset()
     setIsEditingAnswer(false)
     void runExaminerTurn(buildAnswerMessage(answer, cfg))
@@ -277,7 +277,7 @@ export default function InterviewPage() {
     const transcript: TranscriptEntry[] = entries.map((entry) =>
       entry.kind === "examiner"
         ? { role: "examiner", text: entry.turn.questionKo }
-        : { role: "candidate", text: entry.text }
+        : { role: "candidate", text: entry.text },
     )
     const answeredCount = transcript.filter((t) => t.role === "candidate").length
     const durationSeconds = sessionStartRef.current
@@ -312,7 +312,7 @@ export default function InterviewPage() {
             buffer += token
           },
           () => {},
-          () => {}
+          () => {},
         )
         parsed = parseEvaluation(buffer)
       } catch (err) {
@@ -461,7 +461,7 @@ export default function InterviewPage() {
               "h-14 w-full rounded-2xl px-10 text-base font-bold text-white shadow-lg transition-all active:scale-95 disabled:opacity-60 sm:w-auto",
               mode === "exam"
                 ? "bg-rose-600 shadow-rose-600/20 hover:bg-rose-700"
-                : "bg-blue-600 shadow-blue-600/20 hover:bg-blue-700"
+                : "bg-blue-600 shadow-blue-600/20 hover:bg-blue-700",
             )}
           >
             {isExaminerThinking ? (
@@ -673,7 +673,7 @@ export default function InterviewPage() {
               <Badge
                 className={cn(
                   "rounded-lg border-none px-3 py-1 text-[11px] font-bold uppercase tracking-wider",
-                  recording ? "animate-pulse bg-rose-500 text-white" : "bg-accent/20"
+                  recording ? "animate-pulse bg-rose-500 text-white" : "bg-accent/20",
                 )}
               >
                 {recording ? "Recording…" : speech.transcript ? "Captured" : "Ready"}
@@ -700,7 +700,7 @@ export default function InterviewPage() {
                     "h-12 w-full rounded-2xl px-6 text-sm font-bold shadow-lg transition-all active:scale-95 disabled:opacity-50 sm:h-14 sm:w-auto sm:px-8 sm:text-base",
                     recording
                       ? "bg-rose-600 text-white shadow-rose-600/20 hover:bg-rose-700"
-                      : "bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-700"
+                      : "bg-blue-600 text-white shadow-blue-600/20 hover:bg-blue-700",
                   )}
                 >
                   {recording ? (
@@ -725,7 +725,11 @@ export default function InterviewPage() {
               </Button>
             </div>
 
-            <p role="status" aria-live="polite" className="text-xs font-medium text-muted-foreground">
+            <p
+              role="status"
+              aria-live="polite"
+              className="text-xs font-medium text-muted-foreground"
+            >
               {recording
                 ? "Listening now — pauses are okay. Tap Stop when your answer is complete."
                 : "The microphone opens after the examiner finishes speaking; you can also start it manually."}
@@ -815,16 +819,11 @@ export default function InterviewPage() {
             <CardContent className="space-y-3 pt-5">
               {entries.map((entry) =>
                 entry.kind === "examiner" ? (
-                  <div
-                    key={entry.id}
-                    className="rounded-2xl border border-border bg-accent/5 p-4"
-                  >
+                  <div key={entry.id} className="rounded-2xl border border-border bg-accent/5 p-4">
                     <p className="text-[11px] font-bold uppercase tracking-wide text-blue-600">
                       Examiner
                     </p>
-                    <p className="mt-1.5 font-bold text-foreground">
-                      {entry.turn.questionKo}
-                    </p>
+                    <p className="mt-1.5 font-bold text-foreground">{entry.turn.questionKo}</p>
                     {cfg.showEnglish && entry.turn.questionEn && (
                       <p className="mt-1 text-sm italic text-muted-foreground">
                         {entry.turn.questionEn}
@@ -841,7 +840,7 @@ export default function InterviewPage() {
                     </p>
                     <p className="mt-1.5 font-medium text-foreground">{entry.text}</p>
                   </div>
-                )
+                ),
               )}
             </CardContent>
           </Card>

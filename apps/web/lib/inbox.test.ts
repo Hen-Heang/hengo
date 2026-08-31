@@ -69,9 +69,27 @@ describe("parseTagsInput", () => {
 
 describe("filterInboxItems", () => {
   const items = [
-    makeItem({ id: "a", itemType: "idea", status: "inbox", tags: ["work"], content: "Ship the inbox feature" }),
-    makeItem({ id: "b", itemType: "phrase", status: "processed", tags: ["korean"], content: "회의 다녀왔습니다" }),
-    makeItem({ id: "c", itemType: "idea", status: "archived", tags: ["work", "later"], content: "Old idea" }),
+    makeItem({
+      id: "a",
+      itemType: "idea",
+      status: "inbox",
+      tags: ["work"],
+      content: "Ship the inbox feature",
+    }),
+    makeItem({
+      id: "b",
+      itemType: "phrase",
+      status: "processed",
+      tags: ["korean"],
+      content: "회의 다녀왔습니다",
+    }),
+    makeItem({
+      id: "c",
+      itemType: "idea",
+      status: "archived",
+      tags: ["work", "later"],
+      content: "Old idea",
+    }),
   ]
 
   it("filters by type", () => {
@@ -91,7 +109,9 @@ describe("filterInboxItems", () => {
   })
 
   it("combines filters", () => {
-    expect(filterInboxItems(items, { type: "idea", status: "archived" }).map((i) => i.id)).toEqual(["c"])
+    expect(filterInboxItems(items, { type: "idea", status: "archived" }).map((i) => i.id)).toEqual([
+      "c",
+    ])
   })
 
   it("returns everything for 'all'/empty filters", () => {
@@ -112,10 +132,7 @@ describe("sortInboxItems", () => {
 
 describe("collectInboxTags", () => {
   it("returns distinct, sorted tags", () => {
-    const items = [
-      makeItem({ tags: ["work", "korean"] }),
-      makeItem({ tags: ["korean", "idea"] }),
-    ]
+    const items = [makeItem({ tags: ["work", "korean"] }), makeItem({ tags: ["korean", "idea"] })]
     expect(collectInboxTags(items)).toEqual(["idea", "korean", "work"])
   })
 })
@@ -152,7 +169,12 @@ describe("buildNoteConversionPayload", () => {
 
 describe("buildTaskConversionPayload", () => {
   it("maps content to description and carries goal/tags through", () => {
-    const item = makeItem({ title: "Fix flaky test", content: "The retry test flakes on CI", tags: ["dev"], goalId: "g1" })
+    const item = makeItem({
+      title: "Fix flaky test",
+      content: "The retry test flakes on CI",
+      tags: ["dev"],
+      goalId: "g1",
+    })
     const payload = buildTaskConversionPayload(item, "2026-07-26")
     expect(payload).toMatchObject({
       title: "Fix flaky test",
@@ -168,7 +190,10 @@ describe("buildTaskConversionPayload", () => {
 
 describe("buildJournalConversionPayload", () => {
   it("prefers the event timestamp over the captured timestamp", () => {
-    const item = makeItem({ eventAt: "2026-07-19T00:00:00.000Z", capturedAt: "2026-07-20T00:00:00.000Z" })
+    const item = makeItem({
+      eventAt: "2026-07-19T00:00:00.000Z",
+      capturedAt: "2026-07-20T00:00:00.000Z",
+    })
     expect(buildJournalConversionPayload(item).occurredAt).toBe("2026-07-19T00:00:00.000Z")
   })
 

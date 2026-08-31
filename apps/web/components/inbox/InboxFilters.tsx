@@ -3,7 +3,13 @@
 import { Search } from "lucide-react"
 
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { INBOX_ITEM_TYPES, type InboxFilters as InboxFiltersValue } from "@/lib/inbox"
 
 export function InboxFilters({
@@ -18,7 +24,10 @@ export function InboxFilters({
   return (
     <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
       <div className="relative flex-1">
-        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search
+          size={16}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
         <Input
           value={value.query ?? ""}
           onChange={(event) => onChange({ ...value, query: event.target.value })}
@@ -29,7 +38,12 @@ export function InboxFilters({
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:flex">
-        <Select value={value.status ?? "inbox"} onValueChange={(status) => onChange({ ...value, status: status as InboxFiltersValue["status"] })}>
+        <Select
+          value={value.status ?? "inbox"}
+          onValueChange={(status) =>
+            onChange({ ...value, status: status as InboxFiltersValue["status"] })
+          }
+        >
           <SelectTrigger className="w-full sm:w-32" aria-label="Filter by status">
             <SelectValue />
           </SelectTrigger>
@@ -41,7 +55,10 @@ export function InboxFilters({
           </SelectContent>
         </Select>
 
-        <Select value={value.type ?? "all"} onValueChange={(type) => onChange({ ...value, type: type as InboxFiltersValue["type"] })}>
+        <Select
+          value={value.type ?? "all"}
+          onValueChange={(type) => onChange({ ...value, type: type as InboxFiltersValue["type"] })}
+        >
           <SelectTrigger className="w-full sm:w-36" aria-label="Filter by type">
             <SelectValue />
           </SelectTrigger>

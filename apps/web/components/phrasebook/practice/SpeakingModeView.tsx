@@ -20,7 +20,15 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
   const [evaluating, setEvaluating] = useState(false)
   const [feedback, setFeedback] = useState<PhraseAttemptFeedback | null>(null)
   const [error, setError] = useState("")
-  const { supported, status, transcript, start, stop, reset, error: speechError } = useSpeechRecognition({ lang: "ko-KR" })
+  const {
+    supported,
+    status,
+    transcript,
+    start,
+    stop,
+    reset,
+    error: speechError,
+  } = useSpeechRecognition({ lang: "ko-KR" })
 
   const card = cards[index]
 
@@ -86,7 +94,9 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wide text-muted-foreground">
-        <span>{index + 1} / {cards.length}</span>
+        <span>
+          {index + 1} / {cards.length}
+        </span>
         <span>{card.situation}</span>
       </div>
 
@@ -94,7 +104,9 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
         <span className="rounded-full bg-accent/40 px-3 py-1 text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
           Answer aloud
         </span>
-        <p className="break-keep text-2xl font-bold leading-snug text-foreground [overflow-wrap:anywhere]">{card.question.korean}</p>
+        <p className="break-keep text-2xl font-bold leading-snug text-foreground [overflow-wrap:anywhere]">
+          {card.question.korean}
+        </p>
         <p className="text-sm text-muted-foreground">{card.question.english}</p>
         <SpeakButton text={card.question.korean} title="Listen to the question" />
       </div>
@@ -104,7 +116,9 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
           Speech recognition isn&apos;t available in this browser. Try Chrome on desktop or Android.
         </p>
       )}
-      {speechError && <p className="text-center text-xs font-semibold text-destructive">{speechError}</p>}
+      {speechError && (
+        <p className="text-center text-xs font-semibold text-destructive">{speechError}</p>
+      )}
       {error && <p className="text-center text-xs font-semibold text-destructive">{error}</p>}
 
       {!feedback && (
@@ -121,13 +135,25 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
             aria-label={status === "listening" ? "Stop recording" : "Record your spoken answer"}
             className={cn(
               "flex h-24 w-24 items-center justify-center rounded-full text-white shadow-lg transition-all active:scale-95 disabled:opacity-50",
-              status === "listening" ? "animate-pulse bg-red-600 shadow-red-600/30" : "bg-violet-600 shadow-violet-600/30 hover:bg-violet-500",
+              status === "listening"
+                ? "animate-pulse bg-red-600 shadow-red-600/30"
+                : "bg-violet-600 shadow-violet-600/30 hover:bg-violet-500",
             )}
           >
-            {evaluating ? <Loader2 size={32} className="animate-spin" /> : status === "listening" ? <Square size={28} /> : <Mic size={28} />}
+            {evaluating ? (
+              <Loader2 size={32} className="animate-spin" />
+            ) : status === "listening" ? (
+              <Square size={28} />
+            ) : (
+              <Mic size={28} />
+            )}
           </button>
           <p className="text-xs font-semibold text-muted-foreground">
-            {evaluating ? "Evaluating your answer..." : status === "listening" ? "Tap to stop" : "Tap to record your answer"}
+            {evaluating
+              ? "Evaluating your answer..."
+              : status === "listening"
+                ? "Tap to stop"
+                : "Tap to record your answer"}
           </p>
         </div>
       )}
@@ -137,7 +163,9 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
           <div
             className={cn(
               "flex items-center gap-3 rounded-2xl border p-4",
-              feedback.communicationSuccess ? "border-emerald-500/20 bg-emerald-500/5" : "border-amber-500/20 bg-amber-500/5",
+              feedback.communicationSuccess
+                ? "border-emerald-500/20 bg-emerald-500/5"
+                : "border-amber-500/20 bg-amber-500/5",
             )}
           >
             {feedback.communicationSuccess ? (
@@ -146,41 +174,74 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
               <XCircle size={22} className="shrink-0 text-amber-600" />
             )}
             <div className="min-w-0">
-              <p className={cn("text-sm font-bold", feedback.communicationSuccess ? "text-emerald-700 dark:text-emerald-400" : "text-amber-700 dark:text-amber-400")}>
-                {feedback.communicationSuccess ? "You communicated the meaning" : "Not quite there yet"}
+              <p
+                className={cn(
+                  "text-sm font-bold",
+                  feedback.communicationSuccess
+                    ? "text-emerald-700 dark:text-emerald-400"
+                    : "text-amber-700 dark:text-amber-400",
+                )}
+              >
+                {feedback.communicationSuccess
+                  ? "You communicated the meaning"
+                  : "Not quite there yet"}
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{feedback.explanation}</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                {feedback.explanation}
+              </p>
             </div>
           </div>
 
-          <p className="text-xs font-semibold text-muted-foreground">You said: &quot;{feedback.recognizedTranscript}&quot;</p>
+          <p className="text-xs font-semibold text-muted-foreground">
+            You said: &quot;{feedback.recognizedTranscript}&quot;
+          </p>
 
           <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-3">
             <div className="flex items-center justify-between gap-2">
               <div className="min-w-0">
-                <p className="text-[11px] font-bold uppercase tracking-wide text-sky-600 dark:text-sky-400">Corrected</p>
-                <p className="break-keep text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{feedback.correctedSentence}</p>
+                <p className="text-[11px] font-bold uppercase tracking-wide text-sky-600 dark:text-sky-400">
+                  Corrected
+                </p>
+                <p className="break-keep text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+                  {feedback.correctedSentence}
+                </p>
               </div>
-              <SpeakButton text={feedback.correctedSentence} className="shrink-0" title="Listen to the corrected answer" />
+              <SpeakButton
+                text={feedback.correctedSentence}
+                className="shrink-0"
+                title="Listen to the corrected answer"
+              />
             </div>
           </div>
 
-          {feedback.naturalAlternative && feedback.naturalAlternative !== feedback.correctedSentence && (
-            <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
-              <div className="flex items-center justify-between gap-2">
-                <div className="min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400">More natural</p>
-                  <p className="break-keep text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{feedback.naturalAlternative}</p>
+          {feedback.naturalAlternative &&
+            feedback.naturalAlternative !== feedback.correctedSentence && (
+              <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-[11px] font-bold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                      More natural
+                    </p>
+                    <p className="break-keep text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+                      {feedback.naturalAlternative}
+                    </p>
+                  </div>
+                  <SpeakButton
+                    text={feedback.naturalAlternative}
+                    className="shrink-0"
+                    title="Listen to the natural alternative"
+                  />
                 </div>
-                <SpeakButton text={feedback.naturalAlternative} className="shrink-0" title="Listen to the natural alternative" />
               </div>
-            </div>
-          )}
+            )}
 
           {feedback.vocabulary.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {feedback.vocabulary.map((v) => (
-                <span key={v.korean} className="rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-foreground">
+                <span
+                  key={v.korean}
+                  className="rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-foreground"
+                >
                   <span className="font-bold">{v.korean}</span> — {v.english}
                 </span>
               ))}
@@ -189,10 +250,15 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
 
           {feedback.retryWords.length > 0 && (
             <div>
-              <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">Worth retrying</p>
+              <p className="mb-1 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">
+                Worth retrying
+              </p>
               <div className="flex flex-wrap gap-2">
                 {feedback.retryWords.map((w) => (
-                  <span key={w} className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-700 dark:text-red-400">
+                  <span
+                    key={w}
+                    className="rounded-full bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-700 dark:text-red-400"
+                  >
                     {w}
                   </span>
                 ))}
@@ -205,7 +271,8 @@ export function SpeakingModeView({ cards, onExhausted }: SpeakingModeViewProps) 
               <RotateCcw size={14} className="mr-1.5" /> Retry
             </Button>
             <Button className="flex-1" onClick={next}>
-              {index + 1 >= cards.length ? "Finish" : "Next"} <ChevronRight size={16} className="ml-1" />
+              {index + 1 >= cards.length ? "Finish" : "Next"}{" "}
+              <ChevronRight size={16} className="ml-1" />
             </Button>
           </div>
         </div>

@@ -50,10 +50,7 @@ export async function POST(req: Request): Promise<Response> {
 
   const rateStatus = await checkRateLimit(db, user.id, FEATURE)
   if (!rateStatus.allowed) {
-    return Response.json(
-      { skipped: true, reason: "rate_limited", analysis: null },
-      { status: 429 },
-    )
+    return Response.json({ skipped: true, reason: "rate_limited", analysis: null }, { status: 429 })
   }
 
   // Confirm the conversation belongs to the caller (RLS also scopes the

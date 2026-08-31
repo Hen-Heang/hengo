@@ -125,13 +125,11 @@ export async function POST(req: Request): Promise<Response> {
   const voiceLevel = VOICE_LEVELS[level]
   const speechSpeed = resolveSpeechSpeed(level, pace)
 
-  const history: RealtimeBootstrapMessage[] = (historyRows ?? [])
-    .reverse()
-    .map((row) => ({
-      id: String(row.id),
-      role: row.role === "assistant" ? ("assistant" as const) : ("user" as const),
-      text: String(row.content ?? ""),
-    }))
+  const history: RealtimeBootstrapMessage[] = (historyRows ?? []).reverse().map((row) => ({
+    id: String(row.id),
+    role: row.role === "assistant" ? ("assistant" as const) : ("user" as const),
+    text: String(row.content ?? ""),
+  }))
   const bootstrap = buildRealtimeBootstrap(history)
 
   const recentMistakes: RealtimeRecentMistake[] = (mistakeRows ?? [])

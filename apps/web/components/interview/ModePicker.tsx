@@ -36,14 +36,14 @@ export function ModePicker({
                 ? isExam
                   ? "border-rose-500/60 bg-rose-500/5 shadow-lg"
                   : "border-blue-500/60 bg-blue-500/5 shadow-lg"
-                : "border-border bg-card hover:bg-accent/30"
+                : "border-border bg-card hover:bg-accent/30",
             )}
           >
             <div className="flex items-center justify-between gap-2">
               <div
                 className={cn(
                   "flex h-10 w-10 items-center justify-center rounded-2xl",
-                  isExam ? "bg-rose-500/10 text-rose-600" : "bg-blue-500/10 text-blue-600"
+                  isExam ? "bg-rose-500/10 text-rose-600" : "bg-blue-500/10 text-blue-600",
                 )}
               >
                 {isExam ? (

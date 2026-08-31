@@ -25,8 +25,8 @@ export const POST = jsonAiRoute({
     `Generate ${count} Korean vocabulary flashcards for the category "${category}".\n` +
     "Focus on practical, high-frequency words and phrases used in real daily workplace situations.\n" +
     "Rules:\n" +
-    "- \"pronunciation\" must use Revised Romanization (e.g. an-nyeong-ha-se-yo).\n" +
-    "- \"difficultyLevel\" must be exactly \"Easy\", \"Medium\", or \"Hard\".\n" +
-    "- \"example\" must be a realistic sentence a Korean coworker or developer would actually say.\n" +
-    "- \"tags\" is 1-3 short lowercase topic tags (e.g. [\"meetings\", \"deadlines\"]).",
+    '- "pronunciation" must use Revised Romanization (e.g. an-nyeong-ha-se-yo).\n' +
+    '- "difficultyLevel" must be exactly "Easy", "Medium", or "Hard".\n' +
+    '- "example" must be a realistic sentence a Korean coworker or developer would actually say.\n' +
+    '- "tags" is 1-3 short lowercase topic tags (e.g. ["meetings", "deadlines"]).',
 })

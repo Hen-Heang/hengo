@@ -78,10 +78,7 @@ export function AnalyticsCard({ analytics }: { analytics: InterviewAnalytics }) 
             </p>
             <div className="mt-3 space-y-2">
               {analytics.grammarIssues.map((issue, i) => (
-                <div
-                  key={i}
-                  className="rounded-2xl border border-border bg-accent/5 px-4 py-3"
-                >
+                <div key={i} className="rounded-2xl border border-border bg-accent/5 px-4 py-3">
                   <p className="text-sm font-bold text-foreground">{issue.issue}</p>
                   {issue.example && (
                     <p className="mt-1 text-sm font-medium text-muted-foreground">

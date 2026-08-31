@@ -59,7 +59,7 @@ describe("countdownTo", () => {
   it("breaks the remaining time into days/hours/minutes/seconds", () => {
     // 2 days, 3 hours, 4 minutes, 5 seconds before the exam instant.
     const target = new Date(EXAM_DATETIME).getTime()
-    const now = new Date(target - ((2 * 86_400 + 3 * 3_600 + 4 * 60 + 5) * 1000))
+    const now = new Date(target - (2 * 86_400 + 3 * 3_600 + 4 * 60 + 5) * 1000)
     const cd = countdownTo(EXAM_DATETIME, now)
     expect(cd).toMatchObject({ days: 2, hours: 3, minutes: 4, seconds: 5, past: false })
     expect(cd.total).toBeGreaterThan(0)

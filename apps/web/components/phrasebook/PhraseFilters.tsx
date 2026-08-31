@@ -15,11 +15,20 @@ interface PhraseFiltersProps {
 
 const ALL = "All"
 
-export function PhraseFilters({ value, onChange, categories, situations, difficulties }: PhraseFiltersProps) {
+export function PhraseFilters({
+  value,
+  onChange,
+  categories,
+  situations,
+  difficulties,
+}: PhraseFiltersProps) {
   return (
     <div className="space-y-3">
       <div className="relative">
-        <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search
+          size={16}
+          className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
         <Input
           value={value.query ?? ""}
           onChange={(e) => onChange({ ...value, query: e.target.value })}
@@ -31,7 +40,9 @@ export function PhraseFilters({ value, onChange, categories, situations, difficu
 
       {categories.length > 1 && (
         <div>
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">Category</p>
+          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">
+            Category
+          </p>
           <ChipSelect
             options={[ALL, ...categories]}
             value={value.category ?? ALL}
@@ -42,7 +53,9 @@ export function PhraseFilters({ value, onChange, categories, situations, difficu
 
       {situations.length > 1 && (
         <div>
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">Situation</p>
+          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">
+            Situation
+          </p>
           <ChipSelect
             options={[ALL, ...situations]}
             value={value.situation ?? ALL}
@@ -53,7 +66,9 @@ export function PhraseFilters({ value, onChange, categories, situations, difficu
 
       {difficulties.length > 1 && (
         <div>
-          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">Difficulty</p>
+          <p className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-muted-foreground/70">
+            Difficulty
+          </p>
           <ChipSelect
             options={[ALL, ...difficulties]}
             value={value.difficulty ?? ALL}

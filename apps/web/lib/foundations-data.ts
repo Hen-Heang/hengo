@@ -125,7 +125,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "잘 부탁드립니다",
         romanization: "jal butakdeurimnida",
-        meaning: "Please take care of me / I look forward to working with you. Said right after introducing yourself.",
+        meaning:
+          "Please take care of me / I look forward to working with you. Said right after introducing yourself.",
         example: "저는 헨리예요. 잘 부탁드립니다.",
         exampleTranslation: "I'm Henry. I look forward to working with you.",
       },
@@ -251,12 +252,48 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
     intro:
       "Korean vowels are built from simple strokes. Learn these six first — every syllable you read will contain one. A vowel is written next to or below a consonant, never alone (the silent ㅇ holds its place).",
     cards: [
-      { hangul: "ㅏ", romanization: "a", meaning: "like 'a' in father", example: "아", exampleTranslation: "ah" },
-      { hangul: "ㅓ", romanization: "eo", meaning: "like 'u' in but", example: "어", exampleTranslation: "uh" },
-      { hangul: "ㅗ", romanization: "o", meaning: "like 'o' in go", example: "오", exampleTranslation: "oh" },
-      { hangul: "ㅜ", romanization: "u", meaning: "like 'oo' in food", example: "우", exampleTranslation: "oo" },
-      { hangul: "ㅡ", romanization: "eu", meaning: "like 'oo' in good (lips flat)", example: "으", exampleTranslation: "eu" },
-      { hangul: "ㅣ", romanization: "i", meaning: "like 'ee' in see", example: "이", exampleTranslation: "ee" },
+      {
+        hangul: "ㅏ",
+        romanization: "a",
+        meaning: "like 'a' in father",
+        example: "아",
+        exampleTranslation: "ah",
+      },
+      {
+        hangul: "ㅓ",
+        romanization: "eo",
+        meaning: "like 'u' in but",
+        example: "어",
+        exampleTranslation: "uh",
+      },
+      {
+        hangul: "ㅗ",
+        romanization: "o",
+        meaning: "like 'o' in go",
+        example: "오",
+        exampleTranslation: "oh",
+      },
+      {
+        hangul: "ㅜ",
+        romanization: "u",
+        meaning: "like 'oo' in food",
+        example: "우",
+        exampleTranslation: "oo",
+      },
+      {
+        hangul: "ㅡ",
+        romanization: "eu",
+        meaning: "like 'oo' in good (lips flat)",
+        example: "으",
+        exampleTranslation: "eu",
+      },
+      {
+        hangul: "ㅣ",
+        romanization: "i",
+        meaning: "like 'ee' in see",
+        example: "이",
+        exampleTranslation: "ee",
+      },
     ],
     exercises: [
       {
@@ -297,15 +334,69 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
     intro:
       "Consonants start most syllables. Their shapes hint at how your mouth makes the sound. Here are the nine most common ones — note that ㅇ is silent at the start of a syllable.",
     cards: [
-      { hangul: "ㄱ", romanization: "g / k", meaning: "soft g, like 'g' in go", example: "가", exampleTranslation: "ga" },
-      { hangul: "ㄴ", romanization: "n", meaning: "like 'n' in no", example: "나", exampleTranslation: "na" },
-      { hangul: "ㄷ", romanization: "d / t", meaning: "like 'd' in do", example: "다", exampleTranslation: "da" },
-      { hangul: "ㄹ", romanization: "r / l", meaning: "between 'r' and 'l'", example: "라", exampleTranslation: "ra" },
-      { hangul: "ㅁ", romanization: "m", meaning: "like 'm' in mom", example: "마", exampleTranslation: "ma" },
-      { hangul: "ㅂ", romanization: "b / p", meaning: "like 'b' in boy", example: "바", exampleTranslation: "ba" },
-      { hangul: "ㅅ", romanization: "s", meaning: "like 's' in see", example: "사", exampleTranslation: "sa" },
-      { hangul: "ㅇ", romanization: "(silent) / ng", meaning: "silent at the start; 'ng' at the end", example: "아", exampleTranslation: "a" },
-      { hangul: "ㅈ", romanization: "j", meaning: "like 'j' in jump", example: "자", exampleTranslation: "ja" },
+      {
+        hangul: "ㄱ",
+        romanization: "g / k",
+        meaning: "soft g, like 'g' in go",
+        example: "가",
+        exampleTranslation: "ga",
+      },
+      {
+        hangul: "ㄴ",
+        romanization: "n",
+        meaning: "like 'n' in no",
+        example: "나",
+        exampleTranslation: "na",
+      },
+      {
+        hangul: "ㄷ",
+        romanization: "d / t",
+        meaning: "like 'd' in do",
+        example: "다",
+        exampleTranslation: "da",
+      },
+      {
+        hangul: "ㄹ",
+        romanization: "r / l",
+        meaning: "between 'r' and 'l'",
+        example: "라",
+        exampleTranslation: "ra",
+      },
+      {
+        hangul: "ㅁ",
+        romanization: "m",
+        meaning: "like 'm' in mom",
+        example: "마",
+        exampleTranslation: "ma",
+      },
+      {
+        hangul: "ㅂ",
+        romanization: "b / p",
+        meaning: "like 'b' in boy",
+        example: "바",
+        exampleTranslation: "ba",
+      },
+      {
+        hangul: "ㅅ",
+        romanization: "s",
+        meaning: "like 's' in see",
+        example: "사",
+        exampleTranslation: "sa",
+      },
+      {
+        hangul: "ㅇ",
+        romanization: "(silent) / ng",
+        meaning: "silent at the start; 'ng' at the end",
+        example: "아",
+        exampleTranslation: "a",
+      },
+      {
+        hangul: "ㅈ",
+        romanization: "j",
+        meaning: "like 'j' in jump",
+        example: "자",
+        exampleTranslation: "ja",
+      },
     ],
     exercises: [
       {
@@ -314,7 +405,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
         prompt: "Which consonant is silent at the start of a syllable?",
         options: ["ㄴ", "ㅇ", "ㅁ", "ㅅ"],
         answerIndex: 1,
-        explanation: "ㅇ is a placeholder at the start (아 = 'a'), and sounds 'ng' at the end of a syllable.",
+        explanation:
+          "ㅇ is a placeholder at the start (아 = 'a'), and sounds 'ng' at the end of a syllable.",
       },
       {
         id: "alpha-2-e2",
@@ -346,10 +438,34 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
     intro:
       "Hangul groups letters into square syllable blocks. A vertical vowel (ㅏㅓㅣ) goes to the right of the consonant; a horizontal vowel (ㅗㅜㅡ) goes below it. A third letter at the bottom is the 받침 (final consonant).",
     cards: [
-      { hangul: "안", romanization: "an", meaning: "ㅇ + ㅏ + ㄴ — consonant, vowel, final", example: "안녕", exampleTranslation: "hi (annyeong)" },
-      { hangul: "녕", romanization: "nyeong", meaning: "ㄴ + ㅕ + ㅇ — final ㅇ sounds 'ng'", example: "안녕", exampleTranslation: "hi" },
-      { hangul: "고", romanization: "go", meaning: "ㄱ + ㅗ — horizontal vowel sits below", example: "고기", exampleTranslation: "meat" },
-      { hangul: "기", romanization: "gi", meaning: "ㄱ + ㅣ — vertical vowel sits to the right", example: "고기", exampleTranslation: "meat" },
+      {
+        hangul: "안",
+        romanization: "an",
+        meaning: "ㅇ + ㅏ + ㄴ — consonant, vowel, final",
+        example: "안녕",
+        exampleTranslation: "hi (annyeong)",
+      },
+      {
+        hangul: "녕",
+        romanization: "nyeong",
+        meaning: "ㄴ + ㅕ + ㅇ — final ㅇ sounds 'ng'",
+        example: "안녕",
+        exampleTranslation: "hi",
+      },
+      {
+        hangul: "고",
+        romanization: "go",
+        meaning: "ㄱ + ㅗ — horizontal vowel sits below",
+        example: "고기",
+        exampleTranslation: "meat",
+      },
+      {
+        hangul: "기",
+        romanization: "gi",
+        meaning: "ㄱ + ㅣ — vertical vowel sits to the right",
+        example: "고기",
+        exampleTranslation: "meat",
+      },
     ],
     exercises: [
       {
@@ -358,7 +474,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
         prompt: "Where does a horizontal vowel like ㅗ go relative to its consonant?",
         options: ["To the right", "Below it", "Above it", "It stands alone"],
         answerIndex: 1,
-        explanation: "Horizontal vowels (ㅗㅜㅡ) are written below the consonant; vertical ones (ㅏㅓㅣ) go to the right.",
+        explanation:
+          "Horizontal vowels (ㅗㅜㅡ) are written below the consonant; vertical ones (ㅏㅓㅣ) go to the right.",
       },
       {
         id: "alpha-3-e2",
@@ -432,10 +549,12 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "alpha-4-e2",
         type: "multiple-choice",
-        prompt: "Which pair is commonly very similar in modern pronunciation but remains different in spelling?",
+        prompt:
+          "Which pair is commonly very similar in modern pronunciation but remains different in spelling?",
         options: ["ㅏ / ㅓ", "ㅗ / ㅜ", "ㅐ / ㅔ", "ㅑ / ㅠ"],
         answerIndex: 2,
-        explanation: "ㅐ and ㅔ are separate letters, though many speakers pronounce them similarly.",
+        explanation:
+          "ㅐ and ㅔ are separate letters, though many speakers pronounce them similarly.",
       },
       {
         id: "alpha-4-e3",
@@ -565,7 +684,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "ㅢ",
         romanization: "ui",
-        meaning: "A vowel whose pronunciation changes by position; begin with a smooth eu-to-i sound.",
+        meaning:
+          "A vowel whose pronunciation changes by position; begin with a smooth eu-to-i sound.",
         example: "의자",
         exampleTranslation: "chair",
         note: "You may hear 의 pronounced differently in particles or non-initial syllables; learn those patterns through words later.",
@@ -610,22 +730,66 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
     intro:
       "A consonant at the bottom of a syllable is called 받침. Although Korean can write many letters in this position, a syllable pronounced in isolation ends with only seven representative sounds: ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, or ㅇ. Release the final sound cleanly without adding an extra vowel.",
     cards: [
-      { hangul: "ㄱ sound", romanization: "k", meaning: "Final ㄱ, ㄲ, and ㅋ close to [ㄱ].", example: "책", exampleTranslation: "book" },
-      { hangul: "ㄴ sound", romanization: "n", meaning: "Final ㄴ keeps an n sound.", example: "산", exampleTranslation: "mountain" },
-      { hangul: "ㄷ sound", romanization: "t", meaning: "Final ㄷ, ㅅ, ㅆ, ㅈ, ㅊ, ㅌ, and often ㅎ close to [ㄷ].", example: "옷 [옫]", exampleTranslation: "clothes" },
-      { hangul: "ㄹ sound", romanization: "l", meaning: "Final ㄹ has an l-like sound.", example: "물", exampleTranslation: "water" },
-      { hangul: "ㅁ sound", romanization: "m", meaning: "Final ㅁ keeps an m sound.", example: "밤", exampleTranslation: "night; chestnut" },
-      { hangul: "ㅂ sound", romanization: "p", meaning: "Final ㅂ and ㅍ close to [ㅂ].", example: "앞 [압]", exampleTranslation: "front" },
-      { hangul: "ㅇ sound", romanization: "ng", meaning: "Final ㅇ has the ng sound.", example: "공", exampleTranslation: "ball; zero" },
+      {
+        hangul: "ㄱ sound",
+        romanization: "k",
+        meaning: "Final ㄱ, ㄲ, and ㅋ close to [ㄱ].",
+        example: "책",
+        exampleTranslation: "book",
+      },
+      {
+        hangul: "ㄴ sound",
+        romanization: "n",
+        meaning: "Final ㄴ keeps an n sound.",
+        example: "산",
+        exampleTranslation: "mountain",
+      },
+      {
+        hangul: "ㄷ sound",
+        romanization: "t",
+        meaning: "Final ㄷ, ㅅ, ㅆ, ㅈ, ㅊ, ㅌ, and often ㅎ close to [ㄷ].",
+        example: "옷 [옫]",
+        exampleTranslation: "clothes",
+      },
+      {
+        hangul: "ㄹ sound",
+        romanization: "l",
+        meaning: "Final ㄹ has an l-like sound.",
+        example: "물",
+        exampleTranslation: "water",
+      },
+      {
+        hangul: "ㅁ sound",
+        romanization: "m",
+        meaning: "Final ㅁ keeps an m sound.",
+        example: "밤",
+        exampleTranslation: "night; chestnut",
+      },
+      {
+        hangul: "ㅂ sound",
+        romanization: "p",
+        meaning: "Final ㅂ and ㅍ close to [ㅂ].",
+        example: "앞 [압]",
+        exampleTranslation: "front",
+      },
+      {
+        hangul: "ㅇ sound",
+        romanization: "ng",
+        meaning: "Final ㅇ has the ng sound.",
+        example: "공",
+        exampleTranslation: "ball; zero",
+      },
     ],
     exercises: [
       {
         id: "alpha-7-e1",
         type: "multiple-choice",
-        prompt: "How many representative consonant sounds can occur at the end of an isolated Korean syllable?",
+        prompt:
+          "How many representative consonant sounds can occur at the end of an isolated Korean syllable?",
         options: ["5", "7", "14", "19"],
         answerIndex: 1,
-        explanation: "Final spellings reduce to seven representative sounds: ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, and ㅇ.",
+        explanation:
+          "Final spellings reduce to seven representative sounds: ㄱ, ㄴ, ㄷ, ㄹ, ㅁ, ㅂ, and ㅇ.",
       },
       {
         id: "alpha-7-e2",
@@ -667,7 +831,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "옷을 → [오슬]",
         romanization: "oseul",
-        meaning: "Before a vowel, the written final consonant keeps its underlying sound and moves across.",
+        meaning:
+          "Before a vowel, the written final consonant keeps its underlying sound and moves across.",
         example: "옷을 사요.",
         exampleTranslation: "I buy clothes.",
       },
@@ -969,7 +1134,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "장소 + 에 있어요/없어요",
         romanization: "jangso + e isseoyo/eopseoyo",
-        meaning: "에 marks where a person or thing exists; 있어요 means there is/has, 없어요 means there isn't/doesn't have.",
+        meaning:
+          "에 marks where a person or thing exists; 있어요 means there is/has, 없어요 means there isn't/doesn't have.",
         example: "책이 책상 위에 있어요.",
         exampleTranslation: "The book is on the desk.",
       },
@@ -1035,7 +1201,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-(으)ㄴ/는 것 같아요",
         romanization: "-(eu)n/neun geot gatayo",
-        meaning: "I think… / it seems…. Softens an opinion. Verb + 는 것 같아요; descriptive or past + -(으)ㄴ 것 같아요.",
+        meaning:
+          "I think… / it seems…. Softens an opinion. Verb + 는 것 같아요; descriptive or past + -(으)ㄴ 것 같아요.",
         example: "이 버그는 캐시 문제인 것 같아요.",
         exampleTranslation: "I think this bug is a cache issue.",
         note: "Great for meetings — sounds less blunt than stating it as fact.",
@@ -1043,14 +1210,16 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-게 됐어요",
         romanization: "-ge dwaesseoyo",
-        meaning: "I ended up / came to (do). Marks a change of situation, often outside your control.",
+        meaning:
+          "I ended up / came to (do). Marks a change of situation, often outside your control.",
         example: "이 팀에서 일하게 됐어요.",
         exampleTranslation: "I ended up working on this team.",
       },
       {
         hangul: "-아/어 본 적이 있어요",
         romanization: "-a/eo bon jeogi isseoyo",
-        meaning: "I have (ever) done…, talking about experience. Attach 본 적이 있어요 to the -아/어 form.",
+        meaning:
+          "I have (ever) done…, talking about experience. Attach 본 적이 있어요 to the -아/어 form.",
         example: "코드 리뷰를 해 본 적이 있어요.",
         exampleTranslation: "I've done code review before.",
         note: "Negative: -아/어 본 적이 없어요 = 'I've never…'.",
@@ -1091,7 +1260,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-5-e3",
         type: "type-answer",
-        prompt: "Complete: 백엔드 개발자가 되___ 싶어요 (I want to become a backend developer). Type the ending.",
+        prompt:
+          "Complete: 백엔드 개발자가 되___ 싶어요 (I want to become a backend developer). Type the ending.",
         answer: "고",
         explanation: "Verb stem + 고 싶어요 expresses desire → 되고 싶어요.",
       },
@@ -1141,7 +1311,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-거든요",
         romanization: "-geodeunyo",
-        meaning: "…you see / it's because…. Gives a reason or background the listener didn't know yet.",
+        meaning:
+          "…you see / it's because…. Gives a reason or background the listener didn't know yet.",
         example: "어제 늦게까지 일했거든요.",
         exampleTranslation: "(It's because) I worked late yesterday, you see.",
         note: "Conversational — explains the situation behind what you just said.",
@@ -1167,7 +1338,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-6-e3",
         type: "type-answer",
-        prompt: "Complete: 버그를 먼저 고쳐___ 돼요 (I have to fix the bug first). Type the ending.",
+        prompt:
+          "Complete: 버그를 먼저 고쳐___ 돼요 (I have to fix the bug first). Type the ending.",
         answer: "야",
         explanation: "-아/어야 돼요 expresses obligation → 고쳐야 돼요.",
       },
@@ -1279,7 +1451,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "한 · 두 · 세 · 네 · 스무",
         romanization: "han · du · se · ne · seumu",
-        meaning: "Shortened forms used directly before a counter — only 1, 2, 3, 4, and 20 change shape.",
+        meaning:
+          "Shortened forms used directly before a counter — only 1, 2, 3, 4, and 20 change shape.",
         example: "사과 두 개",
         exampleTranslation: "two apples (개 = general counter)",
       },
@@ -1347,7 +1520,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-(스)ㅂ니다",
         romanization: "-(seu)mnida",
-        meaning: "Formal-polite ending for the office, reports, and presentations. Vowel stem → -ㅂ니다; consonant stem → -습니다.",
+        meaning:
+          "Formal-polite ending for the office, reports, and presentations. Vowel stem → -ㅂ니다; consonant stem → -습니다.",
         example: "가다 → 갑니다 · 먹다 → 먹습니다",
         exampleTranslation: "goes / eats (formal)",
         note: "Question form swaps 다 for 까? → 갑니까? 먹습니까?",
@@ -1355,7 +1529,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-았/었어요",
         romanization: "-at/eosseoyo",
-        meaning: "Past tense. Same vowel rule as 요-form, with ㅆ added: ㅏ/ㅗ → 았어요, otherwise → 었어요; 하다 → 했어요.",
+        meaning:
+          "Past tense. Same vowel rule as 요-form, with ㅆ added: ㅏ/ㅗ → 았어요, otherwise → 었어요; 하다 → 했어요.",
         example: "가다 → 갔어요 · 먹다 → 먹었어요",
         exampleTranslation: "went / ate",
       },
@@ -1572,10 +1747,12 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-12-e1",
         type: "multiple-choice",
-        prompt: "Which pattern says you've never learned a skill at all (not just 'not possible right now')?",
+        prompt:
+          "Which pattern says you've never learned a skill at all (not just 'not possible right now')?",
         options: ["-(으)ㄹ 수 없어요", "-(으)ㄹ 줄 몰라요", "-지 않아요", "-(으)면 안 돼요"],
         answerIndex: 1,
-        explanation: "-(으)ㄹ 줄 몰라요 means you never learned how — a skill gap, not a one-time obstacle.",
+        explanation:
+          "-(으)ㄹ 줄 몰라요 means you never learned how — a skill gap, not a one-time obstacle.",
       },
       {
         id: "grammar-12-e2",
@@ -1583,12 +1760,14 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
         prompt: "Complete: 저는 자바스크립트를 ___ 있어요 (I can code in JavaScript).",
         options: ["할 수", "할 줄", "하고", "해야"],
         answerIndex: 0,
-        explanation: "Verb stem + -(으)ㄹ 수 있어요 expresses general ability/possibility → 할 수 있어요.",
+        explanation:
+          "Verb stem + -(으)ㄹ 수 있어요 expresses general ability/possibility → 할 수 있어요.",
       },
       {
         id: "grammar-12-e3",
         type: "type-answer",
-        prompt: "Complete: 오늘은 회의에 갈 수 ___ (I can't go to the meeting today). Type the missing word.",
+        prompt:
+          "Complete: 오늘은 회의에 갈 수 ___ (I can't go to the meeting today). Type the missing word.",
         answer: "없어요",
         explanation: "-(으)ㄹ 수 없어요 is the negative of -(으)ㄹ 수 있어요.",
       },
@@ -1610,7 +1789,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-고",
         romanization: "-go",
-        meaning: "And (then). Lists actions or states in order. Attach directly to the verb/adjective stem.",
+        meaning:
+          "And (then). Lists actions or states in order. Attach directly to the verb/adjective stem.",
         example: "코드를 작성하고 테스트를 했어요.",
         exampleTranslation: "I wrote the code and (then) tested it.",
       },
@@ -1624,7 +1804,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-(으)ㄴ/는데",
         romanization: "-(eu)n/neunde",
-        meaning: "Background/setup for what comes next — softer than -지만, often just connecting context, not a hard contrast.",
+        meaning:
+          "Background/setup for what comes next — softer than -지만, often just connecting context, not a hard contrast.",
         example: "지금 회의 중인데 나중에 다시 전화할게요.",
         exampleTranslation: "I'm in a meeting right now, so I'll call you back later.",
         note: "Verb + 는데; descriptive/past + -(으)ㄴ데. Very common in spoken Korean.",
@@ -1650,7 +1831,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-13-e3",
         type: "type-answer",
-        prompt: "Complete: 지금 회의 중인___ 나중에 다시 전화할게요 (I'm in a meeting, so I'll call back later). Type the ending.",
+        prompt:
+          "Complete: 지금 회의 중인___ 나중에 다시 전화할게요 (I'm in a meeting, so I'll call back later). Type the ending.",
         answer: "데",
         explanation: "-(으)ㄴ데 (here 중인데) sets up background before the main point.",
       },
@@ -1672,14 +1854,16 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-아/어서",
         romanization: "-a/eoseo",
-        meaning: "Because… (so…). States a reason for a fact or feeling. Cannot be followed by a command/suggestion.",
+        meaning:
+          "Because… (so…). States a reason for a fact or feeling. Cannot be followed by a command/suggestion.",
         example: "배포에 실패해서 다시 확인하고 있어요.",
         exampleTranslation: "Because the deployment failed, I'm checking it again.",
       },
       {
         hangul: "-(으)니까",
         romanization: "-(eu)nikka",
-        meaning: "Because… (so let's/please…). States a reason, and CAN be followed by a command, request, or suggestion.",
+        meaning:
+          "Because… (so let's/please…). States a reason, and CAN be followed by a command, request, or suggestion.",
         example: "버그를 찾았으니까 지금 고칠게요.",
         exampleTranslation: "Since I found the bug, I'll fix it now.",
         note: "Use -(으)니까, not -아/어서, right before a command/suggestion: 늦었으니까 빨리 가요 (It's late, so let's go quickly) — 늦어서 빨리 가요 would be wrong.",
@@ -1697,7 +1881,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-14-e2",
         type: "multiple-choice",
-        prompt: "Complete: 배포에 실패___ 다시 확인하고 있어요 (Because the deployment failed, I'm checking again).",
+        prompt:
+          "Complete: 배포에 실패___ 다시 확인하고 있어요 (Because the deployment failed, I'm checking again).",
         options: ["해서", "하니까", "하지만", "하는데"],
         answerIndex: 0,
         explanation: "-아/어서 states the reason for a fact (no command follows) → 실패해서.",
@@ -1705,9 +1890,11 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-14-e3",
         type: "type-answer",
-        prompt: "Complete: 버그를 찾았___ 지금 고칠게요 (Since I found the bug, I'll fix it now). Type the ending.",
+        prompt:
+          "Complete: 버그를 찾았___ 지금 고칠게요 (Since I found the bug, I'll fix it now). Type the ending.",
         answer: "으니까",
-        explanation: "-(으)니까 is the natural choice right before 'I'll fix it now' (a stated intention/suggestion).",
+        explanation:
+          "-(으)니까 is the natural choice right before 'I'll fix it now' (a stated intention/suggestion).",
       },
     ],
   },
@@ -1727,14 +1914,16 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-(으)면",
         romanization: "-(eu)myeon",
-        meaning: "If / when (do/is). Verb/adjective stem + -(으)면; vowel-ending stems take 면, consonant-ending stems take 으면.",
+        meaning:
+          "If / when (do/is). Verb/adjective stem + -(으)면; vowel-ending stems take 면, consonant-ending stems take 으면.",
         example: "시간이 있으면 코드 리뷰를 해 주세요.",
         exampleTranslation: "If you have time, please review the code.",
       },
       {
         hangul: "-(으)면 좋겠어요",
         romanization: "-(eu)myeon jokesseoyo",
-        meaning: "I wish / it would be nice if…. -(으)면 + 좋겠어요 — a softer, hopeful version of a condition.",
+        meaning:
+          "I wish / it would be nice if…. -(으)면 + 좋겠어요 — a softer, hopeful version of a condition.",
         example: "버그가 빨리 고쳐지면 좋겠어요.",
         exampleTranslation: "I wish the bug would get fixed soon.",
       },
@@ -1751,7 +1940,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-15-e2",
         type: "multiple-choice",
-        prompt: "Complete: 시간이 있___ 코드 리뷰를 해 주세요 (If you have time, please review the code).",
+        prompt:
+          "Complete: 시간이 있___ 코드 리뷰를 해 주세요 (If you have time, please review the code).",
         options: ["고", "으면", "지만", "으니까"],
         answerIndex: 1,
         explanation: "있다 ends in a consonant stem (있) → -으면 → 있으면.",
@@ -1759,7 +1949,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-15-e3",
         type: "type-answer",
-        prompt: "Complete: 버그가 빨리 고쳐지___ 좋겠어요 (I wish the bug would get fixed soon). Type the ending.",
+        prompt:
+          "Complete: 버그가 빨리 고쳐지___ 좋겠어요 (I wish the bug would get fixed soon). Type the ending.",
         answer: "면",
         explanation: "고쳐지다 ends in a vowel → -면 (not -으면) → 고쳐지면.",
       },
@@ -1781,14 +1972,16 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-(으)ㄹ까요?",
         romanization: "-(eu)lkkayo?",
-        meaning: "Shall we…? / Do you think…? Verb stem + -(으)ㄹ까요? — proposes an idea or asks for the listener's guess/opinion.",
+        meaning:
+          "Shall we…? / Do you think…? Verb stem + -(으)ㄹ까요? — proposes an idea or asks for the listener's guess/opinion.",
         example: "이 이슈는 내일 같이 볼까요?",
         exampleTranslation: "Shall we look at this issue together tomorrow?",
       },
       {
         hangul: "-(으)ㅂ시다",
         romanization: "-(eu)bsida",
-        meaning: "Let's (do). A more direct suggestion than -(으)ㄹ까요?, common in formal/group settings like meetings.",
+        meaning:
+          "Let's (do). A more direct suggestion than -(으)ㄹ까요?, common in formal/group settings like meetings.",
         example: "이번 스프린트는 여기서 마칩시다.",
         exampleTranslation: "Let's wrap up this sprint here.",
         note: "Less common between close friends — 같이 -아/어요 ('let's… together') feels more casual.",
@@ -1796,7 +1989,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "-죠?",
         romanization: "-jyo?",
-        meaning: "…right? / isn't it? Adds to a statement to check the listener agrees, expecting 'yes'.",
+        meaning:
+          "…right? / isn't it? Adds to a statement to check the listener agrees, expecting 'yes'.",
         example: "이 방법이 더 빠르죠?",
         exampleTranslation: "This way is faster, right?",
       },
@@ -1813,7 +2007,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         id: "grammar-16-e2",
         type: "multiple-choice",
-        prompt: "Complete the meeting wrap-up: 이번 스프린트는 여기서 ___ (Let's wrap up this sprint here).",
+        prompt:
+          "Complete the meeting wrap-up: 이번 스프린트는 여기서 ___ (Let's wrap up this sprint here).",
         options: ["마칠까요", "마칩시다", "마치죠", "마치고"],
         answerIndex: 1,
         explanation: "-(으)ㅂ시다 makes a direct group suggestion → 마칩시다.",
@@ -1843,7 +2038,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "시",
         romanization: "si",
-        meaning: "o'clock / hour. Attaches to a native number (shortened form): 한 시, 두 시, 세 시... 열두 시.",
+        meaning:
+          "o'clock / hour. Attaches to a native number (shortened form): 한 시, 두 시, 세 시... 열두 시.",
         example: "지금 몇 시예요? — 한 시예요.",
         exampleTranslation: "What time is it now? — It's one o'clock.",
         note: "시 always takes native numbers, never Sino — 일 시 is wrong.",
@@ -1866,7 +2062,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
       {
         hangul: "오전 / 오후",
         romanization: "ojeon / ohu",
-        meaning: "AM / PM. Placed before the hour, since Korean doesn't use a 12-hour clock by default.",
+        meaning:
+          "AM / PM. Placed before the hour, since Korean doesn't use a 12-hour clock by default.",
         example: "회의는 오후 두 시예요.",
         exampleTranslation: "The meeting is at 2 PM.",
       },
@@ -1878,7 +2075,8 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
         prompt: "Which number system does 시 (o'clock) use?",
         options: ["Sino-Korean", "Native Korean", "Either, freely", "Neither — it's irregular"],
         answerIndex: 1,
-        explanation: "시 always takes native numbers (한 시, 두 시...), while 분 always takes Sino-Korean.",
+        explanation:
+          "시 always takes native numbers (한 시, 두 시...), while 분 always takes Sino-Korean.",
       },
       {
         id: "grammar-17-e2",
@@ -1900,7 +2098,9 @@ export const FOUNDATIONS_SEED: LessonDetail[] = [
 ]
 
 export function seedLessonsByTrack(track: LearnTrack): LessonDetail[] {
-  return FOUNDATIONS_SEED.filter((lesson) => lesson.track === track).sort((a, b) => a.order - b.order)
+  return FOUNDATIONS_SEED.filter((lesson) => lesson.track === track).sort(
+    (a, b) => a.order - b.order,
+  )
 }
 
 export function seedLessonById(id: string): LessonDetail | undefined {

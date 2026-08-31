@@ -23,7 +23,8 @@ function fakeInsertSpy(result: { data: unknown; error: unknown } = { data: null,
   }
   builder.single = () => Promise.resolve(result)
   builder.maybeSingle = () => Promise.resolve(result)
-  builder.then = (onResolve: (v: typeof result) => unknown) => Promise.resolve(result).then(onResolve)
+  builder.then = (onResolve: (v: typeof result) => unknown) =>
+    Promise.resolve(result).then(onResolve)
   return { builder, rows }
 }
 
@@ -36,7 +37,12 @@ describe("instrumentedTool", () => {
   it("runs the handler and reports success to both kori_ai_usage and kori_mcp_audit", async () => {
     const usage = fakeInsertSpy()
     const audit = fakeInsertSpy()
-    const ctx = fakeContext(fakeDb({ kori_ai_usage: usage.builder as ReturnType<typeof fakeQuery>, kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery> }))
+    const ctx = fakeContext(
+      fakeDb({
+        kori_ai_usage: usage.builder as ReturnType<typeof fakeQuery>,
+        kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery>,
+      }),
+    )
     okHandler.mockClear()
 
     const wrapped = instrumentedTool(ctx, "read", "list_goals", okHandler)
@@ -48,7 +54,12 @@ describe("instrumentedTool", () => {
     // the "mcp.<tool>" feature name, or the bucket never fills and the limit
     // is a no-op.
     expect(usage.rows).toHaveLength(1)
-    expect(usage.rows[0]).toMatchObject({ user_id: "user-1", feature: "mcp.list_goals", model: "mcp", success: true })
+    expect(usage.rows[0]).toMatchObject({
+      user_id: "user-1",
+      feature: "mcp.list_goals",
+      model: "mcp",
+      success: true,
+    })
     expect(audit.rows).toHaveLength(1)
     expect(audit.rows[0]).toMatchObject({
       user_id: "user-1",
@@ -64,7 +75,12 @@ describe("instrumentedTool", () => {
     // count >= limit (mcp_read is 200/day) trips checkRateLimit's !allowed branch.
     const exhausted = fakeQuery({ data: [], error: null, count: 200 })
     const audit = fakeInsertSpy()
-    const ctx = fakeContext(fakeDb({ kori_ai_usage: exhausted, kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery> }))
+    const ctx = fakeContext(
+      fakeDb({
+        kori_ai_usage: exhausted,
+        kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery>,
+      }),
+    )
     okHandler.mockClear()
 
     const wrapped = instrumentedTool(ctx, "read", "list_goals", okHandler)
@@ -79,7 +95,7 @@ describe("instrumentedTool", () => {
   it("never leaks a thrown error's message to the client — only a fixed sentence plus the request id", async () => {
     const ctx = fakeContext(fakeDb({}))
     const throwingHandler = vi.fn(async (): Promise<never> => {
-      throw new Error("relation \"kori_super_secret_internal_table\" does not exist")
+      throw new Error('relation "kori_super_secret_internal_table" does not exist')
     })
 
     const wrapped = instrumentedTool(ctx, "write", "create_task", throwingHandler)
@@ -93,16 +109,40 @@ describe("instrumentedTool", () => {
   it("audit and usage rows carry only shape — never a token, header, or arbitrary field a future edit might add", async () => {
     const usage = fakeInsertSpy()
     const audit = fakeInsertSpy()
-    const ctx = fakeContext(fakeDb({ kori_ai_usage: usage.builder as ReturnType<typeof fakeQuery>, kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery> }))
+    const ctx = fakeContext(
+      fakeDb({
+        kori_ai_usage: usage.builder as ReturnType<typeof fakeQuery>,
+        kori_mcp_audit: audit.builder as ReturnType<typeof fakeQuery>,
+      }),
+    )
     okHandler.mockClear()
 
     await instrumentedTool(ctx, "read", "list_goals", okHandler)({})
 
     expect(Object.keys(usage.rows[0]).sort()).toEqual(
-      ["user_id", "feature", "model", "input_tokens", "output_tokens", "total_tokens", "latency_ms", "success", "error_code"].sort(),
+      [
+        "user_id",
+        "feature",
+        "model",
+        "input_tokens",
+        "output_tokens",
+        "total_tokens",
+        "latency_ms",
+        "success",
+        "error_code",
+      ].sort(),
     )
     expect(Object.keys(audit.rows[0]).sort()).toEqual(
-      ["user_id", "client_id", "tool_name", "kind", "success", "error_code", "duration_ms", "request_id"].sort(),
+      [
+        "user_id",
+        "client_id",
+        "tool_name",
+        "kind",
+        "success",
+        "error_code",
+        "duration_ms",
+        "request_id",
+      ].sort(),
     )
   })
 })

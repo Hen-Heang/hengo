@@ -57,8 +57,7 @@ afterEach(cleanup)
 
 // A task after "Move to backlog": tasksApi.moveToBacklog keeps start/end_date
 // and only nulls the time slot, so `taskDueDate` still returns a day.
-const backlogged = () =>
-  task({ is_anytime: true, daily_start_time: null, daily_end_time: null })
+const backlogged = () => task({ is_anytime: true, daily_start_time: null, daily_end_time: null })
 
 describe("GoalTaskRow — schedule labelling", () => {
   it("is the exact shape moveToBacklog produces", () => {
@@ -119,7 +118,10 @@ describe("GoalTaskRow — status must match stored state", () => {
   it.each(["card", "row"] as const)(
     "never calls a completed past-due task overdue on %s",
     (variant) => {
-      renderRow(task({ start_date: "2026-07-20", end_date: "2026-07-20", completed: true }), variant)
+      renderRow(
+        task({ start_date: "2026-07-20", end_date: "2026-07-20", completed: true }),
+        variant,
+      )
       const text = rowText()
       expect(text).not.toContain("Overdue")
       expect(text).toContain("Completed")

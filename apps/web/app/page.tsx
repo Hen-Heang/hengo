@@ -29,7 +29,8 @@ import { isAuthenticated } from "@/lib/auth-store"
 const features = [
   {
     title: "AI Korean Coach",
-    description: "Ask anything in English and get natural Korean back — grammar, politeness levels, and real workplace phrasing, 24/7.",
+    description:
+      "Ask anything in English and get natural Korean back — grammar, politeness levels, and real workplace phrasing, 24/7.",
     icon: MessageSquareText,
     color: "from-sky-500/20 to-blue-500/10",
     iconColor: "text-sky-600 dark:text-sky-400",
@@ -37,7 +38,8 @@ const features = [
   },
   {
     title: "Workplace Scenarios",
-    description: "Role-play standups, code reviews, and team meetings — the situations you actually face on a Korean dev team.",
+    description:
+      "Role-play standups, code reviews, and team meetings — the situations you actually face on a Korean dev team.",
     icon: Drama,
     color: "from-rose-500/20 to-pink-500/10",
     iconColor: "text-rose-600 dark:text-rose-400",
@@ -45,7 +47,8 @@ const features = [
   },
   {
     title: "Developer Vocabulary",
-    description: "Spaced-repetition decks with audio, tuned to technical and on-the-job terms so the right word sticks.",
+    description:
+      "Spaced-repetition decks with audio, tuned to technical and on-the-job terms so the right word sticks.",
     icon: BookOpenCheck,
     color: "from-amber-500/20 to-orange-500/10",
     iconColor: "text-amber-600 dark:text-amber-400",
@@ -53,7 +56,8 @@ const features = [
   },
   {
     title: "Foundations",
-    description: "Build from Hangul up — grammar and core patterns explained for engineers who like things structured.",
+    description:
+      "Build from Hangul up — grammar and core patterns explained for engineers who like things structured.",
     icon: Languages,
     color: "from-emerald-500/20 to-teal-500/10",
     iconColor: "text-emerald-600 dark:text-emerald-400",
@@ -61,7 +65,8 @@ const features = [
   },
   {
     title: "Listening & Reading",
-    description: "Train your ear with audio drills and read bite-size passages graded to your level.",
+    description:
+      "Train your ear with audio drills and read bite-size passages graded to your level.",
     icon: Headphones,
     color: "from-indigo-500/20 to-blue-500/10",
     iconColor: "text-indigo-600 dark:text-indigo-400",
@@ -69,7 +74,8 @@ const features = [
   },
   {
     title: "Exam & Interview Prep",
-    description: "Rehearse Korean tech interviews and exam-style questions with instant, actionable feedback.",
+    description:
+      "Rehearse Korean tech interviews and exam-style questions with instant, actionable feedback.",
     icon: GraduationCap,
     color: "from-violet-500/20 to-purple-500/10",
     iconColor: "text-violet-600 dark:text-violet-400",
@@ -77,7 +83,8 @@ const features = [
   },
   {
     title: "Daily Phrase & Dev Notes",
-    description: "A fresh phrase every day, plus your own notebook to save words and corrections as you go.",
+    description:
+      "A fresh phrase every day, plus your own notebook to save words and corrections as you go.",
     icon: BookOpenText,
     color: "from-cyan-500/20 to-sky-500/10",
     iconColor: "text-cyan-600 dark:text-cyan-400",
@@ -85,7 +92,8 @@ const features = [
   },
   {
     title: "Goals & Dashboard",
-    description: "Set learning goals, break them into daily to-dos, and keep your streak on a focused dashboard.",
+    description:
+      "Set learning goals, break them into daily to-dos, and keep your streak on a focused dashboard.",
     icon: Target,
     color: "from-blue-500/20 to-indigo-500/10",
     iconColor: "text-blue-600 dark:text-blue-400",
@@ -97,7 +105,8 @@ const processSteps = [
   {
     step: "1",
     title: "Do real work",
-    description: "Chat with the AI coach, run workplace scenarios, and decode real messages from your Korean team.",
+    description:
+      "Chat with the AI coach, run workplace scenarios, and decode real messages from your Korean team.",
     icon: MessageSquareText,
     iconColor: "text-sky-600 dark:text-sky-400",
     iconBg: "bg-sky-100 dark:bg-sky-500/15",
@@ -105,7 +114,8 @@ const processSteps = [
   {
     step: "2",
     title: "Get AI feedback",
-    description: "Instant corrections, tone guidance, and natural alternatives for everything you write and say.",
+    description:
+      "Instant corrections, tone guidance, and natural alternatives for everything you write and say.",
     icon: Sparkles,
     iconColor: "text-violet-600 dark:text-violet-400",
     iconBg: "bg-violet-100 dark:bg-violet-500/15",
@@ -113,7 +123,8 @@ const processSteps = [
   {
     step: "3",
     title: "Everything syncs",
-    description: "One cloud for your data and AI — scripting, goals, and progress stay in sync between phone and PC.",
+    description:
+      "One cloud for your data and AI — scripting, goals, and progress stay in sync between phone and PC.",
     icon: Zap,
     iconColor: "text-emerald-600 dark:text-emerald-400",
     iconBg: "bg-emerald-100 dark:bg-emerald-500/15",
@@ -121,7 +132,8 @@ const processSteps = [
   {
     step: "4",
     title: "Personalized practice",
-    description: "Your mistakes become targeted drills and spaced-repetition reviews, so weak spots get fixed fast.",
+    description:
+      "Your mistakes become targeted drills and spaced-repetition reviews, so weak spots get fixed fast.",
     icon: Target,
     iconColor: "text-amber-600 dark:text-amber-400",
     iconBg: "bg-amber-100 dark:bg-amber-500/15",
@@ -129,7 +141,7 @@ const processSteps = [
 ]
 
 const chatMessages = [
-  { role: "you", text: "How do I say \"I finished the deployment\" in Korean?" },
+  { role: "you", text: 'How do I say "I finished the deployment" in Korean?' },
   {
     role: "ai",
     text: "배포 완료했습니다 ✓ — Natural & professional. 배포 = deployment, 완료 = completed.",
@@ -202,18 +214,25 @@ export default function Home() {
                   className="h-full w-full"
                 />
               </div>
-              <span className="text-lg font-bold tracking-tight text-foreground">
-                Hengo
-              </span>
+              <span className="text-lg font-bold tracking-tight text-foreground">Hengo</span>
             </Link>
 
             <div className="flex items-center gap-2">
               <ThemeToggle />
               <div className="hidden h-6 w-px bg-border/60 sm:block mx-2" />
-              <Button asChild size="sm" variant="ghost" className="hidden font-medium text-muted-foreground hover:text-foreground sm:inline-flex">
+              <Button
+                asChild
+                size="sm"
+                variant="ghost"
+                className="hidden font-medium text-muted-foreground hover:text-foreground sm:inline-flex"
+              >
                 <Link href="/login">Sign in</Link>
               </Button>
-              <Button asChild size="sm" className="rounded-full bg-blue-600 px-5 font-bold text-white hover:bg-blue-500 shadow-md">
+              <Button
+                asChild
+                size="sm"
+                className="rounded-full bg-blue-600 px-5 font-bold text-white hover:bg-blue-500 shadow-md"
+              >
                 <Link href="/register">Get started</Link>
               </Button>
             </div>
@@ -225,18 +244,24 @@ export default function Home() {
           <div className="mx-auto max-w-7xl">
             <div className="grid items-center gap-16 lg:grid-cols-2 lg:gap-20">
               {/* Left — copy */}
-              <motion.div 
+              <motion.div
                 initial="hidden"
                 animate="visible"
                 variants={containerVariants}
                 className="flex flex-col"
               >
-                <motion.div variants={itemVariants} className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 dark:text-blue-400">
+                <motion.div
+                  variants={itemVariants}
+                  className="inline-flex w-fit items-center gap-2 rounded-full border border-blue-500/20 bg-blue-500/10 px-4 py-1.5 text-xs font-bold uppercase tracking-wide text-blue-700 dark:text-blue-400"
+                >
                   <BrainCircuit size={14} strokeWidth={2.5} />
                   Workplace Korean for developers
                 </motion.div>
 
-                <motion.h1 variants={itemVariants} className="mt-6 text-[2.8rem] font-bold leading-[1.08] tracking-tight text-foreground sm:text-[4.2rem]">
+                <motion.h1
+                  variants={itemVariants}
+                  className="mt-6 text-[2.8rem] font-bold leading-[1.08] tracking-tight text-foreground sm:text-[4.2rem]"
+                >
                   Thrive on a Korean dev team. Learn the{" "}
                   <span className="relative inline-block">
                     <span className="bg-gradient-to-r from-blue-500 via-indigo-500 to-sky-500 bg-clip-text text-transparent">
@@ -251,14 +276,25 @@ export default function Home() {
                   </span>
                 </motion.h1>
 
-                <motion.p variants={itemVariants} className="mt-7 text-lg leading-relaxed text-muted-foreground sm:text-xl sm:leading-relaxed max-w-[520px]">
+                <motion.p
+                  variants={itemVariants}
+                  className="mt-7 text-lg leading-relaxed text-muted-foreground sm:text-xl sm:leading-relaxed max-w-[520px]"
+                >
                   Hengo is built for{" "}
-                  <span className="font-semibold text-foreground/80">foreign engineers in Korea</span>. Practice{" "}
-                  <span className="font-semibold text-foreground/80">standups and meetings</span> with an AI coach, drill{" "}
-                  <span className="font-semibold text-foreground/80">developer vocabulary</span>, and rehearse real workplace scenarios.
+                  <span className="font-semibold text-foreground/80">
+                    foreign engineers in Korea
+                  </span>
+                  . Practice{" "}
+                  <span className="font-semibold text-foreground/80">standups and meetings</span>{" "}
+                  with an AI coach, drill{" "}
+                  <span className="font-semibold text-foreground/80">developer vocabulary</span>,
+                  and rehearse real workplace scenarios.
                 </motion.p>
 
-                <motion.div variants={itemVariants} className="mt-10 flex flex-col gap-3 sm:flex-row">
+                <motion.div
+                  variants={itemVariants}
+                  className="mt-10 flex flex-col gap-3 sm:flex-row"
+                >
                   <Button
                     asChild
                     size="lg"
@@ -280,13 +316,20 @@ export default function Home() {
                 </motion.div>
 
                 {/* Stats row */}
-                <motion.div variants={itemVariants} className="mt-10 flex items-center gap-6 sm:gap-8">
+                <motion.div
+                  variants={itemVariants}
+                  className="mt-10 flex items-center gap-6 sm:gap-8"
+                >
                   {statsData.map((stat, i) => (
                     <div key={stat.label} className="flex items-center gap-4">
                       {i > 0 && <div className="h-8 w-px bg-border/60" />}
                       <div>
-                        <p className="text-2xl font-bold leading-none text-foreground">{stat.value}</p>
-                        <p className="mt-1 text-xs font-medium text-muted-foreground">{stat.label}</p>
+                        <p className="text-2xl font-bold leading-none text-foreground">
+                          {stat.value}
+                        </p>
+                        <p className="mt-1 text-xs font-medium text-muted-foreground">
+                          {stat.label}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -296,19 +339,23 @@ export default function Home() {
                 <motion.div variants={itemVariants} className="mt-8 flex items-center gap-3">
                   <div className="flex -space-x-2">
                     {["🇰🇭", "🇻🇳", "🇮🇩", "🇵🇭"].map((flag, i) => (
-                      <div key={i} className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-accent text-sm shadow-sm">
+                      <div
+                        key={i}
+                        className="flex h-8 w-8 items-center justify-center rounded-full border-2 border-background bg-accent text-sm shadow-sm"
+                      >
                         {flag}
                       </div>
                     ))}
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    <span className="font-semibold text-foreground">Developers across Asia</span> learning Korean for their jobs in Korea
+                    <span className="font-semibold text-foreground">Developers across Asia</span>{" "}
+                    learning Korean for their jobs in Korea
                   </p>
                 </motion.div>
               </motion.div>
 
               {/* Right — chat preview */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.9, x: 20 }}
                 animate={{ opacity: 1, scale: 1, x: 0 }}
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.4 }}
@@ -331,7 +378,9 @@ export default function Home() {
                     <p className="text-xs font-bold text-foreground">배포</p>
                     <p className="text-[11px] text-muted-foreground">deployment</p>
                   </div>
-                  <div className="ml-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-600">+2 XP</div>
+                  <div className="ml-1 rounded-full bg-blue-500/10 px-2 py-0.5 text-[11px] font-bold text-blue-600">
+                    +2 XP
+                  </div>
                 </motion.div>
 
                 {/* Floating streak chip */}
@@ -362,8 +411,12 @@ export default function Home() {
                             <Sparkles size={16} className="text-white" strokeWidth={2.5} />
                           </div>
                           <div>
-                            <p className="text-[13px] font-bold leading-none text-foreground">AI Coach</p>
-                            <p className="mt-1 text-[11px] font-medium text-blue-500">● Online now</p>
+                            <p className="text-[13px] font-bold leading-none text-foreground">
+                              AI Coach
+                            </p>
+                            <p className="mt-1 text-[11px] font-medium text-blue-500">
+                              ● Online now
+                            </p>
                           </div>
                         </div>
                         <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-2.5 py-1">
@@ -417,7 +470,10 @@ export default function Home() {
                       {/* Quick phrase chips */}
                       <div className="flex gap-2 overflow-x-auto px-5 pb-2 no-scrollbar">
                         {["오늘 배포했어요", "회의 중입니다", "잠깐만요"].map((phrase) => (
-                          <div key={phrase} className="shrink-0 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-400">
+                          <div
+                            key={phrase}
+                            className="shrink-0 rounded-full border border-blue-500/30 bg-blue-500/10 px-3 py-1.5 text-xs font-medium text-blue-700 dark:text-blue-400"
+                          >
                             {phrase}
                           </div>
                         ))}
@@ -445,7 +501,7 @@ export default function Home() {
         {/* Features */}
         <section className="relative px-4 py-24 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-7xl">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -456,10 +512,12 @@ export default function Home() {
                 One app, every tool
               </p>
               <h2 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                Everything you need for <span className="text-muted-foreground italic font-medium">workplace</span> Korean.
+                Everything you need for{" "}
+                <span className="text-muted-foreground italic font-medium">workplace</span> Korean.
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-                From an AI coach and workplace scenarios to developer vocabulary, listening, reading, and interview prep — Hengo covers the Korean you actually use on the job.
+                From an AI coach and workplace scenarios to developer vocabulary, listening,
+                reading, and interview prep — Hengo covers the Korean you actually use on the job.
               </p>
             </motion.div>
 
@@ -475,19 +533,25 @@ export default function Home() {
                     transition={{ duration: 0.5, delay: i * 0.1 }}
                     className="group relative h-full overflow-hidden rounded-3xl border border-border bg-card p-8 shadow-sm transition-all hover:-translate-y-2 hover:shadow-2xl hover:shadow-blue-500/10 dark:bg-slate-900/40"
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 transition-opacity duration-500 group-hover:opacity-100`} />
+                    <div
+                      className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 transition-opacity duration-500 group-hover:opacity-100`}
+                    />
                     <div className="relative">
-                      <div className={`inline-flex rounded-2xl ${feature.iconBg} p-4 shadow-sm ring-1 ring-border/50 group-hover:scale-110 transition-transform duration-500`}>
+                      <div
+                        className={`inline-flex rounded-2xl ${feature.iconBg} p-4 shadow-sm ring-1 ring-border/50 group-hover:scale-110 transition-transform duration-500`}
+                      >
                         <Icon size={24} strokeWidth={2} className={feature.iconColor} />
                       </div>
-                      <h3 className="mt-6 text-xl font-bold text-foreground">
-                        {feature.title}
-                      </h3>
+                      <h3 className="mt-6 text-xl font-bold text-foreground">{feature.title}</h3>
                       <p className="mt-3 text-[15px] leading-relaxed text-muted-foreground">
                         {feature.description}
                       </p>
                       <div className="mt-6 flex items-center gap-2 text-sm font-bold text-foreground/40 group-hover:text-foreground transition-colors">
-                        Learn more <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                        Learn more{" "}
+                        <ArrowRight
+                          size={14}
+                          className="group-hover:translate-x-1 transition-transform"
+                        />
                       </div>
                     </div>
                   </motion.div>
@@ -511,10 +575,13 @@ export default function Home() {
                 How it works
               </p>
               <h2 className="mt-4 text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
-                One loop, from <span className="text-muted-foreground italic font-medium">real work</span> to fluency.
+                One loop, from{" "}
+                <span className="text-muted-foreground italic font-medium">real work</span> to
+                fluency.
               </h2>
               <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground">
-                Do real work in Korean, get AI feedback, and let everything sync between your phone and PC — Hengo turns your mistakes into personalized practice.
+                Do real work in Korean, get AI feedback, and let everything sync between your phone
+                and PC — Hengo turns your mistakes into personalized practice.
               </p>
             </motion.div>
 
@@ -553,7 +620,9 @@ export default function Home() {
                       className="flex gap-5"
                     >
                       <div className="flex flex-col items-center">
-                        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.iconBg} shadow-sm ring-1 ring-border/50`}>
+                        <div
+                          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${step.iconBg} shadow-sm ring-1 ring-border/50`}
+                        >
                           <Icon size={22} strokeWidth={2} className={step.iconColor} />
                         </div>
                         {i < processSteps.length - 1 && (
@@ -594,9 +663,18 @@ export default function Home() {
                 </h2>
                 <div className="space-y-6">
                   {[
-                    { title: "Learn the Korean you'll actually use", desc: "Standup updates, code-review comments, and meeting phrases — not phrasebook small talk." },
-                    { title: "An AI coach that gets context", desc: "Ask in English, get natural Korean back with grammar, politeness levels, and examples — anytime." },
-                    { title: "Stay consistent with goals & streaks", desc: "Set learning goals, drill vocab with spaced repetition, and keep your streak on a focused dashboard." },
+                    {
+                      title: "Learn the Korean you'll actually use",
+                      desc: "Standup updates, code-review comments, and meeting phrases — not phrasebook small talk.",
+                    },
+                    {
+                      title: "An AI coach that gets context",
+                      desc: "Ask in English, get natural Korean back with grammar, politeness levels, and examples — anytime.",
+                    },
+                    {
+                      title: "Stay consistent with goals & streaks",
+                      desc: "Set learning goals, drill vocab with spaced repetition, and keep your streak on a focused dashboard.",
+                    },
                   ].map((benefit) => (
                     <div key={benefit.title} className="flex gap-4">
                       <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-blue-500/10 text-blue-600 mt-1">
@@ -620,8 +698,12 @@ export default function Home() {
                 <div className="relative flex h-full flex-col justify-between p-6 sm:p-8">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">This week</p>
-                      <p className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">Daily goal: 87%</p>
+                      <p className="text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                        This week
+                      </p>
+                      <p className="mt-1 text-2xl font-bold text-foreground sm:text-3xl">
+                        Daily goal: 87%
+                      </p>
                     </div>
                     <div className="flex items-center gap-1.5 rounded-full bg-amber-500/10 px-3 py-1.5">
                       <span className="text-sm">🔥</span>
@@ -668,7 +750,7 @@ export default function Home() {
         {/* Bottom CTA */}
         <section className="px-4 py-24 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-5xl">
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -683,7 +765,8 @@ export default function Home() {
                   Ready to speak Korean at work?
                 </h2>
                 <p className="mx-auto mt-6 max-w-xl text-lg text-slate-400">
-                  Practice with an AI coach, master developer vocabulary, and rehearse real workplace scenarios. Start free today, no card required.
+                  Practice with an AI coach, master developer vocabulary, and rehearse real
+                  workplace scenarios. Start free today, no card required.
                 </p>
                 <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
                   <Button
@@ -713,18 +796,26 @@ export default function Home() {
             <div className="flex flex-col items-center justify-between gap-8 sm:flex-row">
               <div className="flex items-center gap-3">
                 <div className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-xl shadow-md">
-                  <Image src="/hengo-icon.png" alt="" width={32} height={32} className="h-full w-full" />
+                  <Image
+                    src="/hengo-icon.png"
+                    alt=""
+                    width={32}
+                    height={32}
+                    className="h-full w-full"
+                  />
                 </div>
-                <span className="text-sm font-bold tracking-tight text-foreground">
-                  Hengo
-                </span>
+                <span className="text-sm font-bold tracking-tight text-foreground">Hengo</span>
                 <span className="text-xs text-muted-foreground ml-4">
                   © 2026 Hengo. All rights reserved.
                 </span>
               </div>
               <div className="flex items-center gap-6 text-sm font-medium text-muted-foreground">
-                <Link href="/privacy" className="hover:text-foreground transition-colors">Privacy</Link>
-                <Link href="/terms" className="hover:text-foreground transition-colors">Terms</Link>
+                <Link href="/privacy" className="hover:text-foreground transition-colors">
+                  Privacy
+                </Link>
+                <Link href="/terms" className="hover:text-foreground transition-colors">
+                  Terms
+                </Link>
                 <ThemeToggle />
               </div>
             </div>

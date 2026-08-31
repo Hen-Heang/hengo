@@ -35,11 +35,15 @@ describe("validateNoteInput", () => {
   })
 
   it("rejects an overlong title", () => {
-    expect(validateNoteInput({ title: "a".repeat(MAX_NOTE_TITLE_LENGTH + 1), content: "ok" }).title).toBeTruthy()
+    expect(
+      validateNoteInput({ title: "a".repeat(MAX_NOTE_TITLE_LENGTH + 1), content: "ok" }).title,
+    ).toBeTruthy()
   })
 
   it("rejects overlong content", () => {
-    expect(validateNoteInput({ title: "ok", content: "a".repeat(MAX_NOTE_CONTENT_LENGTH + 1) }).content).toBeTruthy()
+    expect(
+      validateNoteInput({ title: "ok", content: "a".repeat(MAX_NOTE_CONTENT_LENGTH + 1) }).content,
+    ).toBeTruthy()
   })
 
   it("accepts a note with no source URL", () => {
@@ -47,23 +51,42 @@ describe("validateNoteInput", () => {
   })
 
   it("accepts a valid http(s) source URL", () => {
-    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "https://example.com/docs" }).sourceUrl).toBeUndefined()
+    expect(
+      validateNoteInput({ title: "t", content: "c", sourceUrl: "https://example.com/docs" })
+        .sourceUrl,
+    ).toBeUndefined()
   })
 
   it("rejects a malformed source URL", () => {
-    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "not a url" }).sourceUrl).toBeTruthy()
+    expect(
+      validateNoteInput({ title: "t", content: "c", sourceUrl: "not a url" }).sourceUrl,
+    ).toBeTruthy()
   })
 
   it("rejects a non-http(s) source URL", () => {
-    expect(validateNoteInput({ title: "t", content: "c", sourceUrl: "javascript:alert(1)" }).sourceUrl).toBeTruthy()
+    expect(
+      validateNoteInput({ title: "t", content: "c", sourceUrl: "javascript:alert(1)" }).sourceUrl,
+    ).toBeTruthy()
   })
 })
 
 describe("filterNotesMeta", () => {
   const notes = [
     makeNote({ slug: "a", noteType: "technical", pinned: true, title: "Spring Boot notes" }),
-    makeNote({ slug: "b", noteType: "korean", pinned: false, title: "Workplace phrases", tags: ["office"] }),
-    makeNote({ slug: "c", noteType: "technical", pinned: false, title: "SQL indexes", description: "postgres" }),
+    makeNote({
+      slug: "b",
+      noteType: "korean",
+      pinned: false,
+      title: "Workplace phrases",
+      tags: ["office"],
+    }),
+    makeNote({
+      slug: "c",
+      noteType: "technical",
+      pinned: false,
+      title: "SQL indexes",
+      description: "postgres",
+    }),
   ]
 
   it("filters by note type", () => {
@@ -80,7 +103,9 @@ describe("filterNotesMeta", () => {
   })
 
   it("combines filters", () => {
-    expect(filterNotesMeta(notes, { noteType: "technical", pinnedOnly: true }).map((n) => n.slug)).toEqual(["a"])
+    expect(
+      filterNotesMeta(notes, { noteType: "technical", pinnedOnly: true }).map((n) => n.slug),
+    ).toEqual(["a"])
   })
 })
 

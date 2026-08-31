@@ -22,7 +22,11 @@ import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 export default function InboxPage() {
   useSessionTimer("inbox")
-  const [filters, setFilters] = useState<InboxFiltersValue>({ status: "inbox", type: "all", query: "" })
+  const [filters, setFilters] = useState<InboxFiltersValue>({
+    status: "inbox",
+    type: "all",
+    query: "",
+  })
 
   const { items, loading, error } = useInbox({
     status: filters.status,
@@ -32,13 +36,18 @@ export default function InboxPage() {
   const availableTags = useMemo(() => collectInboxTags(items), [items])
   const visible = useMemo(
     () => sortInboxItems(filterInboxItems(items, { query: filters.query })),
-    [items, filters.query]
+    [items, filters.query],
   )
 
   const inboxCount = items.filter((item) => item.status === "inbox").length
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-6 pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-6 pb-16"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Productivity"

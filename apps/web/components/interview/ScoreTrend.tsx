@@ -29,7 +29,7 @@ export function ScoreTrend({ records }: { records: ScorecardRecord[] }) {
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     () => true,
-    () => false
+    () => false,
   )
   if (!mounted || records.length === 0) return null
 
@@ -65,7 +65,7 @@ export function ScoreTrend({ records }: { records: ScorecardRecord[] }) {
                   ? "text-emerald-600 dark:text-emerald-400"
                   : delta < 0
                     ? "text-rose-600 dark:text-rose-400"
-                    : "text-muted-foreground"
+                    : "text-muted-foreground",
               )}
             >
               {delta > 0 ? (

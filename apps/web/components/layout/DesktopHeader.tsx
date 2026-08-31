@@ -37,7 +37,9 @@ export function DesktopHeader({
     <header className="sticky top-0 z-30 flex items-center justify-between gap-4 border-b border-border bg-background/90 px-6 py-3 backdrop-blur-sm">
       <div className="min-w-0">
         {crumbs.length > 0 && <BreadcrumbTrail items={crumbs} />}
-        <h1 className="truncate text-[15px] font-semibold tracking-tight text-foreground">{title}</h1>
+        <h1 className="truncate text-[15px] font-semibold tracking-tight text-foreground">
+          {title}
+        </h1>
         {item?.description && (
           <p className="truncate text-xs text-muted-foreground">{item.description}</p>
         )}

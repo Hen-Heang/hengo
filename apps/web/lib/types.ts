@@ -333,11 +333,7 @@ export interface RecoveryHabit {
 }
 
 export type TrackingMode =
-  | "abstinence"
-  | "frequency_reduction"
-  | "time_reduction"
-  | "personal_limit"
-  | "awareness"
+  "abstinence" | "frequency_reduction" | "time_reduction" | "personal_limit" | "awareness"
 
 export interface RecoveryBaseline {
   approximateFrequency?: number
@@ -668,7 +664,6 @@ export interface PhraseAttempt {
 export interface PhraseCardWithProgress extends PhraseCard {
   progress: PhraseProgress | null
 }
-
 
 export interface PhrasebookStats {
   cardsLearned: number

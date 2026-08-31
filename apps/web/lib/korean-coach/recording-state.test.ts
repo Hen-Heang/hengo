@@ -35,4 +35,3 @@ describe("recording state transitions", () => {
     )
   })
 })
-

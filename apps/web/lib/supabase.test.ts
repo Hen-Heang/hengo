@@ -1,9 +1,6 @@
 import { describe, expect, it } from "vitest"
 
-import {
-  SUPABASE_CONFIGURATION_MESSAGE,
-  resolveSupabaseClientConfig,
-} from "./supabase"
+import { SUPABASE_CONFIGURATION_MESSAGE, resolveSupabaseClientConfig } from "./supabase"
 
 describe("Supabase client configuration", () => {
   it("uses an inert valid client configuration when environment values are absent", () => {
@@ -15,10 +12,7 @@ describe("Supabase client configuration", () => {
 
   it("uses trimmed project values only when both are present", () => {
     expect(
-      resolveSupabaseClientConfig(
-        " https://example.supabase.co ",
-        " publishable-key ",
-      ),
+      resolveSupabaseClientConfig(" https://example.supabase.co ", " publishable-key "),
     ).toEqual({
       url: "https://example.supabase.co",
       key: "publishable-key",
@@ -30,8 +24,6 @@ describe("Supabase client configuration", () => {
   it("provides an actionable setup message", () => {
     expect(SUPABASE_CONFIGURATION_MESSAGE).toContain(".env.local")
     expect(SUPABASE_CONFIGURATION_MESSAGE).toContain("NEXT_PUBLIC_SUPABASE_URL")
-    expect(SUPABASE_CONFIGURATION_MESSAGE).toContain(
-      "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY",
-    )
+    expect(SUPABASE_CONFIGURATION_MESSAGE).toContain("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")
   })
 })

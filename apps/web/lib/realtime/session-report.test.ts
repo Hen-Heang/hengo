@@ -40,13 +40,19 @@ describe("computeVoiceMetrics", () => {
     const metrics = computeVoiceMetrics({
       turns: TURNS,
       corrections: [
-        correction("저는 개발자 예요", [{ original: "예요", corrected: "이에요", severity: "important" }], [
-          { korean: "개발자", english: "developer" },
-        ]),
-        correction("회사에서 한국어를 배우고 있어요", [{ original: "a", corrected: "b", severity: "minor" }], [
-          { korean: "개발자", english: "developer" },
-          { korean: "회사", english: "company" },
-        ]),
+        correction(
+          "저는 개발자 예요",
+          [{ original: "예요", corrected: "이에요", severity: "important" }],
+          [{ korean: "개발자", english: "developer" }],
+        ),
+        correction(
+          "회사에서 한국어를 배우고 있어요",
+          [{ original: "a", corrected: "b", severity: "minor" }],
+          [
+            { korean: "개발자", english: "developer" },
+            { korean: "회사", english: "company" },
+          ],
+        ),
       ],
       startedAt: 0,
       endedAt: 120_000,

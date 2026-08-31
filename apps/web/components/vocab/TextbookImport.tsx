@@ -49,7 +49,9 @@ export function TextbookImport({ existingTerms, onImport, embedded = false }: Te
     if (editingIndex === null) return
     const value = editingValue.trim()
     setEntries((prev) =>
-      value ? prev.map((entry, i) => (i === editingIndex ? value : entry)) : prev.filter((_, i) => i !== editingIndex)
+      value
+        ? prev.map((entry, i) => (i === editingIndex ? value : entry))
+        : prev.filter((_, i) => i !== editingIndex),
     )
     setEditingIndex(null)
   }
@@ -63,7 +65,7 @@ export function TextbookImport({ existingTerms, onImport, embedded = false }: Te
       setMessage(
         count > 0
           ? `Imported ${count} words into "${deckName.trim()}".`
-          : "No vocabulary entries found in that text."
+          : "No vocabulary entries found in that text.",
       )
       if (count > 0) {
         setText("")
@@ -76,18 +78,27 @@ export function TextbookImport({ existingTerms, onImport, embedded = false }: Te
   }
 
   return (
-    <div className={cn(!embedded && "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8")}>
+    <div
+      className={cn(
+        !embedded &&
+          "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8",
+      )}
+    >
       {!embedded && (
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.5)]" />
-              <p className="text-[12px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400">Textbook Import</p>
+              <p className="text-[12px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+                Textbook Import
+              </p>
             </div>
-            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">Paste Your Lesson</h3>
+            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">
+              Paste Your Lesson
+            </h3>
             <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground sm:text-[16px]">
-              Copy a word list from your textbook (사회통합프로그램, TOPIK, class notes) and paste it here.
-              AI turns it into flashcards — your translations are kept exactly as written.
+              Copy a word list from your textbook (사회통합프로그램, TOPIK, class notes) and paste
+              it here. AI turns it into flashcards — your translations are kept exactly as written.
             </p>
           </div>
           <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-500/10 text-violet-600 sm:flex">
@@ -108,21 +119,28 @@ export function TextbookImport({ existingTerms, onImport, embedded = false }: Te
         <textarea
           value={text}
           onChange={(e) => setText(e.target.value)}
-          placeholder={"Paste the lesson word list…\n\n1. 공감 (empathy)\n2. 관계 (relationship)\n..."}
+          placeholder={
+            "Paste the lesson word list…\n\n1. 공감 (empathy)\n2. 관계 (relationship)\n..."
+          }
           rows={6}
           maxLength={8000}
           className="w-full resize-none rounded-2xl border border-border bg-background px-4 py-3 text-base font-medium text-foreground placeholder:text-sm placeholder:text-muted-foreground/40 focus:border-violet-500/40 focus:outline-none focus:ring-1 focus:ring-violet-500/20 transition-colors sm:resize-y sm:text-sm"
         />
         {text.trim() && (
           <div className="flex flex-wrap items-center gap-x-3 gap-y-1 px-1 text-xs font-bold">
-            <span className={entries.length ? "text-violet-600 dark:text-violet-400" : "text-destructive"}>
+            <span
+              className={
+                entries.length ? "text-violet-600 dark:text-violet-400" : "text-destructive"
+              }
+            >
               {entries.length
                 ? `${entries.length} word${entries.length === 1 ? "" : "s"} ready to import`
                 : "No vocabulary entries detected"}
             </span>
             {prepared.duplicatesRemoved > 0 && (
               <span className="text-muted-foreground">
-                {prepared.duplicatesRemoved} duplicate{prepared.duplicatesRemoved === 1 ? "" : "s"} merged
+                {prepared.duplicatesRemoved} duplicate{prepared.duplicatesRemoved === 1 ? "" : "s"}{" "}
+                merged
               </span>
             )}
             {prepared.alreadySaved > 0 && (
@@ -200,7 +218,9 @@ export function TextbookImport({ existingTerms, onImport, embedded = false }: Te
             )}
           </Button>
           {message && (
-            <span className="text-center text-xs font-bold text-violet-600 dark:text-violet-400 sm:text-left">{message}</span>
+            <span className="text-center text-xs font-bold text-violet-600 dark:text-violet-400 sm:text-left">
+              {message}
+            </span>
           )}
         </div>
       </div>

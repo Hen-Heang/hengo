@@ -7,7 +7,7 @@ import { useEffect } from "react"
 export function CodeCopy() {
   useEffect(() => {
     const blocks = document.querySelectorAll<HTMLElement>(
-      "article .shiki-wrapper, article pre:not(.shiki-wrapper pre)"
+      "article .shiki-wrapper, article pre:not(.shiki-wrapper pre)",
     )
     const isDark = document.documentElement.classList.contains("dark")
 

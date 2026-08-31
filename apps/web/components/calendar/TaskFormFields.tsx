@@ -8,7 +8,13 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
 import { cn } from "@/lib/utils"
 import { hhmmToMinutes } from "@/lib/calendar"
@@ -31,7 +37,7 @@ export const calcDurationMinutes = (
   startDate: Date,
   endDate: Date,
   dailyStart: string,
-  dailyEnd: string
+  dailyEnd: string,
 ) => {
   const dayDiff = Math.max(0, differenceInCalendarDays(endDate, startDate))
   return Math.max(0, hhmmToMinutes(dailyEnd) + dayDiff * 1440 - hhmmToMinutes(dailyStart))
@@ -164,7 +170,10 @@ export function TaskFormFields({
 
   const descriptionField = (
     <div className="space-y-2">
-      <Label htmlFor={`${formId}-description`} className="text-sm font-medium text-muted-foreground">
+      <Label
+        htmlFor={`${formId}-description`}
+        className="text-sm font-medium text-muted-foreground"
+      >
         Description <span className="font-normal">(optional)</span>
       </Label>
       <AutoResizingDescription
@@ -330,7 +339,7 @@ export function TaskFormFields({
             <p
               className={cn(
                 "flex items-center gap-1.5 text-xs",
-                rangeHintIsError ? "text-destructive" : "text-muted-foreground"
+                rangeHintIsError ? "text-destructive" : "text-muted-foreground",
               )}
             >
               <Calendar className="h-3.5 w-3.5 shrink-0" />
@@ -351,7 +360,10 @@ export function TaskFormFields({
                 type="button"
                 className="flex min-h-11 items-center gap-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
               >
-                <ChevronDown size={14} className={cn("transition-transform", moreOpen && "rotate-180")} />
+                <ChevronDown
+                  size={14}
+                  className={cn("transition-transform", moreOpen && "rotate-180")}
+                />
                 More options
               </button>
             </CollapsibleTrigger>
@@ -384,7 +396,7 @@ export function TaskFormFields({
             <p
               className={cn(
                 "flex items-center gap-1.5 text-xs -mt-2",
-                rangeHintIsError ? "text-destructive" : "text-muted-foreground"
+                rangeHintIsError ? "text-destructive" : "text-muted-foreground",
               )}
             >
               <Calendar className="h-3.5 w-3.5 shrink-0" />
@@ -431,7 +443,9 @@ export function TaskFormFields({
             </div>
           </div>
 
-          {spanDays > 0 && <p className="text-xs text-muted-foreground">Spans {spanDays + 1} days</p>}
+          {spanDays > 0 && (
+            <p className="text-xs text-muted-foreground">Spans {spanDays + 1} days</p>
+          )}
 
           <div className="space-y-2">
             <Label className="text-sm font-medium text-muted-foreground">Color</Label>

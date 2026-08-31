@@ -29,7 +29,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   const mounted = useSyncExternalStore(
     subscribeToHydration,
     () => true,
-    () => false
+    () => false,
   )
 
   const activeTheme = mounted ? theme : "system"
@@ -41,7 +41,10 @@ export function ThemeToggle({ className }: { className?: string }) {
         <Button
           variant="outline"
           size="sm"
-          className={cn("size-11 rounded-full border-border/70 bg-background/80 px-0 backdrop-blur", className)}
+          className={cn(
+            "size-11 rounded-full border-border/70 bg-background/80 px-0 backdrop-blur",
+            className,
+          )}
           aria-label="Toggle theme"
         >
           <ActiveIcon size={20} strokeWidth={1.5} className="text-current" />
@@ -60,11 +63,7 @@ export function ThemeToggle({ className }: { className?: string }) {
               <Icon size={20} strokeWidth={1.5} className="text-current" />
               {option.label}
               {activeTheme === option.value ? (
-                <Check
-                  size={20}
-                  strokeWidth={1.5}
-                  className="ml-auto text-current"
-                />
+                <Check size={20} strokeWidth={1.5} className="ml-auto text-current" />
               ) : null}
             </DropdownMenuItem>
           )

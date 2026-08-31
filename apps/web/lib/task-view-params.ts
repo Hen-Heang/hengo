@@ -43,13 +43,27 @@ type ReadableParams = Pick<URLSearchParams, "get">
 function decodeList<T extends string>(raw: string | null, allowed: readonly T[]): T[] {
   if (!raw) return []
   const permitted = new Set<string>(allowed)
-  return [...new Set(raw.split(",").map((v) => v.trim()).filter((v) => permitted.has(v)))] as T[]
+  return [
+    ...new Set(
+      raw
+        .split(",")
+        .map((v) => v.trim())
+        .filter((v) => permitted.has(v)),
+    ),
+  ] as T[]
 }
 
 /** Same split/dedupe, but for opaque ids we can't validate against a list. */
 function decodeOpaqueList(raw: string | null): string[] {
   if (!raw) return []
-  return [...new Set(raw.split(",").map((v) => v.trim()).filter(Boolean))]
+  return [
+    ...new Set(
+      raw
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean),
+    ),
+  ]
 }
 
 const decodeYmd = (raw: string | null): string | null => (raw && YMD.test(raw) ? raw : null)

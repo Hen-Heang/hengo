@@ -7,7 +7,12 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/compone
 import { Button } from "@/components/ui/button"
 import { DEFAULT_TASK_COLOR } from "@/lib/tasks"
 import { bumpEndAfterStart } from "@/lib/calendar"
-import { NO_GOAL, TaskFormFields, calcDurationMinutes, type TaskFormGoalOption } from "./TaskFormFields"
+import {
+  NO_GOAL,
+  TaskFormFields,
+  calcDurationMinutes,
+  type TaskFormGoalOption,
+} from "./TaskFormFields"
 
 export interface TaskRangePayload {
   title?: string
@@ -29,7 +34,7 @@ interface AddTaskDialogProps {
     description: string,
     date: Date,
     time?: string,
-    range?: TaskRangePayload
+    range?: TaskRangePayload,
   ) => void | Promise<void>
   defaultDate?: Date
   defaultTime?: string | null
@@ -52,7 +57,7 @@ export function AddTaskDialog({
   const defaultDate = useMemo(
     () => propDefaultDate ?? new Date(),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [propDefaultDate?.getTime()]
+    [propDefaultDate?.getTime()],
   )
 
   const [title, setTitle] = useState("")
@@ -77,20 +82,21 @@ export function AddTaskDialog({
       if (goalTargetDate && r > goalTargetDate) r = new Date(goalTargetDate)
       return r
     },
-    [goalStartDate, goalTargetDate]
+    [goalStartDate, goalTargetDate],
   )
 
   const dateOutOfRange = useMemo(
     () =>
       (!!goalStartDate && startDate < goalStartDate) ||
       (!!goalTargetDate && endDate > goalTargetDate),
-    [goalStartDate, goalTargetDate, startDate, endDate]
+    [goalStartDate, goalTargetDate, startDate, endDate],
   )
 
   const rangeHint = useMemo(() => {
     const fmt = (d: Date) =>
       d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" })
-    if (goalStartDate && goalTargetDate) return `Allowed: ${fmt(goalStartDate)} – ${fmt(goalTargetDate)}`
+    if (goalStartDate && goalTargetDate)
+      return `Allowed: ${fmt(goalStartDate)} – ${fmt(goalTargetDate)}`
     if (goalStartDate) return `Must start on or after ${fmt(goalStartDate)}`
     if (goalTargetDate) return `Must end on or before ${fmt(goalTargetDate)}`
     return null
@@ -105,7 +111,7 @@ export function AddTaskDialog({
         setDailyEnd((prev) => bumpEndAfterStart(v, prev))
       }
     },
-    [startDate, endDate]
+    [startDate, endDate],
   )
 
   const handleEndTimeChange = useCallback((value: string) => {
@@ -167,12 +173,12 @@ export function AddTaskDialog({
       setEndDate(d < startDate ? startDate : d)
       setTimeError(null)
     },
-    [startDate]
+    [startDate],
   )
 
   const endDateMin = useMemo(
     () => (goalStartDate ? (startDate > goalStartDate ? startDate : goalStartDate) : startDate),
-    [goalStartDate, startDate]
+    [goalStartDate, startDate],
   )
 
   const handleSubmit = useCallback(
@@ -184,7 +190,7 @@ export function AddTaskDialog({
         setTimeError(
           rangeHint
             ? `Task dates must fall within the goal window. ${rangeHint}.`
-            : "Task dates fall outside the goal's allowed range."
+            : "Task dates fall outside the goal's allowed range.",
         )
         return
       }
@@ -235,7 +241,7 @@ export function AddTaskDialog({
       onAddTask,
       resetForm,
       onClose,
-    ]
+    ],
   )
 
   const isSubmitDisabled = isSubmitting || !!timeError || dateOutOfRange
@@ -252,8 +258,12 @@ export function AddTaskDialog({
               <CalendarClock className="h-4 w-4 text-blue-500 dark:text-blue-400 sm:h-5 sm:w-5" />
             </div>
             <div>
-              <DialogTitle className="text-base font-semibold text-foreground sm:text-lg">Add task</DialogTitle>
-              <p className="text-xs text-muted-foreground">Name it, choose when, and continue your day.</p>
+              <DialogTitle className="text-base font-semibold text-foreground sm:text-lg">
+                Add task
+              </DialogTitle>
+              <p className="text-xs text-muted-foreground">
+                Name it, choose when, and continue your day.
+              </p>
             </div>
           </div>
           <button
@@ -266,7 +276,8 @@ export function AddTaskDialog({
           </button>
         </div>
         <DialogDescription className="sr-only">
-          Quickly create a task. Description, end time, status and color are available under More options.
+          Quickly create a task. Description, end time, status and color are available under More
+          options.
         </DialogDescription>
 
         <div className="no-scrollbar flex-1 overflow-y-auto p-4 sm:px-5">

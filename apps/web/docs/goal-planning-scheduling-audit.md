@@ -14,7 +14,7 @@ All twelve issues named in the brief were checked against the code. Result:
    had exactly five tabs — `overview | tasks | members | coach | settings`
    (`type DetailTab`, line 86). There was no planning surface at all.
 2. **The Tasks tab was a calendar, and only a calendar.** `TabsContent
-   value="tasks"` rendered `<Calendar goalId … />` inside a
+value="tasks"` rendered `<Calendar goalId … />` inside a
    `h-[clamp(420px,75dvh,700px)]` box and nothing else. A calendar answers
    "when", never "what" or "why" — there was no goal plan anywhere in the app.
 3. **Task-level scheduling was already rich.** `tasks` carries `start_date`,
@@ -69,15 +69,15 @@ Two further problems found while auditing, not in the brief:
 
 One vocabulary across UI, types, tables, API files and docs:
 
-| Term | Meaning | Storage |
-| --- | --- | --- |
-| **Goal** | The final outcome | `goals` |
-| **Key Result** | Measurable proof the outcome is happening | `goal_key_results` |
-| **Phase** | An ordered stage of the plan | `goal_plan_phases` *(new)* |
-| **Task** | A concrete action serving a phase or key result | `tasks` |
-| **Schedule Rule** | A recurring commitment that materialises tasks | `goal_schedule_rules` *(new)* |
-| **Evidence** | Proof of progress | `goal_evidence` |
-| **Weekly Review** | Reflection and replanning | `goal_reviews` |
+| Term              | Meaning                                         | Storage                       |
+| ----------------- | ----------------------------------------------- | ----------------------------- |
+| **Goal**          | The final outcome                               | `goals`                       |
+| **Key Result**    | Measurable proof the outcome is happening       | `goal_key_results`            |
+| **Phase**         | An ordered stage of the plan                    | `goal_plan_phases` _(new)_    |
+| **Task**          | A concrete action serving a phase or key result | `tasks`                       |
+| **Schedule Rule** | A recurring commitment that materialises tasks  | `goal_schedule_rules` _(new)_ |
+| **Evidence**      | Proof of progress                               | `goal_evidence`               |
+| **Weekly Review** | Reflection and replanning                       | `goal_reviews`                |
 
 "Sub-goals" is retired as a user-facing term; the concept is now **Phases**.
 
@@ -99,7 +99,7 @@ One vocabulary across UI, types, tables, API files and docs:
   `goals`/`tasks` are shared with Orbit/DailyGoalMap, so this is the same
   posture as the v2 migration.
 - **The task uniqueness index is partial** — `where schedule_rule_id is not
-  null and occurrence_date is not null` — so the large body of existing tasks
+null and occurrence_date is not null` — so the large body of existing tasks
   with null values can never collide.
 - **Deleting a routine detaches its tasks rather than cascading.** Sessions you
   already did are history; a deleted rule shouldn't erase them. Same reasoning
@@ -124,7 +124,7 @@ One vocabulary across UI, types, tables, API files and docs:
 - **Monthly rules skip short months rather than clamping.** The 31st in
   February is dropped, never moved to the 28th — a clamped date silently moves
   a commitment onto a day the user didn't choose.
-- Output is sorted, deduplicated, clamped to the rule window *and* the goal
+- Output is sorted, deduplicated, clamped to the rule window _and_ the goal
   window, and hard-capped at `MAX_OCCURRENCES = 200`.
 - Generation is a **rolling 14-day window** behind an explicit "Create next 14
   days" button. Idempotent: existing `(schedule_rule_id, occurrence_date)` rows
@@ -170,7 +170,7 @@ the Schedule tab). Effort per task is `effort_minutes ?? duration_minutes ?? 0`.
 Status is `healthy` (<85%), `nearly_full` (85–100%), `over_capacity` (>100%),
 `unset` (no capacity configured). **Being over capacity never blocks
 scheduling** — it warns and explains, because the user knows things the app
-doesn't. A task counts as *scheduled* only when it has a day *and* a time;
+doesn't. A task counts as _scheduled_ only when it has a day _and_ a time;
 `is_anytime` tasks stay in the backlog for capacity purposes.
 
 ## 8. Reordering: buttons, not drag-and-drop
@@ -200,8 +200,8 @@ can go stale behind our back.
   `taskCompletionPatch` always emit both, and `tasksApi.setStatus` /
   `setCompleted` are the only sanctioned entry points.
 
-**`overdue` is deliberately not a status.** It's derived from *(status is not
-completed)* AND *(due date < today in Asia/Seoul)*, so it can never go stale
+**`overdue` is deliberately not a status.** It's derived from _(status is not
+completed)_ AND _(due date < today in Asia/Seoul)_, so it can never go stale
 between writes.
 
 **Migration mapping** (SQL backfill and `deriveStatusFromSchedule` mirror each
@@ -237,7 +237,7 @@ a custom dense desktop list; server state stays in TanStack Query, filter state
 in React state shared across both views. The library is installed and ready but
 not wired.
 
-*Migrate the desktop list to TanStack Table when the product needs:* bulk
+_Migrate the desktop list to TanStack Table when the product needs:_ bulk
 selection, bulk status changes, bulk phase assignment, user-customisable
 columns, server-side pagination, or multi-column sorting. When that happens,
 `buildTaskView` becomes the table's data source and the column defs replace
@@ -245,7 +245,7 @@ columns, server-side pagination, or multi-column sorting. When that happens,
 the desktop table must never be rendered as a horizontally scrolling mobile
 table.
 
-*Not installed:* `dnd-kit` (add it when phase reordering moves to drag —
+_Not installed:_ `dnd-kit` (add it when phase reordering moves to drag —
 `movePhase` already returns a full normalised ordering, so the swap is
 localised), `rrule`, `FullCalendar`.
 
@@ -297,7 +297,7 @@ draft-review-confirm flow. No user data involved.
   cards (visible menu actions already cover every operation, so swipe stays
   additive), and URL-persisted filter state so a filtered All Tasks view is
   shareable.
-- **Phase 4:** evidence and review *authoring* UI (Progress currently reads
+- **Phase 4:** evidence and review _authoring_ UI (Progress currently reads
   both), outcome-progress history.
 - **Phase 5:** the full AI Plan Builder (phases + tasks + routine + risks in
   one validated payload, with vague-task rejection) and the Smart Scheduler

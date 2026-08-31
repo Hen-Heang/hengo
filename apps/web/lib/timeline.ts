@@ -18,7 +18,8 @@
 
 import { toLocalDateString } from "./date-utils"
 
-export type TimelineKind = "task" | "habit_checkin" | "hengo_session" | "manual_activity" | "journal" | "recovery_checkin"
+export type TimelineKind =
+  "task" | "habit_checkin" | "hengo_session" | "manual_activity" | "journal" | "recovery_checkin"
 
 export interface TimelineEntry {
   id: string
@@ -96,7 +97,10 @@ export interface TimelineActivityLogSource {
  * not dozens of near-empty rows for the same session.
  */
 export function buildHengoSessionEntries(rows: TimelineActivityLogSource[]): TimelineEntry[] {
-  const groups = new Map<string, { feature: string; date: string; totalMs: number; latest: string }>()
+  const groups = new Map<
+    string,
+    { feature: string; date: string; totalMs: number; latest: string }
+  >()
   for (const row of rows) {
     const date = toLocalDateString(new Date(row.createdAt))
     const key = `${date}:${row.feature}`
@@ -105,7 +109,12 @@ export function buildHengoSessionEntries(rows: TimelineActivityLogSource[]): Tim
       existing.totalMs += row.durationMs
       if (row.createdAt > existing.latest) existing.latest = row.createdAt
     } else {
-      groups.set(key, { feature: row.feature, date, totalMs: row.durationMs, latest: row.createdAt })
+      groups.set(key, {
+        feature: row.feature,
+        date,
+        totalMs: row.durationMs,
+        latest: row.createdAt,
+      })
     }
   }
   return [...groups.values()].map((g) => ({
@@ -162,7 +171,10 @@ export interface TimelineJournalSource {
  */
 export function fromJournalEntry(entry: TimelineJournalSource): TimelineEntry {
   const title =
-    entry.title?.trim() || entry.content.slice(0, 80).trim() || entry.achievement?.slice(0, 80).trim() || "Journal entry"
+    entry.title?.trim() ||
+    entry.content.slice(0, 80).trim() ||
+    entry.achievement?.slice(0, 80).trim() ||
+    "Journal entry"
   return {
     id: `journal:${entry.id}`,
     kind: "journal",
@@ -233,7 +245,10 @@ export interface TimelineFilters {
   query?: string
 }
 
-export function filterTimelineEntries(entries: TimelineEntry[], filters: TimelineFilters): TimelineEntry[] {
+export function filterTimelineEntries(
+  entries: TimelineEntry[],
+  filters: TimelineFilters,
+): TimelineEntry[] {
   const normalizedQuery = filters.query?.trim().toLowerCase() ?? ""
   return entries.filter((entry) => {
     if (filters.kind && filters.kind !== "all" && entry.kind !== filters.kind) return false
@@ -268,7 +283,8 @@ export function groupTimelineByDay(entries: TimelineEntry[]): DailySummary[] {
       hengoMinutes: dayEntries
         .filter((e) => e.kind === "hengo_session")
         .reduce((sum, e) => sum + (e.durationMinutes ?? 0), 0),
-      completedCount: dayEntries.filter((e) => e.kind === "task" || e.kind === "habit_checkin").length,
+      completedCount: dayEntries.filter((e) => e.kind === "task" || e.kind === "habit_checkin")
+        .length,
       manualActivityCount: dayEntries.filter((e) => e.kind === "manual_activity").length,
       journalCount: dayEntries.filter((e) => e.kind === "journal").length,
     }))

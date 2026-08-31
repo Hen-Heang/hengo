@@ -59,7 +59,8 @@ export function computeVoiceMetrics(input: {
   const approxWordCount = userTurns.reduce((sum, turn) => sum + wordCount(turn.text), 0)
   const importantMistakeCount = input.corrections.reduce(
     (sum, correction) =>
-      sum + correction.analysis.mistakes.filter((mistake) => mistake.severity === "important").length,
+      sum +
+      correction.analysis.mistakes.filter((mistake) => mistake.severity === "important").length,
     0,
   )
   const targetExpressions = uniqueCapped(

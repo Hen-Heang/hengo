@@ -5,7 +5,13 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { phrasebookApi } from "@/lib/api"
 import type { PhrasebookStats } from "@/lib/types"
 
-type StatTileKey = "cardsLearned" | "cardsDue" | "cardsMastered" | "listeningAttempts" | "speakingAttempts" | "successfulCommunicationRate"
+type StatTileKey =
+  | "cardsLearned"
+  | "cardsDue"
+  | "cardsMastered"
+  | "listeningAttempts"
+  | "speakingAttempts"
+  | "successfulCommunicationRate"
 
 const TILES: Array<{ key: StatTileKey; label: string; suffix?: string }> = [
   { key: "cardsLearned", label: "Learned" },
@@ -44,7 +50,8 @@ export function PhrasebookStatsCard() {
   }
 
   const totalActivity = stats.workplaceActivityCount + stats.dailyActivityCount
-  const workplacePct = totalActivity > 0 ? Math.round((stats.workplaceActivityCount / totalActivity) * 100) : 0
+  const workplacePct =
+    totalActivity > 0 ? Math.round((stats.workplaceActivityCount / totalActivity) * 100) : 0
 
   return (
     <div className="space-y-4">
@@ -55,7 +62,9 @@ export function PhrasebookStatsCard() {
               {stats[tile.key]}
               {tile.suffix ?? ""}
             </p>
-            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{tile.label}</p>
+            <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">
+              {tile.label}
+            </p>
           </div>
         ))}
       </div>
@@ -75,10 +84,15 @@ export function PhrasebookStatsCard() {
 
       {stats.mostDifficultSituations.length > 0 && (
         <div>
-          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">Toughest situations</p>
+          <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
+            Toughest situations
+          </p>
           <div className="flex flex-wrap gap-1.5">
             {stats.mostDifficultSituations.map((s) => (
-              <span key={s.situation} className="rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:text-red-400">
+              <span
+                key={s.situation}
+                className="rounded-full bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-700 dark:text-red-400"
+              >
                 {s.situation} ({s.failureCount})
               </span>
             ))}

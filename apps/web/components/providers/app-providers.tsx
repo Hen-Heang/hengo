@@ -6,9 +6,7 @@ import { useState } from "react"
 
 import { Toaster } from "@/components/ui/sonner"
 
-export function AppProviders({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+export function AppProviders({ children }: Readonly<{ children: React.ReactNode }>) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -18,7 +16,7 @@ export function AppProviders({
             refetchOnWindowFocus: false,
           },
         },
-      })
+      }),
   )
 
   return (

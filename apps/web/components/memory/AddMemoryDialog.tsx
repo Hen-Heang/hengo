@@ -14,7 +14,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage } from "@/lib/api"
 import { useMemoryMutations } from "@/hooks/useMemory"
@@ -59,7 +65,9 @@ export function AddMemoryDialog() {
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Tell Hengo something</DialogTitle>
-            <DialogDescription>Saved directly as known context — no approval needed since you wrote it.</DialogDescription>
+            <DialogDescription>
+              Saved directly as known context — no approval needed since you wrote it.
+            </DialogDescription>
           </DialogHeader>
           <div className="mt-4 space-y-3">
             <Textarea
@@ -70,7 +78,11 @@ export function AddMemoryDialog() {
               className="min-h-20"
               maxLength={500}
             />
-            {submitAttempted && errors.fact && <p role="alert" className="text-sm text-destructive">{errors.fact}</p>}
+            {submitAttempted && errors.fact && (
+              <p role="alert" className="text-sm text-destructive">
+                {errors.fact}
+              </p>
+            )}
             <Select value={category} onValueChange={setCategory}>
               <SelectTrigger className="w-full" aria-label="Memory category">
                 <SelectValue />

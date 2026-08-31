@@ -147,7 +147,7 @@ export function ConversationSidebar({
                   "group/conv flex items-center gap-1 rounded-xl border px-1 transition-colors",
                   active
                     ? "border-blue-500/20 bg-blue-500/[0.08] shadow-sm"
-                    : "border-transparent hover:bg-accent/50"
+                    : "border-transparent hover:bg-accent/50",
                 )}
               >
                 <button
@@ -159,14 +159,14 @@ export function ConversationSidebar({
                     size={15}
                     className={cn(
                       "shrink-0",
-                      active ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground/40"
+                      active ? "text-blue-600 dark:text-blue-400" : "text-muted-foreground/40",
                     )}
                   />
                   <span className="min-w-0 flex-1">
                     <span
                       className={cn(
                         "block truncate text-sm font-semibold",
-                        active ? "text-foreground" : "text-foreground/70"
+                        active ? "text-foreground" : "text-foreground/70",
                       )}
                     >
                       {c.title || "Untitled chat"}
@@ -180,7 +180,9 @@ export function ConversationSidebar({
                           : null}
                         {c.messageCount != null && (c.updatedAt || c.createdAt) ? " · " : null}
                         {(c.updatedAt || c.createdAt) &&
-                          formatDistanceToNowStrict(new Date(c.updatedAt || c.createdAt!), { addSuffix: true })}
+                          formatDistanceToNowStrict(new Date(c.updatedAt || c.createdAt!), {
+                            addSuffix: true,
+                          })}
                       </span>
                     )}
                   </span>

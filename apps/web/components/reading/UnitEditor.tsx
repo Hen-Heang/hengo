@@ -20,16 +20,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage } from "@/lib/api"
-import {
-  READING_CATEGORIES,
-  type ReadingCategory,
-  type ReadingUnit,
-} from "@/lib/reading"
-import {
-  createReadingUnit,
-  updateReadingUnit,
-  type ReadingUnitPayload,
-} from "@/lib/reading-store"
+import { READING_CATEGORIES, type ReadingCategory, type ReadingUnit } from "@/lib/reading"
+import { createReadingUnit, updateReadingUnit, type ReadingUnitPayload } from "@/lib/reading-store"
 import type { QuizQuestion } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
@@ -82,19 +74,17 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
   const [category, setCategory] = useState<ReadingCategory>(unit?.category ?? "DAILY_LIFE")
   const [level, setLevel] = useState<ReadingUnit["level"]>(unit?.level ?? "Beginner")
   const [grammarPattern, setGrammarPattern] = useState(unit?.grammarNote?.pattern ?? "")
-  const [grammarExplanation, setGrammarExplanation] = useState(
-    unit?.grammarNote?.explanation ?? ""
-  )
+  const [grammarExplanation, setGrammarExplanation] = useState(unit?.grammarNote?.explanation ?? "")
 
   const [paragraphs, setParagraphs] = useState<ParagraphDraft[]>(
     unit?.paragraphs.map((p) => ({ korean: p.korean, english: p.english })) ?? [
       { korean: "", english: "" },
-    ]
+    ],
   )
   const [vocab, setVocab] = useState<VocabDraft[]>(
     unit?.vocab.map((v) => ({ term: v.term, meaning: v.meaning, example: v.example ?? "" })) ?? [
       { term: "", meaning: "", example: "" },
-    ]
+    ],
   )
   const [quiz, setQuiz] = useState<QuizDraft[]>(
     unit?.quiz.map((q) => ({
@@ -102,7 +92,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
       options: [...q.options],
       answerIndex: q.answerIndex,
       explanation: q.explanation,
-    })) ?? []
+    })) ?? [],
   )
 
   const [error, setError] = useState("")
@@ -123,10 +113,8 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
   function updateQuizOption(qIndex: number, oIndex: number, value: string) {
     setQuiz((prev) =>
       prev.map((q, i) =>
-        i === qIndex
-          ? { ...q, options: q.options.map((o, j) => (j === oIndex ? value : o)) }
-          : q
-      )
+        i === qIndex ? { ...q, options: q.options.map((o, j) => (j === oIndex ? value : o)) } : q,
+      ),
     )
   }
 
@@ -139,7 +127,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
         if (oIndex === q.answerIndex) answerIndex = 0
         else if (oIndex < q.answerIndex) answerIndex = q.answerIndex - 1
         return { ...q, options, answerIndex }
-      })
+      }),
     )
   }
 
@@ -152,13 +140,16 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
     const cleanParagraphs = paragraphs
       .map((p) => ({ korean: p.korean.trim(), english: p.english.trim() }))
       .filter((p) => p.korean)
-    if (cleanParagraphs.length === 0)
-      return setError("Add at least one paragraph of Korean text.")
+    if (cleanParagraphs.length === 0) return setError("Add at least one paragraph of Korean text.")
 
     const cleanVocab = vocab
       .map((v) => ({ term: v.term.trim(), meaning: v.meaning.trim(), example: v.example.trim() }))
       .filter((v) => v.term && v.meaning)
-      .map((v) => ({ term: v.term, meaning: v.meaning, ...(v.example ? { example: v.example } : {}) }))
+      .map((v) => ({
+        term: v.term,
+        meaning: v.meaning,
+        ...(v.example ? { example: v.example } : {}),
+      }))
 
     const cleanQuiz: QuizQuestion[] = []
     for (let i = 0; i < quiz.length; i++) {
@@ -173,8 +164,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
         kept.push(text)
       })
       if (kept.length < 2) return setError(`Question ${i + 1} needs at least 2 options.`)
-      if (answerIndex === -1)
-        return setError(`Pick the correct answer for question ${i + 1}.`)
+      if (answerIndex === -1) return setError(`Pick the correct answer for question ${i + 1}.`)
       cleanQuiz.push({
         question: q.question.trim(),
         options: kept,
@@ -301,7 +291,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
                       "rounded-xl border px-3.5 py-2 text-xs font-bold transition-all active:scale-95",
                       category === key
                         ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                        : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                        : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                     )}
                   >
                     {READING_CATEGORIES[key].label}
@@ -321,7 +311,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
                       "rounded-xl border px-3.5 py-2 text-xs font-bold transition-all active:scale-95",
                       level === l
                         ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                        : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground"
+                        : "border-border text-muted-foreground hover:bg-accent/50 hover:text-foreground",
                     )}
                   >
                     {l}
@@ -493,7 +483,7 @@ export function UnitEditor({ unit }: { unit?: ReadingUnit }) {
                         "flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border transition-all active:scale-90",
                         q.answerIndex === oi
                           ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                          : "border-border text-muted-foreground/40 hover:text-muted-foreground"
+                          : "border-border text-muted-foreground/40 hover:text-muted-foreground",
                       )}
                     >
                       <CheckCircle2 size={15} strokeWidth={2.5} />

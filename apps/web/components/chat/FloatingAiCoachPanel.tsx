@@ -23,7 +23,8 @@ export function FloatingAiCoachPanel({ active }: { active: boolean }) {
 
     bootstrappedRef.current = true
     const recentFreeChat = conversations.find(
-      (conversation) => !conversation.conversationType || conversation.conversationType === "FREE_CHAT"
+      (conversation) =>
+        !conversation.conversationType || conversation.conversationType === "FREE_CHAT",
     )
 
     if (recentFreeChat) {

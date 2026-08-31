@@ -17,7 +17,9 @@ const MobileHeaderTitleContext = createContext<Ctx | null>(null)
 export function MobileHeaderTitleProvider({ children }: { children: React.ReactNode }) {
   const [title, setTitle] = useState<string | null>(null)
   const value = useMemo(() => ({ title, setTitle }), [title])
-  return <MobileHeaderTitleContext.Provider value={value}>{children}</MobileHeaderTitleContext.Provider>
+  return (
+    <MobileHeaderTitleContext.Provider value={value}>{children}</MobileHeaderTitleContext.Provider>
+  )
 }
 
 export function useMobileHeaderTitleValue(): string | null {

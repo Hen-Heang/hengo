@@ -245,7 +245,10 @@ export function daysUntil(dateIso: string, today: Date = new Date()): number {
  * The week containing `today`. Before the plan starts → first week; after it
  * ends → last week, so there's always something to show.
  */
-export function getCurrentWeek(today: Date = new Date(), weeks: StudyWeek[] = STUDY_WEEKS): StudyWeek {
+export function getCurrentWeek(
+  today: Date = new Date(),
+  weeks: StudyWeek[] = STUDY_WEEKS,
+): StudyWeek {
   const base = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime()
   for (const w of weeks) {
     if (base >= toDateOnly(w.start).getTime() && base <= toDateOnly(w.end).getTime()) return w

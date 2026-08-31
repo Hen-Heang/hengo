@@ -57,7 +57,7 @@ export function MobileBottomNav({
                 <span
                   className={cn(
                     "w-full truncate px-0.5 text-center text-xs leading-none",
-                    active ? "font-semibold" : "font-medium"
+                    active ? "font-semibold" : "font-medium",
                   )}
                 >
                   {item.shortLabel ?? item.label}

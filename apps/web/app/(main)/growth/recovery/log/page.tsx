@@ -6,13 +6,22 @@ import { LogFlow } from "@/components/recovery/LogFlow"
 import { BackLink } from "@/components/ui/back-link"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useRecoveryEvents, useRecoveryHabitFromParams, useRecoveryTriggers } from "@/hooks/useRecovery"
+import {
+  useRecoveryEvents,
+  useRecoveryHabitFromParams,
+  useRecoveryTriggers,
+} from "@/hooks/useRecovery"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
 
 export default function RecoveryLogPage() {
   useSessionTimer("recovery")
   const router = useRouter()
-  const { habit, backHref, loading: habitsLoading, error: habitsError } = useRecoveryHabitFromParams()
+  const {
+    habit,
+    backHref,
+    loading: habitsLoading,
+    error: habitsError,
+  } = useRecoveryHabitFromParams()
   const { logEvent, error: eventsError } = useRecoveryEvents(habit?.id ?? null)
   const { triggers, loading: triggersLoading, error: triggersError } = useRecoveryTriggers()
 
@@ -46,7 +55,10 @@ export default function RecoveryLogPage() {
           // Slips get a calm debrief instead of a "nice job" screen; anything
           // else is offered a Pause.
           if (input.kind === "slip") {
-            sessionStorage.setItem("hengo-recovery-debrief", JSON.stringify({ eventId: event.id, habitId: habit.id }))
+            sessionStorage.setItem(
+              "hengo-recovery-debrief",
+              JSON.stringify({ eventId: event.id, habitId: habit.id }),
+            )
             router.push("/growth/recovery/debrief")
           } else {
             router.push("/growth/recovery/urge")

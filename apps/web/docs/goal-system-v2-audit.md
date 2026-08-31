@@ -76,7 +76,7 @@ All of the following were verified in the code, not assumed:
 1. **Goal progress is completed/total tasks, computed independently in (at
    least) four places**: `lib/api/goals.ts:47-48` (`taskCounts`),
    `components/goals/GoalList.tsx:325` (`total > 0 ? Math.round((done/total)*100)
-   : 0`), `app/(main)/goals/[id]/page.tsx:192` (identical formula, its own
+: 0`), `app/(main)/goals/[id]/page.tsx:192` (identical formula, its own
    copy), `components/dashboard/GoalsOverview.tsx:22-25` (identical formula,
    a third copy). None of these called a shared helper before this change.
 2. **A goal can show 100% with nothing real achieved**: 100% task completion
@@ -92,7 +92,7 @@ All of the following were verified in the code, not assumed:
    25% in the Timeline card and 90% in the hero bar simultaneously.
 4. **Learning metrics are activity counts**: `LearningMetric` (`lib/goals.ts`)
    only supports `vocab_cards | corrections | foundation_lessons |
-   activity_sessions` row counts via `progressApi.getMetricCount()`
+activity_sessions` row counts via `progressApi.getMetricCount()`
    (`lib/api/progress.ts`) — no qualitative evidence, no baseline, single
    metric per goal, opt-in and easy to never discover.
 5. **Vague goal titles/tasks are unconstrained**: neither `goalSchema`
@@ -204,9 +204,9 @@ tables and confirming they landed with the expected shape.
   point yet," consistent with the "reject vague/undefined goals" spirit of
   the wider redesign.
 - **`allKeyResultsAchieved` is informational only** — it is used to decide
-  whether to *offer* a "mark complete" action, never to auto-complete a goal.
+  whether to _offer_ a "mark complete" action, never to auto-complete a goal.
   Explicit user confirmation (existing `goalsApi.update(id, { status:
-  "completed" })` flow) is still the only way a goal becomes `completed`.
+"completed" })` flow) is still the only way a goal becomes `completed`.
 - **List-view health omits the two task-detail-dependent risk signals**
   (overdue high-impact tasks, days-since-last-activity) because the goal
   list only has aggregate `taskCounts`, not each goal's full task list —
@@ -222,7 +222,7 @@ tables and confirming they landed with the expected shape.
 ## 7. Compatibility risks
 
 - Every pre-v2 goal has `outcome_progress = 0`, `health_status =
-  'not_started'`, and zero key results — `computeGoalProgress` correctly
+'not_started'`, and zero key results — `computeGoalProgress` correctly
   falls back to legacy activity progress for these (tested), and
   `computeGoalHealth` correctly returns `not_started`/`attention` rather than
   misreporting `on_track` (tested).
@@ -253,4 +253,4 @@ tables and confirming they landed with the expected shape.
   quality validation, review-before-save workflow.
 - **Phase 4 (Today)** — not started.
 - **Phase 5 (Integration prep)** — docs only this pass (`docs/money-flow-
-  integration.md`), no code.
+integration.md`), no code.

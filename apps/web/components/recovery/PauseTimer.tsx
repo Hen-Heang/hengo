@@ -51,7 +51,11 @@ export function PauseTimer({ onComplete }: { onComplete: () => Promise<void> }) 
         <div className="absolute inset-0 rounded-full border border-white/10" />
         <div
           className="absolute rounded-full bg-blue-500/20"
-          style={{ inset: `${(1 - curve) * 20}%`, opacity: 0.35 + curve * 0.5, transition: "inset 120ms linear, opacity 120ms linear" }}
+          style={{
+            inset: `${(1 - curve) * 20}%`,
+            opacity: 0.35 + curve * 0.5,
+            transition: "inset 120ms linear, opacity 120ms linear",
+          }}
         />
         <div
           className="absolute rounded-full border border-blue-400/40"

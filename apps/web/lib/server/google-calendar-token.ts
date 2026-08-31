@@ -2,7 +2,10 @@
 // getValidGoogleAccessToken — every Google Calendar API call (lib/server/
 // google-calendar-client.ts) goes through it instead of reading stored
 // tokens directly, so callers never have to think about expiry themselves.
-import { GoogleCalendarReauthRequiredError, refreshGoogleAccessToken } from "@/lib/server/google-calendar-oauth"
+import {
+  GoogleCalendarReauthRequiredError,
+  refreshGoogleAccessToken,
+} from "@/lib/server/google-calendar-oauth"
 import {
   getGoogleCalendarTokens,
   markGoogleCalendarIntegrationError,

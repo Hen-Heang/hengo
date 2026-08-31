@@ -88,7 +88,11 @@ export const pushApi = {
   webUnsubscribe: async (endpoint: string) => {
     const userId = getUserId()
     if (!userId) return
-    await supabase.from("kori_push_subscriptions").delete().eq("user_id", userId).eq("endpoint", endpoint)
+    await supabase
+      .from("kori_push_subscriptions")
+      .delete()
+      .eq("user_id", userId)
+      .eq("endpoint", endpoint)
   },
 
   // Sends a real push to the current user via KoriAI's own `kori-send-push`

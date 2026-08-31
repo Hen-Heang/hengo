@@ -12,7 +12,10 @@ interface CaptureBody {
 
 function normalizeTitle(value: unknown, content: string): string {
   if (typeof value === "string" && value.trim()) return value.trim().slice(0, 200)
-  const firstLine = content.split("\n").find((line) => line.trim())?.trim()
+  const firstLine = content
+    .split("\n")
+    .find((line) => line.trim())
+    ?.trim()
   return (firstLine || "Hengo capture").slice(0, 200)
 }
 
@@ -29,7 +32,7 @@ export async function POST(req: Request) {
           "Notion capture is not configured. Add NOTION_API_KEY and NOTION_CAPTURE_PARENT_PAGE_ID in Vercel.",
         code: "notion_not_configured",
       },
-      { status: 503 }
+      { status: 503 },
     )
   }
 
@@ -88,7 +91,7 @@ export async function POST(req: Request) {
     })
     return Response.json(
       { error: "Hengo saved the capture, but Notion sync failed." },
-      { status: 502 }
+      { status: 502 },
     )
   }
 

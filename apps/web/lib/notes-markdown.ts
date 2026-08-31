@@ -29,10 +29,7 @@ export function renderMarkdown(content: string): string {
   renderer.code = ({ text, lang }) => {
     const rawLang = (lang ?? "").toLowerCase().trim()
     const langAttr = rawLang ? ` data-lang="${rawLang}"` : ""
-    const escaped = text
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
+    const escaped = text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     return `<div class="shiki-wrapper"${langAttr}><pre><code>${escaped}</code></pre></div>`
   }
 

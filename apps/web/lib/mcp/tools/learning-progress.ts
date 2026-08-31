@@ -51,21 +51,39 @@ export function registerLearningProgressTool(server: McpServer, ctx: McpContext)
         dueVocabCount: z.number(),
         dueCorrectionsCount: z.number(),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "get_learning_progress", async () => {
       const nowIso = new Date().toISOString()
       const [activityRes, vocabCountRes, dueVocabRes, dueCorrectionsRes] = await Promise.all([
-        ctx.db.from("kori_activity_log").select("created_at").order("created_at", { ascending: false }).limit(ACTIVITY_LOOKBACK_ROWS),
+        ctx.db
+          .from("kori_activity_log")
+          .select("created_at")
+          .order("created_at", { ascending: false })
+          .limit(ACTIVITY_LOOKBACK_ROWS),
         ctx.db.from("kori_vocab_cards").select("id", { count: "exact", head: true }),
-        ctx.db.from("kori_vocab_cards").select("id", { count: "exact", head: true }).lte("next_review", nowIso),
-        ctx.db.from("kori_corrections").select("id", { count: "exact", head: true }).lte("next_review_date", nowIso),
+        ctx.db
+          .from("kori_vocab_cards")
+          .select("id", { count: "exact", head: true })
+          .lte("next_review", nowIso),
+        ctx.db
+          .from("kori_corrections")
+          .select("id", { count: "exact", head: true })
+          .lte("next_review_date", nowIso),
       ])
       if (activityRes.error) throw new Error("Could not load activity history.")
-      if (vocabCountRes.error || dueVocabRes.error) throw new Error("Could not load vocabulary counts.")
+      if (vocabCountRes.error || dueVocabRes.error)
+        throw new Error("Could not load vocabulary counts.")
       if (dueCorrectionsRes.error) throw new Error("Could not load correction counts.")
 
-      const activityDates = new Set((activityRes.data ?? []).map((row) => seoulYmd(row.created_at as string)))
+      const activityDates = new Set(
+        (activityRes.data ?? []).map((row) => seoulYmd(row.created_at as string)),
+      )
       const { streakDays, activityToday } = computeStreak(activityDates)
 
       const result = {

@@ -30,7 +30,10 @@ export interface GoalHealth {
   reason: string
 }
 
-const SEVERITY: Record<Extract<GoalHealthStatus, "on_track" | "attention" | "at_risk" | "blocked">, number> = {
+const SEVERITY: Record<
+  Extract<GoalHealthStatus, "on_track" | "attention" | "at_risk" | "blocked">,
+  number
+> = {
   on_track: 0,
   attention: 1,
   at_risk: 2,
@@ -51,7 +54,8 @@ export const computeGoalHealth = (input: GoalHealthInput): GoalHealth => {
     if (input.activityTotalTasks === 0) {
       return {
         status: "not_started",
-        reason: "No key results or tasks yet — add key results to start tracking real outcome progress.",
+        reason:
+          "No key results or tasks yet — add key results to start tracking real outcome progress.",
       }
     }
     return {

@@ -80,7 +80,7 @@ export function MonthView({
               key={day}
               className={cn(
                 "py-3 text-[11px] font-bold uppercase tracking-wide",
-                i === 0 || i === 6 ? "text-muted-foreground" : "text-muted-foreground"
+                i === 0 || i === 6 ? "text-muted-foreground" : "text-muted-foreground",
               )}
             >
               <span className="hidden sm:inline">{day}</span>
@@ -110,7 +110,7 @@ export function MonthView({
                   Math.floor(index / 7) === 0 && "border-t",
                   !isCurrentMonth && "bg-muted/10 opacity-30",
                   isCurrentMonth && "hover:bg-muted/20",
-                  isSelected && "bg-primary/5"
+                  isSelected && "bg-primary/5",
                 )}
               >
                 {isCurrentMonth && onQuickAdd && (
@@ -138,8 +138,11 @@ export function MonthView({
                       "flex h-6 w-6 shrink-0 items-center justify-center rounded-lg text-[11px] font-bold transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70 sm:h-7 sm:w-7 sm:text-xs",
                       today && !isSelected && "bg-primary text-primary-foreground shadow",
                       isSelected && "scale-110 bg-primary/90 text-primary-foreground shadow",
-                      !today && !isSelected && holidays.length > 0 && "text-rose-600 dark:text-rose-400",
-                      !today && !isSelected && holidays.length === 0 && "text-muted-foreground"
+                      !today &&
+                        !isSelected &&
+                        holidays.length > 0 &&
+                        "text-rose-600 dark:text-rose-400",
+                      !today && !isSelected && holidays.length === 0 && "text-muted-foreground",
                     )}
                   >
                     {date.getDate()}
@@ -152,9 +155,7 @@ export function MonthView({
                       variant="month"
                     />
                   )}
-                  {isCurrentMonth && weather && (
-                    <WeatherBadge weather={weather} variant="month" />
-                  )}
+                  {isCurrentMonth && weather && <WeatherBadge weather={weather} variant="month" />}
                 </div>
 
                 {isCurrentMonth && (

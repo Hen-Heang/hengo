@@ -127,11 +127,7 @@ export default function KoreanCoachPracticePage() {
         "speaking",
         preferences,
       )
-      const turn = await koreanCoachApi.createTurn(
-        createdSession.id,
-        1,
-        scenario!.openingMessage,
-      )
+      const turn = await koreanCoachApi.createTurn(createdSession.id, 1, scenario!.openingMessage)
       startedAtRef.current = Date.now()
       setSession(createdSession)
       setCurrentTurn(turn)
@@ -390,8 +386,8 @@ export default function KoreanCoachPracticePage() {
                 <ShieldCheck className="mt-0.5 size-5 shrink-0 text-primary" aria-hidden="true" />
                 <p className="text-sm leading-6 text-muted-foreground">
                   Your recording is sent to an AI service for transcription and feedback. Do not
-                  include sensitive workplace or personal information. Raw recordings are
-                  processed transiently and are not saved.
+                  include sensitive workplace or personal information. Raw recordings are processed
+                  transiently and are not saved.
                 </p>
               </div>
             </div>
@@ -438,7 +434,9 @@ export default function KoreanCoachPracticePage() {
         </div>
         <div>
           <div className="mb-1.5 flex justify-between text-xs font-medium text-muted-foreground">
-            <span>Turn {turnNumber} of {MAX_TURNS}</span>
+            <span>
+              Turn {turnNumber} of {MAX_TURNS}
+            </span>
             <span>{Math.round(progress)}%</span>
           </div>
           <div
@@ -527,12 +525,7 @@ export default function KoreanCoachPracticePage() {
                   {transcriptVisible ? <EyeOff /> : <Eye />}
                   {transcriptVisible ? "Hide transcript" : "Show transcript"}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="min-h-11"
-                  onClick={showHint}
-                >
+                <Button type="button" variant="outline" className="min-h-11" onClick={showHint}>
                   <Lightbulb />
                   Give me a hint
                 </Button>
@@ -542,8 +535,7 @@ export default function KoreanCoachPracticePage() {
                   className="col-span-2 min-h-11"
                   onClick={() => setEnglishVisible(true)}
                 >
-                  <CircleHelp />
-                  I don’t understand
+                  <CircleHelp />I don’t understand
                 </Button>
               </div>
 

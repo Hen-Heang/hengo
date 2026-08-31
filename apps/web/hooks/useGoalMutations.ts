@@ -57,7 +57,7 @@ export function useCreateGoal() {
         version: 1,
         ...payload.metadata,
         start_date: payload.start_date
-          ? toDateOnly(payload.start_date) ?? undefined
+          ? (toDateOnly(payload.start_date) ?? undefined)
           : payload.metadata.start_date,
       }
 
@@ -77,7 +77,7 @@ export function useCreateGoal() {
 
   const createGoal = async (
     payload: CreateGoalPayload,
-    options: GoalMutationOptions = {}
+    options: GoalMutationOptions = {},
   ): Promise<{ success: boolean; goal?: Goal; error?: string }> => {
     try {
       const goal = await mutation.mutateAsync(payload)
@@ -103,16 +103,13 @@ export function useUpdateGoal() {
   const userId = getUserId()
 
   const mutation = useMutation({
-    mutationFn: async (vars: {
-      goalId: string
-      payload: UpdateGoalPayload
-    }): Promise<Goal> => {
+    mutationFn: async (vars: { goalId: string; payload: UpdateGoalPayload }): Promise<Goal> => {
       const { goalId, payload } = vars
       const metadata: GoalMetadata = {
         version: 1,
         ...payload.metadata,
         start_date: payload.start_date
-          ? toDateOnly(payload.start_date) ?? undefined
+          ? (toDateOnly(payload.start_date) ?? undefined)
           : payload.metadata.start_date,
       }
 
@@ -134,7 +131,7 @@ export function useUpdateGoal() {
   const updateGoal = async (
     goalId: string,
     payload: UpdateGoalPayload,
-    options: GoalMutationOptions = {}
+    options: GoalMutationOptions = {},
   ): Promise<{ success: boolean; goal?: Goal; message?: string }> => {
     try {
       const goal = await mutation.mutateAsync({ goalId, payload })

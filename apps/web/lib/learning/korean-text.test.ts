@@ -115,7 +115,11 @@ describe("createCorrectionFingerprint", () => {
 
   it("defaults category to general when missing", () => {
     const a = createCorrectionFingerprint({ originalText: "a", correctedText: "b" })
-    const b = createCorrectionFingerprint({ originalText: "a", correctedText: "b", category: "general" })
+    const b = createCorrectionFingerprint({
+      originalText: "a",
+      correctedText: "b",
+      category: "general",
+    })
     expect(a).toBe(b)
   })
 })

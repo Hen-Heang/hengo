@@ -15,11 +15,7 @@ import { CoachAudioPlayer } from "@/components/korean-coach/CoachAudioPlayer"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type {
-  KoreanTutorFeedback,
-  RomanizationMode,
-  SpeechSpeed,
-} from "@/lib/korean-coach/schemas"
+import type { KoreanTutorFeedback, RomanizationMode, SpeechSpeed } from "@/lib/korean-coach/schemas"
 
 interface CoachFeedbackProps {
   feedback: KoreanTutorFeedback
@@ -219,4 +215,3 @@ export function CoachFeedback({
     </section>
   )
 }
-

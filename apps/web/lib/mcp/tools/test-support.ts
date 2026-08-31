@@ -17,7 +17,10 @@ export interface CapturedTool {
 
 /** Stands in for McpServer just well enough to record what registerTool was
  * called with — no real transport, no JSON-RPC. */
-export function captureRegisteredTools(): { fakeServer: McpServer; tools: Map<string, CapturedTool> } {
+export function captureRegisteredTools(): {
+  fakeServer: McpServer
+  tools: Map<string, CapturedTool>
+} {
   const tools = new Map<string, CapturedTool>()
   const fakeServer = {
     registerTool(name: string, config: CapturedTool["config"], handler: CapturedTool["handler"]) {
@@ -32,12 +35,24 @@ export function captureRegisteredTools(): { fakeServer: McpServer; tools: Map<st
  * every chain method returns itself, and awaiting it resolves to `result`. */
 export function fakeQuery(result: { data: unknown; error: unknown; count?: number | null }) {
   const builder: Record<string, unknown> = {}
-  for (const method of ["select", "eq", "order", "limit", "gte", "lte", "is", "in", "insert", "update"]) {
+  for (const method of [
+    "select",
+    "eq",
+    "order",
+    "limit",
+    "gte",
+    "lte",
+    "is",
+    "in",
+    "insert",
+    "update",
+  ]) {
     builder[method] = () => builder
   }
   builder.maybeSingle = () => Promise.resolve(result)
   builder.single = () => Promise.resolve(result)
-  builder.then = (onResolve: (v: typeof result) => unknown) => Promise.resolve(result).then(onResolve)
+  builder.then = (onResolve: (v: typeof result) => unknown) =>
+    Promise.resolve(result).then(onResolve)
   return builder
 }
 
@@ -57,5 +72,12 @@ export function fakeDb(
 }
 
 export function fakeContext(db: SupabaseClient, overrides: Partial<McpContext> = {}): McpContext {
-  return { userId: "user-1", clientId: "client-1", db, writeEnabled: false, requestId: "req-1", ...overrides }
+  return {
+    userId: "user-1",
+    clientId: "client-1",
+    db,
+    writeEnabled: false,
+    requestId: "req-1",
+    ...overrides,
+  }
 }

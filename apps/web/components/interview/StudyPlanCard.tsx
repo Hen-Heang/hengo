@@ -143,11 +143,24 @@ export function StudyPlanCard() {
           className="flex flex-1 items-start gap-2.5 rounded-xl px-2 py-2 text-left transition-colors hover:bg-accent/50 active:scale-[0.99]"
         >
           {checked ? (
-            <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
+            <CheckCircle2
+              size={18}
+              className="mt-0.5 shrink-0 text-emerald-600 dark:text-emerald-400"
+              strokeWidth={2.5}
+            />
           ) : (
-            <Circle size={18} className="mt-0.5 shrink-0 text-muted-foreground/50" strokeWidth={2} />
+            <Circle
+              size={18}
+              className="mt-0.5 shrink-0 text-muted-foreground/50"
+              strokeWidth={2}
+            />
           )}
-          <span className={cn("text-sm font-medium leading-snug", checked ? "text-muted-foreground line-through" : "text-foreground")}>
+          <span
+            className={cn(
+              "text-sm font-medium leading-snug",
+              checked ? "text-muted-foreground line-through" : "text-foreground",
+            )}
+          >
             {text}
           </span>
         </button>
@@ -208,7 +221,9 @@ export function StudyPlanCard() {
 
         {/* This week's checklist */}
         <div className="mt-5 flex items-center justify-between">
-          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">This week</p>
+          <p className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            This week
+          </p>
           <Badge variant="outline" className="rounded-lg px-2 py-0.5 text-[11px]">
             {completed}/{total}
           </Badge>
@@ -258,7 +273,9 @@ export function StudyPlanCard() {
                 key={w.id}
                 className={cn(
                   "flex items-center justify-between rounded-lg px-3 py-1.5 text-xs",
-                  w.id === week.id ? "bg-amber-500/10 font-bold text-foreground" : "text-muted-foreground"
+                  w.id === week.id
+                    ? "bg-amber-500/10 font-bold text-foreground"
+                    : "text-muted-foreground",
                 )}
               >
                 <span>{w.range}</span>

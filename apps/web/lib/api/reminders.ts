@@ -1,6 +1,14 @@
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
-import { DEFAULT_REMINDER_TIMEZONE, type Reminder, type ReminderChannel, type ReminderEntityType, type ReminderInput, type ReminderStatus, type RecurrenceRule } from "@/lib/reminders"
+import {
+  DEFAULT_REMINDER_TIMEZONE,
+  type Reminder,
+  type ReminderChannel,
+  type ReminderEntityType,
+  type ReminderInput,
+  type ReminderStatus,
+  type RecurrenceRule,
+} from "@/lib/reminders"
 
 // Universal Reminders over kori_reminders. Mirrors the notesApi/inboxApi
 // shape: plain async functions, row<->camelCase mapping here,
@@ -56,7 +64,11 @@ function toReminder(row: ReminderRow): Reminder {
 }
 
 /** Live "next reminder: ..." preview — calls the same SQL function the server-side dispatcher uses. */
-export async function previewNextRun(recurrence: RecurrenceRule, timezone: string, after: Date = new Date()): Promise<Date | null> {
+export async function previewNextRun(
+  recurrence: RecurrenceRule,
+  timezone: string,
+  after: Date = new Date(),
+): Promise<Date | null> {
   const { data, error } = await supabase.rpc("kori_next_reminder_run", {
     p_recurrence: recurrence,
     p_timezone: timezone,
@@ -74,7 +86,10 @@ export interface ReminderListParams {
 
 export const remindersApi = {
   list: async (params: ReminderListParams = {}): Promise<Reminder[]> => {
-    let query = supabase.from("kori_reminders").select(SELECT_COLUMNS).order("next_run_at", { ascending: true, nullsFirst: false })
+    let query = supabase
+      .from("kori_reminders")
+      .select(SELECT_COLUMNS)
+      .order("next_run_at", { ascending: true, nullsFirst: false })
     if (params.entityType) query = query.eq("entity_type", params.entityType)
     if (params.entityId) query = query.eq("entity_id", params.entityId)
     if (params.status && params.status !== "all") query = query.eq("status", params.status)
@@ -141,7 +156,11 @@ export const remindersApi = {
 
     const { data, error } = await supabase
       .from("kori_reminders")
-      .update({ status: "active", next_run_at: nextRunAt ? nextRunAt.toISOString() : null, updated_at: new Date().toISOString() })
+      .update({
+        status: "active",
+        next_run_at: nextRunAt ? nextRunAt.toISOString() : null,
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id)
       .select(SELECT_COLUMNS)
       .single()
@@ -164,7 +183,12 @@ export const remindersApi = {
     const until = new Date(Date.now() + minutes * 60_000).toISOString()
     const { data, error } = await supabase
       .from("kori_reminders")
-      .update({ snoozed_until: until, next_run_at: until, status: "active", updated_at: new Date().toISOString() })
+      .update({
+        snoozed_until: until,
+        next_run_at: until,
+        status: "active",
+        updated_at: new Date().toISOString(),
+      })
       .eq("id", id)
       .select(SELECT_COLUMNS)
       .single()

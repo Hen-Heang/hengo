@@ -75,7 +75,10 @@ function PlanCard({
   }
 
   return (
-    <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+    <motion.div
+      variants={itemVariants}
+      className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+    >
       <div className="flex items-start justify-between gap-4">
         {editing ? (
           <div className="min-w-0 flex-1 space-y-2">
@@ -85,7 +88,11 @@ function PlanCard({
             </div>
             <div className="flex items-center gap-2">
               <span className="w-10 shrink-0 text-sm font-semibold text-foreground">Then</span>
-              <Input value={thenText} onChange={(e) => setThenText(e.target.value)} className="h-9" />
+              <Input
+                value={thenText}
+                onChange={(e) => setThenText(e.target.value)}
+                className="h-9"
+              />
             </div>
           </div>
         ) : (
@@ -109,7 +116,11 @@ function PlanCard({
 
       {editing ? (
         <div className="mt-4 flex gap-2">
-          <Button size="sm" onClick={handleSave} disabled={saving || !ifText.trim() || !thenText.trim()}>
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving || !ifText.trim() || !thenText.trim()}
+          >
             {saving ? "Saving…" : "Save"}
           </Button>
           <Button
@@ -143,7 +154,12 @@ function PlanCard({
           <Button variant="outline" size="sm" onClick={onStartReview}>
             {isDue ? "Rehearse" : "Rehearse early"}
           </Button>
-          <Button variant="ghost" size="icon-sm" onClick={() => setEditing(true)} aria-label="Edit plan">
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            onClick={() => setEditing(true)}
+            aria-label="Edit plan"
+          >
             <Pencil size={14} strokeWidth={2} />
           </Button>
           <AlertDialog>

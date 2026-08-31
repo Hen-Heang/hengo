@@ -27,7 +27,7 @@ export function UserAvatar({ className, href, title = "Your profile" }: UserAvat
   const box = cn(
     "flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-linear-to-br from-blue-500 to-indigo-600 text-xs font-bold text-white shadow-lg shadow-blue-500/20 ring-1 ring-border/50 transition-all",
     href && "group-hover:ring-blue-500/40",
-    className
+    className,
   )
 
   const inner = url ? (

@@ -20,7 +20,12 @@ export function BackLink({
   className?: string
 }) {
   return (
-    <Button asChild variant="ghost" size="sm" className={cn("-ml-2", mobileOnly && "lg:hidden", className)}>
+    <Button
+      asChild
+      variant="ghost"
+      size="sm"
+      className={cn("-ml-2", mobileOnly && "lg:hidden", className)}
+    >
       <Link href={href}>
         <ArrowLeft size={16} strokeWidth={2} />
         {label}

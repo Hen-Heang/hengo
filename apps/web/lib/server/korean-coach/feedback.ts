@@ -17,9 +17,7 @@ export interface TutorFeedbackResult {
   mode: "live" | "mock"
 }
 
-export async function generateKoreanTutorFeedback(
-  rawInput: unknown,
-): Promise<TutorFeedbackResult> {
+export async function generateKoreanTutorFeedback(rawInput: unknown): Promise<TutorFeedbackResult> {
   const input = feedbackRequestSchema.parse(rawInput)
   const scenario = getKoreanCoachScenario(input.scenarioId)
   if (!scenario) {

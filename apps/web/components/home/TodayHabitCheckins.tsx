@@ -13,7 +13,10 @@ import { cn } from "@/lib/utils"
 const VISIBLE_LIMIT = 4
 
 function HabitCheckinRow({ habit }: { habit: Habit }) {
-  const { checkins, currentStreak, loading, toggleCheckin } = useHabitCheckins(habit.id, habit.startedAt)
+  const { checkins, currentStreak, loading, toggleCheckin } = useHabitCheckins(
+    habit.id,
+    habit.startedAt,
+  )
   const today = toCheckinDate()
   const doneToday = checkins.some((c) => c.date === today && c.completed)
   const Icon = CATEGORY_ICONS[habit.category]
@@ -26,15 +29,20 @@ function HabitCheckinRow({ habit }: { habit: Habit }) {
       transition={{ duration: 0.2, ease: "easeOut" }}
       className={cn(
         "flex min-h-11 items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
-        doneToday ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-background/40"
+        doneToday ? "border-emerald-500/20 bg-emerald-500/5" : "border-border bg-background/40",
       )}
     >
       <div
-        className={cn("flex size-8 shrink-0 items-center justify-center rounded-lg", CATEGORY_COLORS[habit.category])}
+        className={cn(
+          "flex size-8 shrink-0 items-center justify-center rounded-lg",
+          CATEGORY_COLORS[habit.category],
+        )}
       >
         <Icon size={16} strokeWidth={2} />
       </div>
-      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">{habit.label}</span>
+      <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
+        {habit.label}
+      </span>
       {!loading && currentStreak > 0 && (
         <span className="flex shrink-0 items-center gap-1 text-xs font-semibold text-muted-foreground">
           <Flame size={12} className="text-orange-500" />
@@ -44,7 +52,11 @@ function HabitCheckinRow({ habit }: { habit: Habit }) {
       <motion.button
         type="button"
         whileTap={{ scale: 0.85 }}
-        aria-label={doneToday ? `Undo today's check-in for ${habit.label}` : `Check in ${habit.label} for today`}
+        aria-label={
+          doneToday
+            ? `Undo today's check-in for ${habit.label}`
+            : `Check in ${habit.label} for today`
+        }
         onClick={() => void toggleCheckin(today)}
         disabled={loading}
         className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md disabled:opacity-50"

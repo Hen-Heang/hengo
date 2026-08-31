@@ -43,32 +43,35 @@ export default function GoalsPage() {
 
   const activeGoals = useMemo(
     () => sortedGoals.filter((g) => g.status !== "completed" && g.status !== "archived"),
-    [sortedGoals]
+    [sortedGoals],
   )
   const completedGoals = useMemo(
     () => sortedGoals.filter((g) => g.status === "completed"),
-    [sortedGoals]
+    [sortedGoals],
   )
-  const allGoals = useMemo(
-    () => sortedGoals.filter((g) => g.status !== "archived"),
-    [sortedGoals]
-  )
+  const allGoals = useMemo(() => sortedGoals.filter((g) => g.status !== "archived"), [sortedGoals])
 
   const filteredGoals =
     goalFilter === "all" ? allGoals : goalFilter === "active" ? activeGoals : completedGoals
   const filteredTotalPages = Math.max(1, Math.ceil(filteredGoals.length / itemsPerPage))
   const displayGoals = useMemo(
     () => filteredGoals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage),
-    [filteredGoals, currentPage, itemsPerPage]
+    [filteredGoals, currentPage, itemsPerPage],
   )
 
   const emptyState =
     allGoals.length === 0
-      ? { title: "No goals yet", description: "Create your first goal and turn it into a clear plan." }
+      ? {
+          title: "No goals yet",
+          description: "Create your first goal and turn it into a clear plan.",
+        }
       : goalFilter === "active"
         ? { title: "No active goals", description: "Completed goals can be found under Completed." }
         : goalFilter === "completed"
-          ? { title: "Nothing completed yet.", description: "Finish a goal and it'll show up here." }
+          ? {
+              title: "Nothing completed yet.",
+              description: "Finish a goal and it'll show up here.",
+            }
           : undefined
 
   const handleEditGoal = useCallback((goal: Goal, event: React.MouseEvent) => {
@@ -94,7 +97,11 @@ export default function GoalsPage() {
           <div className="flex w-fit gap-1 rounded-lg bg-foreground/5 p-1">
             {(["all", "active", "completed"] as const).map((tab) => {
               const count =
-                tab === "all" ? allGoals.length : tab === "active" ? activeGoals.length : completedGoals.length
+                tab === "all"
+                  ? allGoals.length
+                  : tab === "active"
+                    ? activeGoals.length
+                    : completedGoals.length
               const isSelected = goalFilter === tab
               return (
                 <button
@@ -107,14 +114,16 @@ export default function GoalsPage() {
                     "flex min-h-11 items-center gap-2 rounded-lg px-4 py-2 text-sm capitalize transition-colors",
                     isSelected
                       ? "bg-background font-semibold text-foreground shadow-sm"
-                      : "font-medium text-muted-foreground hover:text-foreground hover:bg-background/40"
+                      : "font-medium text-muted-foreground hover:text-foreground hover:bg-background/40",
                   )}
                 >
                   {tab}
                   <span
                     className={cn(
                       "rounded-md px-2 py-0.5 text-xs font-medium tabular-nums",
-                      isSelected ? "bg-blue-500/10 text-blue-600 dark:text-blue-400" : "bg-foreground/5 text-muted-foreground"
+                      isSelected
+                        ? "bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                        : "bg-foreground/5 text-muted-foreground",
                     )}
                   >
                     {count}

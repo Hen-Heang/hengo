@@ -14,9 +14,7 @@ const PANEL_ID = "floating-ai-coach"
 
 const FloatingAiCoachPanel = dynamic(
   () =>
-    import("@/components/chat/FloatingAiCoachPanel").then(
-      (module) => module.FloatingAiCoachPanel
-    ),
+    import("@/components/chat/FloatingAiCoachPanel").then((module) => module.FloatingAiCoachPanel),
   {
     ssr: false,
     loading: () => (
@@ -27,7 +25,7 @@ const FloatingAiCoachPanel = dynamic(
         </div>
       </div>
     ),
-  }
+  },
 )
 
 type FloatingAiCoachProps = {
@@ -41,11 +39,7 @@ type FloatingAiCoachProps = {
  * after the first open, then stay mounted so closing the window does not reset a
  * draft or interrupt a streaming response.
  */
-export function FloatingAiCoach({
-  mobile,
-  bottomNavVisible,
-  keyboardOpen,
-}: FloatingAiCoachProps) {
+export function FloatingAiCoach({ mobile, bottomNavVisible, keyboardOpen }: FloatingAiCoachProps) {
   const [open, setOpen] = useState(false)
   const [hasOpened, setHasOpened] = useState(false)
   const launcherRef = useRef<HTMLButtonElement>(null)
@@ -105,7 +99,7 @@ export function FloatingAiCoach({
             mobile
               ? mobilePanelPosition
               : "bottom-5 right-5 h-[min(42rem,calc(100dvh-2.5rem))] w-[26rem]",
-            !open && "hidden"
+            !open && "hidden",
           )}
         >
           <div className="flex min-w-0 flex-1 flex-col">
@@ -120,9 +114,7 @@ export function FloatingAiCoach({
                 >
                   Hengo Coach
                 </h2>
-                <p className="truncate text-xs text-muted-foreground">
-                  Quick help, right here
-                </p>
+                <p className="truncate text-xs text-muted-foreground">Quick help, right here</p>
               </div>
               <Button asChild variant="ghost" size="icon-sm">
                 <Link
@@ -170,7 +162,7 @@ export function FloatingAiCoach({
             "fixed right-4 z-40 size-14 rounded-full shadow-lg shadow-primary/30",
             bottomNavVisible
               ? "bottom-[calc(4.75rem+env(safe-area-inset-bottom))]"
-              : "bottom-[max(0.75rem,env(safe-area-inset-bottom))]"
+              : "bottom-[max(0.75rem,env(safe-area-inset-bottom))]",
           )}
         >
           <Sparkles data-icon="inline-start" className="size-5" aria-hidden="true" />

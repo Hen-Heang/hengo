@@ -24,7 +24,11 @@ export function simpleCoachError(
   return coachErrorResponse({ code, message, status, retryable })
 }
 
-export function coachDataResponse<T>(data: T, mode: "live" | "mock" = "live", init?: ResponseInit): Response {
+export function coachDataResponse<T>(
+  data: T,
+  mode: "live" | "mock" = "live",
+  init?: ResponseInit,
+): Response {
   return Response.json({ data, meta: { mode } }, init)
 }
 
@@ -34,11 +38,7 @@ export async function requireCoachUser(req: Request): Promise<AuthedRequest | Re
   const status = auth.status === 401 ? 401 : 500
   const hadBearerToken = req.headers.has("authorization")
   return simpleCoachError(
-    status === 401
-      ? hadBearerToken
-        ? "SESSION_EXPIRED"
-        : "AUTH_REQUIRED"
-      : "INTERNAL_ERROR",
+    status === 401 ? (hadBearerToken ? "SESSION_EXPIRED" : "AUTH_REQUIRED") : "INTERNAL_ERROR",
     status === 401
       ? hadBearerToken
         ? "Your session expired. Sign in again, then retry."

@@ -40,13 +40,7 @@ export const SKILL_CODES = [
 export type SkillCode = (typeof SKILL_CODES)[number]
 
 export type SkillCategory =
-  | "grammar"
-  | "communication"
-  | "vocabulary"
-  | "listening"
-  | "speaking"
-  | "reading"
-  | "interview"
+  "grammar" | "communication" | "vocabulary" | "listening" | "speaking" | "reading" | "interview"
 
 export interface SkillDefinition {
   code: SkillCode
@@ -256,7 +250,14 @@ export function skillForCorrectionCategory(category: string): SkillCode {
 // skills that topic mainly exercises. Falls back to a sensible default set.
 export function skillsForListeningTopic(topic: string): SkillCode[] {
   const key = topic.toLowerCase()
-  if (key.includes("standup") || key.includes("sprint") || key.includes("review") || key.includes("meeting") || key.includes("one-on-one") || key.includes("client")) {
+  if (
+    key.includes("standup") ||
+    key.includes("sprint") ||
+    key.includes("review") ||
+    key.includes("meeting") ||
+    key.includes("one-on-one") ||
+    key.includes("client")
+  ) {
     return ["listening.workplace", "listening.main_idea", "listening.details"]
   }
   if (key.includes("helpdesk") || key.includes("it")) {
@@ -267,7 +268,13 @@ export function skillsForListeningTopic(topic: string): SkillCode[] {
 
 export function skillForVocabCategory(category: string): SkillCode {
   const key = category.toLowerCase()
-  if (key.includes("tech") || key.includes("code") || key.includes("dev") || key.includes("engineer") || key.includes("it ")) {
+  if (
+    key.includes("tech") ||
+    key.includes("code") ||
+    key.includes("dev") ||
+    key.includes("engineer") ||
+    key.includes("it ")
+  ) {
     return "vocabulary.technical"
   }
   if (key.includes("daily") || key.includes("life") || key.includes("general")) {
@@ -284,7 +291,12 @@ export function skillsForScenarioCategory(category: string): SkillCode[] {
   if (key.includes("review") || key.includes("code")) {
     return ["vocabulary.technical", "speaking.accuracy", "speaking.task_completion"]
   }
-  if (key.includes("social") || key.includes("lunch") || key.includes("dinner") || key.includes("team")) {
+  if (
+    key.includes("social") ||
+    key.includes("lunch") ||
+    key.includes("dinner") ||
+    key.includes("team")
+  ) {
     return ["speaking.confidence", "vocabulary.daily_life", "communication.clarification"]
   }
   return ["speaking.task_completion", "speaking.fluency", "communication.clarification"]

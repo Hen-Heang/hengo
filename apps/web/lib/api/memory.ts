@@ -33,10 +33,14 @@ export const memoryApi = {
    * own RLS-scoped data, answers with citations, and persists any new memory
    * candidates it noticed (always as status "proposed" — never trusted
    * automatically); those come back already inserted, ready to review. */
-  ask: async (question: string): Promise<AskHengoAnswer> => aiPost<AskHengoAnswer>("/memory/ask", { question }),
+  ask: async (question: string): Promise<AskHengoAnswer> =>
+    aiPost<AskHengoAnswer>("/memory/ask", { question }),
 
   listCandidates: async (status?: MemoryStatus | "all"): Promise<MemoryCandidate[]> => {
-    let query = supabase.from("kori_memory_candidates").select("*").order("created_at", { ascending: false })
+    let query = supabase
+      .from("kori_memory_candidates")
+      .select("*")
+      .order("created_at", { ascending: false })
     if (status && status !== "all") query = query.eq("status", status)
     const { data, error } = await query
     if (error) throw error
@@ -45,7 +49,9 @@ export const memoryApi = {
 
   /** User-authored memory, added directly rather than proposed by the AI —
    * defaults to "approved" since the user typed it themselves. */
-  create: async (input: Pick<MemoryCandidateInput, "fact" | "category">): Promise<MemoryCandidate> => {
+  create: async (
+    input: Pick<MemoryCandidateInput, "fact" | "category">,
+  ): Promise<MemoryCandidate> => {
     const userId = requireUserId()
     const { data, error } = await supabase
       .from("kori_memory_candidates")
@@ -65,9 +71,17 @@ export const memoryApi = {
   },
 
   approve: async (id: string, editedFact?: string): Promise<MemoryCandidate> => {
-    const patch: Record<string, unknown> = { status: "approved", updated_at: new Date().toISOString() }
+    const patch: Record<string, unknown> = {
+      status: "approved",
+      updated_at: new Date().toISOString(),
+    }
     if (editedFact !== undefined) patch.fact = editedFact.trim()
-    const { data, error } = await supabase.from("kori_memory_candidates").update(patch).eq("id", id).select("*").single()
+    const { data, error } = await supabase
+      .from("kori_memory_candidates")
+      .update(patch)
+      .eq("id", id)
+      .select("*")
+      .single()
     if (error) throw error
     return toMemoryCandidate(data as MemoryCandidateRow)
   },

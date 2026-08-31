@@ -14,7 +14,10 @@ interface PhraseQuestionShape {
   english: string
 }
 
-export async function buildPhrasebookContextBlock(db: SupabaseClient, userId: string): Promise<string> {
+export async function buildPhrasebookContextBlock(
+  db: SupabaseClient,
+  userId: string,
+): Promise<string> {
   try {
     const { data: dueRows } = await db
       .from("kori_phrase_progress")
@@ -27,7 +30,10 @@ export async function buildPhrasebookContextBlock(db: SupabaseClient, userId: st
     const phraseIds = (dueRows ?? []).map((r) => r.phrase_id as string)
     if (phraseIds.length === 0) return ""
 
-    const { data: cards } = await db.from("kori_phrase_cards").select("question, category, situation").in("id", phraseIds)
+    const { data: cards } = await db
+      .from("kori_phrase_cards")
+      .select("question, category, situation")
+      .in("id", phraseIds)
     if (!cards || cards.length === 0) return ""
 
     const lines = cards.map((c) => {

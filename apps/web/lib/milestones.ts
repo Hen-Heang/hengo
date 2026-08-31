@@ -2,13 +2,7 @@
 // Recovery) — a meaningful phase name reads calmer than a raw day count and
 // keeps both modules' progress language in sync from one place.
 export type MilestonePhase =
-  | "detox"
-  | "momentum"
-  | "foundation"
-  | "consistency"
-  | "identity"
-  | "lifestyle"
-  | "mastery"
+  "detox" | "momentum" | "foundation" | "consistency" | "identity" | "lifestyle" | "mastery"
 
 export const MILESTONE_LABELS: Record<MilestonePhase, string> = {
   detox: "Detox",
@@ -42,7 +36,9 @@ export function milestonePhase(daysActive: number): MilestonePhase {
 }
 
 /** The next phase and how many days away it is, or null once at Mastery. */
-export function nextMilestone(daysActive: number): { phase: MilestonePhase; daysRemaining: number } | null {
+export function nextMilestone(
+  daysActive: number,
+): { phase: MilestonePhase; daysRemaining: number } | null {
   const days = Math.max(0, daysActive)
   const next = THRESHOLDS.find((t) => t.fromDay > days)
   if (!next) return null

@@ -14,7 +14,13 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage, previewNextRun } from "@/lib/api"
 import { usePush } from "@/hooks/usePush"
@@ -49,7 +55,14 @@ function parseValidDate(value: string): Date | null {
   return Number.isNaN(date.getTime()) ? null : date
 }
 
-export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepLink, defaultTitle }: ReminderDialogProps) {
+export function ReminderDialog({
+  open,
+  onOpenChange,
+  entityType,
+  entityId,
+  deepLink,
+  defaultTitle,
+}: ReminderDialogProps) {
   const [title, setTitle] = useState(defaultTitle)
   const [body, setBody] = useState("")
   const [mode, setMode] = useState<ScheduleMode>("recurring")
@@ -82,12 +95,12 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
             ? { frequency, time, weekdays }
             : { frequency, time }
         : null,
-    [anchorWeekday, frequency, mode, time, weekdays]
+    [anchorWeekday, frequency, mode, time, weekdays],
   )
 
   const parsedScheduledFor = useMemo(
     () => (mode === "once" ? parseValidDate(scheduledFor) : null),
-    [mode, scheduledFor]
+    [mode, scheduledFor],
   )
 
   const input = {
@@ -103,13 +116,20 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
     if (mode === "recurring" && recurrence && !errors.schedule) {
       previewNextRun(recurrence, DEFAULT_REMINDER_TIMEZONE)
         .then((date) => {
-          if (!cancelled) setPreview(date ? date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) : "")
+          if (!cancelled)
+            setPreview(
+              date
+                ? date.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" })
+                : "",
+            )
         })
         .catch(() => {
           if (!cancelled) setPreview("")
         })
     } else if (mode === "once" && parsedScheduledFor) {
-      setPreview(parsedScheduledFor.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }))
+      setPreview(
+        parsedScheduledFor.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }),
+      )
     } else {
       setPreview("")
     }
@@ -119,11 +139,15 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
   }, [errors.schedule, mode, parsedScheduledFor, recurrence])
 
   function toggleChannel(channel: ReminderChannel) {
-    setChannels((prev) => (prev.includes(channel) ? prev.filter((c) => c !== channel) : [...prev, channel]))
+    setChannels((prev) =>
+      prev.includes(channel) ? prev.filter((c) => c !== channel) : [...prev, channel],
+    )
   }
 
   function toggleWeekday(day: number) {
-    setWeekdays((prev) => (prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort()))
+    setWeekdays((prev) =>
+      prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day].sort(),
+    )
   }
 
   async function handleSubmit(event: React.FormEvent) {
@@ -165,17 +189,31 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
           </DialogHeader>
 
           <div className="mt-4 space-y-3">
-            <Input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Reminder title" maxLength={200} />
-            <Textarea value={body} onChange={(e) => setBody(e.target.value)} placeholder="Message (optional)" className="min-h-16" />
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Reminder title"
+              maxLength={200}
+            />
+            <Textarea
+              value={body}
+              onChange={(e) => setBody(e.target.value)}
+              placeholder="Message (optional)"
+              className="min-h-16"
+            />
 
-            <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1" role="group" aria-label="Schedule type">
+            <div
+              className="flex items-center gap-1 rounded-xl border border-border bg-card p-1"
+              role="group"
+              aria-label="Schedule type"
+            >
               <button
                 type="button"
                 onClick={() => setMode("recurring")}
                 aria-pressed={mode === "recurring"}
                 className={cn(
                   "min-h-11 flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                  mode === "recurring" ? "bg-accent text-foreground" : "text-muted-foreground"
+                  mode === "recurring" ? "bg-accent text-foreground" : "text-muted-foreground",
                 )}
               >
                 Recurring
@@ -186,7 +224,7 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                 aria-pressed={mode === "once"}
                 className={cn(
                   "min-h-11 flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                  mode === "once" ? "bg-accent text-foreground" : "text-muted-foreground"
+                  mode === "once" ? "bg-accent text-foreground" : "text-muted-foreground",
                 )}
               >
                 One-time
@@ -203,7 +241,10 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
             ) : (
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Select value={frequency} onValueChange={(v) => setFrequency(v as ReminderFrequency)}>
+                  <Select
+                    value={frequency}
+                    onValueChange={(v) => setFrequency(v as ReminderFrequency)}
+                  >
                     <SelectTrigger className="flex-1" aria-label="Repeat frequency">
                       <SelectValue />
                     </SelectTrigger>
@@ -213,11 +254,21 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                       <SelectItem value="weekdays">Selected weekdays</SelectItem>
                     </SelectContent>
                   </Select>
-                  <Input type="time" value={time} onChange={(e) => setTime(e.target.value)} className="w-32" aria-label="Time" />
+                  <Input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    className="w-32"
+                    aria-label="Time"
+                  />
                 </div>
 
                 {frequency === "weekly" && (
-                  <div className="flex flex-wrap gap-1.5" role="group" aria-label="Weekly reminder day">
+                  <div
+                    className="flex flex-wrap gap-1.5"
+                    role="group"
+                    aria-label="Weekly reminder day"
+                  >
                     {WEEKDAY_LABELS.map((label, index) => (
                       <button
                         key={label}
@@ -226,7 +277,9 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                         aria-pressed={anchorWeekday === index}
                         className={cn(
                           "min-h-11 min-w-11 rounded-lg border px-2.5 py-2 text-sm font-medium transition-colors",
-                          anchorWeekday === index ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                          anchorWeekday === index
+                            ? "border-primary/40 bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground",
                         )}
                       >
                         {label}
@@ -236,7 +289,11 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                 )}
 
                 {frequency === "weekdays" && (
-                  <div className="flex flex-wrap gap-1.5" role="group" aria-label="Reminder weekdays">
+                  <div
+                    className="flex flex-wrap gap-1.5"
+                    role="group"
+                    aria-label="Reminder weekdays"
+                  >
                     {WEEKDAY_LABELS.map((label, index) => (
                       <button
                         key={label}
@@ -245,7 +302,9 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                         aria-pressed={weekdays.includes(index)}
                         className={cn(
                           "min-h-11 min-w-11 rounded-lg border px-2.5 py-2 text-sm font-medium transition-colors",
-                          weekdays.includes(index) ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                          weekdays.includes(index)
+                            ? "border-primary/40 bg-primary/10 text-primary"
+                            : "border-border text-muted-foreground",
                         )}
                       >
                         {label}
@@ -256,8 +315,14 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
               </div>
             )}
 
-            {preview && <p className="text-sm text-muted-foreground">Next scheduled run: {preview}</p>}
-            {submitAttempted && errors.schedule && <p role="alert" className="text-sm text-destructive">{errors.schedule}</p>}
+            {preview && (
+              <p className="text-sm text-muted-foreground">Next scheduled run: {preview}</p>
+            )}
+            {submitAttempted && errors.schedule && (
+              <p role="alert" className="text-sm text-destructive">
+                {errors.schedule}
+              </p>
+            )}
 
             <div className="space-y-1.5">
               <span className="text-sm font-medium text-muted-foreground">Deliver via</span>
@@ -268,7 +333,9 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                   aria-pressed={channels.includes("web")}
                   className={cn(
                     "min-h-11 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                    channels.includes("web") ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                    channels.includes("web")
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground",
                   )}
                 >
                   Browser {!push.webEnabled && "(not enabled)"}
@@ -279,16 +346,23 @@ export function ReminderDialog({ open, onOpenChange, entityType, entityId, deepL
                   aria-pressed={channels.includes("telegram")}
                   className={cn(
                     "min-h-11 flex-1 rounded-lg border px-3 py-2 text-sm font-medium transition-colors",
-                    channels.includes("telegram") ? "border-primary/40 bg-primary/10 text-primary" : "border-border text-muted-foreground"
+                    channels.includes("telegram")
+                      ? "border-primary/40 bg-primary/10 text-primary"
+                      : "border-border text-muted-foreground",
                   )}
                 >
                   Telegram {!push.telegramLinked && "(not linked)"}
                 </button>
               </div>
-              {submitAttempted && errors.channels && <p role="alert" className="text-sm text-destructive">{errors.channels}</p>}
+              {submitAttempted && errors.channels && (
+                <p role="alert" className="text-sm text-destructive">
+                  {errors.channels}
+                </p>
+              )}
               {(!push.webEnabled || !push.telegramLinked) && (
                 <p className="text-xs leading-relaxed text-muted-foreground">
-                  Connect delivery channels in Settings → Notifications for reminders to actually reach you.
+                  Connect delivery channels in Settings → Notifications for reminders to actually
+                  reach you.
                 </p>
               )}
             </div>

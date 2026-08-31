@@ -78,11 +78,15 @@ export function FeatureBreakdown() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-bold text-foreground">{meta.label}</span>
                 <span className="shrink-0 text-xs font-medium text-muted-foreground/70">
-                  {row.totalMinutes}m · {row.sessionCount} session{row.sessionCount === 1 ? "" : "s"}
+                  {row.totalMinutes}m · {row.sessionCount} session
+                  {row.sessionCount === 1 ? "" : "s"}
                 </span>
               </div>
               <div className="mt-1.5 h-1.5 w-full overflow-hidden rounded-full bg-foreground/5">
-                <div className="h-full rounded-full bg-blue-500 transition-all" style={{ width: `${pct}%` }} />
+                <div
+                  className="h-full rounded-full bg-blue-500 transition-all"
+                  style={{ width: `${pct}%` }}
+                />
               </div>
             </div>
           </div>

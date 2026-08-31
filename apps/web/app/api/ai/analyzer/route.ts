@@ -46,13 +46,21 @@ export async function POST(req: Request): Promise<Response> {
 
   const rateStatus = await checkRateLimit(db, user.id, "analyzer")
   if (!rateStatus.allowed) {
-    return Response.json({ error: `Daily limit reached for AI grading / generation requests (${rateStatus.limit}/day). Try again tomorrow.` }, { status: 429 })
+    return Response.json(
+      {
+        error: `Daily limit reached for AI grading / generation requests (${rateStatus.limit}/day). Try again tomorrow.`,
+      },
+      { status: 429 },
+    )
   }
 
   const rawBody = await req.json().catch(() => ({}))
   const parsed = inputSchema.safeParse(rawBody)
   if (!parsed.success) {
-    return Response.json({ error: "Invalid request", details: parsed.error.issues.map((i) => i.message) }, { status: 400 })
+    return Response.json(
+      { error: "Invalid request", details: parsed.error.issues.map((i) => i.message) },
+      { status: 400 },
+    )
   }
   const { text, source } = parsed.data
 
@@ -60,7 +68,7 @@ export async function POST(req: Request): Promise<Response> {
     "Analyze the message below in EXTREME detail so a non-native engineer understands exactly what was meant, " +
     "how it lands socially, and how they should respond.\n" +
     "Rules:\n" +
-    "- \"breakdown\" must cover EVERY meaningful phrase/honorific in the message so nothing is left unexplained.\n" +
+    '- "breakdown" must cover EVERY meaningful phrase/honorific in the message so nothing is left unexplained.\n' +
     "- Pay special attention to honorifics (-시-, -습니다, -드리다, 분, 님) and explain the social signal each sends.\n" +
     `- \"politenessLevel\" must be exactly one of ${FORMALITY_LABELS}, followed by a short English note on who it's appropriate for.\n` +
     `- Provide 2-3 \"suggestedReplies\" ranging across formality (each formality exactly one of ${FORMALITY_LABELS}) unless a reply would be inappropriate, then return [].\n` +

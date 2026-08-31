@@ -12,7 +12,14 @@ import { CircleCheck, KeyRound, Loader2, PenLine, ShieldOff } from "lucide-react
 import type { OAuthAuthorizationDetails } from "@supabase/supabase-js"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { supabase } from "@/lib/supabase"
 
@@ -59,7 +66,10 @@ function ConsentCard() {
     supabase.auth.oauth.getAuthorizationDetails(authorizationId).then(({ data, error }) => {
       if (cancelled) return
       if (error || !data) {
-        setState({ kind: "error", message: error?.message || "This authorization link is invalid or has expired." })
+        setState({
+          kind: "error",
+          message: error?.message || "This authorization link is invalid or has expired.",
+        })
         return
       }
       if (isAuthorizationDetails(data)) {
@@ -81,10 +91,17 @@ function ConsentCard() {
       if (state.kind !== "ready") return
       const { details } = state
       setState({ kind: "ready", details, submitting: decision })
-      const call = decision === "approve" ? supabase.auth.oauth.approveAuthorization : supabase.auth.oauth.denyAuthorization
+      const call =
+        decision === "approve"
+          ? supabase.auth.oauth.approveAuthorization
+          : supabase.auth.oauth.denyAuthorization
       const { data, error } = await call(details.authorization_id, { skipBrowserRedirect: true })
       if (error || !data) {
-        setState({ kind: "error", message: error?.message || "Something went wrong recording your decision. Please try again." })
+        setState({
+          kind: "error",
+          message:
+            error?.message || "Something went wrong recording your decision. Please try again.",
+        })
         return
       }
       if (decision === "deny") {
@@ -102,7 +119,8 @@ function ConsentCard() {
         <CardHeader>
           <CardTitle>Missing authorization link</CardTitle>
           <CardDescription>
-            This page needs to be opened from a connector&apos;s sign-in flow — it isn&apos;t meant to be visited directly.
+            This page needs to be opened from a connector&apos;s sign-in flow — it isn&apos;t meant
+            to be visited directly.
           </CardDescription>
         </CardHeader>
       </Card>
@@ -114,7 +132,9 @@ function ConsentCard() {
       <Card className="items-center py-10 text-center">
         <Loader2 className="size-6 animate-spin text-muted-foreground" aria-hidden />
         <p className="text-sm text-muted-foreground">
-          {state.kind === "redirecting" ? "You've already decided — returning you now…" : "Loading authorization request…"}
+          {state.kind === "redirecting"
+            ? "You've already decided — returning you now…"
+            : "Loading authorization request…"}
         </p>
       </Card>
     )
@@ -138,7 +158,9 @@ function ConsentCard() {
       <Card className="items-center py-10 text-center">
         <ShieldOff className="size-6 text-muted-foreground" aria-hidden />
         <CardTitle>Access denied</CardTitle>
-        <CardDescription>You can close this tab. The connector was not given access to your Hengo account.</CardDescription>
+        <CardDescription>
+          You can close this tab. The connector was not given access to your Hengo account.
+        </CardDescription>
       </Card>
     )
   }
@@ -152,12 +174,16 @@ function ConsentCard() {
       <CardHeader>
         <CardTitle>Let &ldquo;{details.client.name}&rdquo; connect to Hengo?</CardTitle>
         <CardDescription>
-          This connector will be able to act on your Hengo account as you, using your own sign-in. You can revoke access at any time from Supabase&apos;s connected-apps settings.
+          This connector will be able to act on your Hengo account as you, using your own sign-in.
+          You can revoke access at any time from Supabase&apos;s connected-apps settings.
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         <section aria-labelledby="consent-read-heading" className="space-y-2">
-          <h3 id="consent-read-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
+          <h3
+            id="consent-read-heading"
+            className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+          >
             <KeyRound className="size-4" aria-hidden /> Can read
           </h3>
           <ul className="space-y-1 text-sm text-muted-foreground">
@@ -170,8 +196,12 @@ function ConsentCard() {
           </ul>
         </section>
         <section aria-labelledby="consent-write-heading" className="space-y-2">
-          <h3 id="consent-write-heading" className="flex items-center gap-1.5 text-sm font-semibold text-foreground">
-            <PenLine className="size-4" aria-hidden /> Can create or change (only if write access is enabled for this deployment)
+          <h3
+            id="consent-write-heading"
+            className="flex items-center gap-1.5 text-sm font-semibold text-foreground"
+          >
+            <PenLine className="size-4" aria-hidden /> Can create or change (only if write access is
+            enabled for this deployment)
           </h3>
           <ul className="space-y-1 text-sm text-muted-foreground">
             {WRITE_PERMISSIONS.map((line) => (
@@ -182,7 +212,10 @@ function ConsentCard() {
             ))}
           </ul>
         </section>
-        <p className="text-xs text-muted-foreground">This connector never deletes anything and never sees your recovery, mood, or journal entries.</p>
+        <p className="text-xs text-muted-foreground">
+          This connector never deletes anything and never sees your recovery, mood, or journal
+          entries.
+        </p>
       </CardContent>
       <CardFooter className="justify-end gap-2">
         <Button variant="outline" onClick={() => decide("deny")} disabled={submitting !== null}>
@@ -190,7 +223,9 @@ function ConsentCard() {
           Deny
         </Button>
         <Button onClick={() => decide("approve")} disabled={submitting !== null}>
-          {submitting === "approve" ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
+          {submitting === "approve" ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : null}
           Approve
         </Button>
       </CardFooter>

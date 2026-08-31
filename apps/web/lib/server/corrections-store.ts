@@ -49,7 +49,9 @@ async function persistOneMistake(params: {
 
   const { data: existingRow } = await db
     .from("kori_corrections")
-    .select("mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date")
+    .select(
+      "mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date",
+    )
     .eq("user_id", userId)
     .eq("fingerprint", fingerprint)
     .maybeSingle()

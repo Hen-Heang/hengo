@@ -25,7 +25,12 @@ export function registerCompleteTaskTool(server: McpServer, ctx: McpContext): vo
         changed: z.boolean(),
         url: z.string(),
       }),
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "write", "complete_task", async ({ taskId }) => {
       // Fetches the full TaskSummary column set up front (not just the
@@ -38,17 +43,28 @@ export function registerCompleteTaskTool(server: McpServer, ctx: McpContext): vo
         .maybeSingle()
       if (fetchError) throw new Error("Could not load the task.")
       if (!existing || !(await isTaskWritableBy(ctx.db, existing, ctx.userId))) {
-        return { isError: true, content: [{ type: "text" as const, text: "No task found with that id." }] }
+        return {
+          isError: true,
+          content: [{ type: "text" as const, text: "No task found with that id." }],
+        }
       }
 
       const today = todayInAppTimezone()
-      const previousStatus = resolveTaskStatus(existing as Parameters<typeof resolveTaskStatus>[0], today)
+      const previousStatus = resolveTaskStatus(
+        existing as Parameters<typeof resolveTaskStatus>[0],
+        today,
+      )
       const url = existing.goal_id ? `/goals/${existing.goal_id}/tasks` : "/goals/tasks"
 
       if (previousStatus === "completed") {
         const task = toTaskSummary(existing, today)
         return {
-          content: [{ type: "text" as const, text: `"${task.title}" was already completed — no change made.` }],
+          content: [
+            {
+              type: "text" as const,
+              text: `"${task.title}" was already completed — no change made.`,
+            },
+          ],
           structuredContent: { task, previousStatus, changed: false, url },
         }
       }

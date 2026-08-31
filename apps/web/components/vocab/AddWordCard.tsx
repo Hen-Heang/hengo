@@ -58,7 +58,12 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
     "w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm font-semibold text-foreground outline-none transition-all placeholder:font-medium placeholder:text-muted-foreground/40 focus:border-emerald-500/50 focus:ring-2 focus:ring-emerald-500/10"
 
   return (
-    <div className={cn(!embedded && "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8")}>
+    <div
+      className={cn(
+        !embedded &&
+          "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8",
+      )}
+    >
       {!embedded && (
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
@@ -68,7 +73,9 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
                 Manual entry
               </p>
             </div>
-            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">Add a Word</h3>
+            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">
+              Add a Word
+            </h3>
             <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground sm:text-[16px]">
               Type your own term and meaning. Use the topic field to add it to an existing deck or
               create a new one.
@@ -130,10 +137,12 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
         </div>
       </div>
 
-      <div className={cn(
-        "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
-        embedded ? "mt-4" : "mt-6 border-t border-border/60 pt-6 sm:mt-8 sm:pt-8"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between",
+          embedded ? "mt-4" : "mt-6 border-t border-border/60 pt-6 sm:mt-8 sm:pt-8",
+        )}
+      >
         <Button
           onClick={handleSave}
           disabled={!canSave}

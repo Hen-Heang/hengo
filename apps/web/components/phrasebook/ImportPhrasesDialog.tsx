@@ -51,7 +51,12 @@ function downloadTemplate() {
   URL.revokeObjectURL(url)
 }
 
-export function ImportPhrasesDialog({ open, onOpenChange, collections, onImported }: ImportPhrasesDialogProps) {
+export function ImportPhrasesDialog({
+  open,
+  onOpenChange,
+  collections,
+  onImported,
+}: ImportPhrasesDialogProps) {
   const [text, setText] = useState("")
   const [collectionId, setCollectionId] = useState(collections[0]?.id ?? "")
   const [preview, setPreview] = useState<ImportPreview | null>(null)
@@ -73,7 +78,11 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
       const rawRows = trimmed.startsWith("[") ? parseJsonImport(trimmed) : parseCsvImport(trimmed)
       setPreview(validateImportRows(rawRows))
     } catch (err) {
-      setParseError(err instanceof Error ? err.message : "Could not parse this file — check the format and try again.")
+      setParseError(
+        err instanceof Error
+          ? err.message
+          : "Could not parse this file — check the format and try again.",
+      )
     }
   }
 
@@ -90,7 +99,9 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
       onImported()
       onOpenChange(false)
     } catch (err) {
-      toast.error("Import failed partway through", { description: getApiErrorMessage(err, "Please try again.") })
+      toast.error("Import failed partway through", {
+        description: getApiErrorMessage(err, "Please try again."),
+      })
     } finally {
       setImporting(false)
     }
@@ -101,7 +112,9 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
       <DialogContent className="max-h-[85dvh] overflow-y-auto sm:max-w-lg">
         <DialogHeader>
           <DialogTitle>Import Q&A cards</DialogTitle>
-          <DialogDescription>Paste JSON or CSV, preview the rows, then confirm what gets imported.</DialogDescription>
+          <DialogDescription>
+            Paste JSON or CSV, preview the rows, then confirm what gets imported.
+          </DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -123,7 +136,9 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
 
           <div>
             <div className="mb-1.5 flex items-center justify-between">
-              <p className="text-xs font-semibold text-muted-foreground">JSON array or CSV with header row</p>
+              <p className="text-xs font-semibold text-muted-foreground">
+                JSON array or CSV with header row
+              </p>
               <button
                 type="button"
                 onClick={downloadTemplate}
@@ -154,15 +169,20 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
               </p>
               {incompleteCount > 0 && (
                 <p className="text-amber-600 dark:text-amber-400">
-                  {incompleteCount} row(s) are missing romanization/English/register and were skipped.
+                  {incompleteCount} row(s) are missing romanization/English/register and were
+                  skipped.
                 </p>
               )}
               {preview.duplicateRows.length > 0 && (
-                <p className="text-muted-foreground">{preview.duplicateRows.length} duplicate row(s) skipped.</p>
+                <p className="text-muted-foreground">
+                  {preview.duplicateRows.length} duplicate row(s) skipped.
+                </p>
               )}
               {preview.invalidRows.length > 0 && (
                 <div className="space-y-1">
-                  <p className="font-semibold text-destructive">{preview.invalidRows.length} invalid row(s):</p>
+                  <p className="font-semibold text-destructive">
+                    {preview.invalidRows.length} invalid row(s):
+                  </p>
                   <ul className="max-h-24 space-y-0.5 overflow-y-auto text-destructive/80">
                     {preview.invalidRows.slice(0, 10).map((issue) => (
                       <li key={issue.index}>
@@ -182,7 +202,10 @@ export function ImportPhrasesDialog({ open, onOpenChange, collections, onImporte
               <Button variant="outline" onClick={() => setPreview(null)}>
                 Back
               </Button>
-              <Button onClick={handleImport} disabled={ready.length === 0 || !collectionId || importing}>
+              <Button
+                onClick={handleImport}
+                disabled={ready.length === 0 || !collectionId || importing}
+              >
                 {importing ? <Loader2 size={14} className="mr-1.5 animate-spin" /> : null}
                 Import {ready.length > 0 ? ready.length : ""}
               </Button>

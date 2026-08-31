@@ -6,7 +6,13 @@ import { Pencil, Plus, Trash2, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -76,8 +82,25 @@ function TriggerRow({
   if (editing) {
     return (
       <div className="grid gap-2 rounded-xl border border-border bg-card p-2 sm:grid-cols-[1fr_10rem_auto_auto]">
-        <Input value={label} onChange={(e) => setLabel(e.target.value)} maxLength={60} autoFocus className="h-9" />
-        <Select value={category} onValueChange={(value) => setCategory(value as TriggerCategory)}><SelectTrigger className="h-9"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent></Select>
+        <Input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          maxLength={60}
+          autoFocus
+          className="h-9"
+        />
+        <Select value={category} onValueChange={(value) => setCategory(value as TriggerCategory)}>
+          <SelectTrigger className="h-9">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Button size="sm" onClick={handleSave} disabled={saving || !label.trim()}>
           Save
         </Button>
@@ -98,9 +121,19 @@ function TriggerRow({
 
   return (
     <div className="flex items-center justify-between gap-2 rounded-xl border border-border bg-card p-3">
-      <span className="min-w-0 text-sm text-foreground"><span className="block truncate">{trigger.label}</span><span className="mt-0.5 block text-[11px] text-muted-foreground">{categoryLabel(trigger.category)}</span></span>
+      <span className="min-w-0 text-sm text-foreground">
+        <span className="block truncate">{trigger.label}</span>
+        <span className="mt-0.5 block text-[11px] text-muted-foreground">
+          {categoryLabel(trigger.category)}
+        </span>
+      </span>
       <div className="flex items-center gap-1">
-        <Button size="icon-sm" variant="ghost" onClick={() => setEditing(true)} aria-label="Rename trigger">
+        <Button
+          size="icon-sm"
+          variant="ghost"
+          onClick={() => setEditing(true)}
+          aria-label="Rename trigger"
+        >
           <Pencil size={14} strokeWidth={2} />
         </Button>
         <AlertDialog>
@@ -113,8 +146,8 @@ function TriggerRow({
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this trigger?</AlertDialogTitle>
               <AlertDialogDescription>
-                &quot;{trigger.label}&quot; will no longer show up as a chip when logging. Past check-ins that used it keep their
-                own record.
+                &quot;{trigger.label}&quot; will no longer show up as a chip when logging. Past
+                check-ins that used it keep their own record.
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -163,15 +196,38 @@ export function TriggersManager({
 
   return (
     <div className="space-y-4">
-      <motion.form variants={itemVariants} onSubmit={handleAdd} className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]">
+      <motion.form
+        variants={itemVariants}
+        onSubmit={handleAdd}
+        className="grid gap-2 sm:grid-cols-[1fr_10rem_auto]"
+      >
         <Input
           value={newLabel}
           onChange={(e) => setNewLabel(e.target.value)}
           placeholder="e.g. after a stressful meeting"
           maxLength={60}
         />
-        <Select value={newCategory} onValueChange={(value) => setNewCategory(value as TriggerCategory)}><SelectTrigger className="h-11" aria-label="Trigger category"><SelectValue /></SelectTrigger><SelectContent>{CATEGORIES.map((item) => <SelectItem key={item.value} value={item.value}>{item.label}</SelectItem>)}</SelectContent></Select>
-        <Button type="submit" size="icon" disabled={adding || !newLabel.trim()} aria-label="Add trigger">
+        <Select
+          value={newCategory}
+          onValueChange={(value) => setNewCategory(value as TriggerCategory)}
+        >
+          <SelectTrigger className="h-11" aria-label="Trigger category">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {CATEGORIES.map((item) => (
+              <SelectItem key={item.value} value={item.value}>
+                {item.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <Button
+          type="submit"
+          size="icon"
+          disabled={adding || !newLabel.trim()}
+          aria-label="Add trigger"
+        >
           <Plus size={18} strokeWidth={2} />
         </Button>
       </motion.form>

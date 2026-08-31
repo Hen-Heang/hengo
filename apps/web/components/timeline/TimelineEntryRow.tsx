@@ -26,11 +26,19 @@ const KIND_COLOR: Record<TimelineKind, string> = {
 
 export function TimelineEntryRow({ entry }: { entry: TimelineEntry }) {
   const Icon = KIND_ICON[entry.kind]
-  const time = new Date(entry.occurredAt).toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })
+  const time = new Date(entry.occurredAt).toLocaleTimeString(undefined, {
+    hour: "numeric",
+    minute: "2-digit",
+  })
 
   const content = (
     <div className="flex min-h-16 items-start gap-3 rounded-xl border border-border/60 bg-card/60 p-3 transition-colors hover:border-border">
-      <span className={cn("mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background", KIND_COLOR[entry.kind])}>
+      <span
+        className={cn(
+          "mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background",
+          KIND_COLOR[entry.kind],
+        )}
+      >
         <Icon size={15} strokeWidth={2} />
       </span>
       <div className="min-w-0 flex-1">
@@ -40,8 +48,14 @@ export function TimelineEntryRow({ entry }: { entry: TimelineEntry }) {
           </span>
           <span className="text-xs text-muted-foreground/70">{time}</span>
         </div>
-        <p className="mt-0.5 break-words text-sm font-medium text-foreground [overflow-wrap:anywhere]">{entry.title}</p>
-        {entry.description && <p className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">{entry.description}</p>}
+        <p className="mt-0.5 break-words text-sm font-medium text-foreground [overflow-wrap:anywhere]">
+          {entry.title}
+        </p>
+        {entry.description && (
+          <p className="mt-0.5 line-clamp-2 break-words text-xs text-muted-foreground [overflow-wrap:anywhere]">
+            {entry.description}
+          </p>
+        )}
       </div>
     </div>
   )

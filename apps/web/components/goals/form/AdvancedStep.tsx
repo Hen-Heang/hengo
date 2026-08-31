@@ -3,13 +3,7 @@
 import { ChevronLeft, Loader2, Sparkles, Target } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import type { FormStepProps } from "@/lib/goal-form"
@@ -25,7 +19,13 @@ interface AdvancedStepProps extends FormStepProps {
 // builder (`?aiPlan=1`), which drafts tasks and requires an explicit
 // confirmation before writing anything. It previously only fired a "coming
 // soon" toast — see docs/goal-planning-scheduling-audit.md.
-export function AdvancedStep({ form, onPrevStep, onSubmit, isSubmitting, isEdit = false }: AdvancedStepProps) {
+export function AdvancedStep({
+  form,
+  onPrevStep,
+  onSubmit,
+  isSubmitting,
+  isEdit = false,
+}: AdvancedStepProps) {
   const generateTasksWithAI = form.watch("generate_tasks_with_ai") || false
 
   const handleSubmit = async () => {
@@ -71,7 +71,9 @@ export function AdvancedStep({ form, onPrevStep, onSubmit, isSubmitting, isEdit 
             name="ai_prompt"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-sm font-medium">Additional instructions (optional)</FormLabel>
+                <FormLabel className="text-sm font-medium">
+                  Additional instructions (optional)
+                </FormLabel>
                 <FormControl>
                   <Textarea
                     placeholder="E.g., I prefer morning workouts, focus on beginner tasks"
@@ -99,7 +101,11 @@ export function AdvancedStep({ form, onPrevStep, onSubmit, isSubmitting, isEdit 
             </>
           ) : (
             <>
-              {generateTasksWithAI ? <Sparkles className="h-4 w-4" /> : <Target className="h-4 w-4" />}
+              {generateTasksWithAI ? (
+                <Sparkles className="h-4 w-4" />
+              ) : (
+                <Target className="h-4 w-4" />
+              )}
               {isEdit ? "Update goal" : generateTasksWithAI ? "Create & draft plan" : "Create goal"}
             </>
           )}

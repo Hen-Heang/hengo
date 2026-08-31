@@ -3,7 +3,13 @@
 import { useEffect, useState } from "react"
 import { Mic } from "lucide-react"
 
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet"
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetDescription,
+} from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import {
   CAPTION_OPTIONS,
@@ -36,7 +42,9 @@ function OptionGroup<T extends string>({
 }) {
   return (
     <div className="space-y-2">
-      <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{label}</h4>
+      <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+        {label}
+      </h4>
       <div className="grid grid-cols-2 gap-2">
         {options.map((option) => {
           const active = option.value === value
@@ -53,10 +61,17 @@ function OptionGroup<T extends string>({
                   : "border-border/60 bg-muted/20 hover:border-blue-500/30",
               )}
             >
-              <span className={cn("text-[13px] font-bold", active ? "text-blue-700 dark:text-blue-300" : "text-foreground")}>
+              <span
+                className={cn(
+                  "text-[13px] font-bold",
+                  active ? "text-blue-700 dark:text-blue-300" : "text-foreground",
+                )}
+              >
                 {option.label}
               </span>
-              <span className="text-[11px] leading-snug text-muted-foreground">{option.description}</span>
+              <span className="text-[11px] leading-snug text-muted-foreground">
+                {option.description}
+              </span>
             </button>
           )
         })}
@@ -88,9 +103,13 @@ export function VoicePracticeSetup({
         className="dark max-h-[92dvh] gap-0 overflow-hidden rounded-t-3xl border-white/10 bg-slate-950 p-0 text-white shadow-2xl shadow-black/50"
       >
         <SheetHeader className="border-b border-white/10 px-5 pt-5 pb-4 text-left">
-          <SheetTitle className="text-[17px] font-bold tracking-tight">Set up your speaking practice</SheetTitle>
+          <SheetTitle className="text-[17px] font-bold tracking-tight">
+            Set up your speaking practice
+          </SheetTitle>
           <SheetDescription className="text-[13px]">
-            {scenarioTitle ? `Roleplay: ${scenarioTitle}` : "Choose how you want to practice today."}
+            {scenarioTitle
+              ? `Roleplay: ${scenarioTitle}`
+              : "Choose how you want to practice today."}
           </SheetDescription>
         </SheetHeader>
 

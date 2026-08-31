@@ -31,11 +31,11 @@ environment.
 
 ## The three levels in use
 
-| Level | Environment | What belongs here | Example |
-| --- | --- | --- | --- |
-| **Unit** | node | Pure domain functions — status derivation, filtering, sorting, recurrence, progress, capacity | `lib/task-status.test.ts` |
-| **Component** | jsdom + Testing Library | That the UI renders the *business state* it was given | `components/goals/detail/tasks/GoalTaskRow.test.tsx` |
-| **Integration** | node + in-memory Supabase fake | Mutation payload shape, the status/completed dual-write, error propagation | `lib/api/goals-tasks.test.ts` |
+| Level           | Environment                    | What belongs here                                                                             | Example                                              |
+| --------------- | ------------------------------ | --------------------------------------------------------------------------------------------- | ---------------------------------------------------- |
+| **Unit**        | node                           | Pure domain functions — status derivation, filtering, sorting, recurrence, progress, capacity | `lib/task-status.test.ts`                            |
+| **Component**   | jsdom + Testing Library        | That the UI renders the _business state_ it was given                                         | `components/goals/detail/tasks/GoalTaskRow.test.tsx` |
+| **Integration** | node + in-memory Supabase fake | Mutation payload shape, the status/completed dual-write, error propagation                    | `lib/api/goals-tasks.test.ts`                        |
 
 E2E (Playwright) is a dependency but **no specs exist yet**. See the audit doc.
 
@@ -60,8 +60,8 @@ internally inconsistent but changing it is a product decision, pin it with a
 test that says so in a comment and points at the audit doc. Do not let a reader
 mistake a pinned quirk for an endorsed rule.
 
-**Regression discipline.** For every bug fixed: write the test, *watch it fail
-against the unfixed code*, then fix. A regression test that was never observed
+**Regression discipline.** For every bug fixed: write the test, _watch it fail
+against the unfixed code_, then fix. A regression test that was never observed
 to fail proves nothing.
 
 ## Database safety

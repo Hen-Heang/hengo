@@ -5,12 +5,7 @@ import { Loader2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
@@ -186,7 +181,12 @@ export function PhaseDialog({
         </div>
 
         <div className="flex gap-3 border-t border-border/60 px-5 py-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <Button type="button" variant="outline" onClick={onClose} className="h-11 flex-1 rounded-xl">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onClose}
+            className="h-11 flex-1 rounded-xl"
+          >
             Cancel
           </Button>
           <Button

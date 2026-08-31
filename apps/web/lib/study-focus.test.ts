@@ -27,8 +27,8 @@ describe("getStudyFocus", () => {
           wordsSaved: 20,
           correctionsThisWeek: 5,
           dailyGoalProgress: 15,
-        })
-      )
+        }),
+      ),
     ).toMatchObject({
       ctaHref: "/chat",
       badge: "Start strong",
@@ -44,8 +44,8 @@ describe("getStudyFocus", () => {
           wordsSaved: 6,
           correctionsThisWeek: 5,
           dailyGoalProgress: 70,
-        })
-      )
+        }),
+      ),
     ).toMatchObject({
       ctaHref: "/vocab",
       badge: "Grow your deck",
@@ -61,8 +61,8 @@ describe("getStudyFocus", () => {
           wordsSaved: 30,
           correctionsThisWeek: 4,
           dailyGoalProgress: 80,
-        })
-      )
+        }),
+      ),
     ).toMatchObject({
       ctaHref: "/practice",
       badge: "Keep momentum",

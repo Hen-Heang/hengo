@@ -62,9 +62,9 @@ export default function PrivacyPage() {
 
         <h2>How it&apos;s used</h2>
         <p>
-          Your profile and activity are used to run the app&apos;s features: generating
-          personalized vocabulary and lessons, streaming AI chat and feedback, tracking your streaks
-          and progress, and sending reminders you&apos;ve opted into. We don&apos;t sell your data.
+          Your profile and activity are used to run the app&apos;s features: generating personalized
+          vocabulary and lessons, streaming AI chat and feedback, tracking your streaks and
+          progress, and sending reminders you&apos;ve opted into. We don&apos;t sell your data.
         </p>
 
         <h2>Third parties</h2>
@@ -75,16 +75,16 @@ export default function PrivacyPage() {
           </li>
           <li>
             <strong>OpenAI</strong> processes the text and audio you submit to AI features (chat,
-            analyzer, message generator, interview simulator, listening generator, text-to-speech) in
-            order to generate a response. It is not used to train Hengo&apos;s own product beyond
+            analyzer, message generator, interview simulator, listening generator, text-to-speech)
+            in order to generate a response. It is not used to train Hengo&apos;s own product beyond
             that request.
           </li>
           <li>
-            <strong>Google</strong> is used if you choose &quot;Sign in with Google,&quot; to verify your
-            identity. If you connect Google Calendar from Settings, we request read-only access
-            (<code>calendar.readonly</code>) to your calendar events so we can show them in Hengo; we
-            don&apos;t modify or delete your Google Calendar data. You can disconnect this access at
-            any time from Settings or from your{" "}
+            <strong>Google</strong> is used if you choose &quot;Sign in with Google,&quot; to verify
+            your identity. If you connect Google Calendar from Settings, we request read-only access
+            (<code>calendar.readonly</code>) to your calendar events so we can show them in Hengo;
+            we don&apos;t modify or delete your Google Calendar data. You can disconnect this access
+            at any time from Settings or from your{" "}
             <a
               href="https://myaccount.google.com/permissions"
               target="_blank"
@@ -106,15 +106,20 @@ export default function PrivacyPage() {
         <h2>Data retention</h2>
         <p>
           We keep your data for as long as your account is active. If you delete your account, your
-          data is removed within a reasonable period, except where we&apos;re required to keep records
-          for legal reasons.
+          data is removed within a reasonable period, except where we&apos;re required to keep
+          records for legal reasons.
         </p>
 
         <h2>Changes to this policy</h2>
-        <p>We may update this policy as the product evolves and will reflect the current version here.</p>
+        <p>
+          We may update this policy as the product evolves and will reflect the current version
+          here.
+        </p>
 
         <h2>Contact</h2>
-        <p>Questions about this policy can be sent to the Hengo team through your account settings.</p>
+        <p>
+          Questions about this policy can be sent to the Hengo team through your account settings.
+        </p>
       </article>
     </main>
   )

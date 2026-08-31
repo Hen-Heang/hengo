@@ -3,8 +3,18 @@ import { requireUserId } from "@/lib/auth-store"
 import type { ReviewRating } from "@/lib/srs"
 import { createCorrectionFingerprint } from "@/lib/learning/korean-text"
 import { planCorrectionUpsert, type ExistingCorrectionState } from "@/lib/learning/corrections"
-import { deriveState, isCardDue, rateProgress, selectPracticeQueue, type PhraseSelectionOptions } from "@/lib/korean-phrasebook/mastery"
-import { planSeedUpsert, type ExistingSeedCard, type ExistingSeedCollection } from "@/lib/korean-phrasebook/seed"
+import {
+  deriveState,
+  isCardDue,
+  rateProgress,
+  selectPracticeQueue,
+  type PhraseSelectionOptions,
+} from "@/lib/korean-phrasebook/mastery"
+import {
+  planSeedUpsert,
+  type ExistingSeedCard,
+  type ExistingSeedCollection,
+} from "@/lib/korean-phrasebook/seed"
 import {
   phraseCardContentSchema,
   phraseCollectionInputSchema,
@@ -194,7 +204,9 @@ async function attachProgress(cards: CardRow[]): Promise<PhraseCardWithProgress[
       cards.map((c) => c.id),
     )
   if (error) throw error
-  const byPhraseId = new Map((progressRows as ProgressRow[]).map((p) => [p.phrase_id, toProgress(p)]))
+  const byPhraseId = new Map(
+    (progressRows as ProgressRow[]).map((p) => [p.phrase_id, toProgress(p)]),
+  )
   return cards.map((row) => ({ ...toCard(row), progress: byPhraseId.get(row.id) ?? null }))
 }
 
@@ -219,10 +231,11 @@ function ensureSeeded(): Promise<void> {
 
 async function runSeeding(): Promise<void> {
   const userId = requireUserId()
-  const [{ data: collectionRows, error: collectionsError }, { data: cardRows, error: cardsError }] = await Promise.all([
-    supabase.from("kori_phrase_collections").select("id, source_key, seed_version"),
-    supabase.from("kori_phrase_cards").select("id, source_key, is_user_edited"),
-  ])
+  const [{ data: collectionRows, error: collectionsError }, { data: cardRows, error: cardsError }] =
+    await Promise.all([
+      supabase.from("kori_phrase_collections").select("id, source_key, seed_version"),
+      supabase.from("kori_phrase_cards").select("id, source_key, is_user_edited"),
+    ])
   if (collectionsError) throw collectionsError
   if (cardsError) throw cardsError
 
@@ -269,7 +282,10 @@ async function runSeeding(): Promise<void> {
   }
 
   for (const bump of plan.collectionsToBumpVersion) {
-    await supabase.from("kori_phrase_collections").update({ seed_version: bump.seedVersion }).eq("id", bump.id)
+    await supabase
+      .from("kori_phrase_collections")
+      .update({ seed_version: bump.seedVersion })
+      .eq("id", bump.id)
   }
 
   if (plan.cardsToInsert.length > 0) {
@@ -300,12 +316,21 @@ export const phrasebookApi = {
   },
 
   getCollection: async (id: string): Promise<PhraseCollection> => {
-    const { data, error } = await supabase.from("kori_phrase_collections").select("*").eq("id", id).single()
+    const { data, error } = await supabase
+      .from("kori_phrase_collections")
+      .select("*")
+      .eq("id", id)
+      .single()
     if (error) throw error
     return toCollection(data as CollectionRow)
   },
 
-  createCollection: async (input: { titleKo: string; titleEn: string; description?: string; category: string }) => {
+  createCollection: async (input: {
+    titleKo: string
+    titleEn: string
+    description?: string
+    category: string
+  }) => {
     const parsed = phraseCollectionInputSchema.parse(input)
     const { data, error } = await supabase
       .from("kori_phrase_collections")
@@ -351,7 +376,11 @@ export const phrasebookApi = {
   },
 
   getCard: async (id: string): Promise<PhraseCardWithProgress> => {
-    const { data, error } = await supabase.from("kori_phrase_cards").select("*").eq("id", id).single()
+    const { data, error } = await supabase
+      .from("kori_phrase_cards")
+      .select("*")
+      .eq("id", id)
+      .single()
     if (error) throw error
     const [withProgress] = await attachProgress([data as CardRow])
     return withProgress
@@ -396,14 +425,19 @@ export const phrasebookApi = {
   },
 
   moveCard: async (id: string, collectionId: string) => {
-    const { error } = await supabase.from("kori_phrase_cards").update({ collection_id: collectionId }).eq("id", id)
+    const { error } = await supabase
+      .from("kori_phrase_cards")
+      .update({ collection_id: collectionId })
+      .eq("id", id)
     if (error) throw error
   },
 
   // Practice-runner queue (review/listen/speak modes) — due cards first, then
   // recently-failed, then the caller's preferred category, new cards last.
   getPracticeQueue: async (
-    options: { collectionId?: string } & Omit<PhraseSelectionOptions, "recentlyFailedIds"> & { recentlyFailedIds?: string[] },
+    options: { collectionId?: string } & Omit<PhraseSelectionOptions, "recentlyFailedIds"> & {
+        recentlyFailedIds?: string[]
+      },
   ): Promise<PhraseCardWithProgress[]> => {
     const cards = options.collectionId
       ? await phrasebookApi.getCardsForCollection(options.collectionId)
@@ -432,11 +466,16 @@ export const phrasebookApi = {
       if (orderedIds.length >= limit) break
     }
     if (orderedIds.length === 0) return []
-    const { data: cardRows, error: cardsError } = await supabase.from("kori_phrase_cards").select("*").in("id", orderedIds)
+    const { data: cardRows, error: cardsError } = await supabase
+      .from("kori_phrase_cards")
+      .select("*")
+      .in("id", orderedIds)
     if (cardsError) throw cardsError
     const withProgress = await attachProgress(cardRows as CardRow[])
     const byId = new Map(withProgress.map((c) => [c.id, c]))
-    return orderedIds.map((id) => byId.get(id)).filter((c): c is PhraseCardWithProgress => Boolean(c))
+    return orderedIds
+      .map((id) => byId.get(id))
+      .filter((c): c is PhraseCardWithProgress => Boolean(c))
   },
 
   // Cards due for review right now — used both for the landing page's due
@@ -544,7 +583,11 @@ export const phrasebookApi = {
       mistakeSeverity: "none" | "minor" | "important"
     }>("/phrasebook/evaluate", { phraseId, transcript })
 
-    if (result.mistakeSeverity !== "none" && result.correctedSentence && result.correctedSentence !== transcript) {
+    if (
+      result.mistakeSeverity !== "none" &&
+      result.correctedSentence &&
+      result.correctedSentence !== transcript
+    ) {
       try {
         const userId = requireUserId()
         const fingerprint = createCorrectionFingerprint({
@@ -554,7 +597,9 @@ export const phrasebookApi = {
         })
         const { data: existingRow } = await supabase
           .from("kori_corrections")
-          .select("mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date")
+          .select(
+            "mastery, ease_factor, interval_days, repetitions, lapses, occurrence_count, next_review_date",
+          )
           .eq("user_id", userId)
           .eq("fingerprint", fingerprint)
           .maybeSingle()
@@ -594,7 +639,11 @@ export const phrasebookApi = {
         if (plan.action === "insert") {
           await supabase.from("kori_corrections").insert(row)
         } else {
-          await supabase.from("kori_corrections").update(row).eq("user_id", userId).eq("fingerprint", fingerprint)
+          await supabase
+            .from("kori_corrections")
+            .update(row)
+            .eq("user_id", userId)
+            .eq("fingerprint", fingerprint)
         }
       } catch {
         // Best-effort — a failed correction save must not break the practice flow.
@@ -608,17 +657,26 @@ export const phrasebookApi = {
 
   getStats: async (): Promise<PhrasebookStats> => {
     const userId = requireUserId()
-    const [{ data: progressRows, error: progressError }, { data: attemptRows, error: attemptError }, { data: cardRows, error: cardError }] =
-      await Promise.all([
-        supabase.from("kori_phrase_progress").select("state, next_review_at").eq("user_id", userId),
-        supabase.from("kori_phrase_attempts").select("practice_mode, phrase_id, feedback").eq("user_id", userId),
-        supabase.from("kori_phrase_cards").select("id, category, situation").eq("active", true),
-      ])
+    const [
+      { data: progressRows, error: progressError },
+      { data: attemptRows, error: attemptError },
+      { data: cardRows, error: cardError },
+    ] = await Promise.all([
+      supabase.from("kori_phrase_progress").select("state, next_review_at").eq("user_id", userId),
+      supabase
+        .from("kori_phrase_attempts")
+        .select("practice_mode, phrase_id, feedback")
+        .eq("user_id", userId),
+      supabase.from("kori_phrase_cards").select("id, category, situation").eq("active", true),
+    ])
     if (progressError) throw progressError
     if (attemptError) throw attemptError
     if (cardError) throw cardError
 
-    const progress = (progressRows ?? []) as Array<{ state: PhraseProgress["state"]; next_review_at: string }>
+    const progress = (progressRows ?? []) as Array<{
+      state: PhraseProgress["state"]
+      next_review_at: string
+    }>
     const cardsLearned = progress.filter((p) => p.state !== "new").length
     const cardsMastered = progress.filter((p) => p.state === "mastered").length
     const now = new Date().toISOString()
@@ -629,13 +687,22 @@ export const phrasebookApi = {
       phrase_id: string
       feedback: PhraseAttemptFeedback | null
     }>
-    const cardById = new Map((cardRows as Array<{ id: string; category: string; situation: string }>).map((c) => [c.id, c]))
+    const cardById = new Map(
+      (cardRows as Array<{ id: string; category: string; situation: string }>).map((c) => [
+        c.id,
+        c,
+      ]),
+    )
 
     const listeningAttempts = attempts.filter((a) => a.practice_mode === "listen").length
     const speakingAttempts = attempts.filter((a) => a.practice_mode === "speak")
-    const successfulSpeaking = speakingAttempts.filter((a) => a.feedback?.communicationSuccess === true).length
+    const successfulSpeaking = speakingAttempts.filter(
+      (a) => a.feedback?.communicationSuccess === true,
+    ).length
     const successfulCommunicationRate =
-      speakingAttempts.length > 0 ? Math.round((successfulSpeaking / speakingAttempts.length) * 100) : 0
+      speakingAttempts.length > 0
+        ? Math.round((successfulSpeaking / speakingAttempts.length) * 100)
+        : 0
 
     const failuresBySituation = new Map<string, number>()
     for (const attempt of speakingAttempts) {

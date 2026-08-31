@@ -27,7 +27,12 @@ type DeckBuilderProps = {
   embedded?: boolean
 }
 
-export function DeckBuilder({ dueCount, totalCount, onGenerate, embedded = false }: DeckBuilderProps) {
+export function DeckBuilder({
+  dueCount,
+  totalCount,
+  onGenerate,
+  embedded = false,
+}: DeckBuilderProps) {
   const [selectedCategory, setSelectedCategory] = useState("")
   const [generating, setGenerating] = useState(false)
 
@@ -42,15 +47,24 @@ export function DeckBuilder({ dueCount, totalCount, onGenerate, embedded = false
   }
 
   return (
-    <div className={cn(!embedded && "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8")}>
+    <div
+      className={cn(
+        !embedded &&
+          "rounded-3xl border border-border bg-card p-5 shadow-xl dark:bg-slate-900/40 sm:rounded-3xl sm:p-8",
+      )}
+    >
       {!embedded && (
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0">
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-indigo-500 shadow-[0_0_8px_rgba(59,130,246,0.5)]" />
-              <p className="text-[12px] font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">Card Generator</p>
+              <p className="text-[12px] font-bold uppercase tracking-wide text-indigo-600 dark:text-indigo-400">
+                Card Generator
+              </p>
             </div>
-            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">AI Deck Builder</h3>
+            <h3 className="mt-3 text-xl font-bold text-foreground sm:mt-4 sm:text-2xl">
+              AI Deck Builder
+            </h3>
             <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground sm:text-[16px]">
               Select a category to expand your vocabulary with relevant high-frequency terms.
             </p>
@@ -70,24 +84,30 @@ export function DeckBuilder({ dueCount, totalCount, onGenerate, embedded = false
               "flex flex-col items-center gap-1.5 rounded-2xl border p-3 text-center transition-all active:scale-95 sm:gap-2 sm:p-4",
               selectedCategory === cat.id
                 ? "border-indigo-500 bg-indigo-500/10 ring-1 ring-indigo-500/20"
-                : "border-border bg-background text-muted-foreground hover:border-indigo-500/40 hover:bg-indigo-500/[0.02]"
+                : "border-border bg-background text-muted-foreground hover:border-indigo-500/40 hover:bg-indigo-500/[0.02]",
             )}
           >
             <span className="text-lg sm:text-xl">{cat.emoji}</span>
-            <span className={cn(
-              "text-[12px] font-bold uppercase tracking-tight sm:text-xs",
-              selectedCategory === cat.id ? "text-indigo-600 dark:text-indigo-400" : "text-muted-foreground"
-            )}>
+            <span
+              className={cn(
+                "text-[12px] font-bold uppercase tracking-tight sm:text-xs",
+                selectedCategory === cat.id
+                  ? "text-indigo-600 dark:text-indigo-400"
+                  : "text-muted-foreground",
+              )}
+            >
               {cat.label}
             </span>
           </button>
         ))}
       </div>
 
-      <div className={cn(
-        "flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-6",
-        embedded ? "mt-4" : "mt-6 border-t border-border/60 pt-6 sm:mt-10 sm:pt-8"
-      )}>
+      <div
+        className={cn(
+          "flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-6",
+          embedded ? "mt-4" : "mt-6 border-t border-border/60 pt-6 sm:mt-10 sm:pt-8",
+        )}
+      >
         <Button
           className="h-14 w-full rounded-2xl bg-indigo-600 px-6 text-base font-bold text-white shadow-xl shadow-indigo-600/20 transition-all hover:bg-indigo-500 active:scale-95 sm:w-auto sm:px-8"
           onClick={handleGenerate}

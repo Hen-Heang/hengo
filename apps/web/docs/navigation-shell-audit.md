@@ -15,29 +15,29 @@ redesign, no schema changes, no routes removed.
 
 ## 1. Architecture before this change
 
-| Concern | Where it lived |
-| --- | --- |
-| Auth redirect | `app/(main)/layout.tsx` |
-| Onboarding wizard | `app/(main)/layout.tsx` |
-| Soft-keyboard detection (`visualViewport`) | `app/(main)/layout.tsx` |
-| Last-visited route tracking | `app/(main)/layout.tsx` |
-| Desktop sidebar (brand, workspace icon row, contextual links, Settings) | `app/(main)/layout.tsx` |
-| Desktop top bar (title, Quick Switcher, AI Coach button, theme, level, bell, avatar) | `app/(main)/layout.tsx` |
-| Mobile top bar (logo, "Hengo", page title, switcher, level, bell, avatar) | `app/(main)/layout.tsx` |
-| Mobile bottom tab bar (4 tabs + More, sliding pill) | `app/(main)/layout.tsx` |
-| Mobile floating AI button | `app/(main)/layout.tsx` |
-| More sheet (2-column grid, grouped by workspace) | `app/(main)/layout.tsx` |
-| Main content padding / immersive route branches | `app/(main)/layout.tsx` |
-| Nav data | `lib/navigation.ts` |
-| Quick Switcher | `components/app/quick-switcher.tsx` |
+| Concern                                                                              | Where it lived                      |
+| ------------------------------------------------------------------------------------ | ----------------------------------- |
+| Auth redirect                                                                        | `app/(main)/layout.tsx`             |
+| Onboarding wizard                                                                    | `app/(main)/layout.tsx`             |
+| Soft-keyboard detection (`visualViewport`)                                           | `app/(main)/layout.tsx`             |
+| Last-visited route tracking                                                          | `app/(main)/layout.tsx`             |
+| Desktop sidebar (brand, workspace icon row, contextual links, Settings)              | `app/(main)/layout.tsx`             |
+| Desktop top bar (title, Quick Switcher, AI Coach button, theme, level, bell, avatar) | `app/(main)/layout.tsx`             |
+| Mobile top bar (logo, "Hengo", page title, switcher, level, bell, avatar)            | `app/(main)/layout.tsx`             |
+| Mobile bottom tab bar (4 tabs + More, sliding pill)                                  | `app/(main)/layout.tsx`             |
+| Mobile floating AI button                                                            | `app/(main)/layout.tsx`             |
+| More sheet (2-column grid, grouped by workspace)                                     | `app/(main)/layout.tsx`             |
+| Main content padding / immersive route branches                                      | `app/(main)/layout.tsx`             |
+| Nav data                                                                             | `lib/navigation.ts`                 |
+| Quick Switcher                                                                       | `components/app/quick-switcher.tsx` |
 
 `app/(main)/layout.tsx` was **620 lines** owning all twelve concerns above.
 
 ### Nav data model (before)
 
 ```ts
-type NavLink = { href, label, icon, soon? }
-type Workspace = { id, label, icon, links: NavLink[] }
+type NavLink = { href; label; icon; soon? }
+type Workspace = { id; label; icon; links: NavLink[] }
 ```
 
 Five workspaces: `learning`, `productivity`, `ai`, `progress`, `growth`.
@@ -63,8 +63,8 @@ AI was reachable through five competing permanent entry points:
 4. AI links inside the mobile **More sheet** (via `moreWorkspaces`).
 5. Query-mode links `/chat?mode=analyze|generate|corrections`.
 
-**Decision:** one AI strategy. AI Coach stays a *destination* in the sidebar/rail
-(bottom of the primary list) and a *card* at the top of the More sheet, plus an
+**Decision:** one AI strategy. AI Coach stays a _destination_ in the sidebar/rail
+(bottom of the primary list) and a _card_ at the top of the More sheet, plus an
 **Ask AI** action in the Quick Switcher. The floating mobile button and the
 bespoke desktop top-bar button are **removed**. Pages keep the freedom to add
 contextual "Ask AI" actions (`/home` already has one) — that is the sanctioned
@@ -95,7 +95,7 @@ entry. No `isHomeRoute` branch remains.
 ### 2.4 Workspace discoverability — **confirmed**
 
 `layout.tsx` L220–L241: a row of five 44px **icon-only** buttons with only
-`title` / `aria-label` for names. The sidebar showed *only* the active
+`title` / `aria-label` for names. The sidebar showed _only_ the active
 workspace's links, so four of the five product areas were invisible without
 hovering, and their contents were invisible without navigating.
 
@@ -131,16 +131,16 @@ the things that must stay tied to the route boundary — and renders `<AppShell>
   and ambiguous filtering. Fixed with stable `id`s.
 - **`/goals/calendar` was not in the nav at all** even though the route exists
   (`app/(main)/goals/calendar/page.tsx`) — it was only reachable from inside the
-  Goals page. It is now a first-class Goals item. *(This resolves the brief's
+  Goals page. It is now a first-class Goals item. _(This resolves the brief's
   "if there is not yet a dedicated route for a goal calendar" clause: there is
-  one, so no substitute was needed.)*
+  one, so no substitute was needed.)_
 - **Last-visited tracking silently skipped two workspaces.** `workspaceRoutePrefixes`
   omitted `ai`, and the layout's effect only branched on
   learning/productivity/progress, so Growth and AI never got "continue where you
   left off". Now generated from `primarySections`, covering all five.
 - **`useIsMobile()` uses a 1024px breakpoint** while the shell used Tailwind
   `lg` (also 1024px) — consistent, but wrong for tablets: a 768×1024 iPad got
-  the *mobile* bottom bar and mobile header. Replaced by `useNavigationMode()`
+  the _mobile_ bottom bar and mobile header. Replaced by `useNavigationMode()`
   with explicit 768 / 1200 boundaries.
 - **`aria-hidden` on a focusable subtree.** The bottom nav set
   `aria-hidden={isKeyboardOpen}` but left its links tabbable, and the floating
@@ -170,22 +170,22 @@ destination with modes.
 
 ### Surface mapping
 
-| Surface | Shows |
-| --- | --- |
-| Desktop sidebar (≥1200px) | Today, four labelled sections, AI Coach, profile, Settings |
-| Tablet rail (768–1199px) | Today, Learn, Goals, Growth, Progress, AI Coach (icons + micro-labels) → flyout for children |
-| Mobile bottom nav (<768px) | Today, Learn, Goals, Growth, More |
-| More sheet | AI Coach card, then Progress / Tools / Learn more / Growth / Account, then a small Coming Soon strip |
+| Surface                    | Shows                                                                                                |
+| -------------------------- | ---------------------------------------------------------------------------------------------------- |
+| Desktop sidebar (≥1200px)  | Today, four labelled sections, AI Coach, profile, Settings                                           |
+| Tablet rail (768–1199px)   | Today, Learn, Goals, Growth, Progress, AI Coach (icons + micro-labels) → flyout for children         |
+| Mobile bottom nav (<768px) | Today, Learn, Goals, Growth, More                                                                    |
+| More sheet                 | AI Coach card, then Progress / Tools / Learn more / Growth / Account, then a small Coming Soon strip |
 
 ---
 
 ## 4. Responsive strategy
 
-| Mode | Width | Chrome |
-| --- | --- | --- |
-| mobile | `< 768px` | `MobileHeader` + `MobileBottomNav` + `MoreNavigationSheet` |
-| tablet | `768–1199px` | `TabletNavigationRail` (+ `WorkspaceFlyout`) + `DesktopHeader` |
-| desktop | `≥ 1200px` | `DesktopSidebar` (expanded 272px / collapsed 76px) + `DesktopHeader` |
+| Mode    | Width        | Chrome                                                               |
+| ------- | ------------ | -------------------------------------------------------------------- |
+| mobile  | `< 768px`    | `MobileHeader` + `MobileBottomNav` + `MoreNavigationSheet`           |
+| tablet  | `768–1199px` | `TabletNavigationRail` (+ `WorkspaceFlyout`) + `DesktopHeader`       |
+| desktop | `≥ 1200px`   | `DesktopSidebar` (expanded 272px / collapsed 76px) + `DesktopHeader` |
 
 Tailwind's `lg` (1024px) is the wrong tablet boundary in both directions, so the
 shell switches on `useNavigationMode()` (`matchMedia`, SSR-safe) rather than
@@ -226,7 +226,7 @@ is no first-paint flash from reading `matchMedia` in an effect.
 
 5. **Level badge removed from the global header.** `LevelBadge` is unchanged and
    still available; it now appears on Today / Progress surfaces only, per the
-   brief. It also fired an `achievementsApi.getSummary()` request on *every*
+   brief. It also fired an `achievementsApi.getSummary()` request on _every_
    route change from the shell — removing it from the shell removes that cost.
 
 6. **No new dependencies.** Sidebar, rail, flyout, sheet and command menu are
@@ -236,7 +236,7 @@ is no first-paint flash from reading `matchMedia` in an effect.
 
 7. **Quick Switcher recents are local-only.** The Recent group reads nav ids
    from `localStorage` (`hengo-recent-routes`) written on navigation. Recent
-   *goals* were **not** added: there is no already-cached global goals query in
+   _goals_ were **not** added: there is no already-cached global goals query in
    the shell, and adding one would fetch every goal on every page just to render
    a menu. Explicitly out of scope per the brief's "do not introduce a global
    N+1 query".

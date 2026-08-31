@@ -6,13 +6,7 @@ import type { UseFormReturn } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { DateTimePicker } from "@/components/ui/date-time-picker"
 import EmojiIconPicker from "@/components/ui/emoji-icon-picker"
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form"
+import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import {
   Select,
@@ -106,7 +100,9 @@ export function BasicInfoStep({ form, onNextStep, selectedGoalType }: BasicInfoS
               />
               <FormControl>
                 <Input
-                  placeholder={selectedGoalType === "travel" ? "e.g., Trip to Japan" : "e.g., Learn Spanish"}
+                  placeholder={
+                    selectedGoalType === "travel" ? "e.g., Trip to Japan" : "e.g., Learn Spanish"
+                  }
                   className="h-11 text-base"
                   {...field}
                 />

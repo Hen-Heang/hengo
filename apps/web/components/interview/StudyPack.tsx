@@ -20,12 +20,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FINAL_WEATHER_CORE_VOCABULARY } from "@/lib/exam-core-vocabulary"
-import type {
-  InterviewTopic,
-  PhraseEntry,
-  PracticeQuestion,
-  VocabEntry,
-} from "@/lib/interview"
+import type { InterviewTopic, PhraseEntry, PracticeQuestion, VocabEntry } from "@/lib/interview"
 import { cn } from "@/lib/utils"
 
 // Topic course for the chosen exam prompt. The three tabs deliberately mirror
@@ -77,7 +72,10 @@ export function StudyPack({
         </div>
         <ChevronDown
           size={20}
-          className={cn("shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
+          className={cn(
+            "shrink-0 text-muted-foreground transition-transform",
+            open && "rotate-180",
+          )}
         />
       </button>
 
@@ -92,13 +90,22 @@ export function StudyPack({
             <CardContent className="border-t border-border/80 pt-6">
               <Tabs defaultValue="vocabulary" className="gap-5">
                 <TabsList className="grid h-auto w-full grid-cols-3 rounded-2xl bg-muted/70 p-1">
-                  <TabsTrigger value="vocabulary" className="h-10 rounded-xl text-xs font-bold sm:text-sm">
+                  <TabsTrigger
+                    value="vocabulary"
+                    className="h-10 rounded-xl text-xs font-bold sm:text-sm"
+                  >
                     <BookOpen /> Vocabulary
                   </TabsTrigger>
-                  <TabsTrigger value="speaking" className="h-10 rounded-xl text-xs font-bold sm:text-sm">
+                  <TabsTrigger
+                    value="speaking"
+                    className="h-10 rounded-xl text-xs font-bold sm:text-sm"
+                  >
                     <Quote /> Speaking
                   </TabsTrigger>
-                  <TabsTrigger value="listening" className="h-10 rounded-xl text-xs font-bold sm:text-sm">
+                  <TabsTrigger
+                    value="listening"
+                    className="h-10 rounded-xl text-xs font-bold sm:text-sm"
+                  >
                     <Headphones /> Listening
                   </TabsTrigger>
                 </TabsList>
@@ -144,7 +151,10 @@ export function StudyPack({
                       </SectionLabel>
                       <div className="mt-3 grid gap-3 lg:grid-cols-2">
                         {prep.answerFrames.map((frame) => (
-                          <div key={frame.label} className="rounded-2xl border border-border bg-accent/5 p-4">
+                          <div
+                            key={frame.label}
+                            className="rounded-2xl border border-border bg-accent/5 p-4"
+                          >
                             <div className="flex flex-wrap items-center gap-2">
                               <p className="font-bold text-foreground">{frame.label}</p>
                               <Badge variant="outline" className="rounded-lg text-[10px]">
@@ -159,12 +169,18 @@ export function StudyPack({
                             </p>
                             <div className="mt-3 flex items-start justify-between gap-2 rounded-xl bg-background/80 p-3">
                               <div>
-                                <p className="text-sm font-bold leading-relaxed">{frame.exampleKo}</p>
+                                <p className="text-sm font-bold leading-relaxed">
+                                  {frame.exampleKo}
+                                </p>
                                 <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                                   {frame.exampleEn}
                                 </p>
                               </div>
-                              <SpeakButton text={frame.exampleKo} className="shrink-0" title="Hear the model sentence" />
+                              <SpeakButton
+                                text={frame.exampleKo}
+                                className="shrink-0"
+                                title="Hear the model sentence"
+                              />
                             </div>
                           </div>
                         ))}
@@ -173,12 +189,19 @@ export function StudyPack({
                   )}
 
                   <section>
-                    <SectionLabel icon={<MessageCircleQuestion size={13} strokeWidth={3} />} color="blue">
+                    <SectionLabel
+                      icon={<MessageCircleQuestion size={13} strokeWidth={3} />}
+                      color="blue"
+                    >
                       Model Q&amp;A · {modelQuestions.length} answers
                     </SectionLabel>
                     <div className="mt-3 space-y-3">
                       {modelQuestions.map((question, index) => (
-                        <SpeakingAnswerCard key={question.ko} question={question} number={index + 1} />
+                        <SpeakingAnswerCard
+                          key={question.ko}
+                          question={question}
+                          number={index + 1}
+                        />
                       ))}
                     </div>
                   </section>
@@ -202,7 +225,10 @@ export function StudyPack({
                     text="Play each card once, say the words you recognized, and answer aloud. Reveal the transcript only after your attempt."
                   />
 
-                  <Button asChild className="h-11 w-full rounded-xl bg-violet-600 font-bold text-white hover:bg-violet-700 sm:w-auto">
+                  <Button
+                    asChild
+                    className="h-11 w-full rounded-xl bg-violet-600 font-bold text-white hover:bg-violet-700 sm:w-auto"
+                  >
                     <Link href="/interview/listening">
                       <Headphones size={17} className="mr-2" /> Open Full Listening Drill
                     </Link>
@@ -210,7 +236,11 @@ export function StudyPack({
 
                   <div className="grid gap-3 lg:grid-cols-2">
                     {prep.sampleQuestions.map((question, index) => (
-                      <ListeningQuestionCard key={question.ko} question={question} number={index + 1} />
+                      <ListeningQuestionCard
+                        key={question.ko}
+                        question={question}
+                        number={index + 1}
+                      />
                     ))}
                   </div>
                 </TabsContent>
@@ -222,7 +252,9 @@ export function StudyPack({
                     Research basis
                   </SectionLabel>
                   <p className="mt-2 text-xs font-medium leading-relaxed text-muted-foreground">
-                    The exam format and personal topic come from your prep document. Weather, health, culture, and learning vocabulary were checked against these external references.
+                    The exam format and personal topic come from your prep document. Weather,
+                    health, culture, and learning vocabulary were checked against these external
+                    references.
                   </p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     {prep.sources.map((source) => (
@@ -242,7 +274,10 @@ export function StudyPack({
                               {source.title}
                             </p>
                           </div>
-                          <ExternalLink size={14} className="shrink-0 text-muted-foreground transition-colors group-hover:text-foreground" />
+                          <ExternalLink
+                            size={14}
+                            className="shrink-0 text-muted-foreground transition-colors group-hover:text-foreground"
+                          />
                         </div>
                         <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                           {source.usedFor}
@@ -275,7 +310,7 @@ function PracticeIntro({
         "rounded-2xl border p-4",
         tone === "amber" && "border-amber-500/20 bg-amber-500/5",
         tone === "blue" && "border-blue-500/20 bg-blue-500/5",
-        tone === "violet" && "border-violet-500/20 bg-violet-500/5"
+        tone === "violet" && "border-violet-500/20 bg-violet-500/5",
       )}
     >
       <p className="font-bold text-foreground">{title}</p>
@@ -284,7 +319,15 @@ function PracticeIntro({
   )
 }
 
-function DeckButton({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
+function DeckButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean
+  onClick: () => void
+  label: string
+}) {
   return (
     <button
       type="button"
@@ -292,7 +335,9 @@ function DeckButton({ active, onClick, label }: { active: boolean; onClick: () =
       aria-pressed={active}
       className={cn(
         "h-9 rounded-xl px-3 text-xs font-bold transition-colors",
-        active ? "bg-background text-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+        active
+          ? "bg-background text-foreground shadow-sm"
+          : "text-muted-foreground hover:text-foreground",
       )}
     >
       {label}
@@ -323,7 +368,11 @@ function VocabCard({ item }: { item: VocabEntry }) {
             <p className="text-sm font-bold leading-relaxed text-foreground">{item.exampleKo}</p>
             <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{item.exampleEn}</p>
           </div>
-          <SpeakButton text={item.exampleKo} className="shrink-0" title="Hear the example sentence" />
+          <SpeakButton
+            text={item.exampleKo}
+            className="shrink-0"
+            title="Hear the example sentence"
+          />
         </div>
       )}
     </div>
@@ -345,7 +394,11 @@ function SpeakingAnswerCard({ question, number }: { question: PracticeQuestion; 
               <p className="font-bold leading-relaxed text-foreground">{question.ko}</p>
               <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">{question.en}</p>
             </div>
-            <SpeakButton text={question.ko} className="shrink-0" title="Hear the interview question" />
+            <SpeakButton
+              text={question.ko}
+              className="shrink-0"
+              title="Hear the interview question"
+            />
           </div>
 
           {question.keywords && (
@@ -369,13 +422,21 @@ function SpeakingAnswerCard({ question, number }: { question: PracticeQuestion; 
           {revealed && question.answerKo && (
             <div className="mt-3 flex items-start justify-between gap-3 rounded-xl bg-background p-3">
               <div>
-                <p className="text-sm font-bold leading-relaxed text-foreground">{question.answerKo}</p>
-                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{question.answerEn}</p>
+                <p className="text-sm font-bold leading-relaxed text-foreground">
+                  {question.answerKo}
+                </p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                  {question.answerEn}
+                </p>
                 <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                   Shadow once, then replace the details with your real answer.
                 </p>
               </div>
-              <SpeakButton text={question.answerKo} className="shrink-0" title="Hear the model answer" />
+              <SpeakButton
+                text={question.answerKo}
+                className="shrink-0"
+                title="Hear the model answer"
+              />
             </div>
           )}
         </div>
@@ -384,7 +445,13 @@ function SpeakingAnswerCard({ question, number }: { question: PracticeQuestion; 
   )
 }
 
-function ListeningQuestionCard({ question, number }: { question: PracticeQuestion; number: number }) {
+function ListeningQuestionCard({
+  question,
+  number,
+}: {
+  question: PracticeQuestion
+  number: number
+}) {
   const [revealed, setRevealed] = useState(false)
 
   return (
@@ -449,7 +516,7 @@ function SectionLabel({
           color === "amber" && "bg-amber-500/10 text-amber-600",
           color === "emerald" && "bg-emerald-500/10 text-emerald-600",
           color === "blue" && "bg-blue-500/10 text-blue-600",
-          color === "slate" && "bg-slate-500/10 text-slate-600 dark:text-slate-400"
+          color === "slate" && "bg-slate-500/10 text-slate-600 dark:text-slate-400",
         )}
       >
         {icon}

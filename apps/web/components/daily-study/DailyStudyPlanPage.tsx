@@ -26,7 +26,13 @@ import { ExpressionCard } from "@/components/daily-study/ExpressionCard"
 import { VoicePractice } from "@/components/daily-study/VoicePractice"
 import { Button } from "@/components/ui/button"
 import { ErrorBanner } from "@/components/ui/error-banner"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Skeleton } from "@/components/ui/skeleton"
 import { SpeakButton } from "@/components/ui/SpeakButton"
 import { Switch } from "@/components/ui/switch"
@@ -48,12 +54,18 @@ export function DailyStudyPlanPage() {
   const study = useDailyStudyPlan()
   const [openActivity, setOpenActivity] = useState<string | null>(null)
   const [skipReasons, setSkipReasons] = useState<Record<string, string>>({})
-  const dashboard = useQuery({ queryKey: ["daily-plan-dashboard"], queryFn: progressApi.getDashboard })
+  const dashboard = useQuery({
+    queryKey: ["daily-plan-dashboard"],
+    queryFn: progressApi.getDashboard,
+  })
   const streak = useQuery({ queryKey: ["daily-plan-streak"], queryFn: progressApi.getStreak })
-  const weekly = useQuery({ queryKey: ["daily-plan-weekly"], queryFn: dailyStudyPlanApi.getWeeklyProgress })
+  const weekly = useQuery({
+    queryKey: ["daily-plan-weekly"],
+    queryFn: dailyStudyPlanApi.getWeeklyProgress,
+  })
 
   const planWithLiveActivities = useMemo<DailyStudyPlan | null>(
-    () => study.plan ? { ...study.plan, activities: study.activities } : null,
+    () => (study.plan ? { ...study.plan, activities: study.activities } : null),
     [study.activities, study.plan],
   )
   const next = nextStudyActivity(study.activities)
@@ -78,7 +90,13 @@ export function DailyStudyPlanPage() {
       <main className="pb-24">
         <ErrorBanner>
           {study.error || "No daily plan is available yet."}
-          <Button type="button" variant="outline" size="sm" onClick={() => void study.reload()} className="ml-3">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => void study.reload()}
+            className="ml-3"
+          >
             Retry
           </Button>
         </ErrorBanner>
@@ -134,10 +152,16 @@ export function DailyStudyPlanPage() {
             {next && (
               <Button
                 type="button"
-                onClick={() => next.status === "active" ? study.pause(next.id) : startActivity(next)}
+                onClick={() =>
+                  next.status === "active" ? study.pause(next.id) : startActivity(next)
+                }
                 className="mt-6 min-h-12 w-full rounded-xl bg-blue-600 text-white hover:bg-blue-500 sm:w-auto sm:px-7"
               >
-                {next.status === "active" ? <Pause size={18} className="mr-2" /> : <Play size={18} className="mr-2" />}
+                {next.status === "active" ? (
+                  <Pause size={18} className="mr-2" />
+                ) : (
+                  <Play size={18} className="mr-2" />
+                )}
                 {next.status === "active" ? "Pause session" : "Start next activity"}
               </Button>
             )}
@@ -161,7 +185,10 @@ export function DailyStudyPlanPage() {
               />
             </div>
             <dl className="mt-5 grid grid-cols-2 gap-4 text-sm">
-              <Metric label="Completed" value={`${study.progress.completedCount}/${study.activities.length}`} />
+              <Metric
+                label="Completed"
+                value={`${study.progress.completedCount}/${study.activities.length}`}
+              />
               <Metric label="Focused" value={`${study.progress.focusedMinutes} min`} />
               <Metric label="Speaking" value={`${speakingMinutes} min`} />
               <Metric label="Due review" value={`${dashboard.data?.stats.dueReviews ?? "—"}`} />
@@ -174,16 +201,30 @@ export function DailyStudyPlanPage() {
 
       <section aria-label="Daily summary" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <SummaryCard icon={Target} label="Today’s topic" value={plan.topicLabel} />
-        <SummaryCard icon={CalendarClock} label="Current mode" value={`${MODE_LABELS[plan.mode]} · ${MODE_TOTAL_MINUTES[plan.mode]} min`} />
-        <SummaryCard icon={RotateCcw} label="Study streak" value={`${streak.data?.streakDays ?? 0} days`} />
-        <SummaryCard icon={TimerReset} label="This week" value={`${weekly.data?.focusedMinutes ?? 0} focused min`} />
+        <SummaryCard
+          icon={CalendarClock}
+          label="Current mode"
+          value={`${MODE_LABELS[plan.mode]} · ${MODE_TOTAL_MINUTES[plan.mode]} min`}
+        />
+        <SummaryCard
+          icon={RotateCcw}
+          label="Study streak"
+          value={`${streak.data?.streakDays ?? 0} days`}
+        />
+        <SummaryCard
+          icon={TimerReset}
+          label="This week"
+          value={`${weekly.data?.focusedMinutes ?? 0} focused min`}
+        />
       </section>
 
       <section className="rounded-2xl border border-border bg-card p-4 shadow-sm sm:p-6">
         <div className="grid gap-5 lg:grid-cols-2">
           <div>
             <h2 className="font-semibold">Choose today’s pace</h2>
-            <p className="mt-1 text-sm text-muted-foreground">Changing mode resets today’s activity schedule.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Changing mode resets today’s activity schedule.
+            </p>
             <div className="mt-4 grid gap-2 sm:grid-cols-3">
               {(Object.keys(MODE_LABELS) as DailyStudyMode[]).map((mode) => (
                 <button
@@ -193,32 +234,44 @@ export function DailyStudyPlanPage() {
                   aria-pressed={plan.mode === mode}
                   className={cn(
                     "min-h-14 rounded-xl border px-3 py-2 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-                    plan.mode === mode ? "border-blue-500 bg-blue-500/10" : "border-border hover:bg-muted",
+                    plan.mode === mode
+                      ? "border-blue-500 bg-blue-500/10"
+                      : "border-border hover:bg-muted",
                   )}
                 >
                   <span className="block text-sm font-semibold">{MODE_LABELS[mode]}</span>
-                  <span className="text-xs text-muted-foreground">{MODE_TOTAL_MINUTES[mode]} minutes</span>
+                  <span className="text-xs text-muted-foreground">
+                    {MODE_TOTAL_MINUTES[mode]} minutes
+                  </span>
                 </button>
               ))}
             </div>
           </div>
           <div>
-            <label htmlFor="daily-topic" className="font-semibold">Today’s topic</label>
-            <p className="mt-1 text-sm text-muted-foreground">The weekday suggestion is automatic, but you can change it.</p>
+            <label htmlFor="daily-topic" className="font-semibold">
+              Today’s topic
+            </label>
+            <p className="mt-1 text-sm text-muted-foreground">
+              The weekday suggestion is automatic, but you can change it.
+            </p>
             <Select value={plan.topicKey} onValueChange={study.changeTopic}>
               <SelectTrigger id="daily-topic" className="mt-4 min-h-11 rounded-xl">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
                 {WEEKDAY_TOPICS.map((topic) => (
-                  <SelectItem key={topic.key} value={topic.key}>{topic.label}</SelectItem>
+                  <SelectItem key={topic.key} value={topic.key}>
+                    {topic.label}
+                  </SelectItem>
                 ))}
               </SelectContent>
             </Select>
             <div className="mt-4 flex items-center justify-between gap-3 rounded-xl bg-muted/60 p-3">
               <div>
                 <p className="text-sm font-medium">Show romanization</p>
-                <p className="text-xs text-muted-foreground">Helpful now—gradually try short sections without it.</p>
+                <p className="text-xs text-muted-foreground">
+                  Helpful now—gradually try short sections without it.
+                </p>
               </div>
               <Switch
                 checked={plan.romanizationVisible}
@@ -233,8 +286,12 @@ export function DailyStudyPlanPage() {
       <section aria-labelledby="schedule-title">
         <div className="mb-3 flex items-end justify-between gap-3">
           <div>
-            <h2 id="schedule-title" className="text-xl font-bold">Today’s schedule</h2>
-            <p className="text-sm text-muted-foreground">Only one timer can run at a time. Times are editable.</p>
+            <h2 id="schedule-title" className="text-xl font-bold">
+              Today’s schedule
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              Only one timer can run at a time. Times are editable.
+            </p>
           </div>
           <span className="text-sm font-semibold">{study.progress.plannedMinutes} min planned</span>
         </div>
@@ -246,8 +303,12 @@ export function DailyStudyPlanPage() {
               index={index}
               open={openActivity === activity.id}
               skipReason={skipReasons[activity.id] ?? ""}
-              onSkipReason={(value) => setSkipReasons((current) => ({ ...current, [activity.id]: value }))}
-              onToggle={() => setOpenActivity((current) => current === activity.id ? null : activity.id)}
+              onSkipReason={(value) =>
+                setSkipReasons((current) => ({ ...current, [activity.id]: value }))
+              }
+              onToggle={() =>
+                setOpenActivity((current) => (current === activity.id ? null : activity.id))
+              }
               onStart={() => startActivity(activity)}
               onPause={() => study.pause(activity.id)}
               onComplete={() => completeActivity(activity)}
@@ -267,14 +328,22 @@ export function DailyStudyPlanPage() {
 
       <section aria-labelledby="study-kit-title" className="space-y-5">
         <div>
-          <h2 id="study-kit-title" className="text-xl font-bold">Today’s complete study kit</h2>
-          <p className="text-sm text-muted-foreground">Five reviews, five words, three expressions, one dialogue and five spoken questions.</p>
+          <h2 id="study-kit-title" className="text-xl font-bold">
+            Today’s complete study kit
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Five reviews, five words, three expressions, one dialogue and five spoken questions.
+          </p>
         </div>
 
         <StudyGroup title="Five review cards" icon={BookOpenCheck}>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {plan.content.reviewCards.map((item) => (
-              <ExpressionCard key={item.id} expression={item} showRomanization={plan.romanizationVisible} />
+              <ExpressionCard
+                key={item.id}
+                expression={item}
+                showRomanization={plan.romanizationVisible}
+              />
             ))}
           </div>
         </StudyGroup>
@@ -282,7 +351,11 @@ export function DailyStudyPlanPage() {
         <StudyGroup title="Five useful words" icon={Languages}>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {plan.content.usefulWords.map((item) => (
-              <ExpressionCard key={item.id} expression={item} showRomanization={plan.romanizationVisible} />
+              <ExpressionCard
+                key={item.id}
+                expression={item}
+                showRomanization={plan.romanizationVisible}
+              />
             ))}
           </div>
         </StudyGroup>
@@ -290,7 +363,11 @@ export function DailyStudyPlanPage() {
         <StudyGroup title="Three practical expressions" icon={Sparkles}>
           <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {plan.content.practicalExpressions.map((item) => (
-              <ExpressionCard key={item.id} expression={item} showRomanization={plan.romanizationVisible} />
+              <ExpressionCard
+                key={item.id}
+                expression={item}
+                showRomanization={plan.romanizationVisible}
+              />
             ))}
           </div>
         </StudyGroup>
@@ -310,7 +387,9 @@ export function DailyStudyPlanPage() {
             className="mt-4 min-h-24"
             aria-label="Real-world mission result"
           />
-          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Save size={12} /> Saves when you leave the field.</p>
+          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+            <Save size={12} /> Saves when you leave the field.
+          </p>
         </div>
         <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
           <div className="flex items-center gap-2">
@@ -325,7 +404,9 @@ export function DailyStudyPlanPage() {
             className="mt-4 min-h-24"
             aria-label="Daily study reflection"
           />
-          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground"><Save size={12} /> Saves when you leave the field.</p>
+          <p className="mt-2 flex items-center gap-1 text-xs text-muted-foreground">
+            <Save size={12} /> Saves when you leave the field.
+          </p>
         </div>
       </section>
     </main>
@@ -389,31 +470,40 @@ function ActivityCard({
   const seconds = activity.completedSeconds
   const targetSeconds = activity.estimatedMinutes * 60
   const timerProgress = Math.min(100, Math.round((seconds / targetSeconds) * 100))
-  const statusIcon = activity.status === "completed"
-    ? <CheckCircle2 size={21} className="text-emerald-600" />
-    : activity.status === "skipped"
-      ? <SkipForward size={21} className="text-muted-foreground" />
-      : activity.status === "active"
-        ? <Play size={21} className="text-blue-600" />
-        : <Circle size={21} className="text-muted-foreground/60" />
+  const statusIcon =
+    activity.status === "completed" ? (
+      <CheckCircle2 size={21} className="text-emerald-600" />
+    ) : activity.status === "skipped" ? (
+      <SkipForward size={21} className="text-muted-foreground" />
+    ) : activity.status === "active" ? (
+      <Play size={21} className="text-blue-600" />
+    ) : (
+      <Circle size={21} className="text-muted-foreground/60" />
+    )
 
   return (
-    <article className={cn(
-      "overflow-hidden rounded-2xl border bg-card shadow-sm",
-      activity.status === "active" ? "border-blue-500/50" : "border-border",
-    )}>
+    <article
+      className={cn(
+        "overflow-hidden rounded-2xl border bg-card shadow-sm",
+        activity.status === "active" ? "border-blue-500/50" : "border-border",
+      )}
+    >
       <div className="p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <div className="mt-1 shrink-0">{statusIcon}</div>
           <div className="min-w-0 flex-1">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
               <div className="min-w-0">
-                <p className="text-xs font-medium text-muted-foreground">Activity {index + 1} · {activity.type.replace("_", " ")}</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  Activity {index + 1} · {activity.type.replace("_", " ")}
+                </p>
                 <h3 className="mt-1 break-words font-semibold">{activity.title}</h3>
                 <p className="mt-1 text-sm text-muted-foreground">{activity.description}</p>
               </div>
               <div className="flex shrink-0 items-center gap-2">
-                <label className="sr-only" htmlFor={`time-${activity.id}`}>Start time for {activity.title}</label>
+                <label className="sr-only" htmlFor={`time-${activity.id}`}>
+                  Start time for {activity.title}
+                </label>
                 <input
                   id={`time-${activity.id}`}
                   type="time"
@@ -421,19 +511,26 @@ function ActivityCard({
                   onChange={(event) => onTimeChange(event.target.value)}
                   className="min-h-11 rounded-xl border border-border bg-background px-3 text-sm font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 />
-                <span className="whitespace-nowrap text-sm font-medium text-muted-foreground">{activity.estimatedMinutes} min</span>
+                <span className="whitespace-nowrap text-sm font-medium text-muted-foreground">
+                  {activity.estimatedMinutes} min
+                </span>
               </div>
             </div>
 
             <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-muted">
               <div
-                className={cn("h-full rounded-full", activity.status === "completed" ? "bg-emerald-500" : "bg-blue-500")}
+                className={cn(
+                  "h-full rounded-full",
+                  activity.status === "completed" ? "bg-emerald-500" : "bg-blue-500",
+                )}
                 style={{ width: `${activity.status === "completed" ? 100 : timerProgress}%` }}
               />
             </div>
             <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
               <span className="capitalize">{activity.status}</span>
-              <span className="tabular-nums">{formatSeconds(seconds)} / {activity.estimatedMinutes}:00</span>
+              <span className="tabular-nums">
+                {formatSeconds(seconds)} / {activity.estimatedMinutes}:00
+              </span>
             </div>
 
             {activity.status !== "completed" && activity.status !== "skipped" && (
@@ -451,7 +548,11 @@ function ActivityCard({
                   <Check size={16} className="mr-2" /> Complete
                 </Button>
                 <Button type="button" variant="ghost" onClick={onToggle} className="min-h-11">
-                  Material <ChevronDown size={16} className={cn("ml-2 transition-transform", open && "rotate-180")} />
+                  Material{" "}
+                  <ChevronDown
+                    size={16}
+                    className={cn("ml-2 transition-transform", open && "rotate-180")}
+                  />
                 </Button>
               </div>
             )}
@@ -493,10 +594,20 @@ function ActivityMaterial({
   onVoiceFinished: () => void
 }) {
   if (activity.type === "review") {
-    return <p className="text-sm text-muted-foreground">Use the five review cards in the complete study kit below. Listen first, then say the Korean before reading it.</p>
+    return (
+      <p className="text-sm text-muted-foreground">
+        Use the five review cards in the complete study kit below. Listen first, then say the Korean
+        before reading it.
+      </p>
+    )
   }
   if (activity.type === "vocabulary") {
-    return <p className="text-sm text-muted-foreground">Study the five words and three expressions below. Tap every speaker button and create one sentence aloud.</p>
+    return (
+      <p className="text-sm text-muted-foreground">
+        Study the five words and three expressions below. Tap every speaker button and create one
+        sentence aloud.
+      </p>
+    )
   }
   if (activity.type === "shadowing") {
     return (
@@ -505,7 +616,9 @@ function ActivityMaterial({
           <Headphones size={18} className="text-blue-600" />
           <div>
             <p className="font-semibold">{plan.content.dialogue.title}</p>
-            <p className="text-xs text-muted-foreground">{plan.content.dialogue.situation} · shadow each line 3×</p>
+            <p className="text-xs text-muted-foreground">
+              {plan.content.dialogue.situation} · shadow each line 3×
+            </p>
           </div>
         </div>
         {plan.content.dialogue.lines.map((line, index) => (
@@ -513,11 +626,19 @@ function ActivityMaterial({
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-blue-600">{line.speaker}</p>
-                <p className="mt-1 break-keep font-medium [overflow-wrap:anywhere]">{line.korean}</p>
-                {plan.romanizationVisible && <p className="mt-1 break-words text-xs text-blue-600/80">{line.romanization}</p>}
+                <p className="mt-1 break-keep font-medium [overflow-wrap:anywhere]">
+                  {line.korean}
+                </p>
+                {plan.romanizationVisible && (
+                  <p className="mt-1 break-words text-xs text-blue-600/80">{line.romanization}</p>
+                )}
                 <p className="mt-1 text-xs text-muted-foreground">{line.english}</p>
               </div>
-              <SpeakButton text={line.korean} playbackRate={0.85} className="min-h-10 min-w-10 shrink-0" />
+              <SpeakButton
+                text={line.korean}
+                playbackRate={0.85}
+                className="min-h-10 min-w-10 shrink-0"
+              />
             </div>
           </div>
         ))}
@@ -531,14 +652,23 @@ function ActivityMaterial({
     <div className="space-y-3">
       <p className="text-sm font-medium">Corrections to retry</p>
       {plan.attempts.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Complete the voice role-play first. Your meaningful corrections will appear here.</p>
+        <p className="text-sm text-muted-foreground">
+          Complete the voice role-play first. Your meaningful corrections will appear here.
+        </p>
       ) : (
         plan.attempts.slice(-5).map((attempt) => (
           <div key={attempt.id} className="rounded-xl bg-background p-3">
-            <p className="text-xs text-muted-foreground">Original: {attempt.feedback.originalAnswer}</p>
+            <p className="text-xs text-muted-foreground">
+              Original: {attempt.feedback.originalAnswer}
+            </p>
             <div className="mt-2 flex items-start justify-between gap-2">
-              <p className="break-keep text-sm font-medium [overflow-wrap:anywhere]">{attempt.feedback.correctedAnswer}</p>
-              <SpeakButton text={attempt.feedback.correctedAnswer} className="min-h-10 min-w-10 shrink-0" />
+              <p className="break-keep text-sm font-medium [overflow-wrap:anywhere]">
+                {attempt.feedback.correctedAnswer}
+              </p>
+              <SpeakButton
+                text={attempt.feedback.correctedAnswer}
+                className="min-h-10 min-w-10 shrink-0"
+              />
             </div>
           </div>
         ))
@@ -571,4 +701,3 @@ function formatSeconds(seconds: number): string {
   const minutes = Math.floor(seconds / 60)
   return `${minutes}:${String(seconds % 60).padStart(2, "0")}`
 }
-

@@ -46,9 +46,13 @@ export function hasAnyMistake(analysis: TurnAnalysis): boolean {
 
 // The single most useful mistake to surface live: the first important one, or
 // (failing that) the first mistake at all.
-export function pickPrimaryMistake(analysis: TurnAnalysis): TurnAnalysis["mistakes"][number] | null {
+export function pickPrimaryMistake(
+  analysis: TurnAnalysis,
+): TurnAnalysis["mistakes"][number] | null {
   if (!hasAnyMistake(analysis)) return null
-  return analysis.mistakes.find((mistake) => mistake.severity === "important") ?? analysis.mistakes[0]
+  return (
+    analysis.mistakes.find((mistake) => mistake.severity === "important") ?? analysis.mistakes[0]
+  )
 }
 
 export interface CorrectionDecision {

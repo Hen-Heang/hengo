@@ -2,11 +2,18 @@
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
-import { manualActivitiesApi, type ManualActivity, type ManualActivityInput, type ManualActivityRangeParams } from "@/lib/api"
+import {
+  manualActivitiesApi,
+  type ManualActivity,
+  type ManualActivityInput,
+  type ManualActivityRangeParams,
+} from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 
-export const manualActivitiesQueryKey = (userId?: string | null, params?: ManualActivityRangeParams) =>
-  ["manual-activities", userId, params ?? {}] as const
+export const manualActivitiesQueryKey = (
+  userId?: string | null,
+  params?: ManualActivityRangeParams,
+) => ["manual-activities", userId, params ?? {}] as const
 
 export function useManualActivities(params: ManualActivityRangeParams = {}) {
   const userId = getUserId()
@@ -26,7 +33,8 @@ export function useManualActivities(params: ManualActivityRangeParams = {}) {
 export function useManualActivityMutations() {
   const queryClient = useQueryClient()
   const userId = getUserId()
-  const invalidateList = () => queryClient.invalidateQueries({ queryKey: ["manual-activities", userId] })
+  const invalidateList = () =>
+    queryClient.invalidateQueries({ queryKey: ["manual-activities", userId] })
 
   const create = useMutation({
     mutationFn: (input: ManualActivityInput) => manualActivitiesApi.create(input),

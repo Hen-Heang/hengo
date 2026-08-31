@@ -3,7 +3,17 @@
 import { createContext, useContext, useEffect, useRef, useState, type FC } from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { AudioLines, SquarePen, Sparkles, Terminal, Briefcase, ChevronLeft, EllipsisVertical, Mic, Headphones } from "lucide-react"
+import {
+  AudioLines,
+  SquarePen,
+  Sparkles,
+  Terminal,
+  Briefcase,
+  ChevronLeft,
+  EllipsisVertical,
+  Mic,
+  Headphones,
+} from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 import { toast } from "sonner"
 import {
@@ -55,17 +65,51 @@ type Suggestion = {
 }
 
 const GENERAL_SUGGESTIONS: Suggestion[] = [
-  { emoji: "👋", label: "Greetings", text: "Teach me 5 everyday Korean greetings with pronunciation tips." },
-  { emoji: "✍️", label: "Beginner chat", text: "I'm a beginner. Give me a simple Korean conversation I can practice right now." },
-  { emoji: "🔤", label: "Grammar", text: "Explain the difference between 이/가 and 은/는 with short examples." },
-  { emoji: "🛠️", label: "Fix my writing", text: "Please correct my Korean and explain each change in English.\n\nMy text:\n", prefill: true },
+  {
+    emoji: "👋",
+    label: "Greetings",
+    text: "Teach me 5 everyday Korean greetings with pronunciation tips.",
+  },
+  {
+    emoji: "✍️",
+    label: "Beginner chat",
+    text: "I'm a beginner. Give me a simple Korean conversation I can practice right now.",
+  },
+  {
+    emoji: "🔤",
+    label: "Grammar",
+    text: "Explain the difference between 이/가 and 은/는 with short examples.",
+  },
+  {
+    emoji: "🛠️",
+    label: "Fix my writing",
+    text: "Please correct my Korean and explain each change in English.\n\nMy text:\n",
+    prefill: true,
+  },
 ]
 
 const TECHNICAL_SUGGESTIONS: Suggestion[] = [
-  { emoji: "📝", label: "Fix my report", text: "Please correct my Korean writing and explain each change in English. Make it sound natural for a work report.\n\nMy text:\n", prefill: true },
-  { emoji: "💻", label: "PR Review", text: "How do I ask a colleague to review my Pull Request politely in Korean?" },
-  { emoji: "📅", label: "Stand-up", text: "Help me prepare a short daily stand-up update in Korean: I finished the login bug and I'm starting the API integration today." },
-  { emoji: "🚀", label: "Deployment", text: "What are some common Korean terms used during a production deployment or system maintenance?" },
+  {
+    emoji: "📝",
+    label: "Fix my report",
+    text: "Please correct my Korean writing and explain each change in English. Make it sound natural for a work report.\n\nMy text:\n",
+    prefill: true,
+  },
+  {
+    emoji: "💻",
+    label: "PR Review",
+    text: "How do I ask a colleague to review my Pull Request politely in Korean?",
+  },
+  {
+    emoji: "📅",
+    label: "Stand-up",
+    text: "Help me prepare a short daily stand-up update in Korean: I finished the login bug and I'm starting the API integration today.",
+  },
+  {
+    emoji: "🚀",
+    label: "Deployment",
+    text: "What are some common Korean terms used during a production deployment or system maintenance?",
+  },
 ]
 
 // Bridges ChatWindow state to the welcome screen and composer voice button
@@ -210,7 +254,9 @@ const HengoWelcome: FC = () => {
         <div className="flex items-end justify-between px-1">
           <div>
             <p className="text-[13px] font-bold text-foreground">Choose a conversation</p>
-            <p className="mt-0.5 text-[11px] font-medium text-muted-foreground">Practice a situation you will actually use.</p>
+            <p className="mt-0.5 text-[11px] font-medium text-muted-foreground">
+              Practice a situation you will actually use.
+            </p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3">
@@ -285,7 +331,9 @@ const CompactHengoWelcome: FC = () => {
       <span className="flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
         <Sparkles className="size-5" aria-hidden="true" />
       </span>
-      <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">What can I help with?</h2>
+      <h2 className="mt-3 text-lg font-semibold tracking-tight text-foreground">
+        What can I help with?
+      </h2>
       <p className="mt-1 max-w-xs text-xs leading-5 text-muted-foreground">
         Ask about Korean, workplace communication, or a sentence you want corrected.
       </p>
@@ -333,7 +381,8 @@ const MicButton: FC = () => {
   const { canInteract, voice } = useHengoChat()
   if (!voice.supported) return null
 
-  const title = voice.phase === "connecting" ? "Connecting live voice" : "Start live Korean conversation"
+  const title =
+    voice.phase === "connecting" ? "Connecting live voice" : "Start live Korean conversation"
 
   return (
     <Button
@@ -348,7 +397,7 @@ const MicButton: FC = () => {
         "size-9 shrink-0 rounded-full transition-colors",
         voice.phase === "connecting"
           ? "animate-pulse bg-blue-600 text-white"
-          : "text-muted-foreground/60 hover:bg-accent hover:text-foreground"
+          : "text-muted-foreground/60 hover:bg-accent hover:text-foreground",
       )}
     >
       <Mic size={18} />
@@ -427,7 +476,9 @@ export function ChatWindow({
         description: scenarioResult.strengths[0],
       })
     } else {
-      toast.info("Not quite there yet", { description: scenarioResult.improvements[0] ?? "Keep going and try ending again." })
+      toast.info("Not quite there yet", {
+        description: scenarioResult.improvements[0] ?? "Keep going and try ending again.",
+      })
     }
   }, [scenarioResult])
 
@@ -550,7 +601,7 @@ export function ChatWindow({
         <div
           className={cn(
             "relative flex h-full min-h-0 w-full max-w-full min-w-0 flex-col overflow-hidden border-border/60 bg-card dark:bg-slate-950/40 dark:backdrop-blur-md",
-            compact ? "border-0 shadow-none" : "shadow-2xl md:rounded-3xl md:border"
+            compact ? "border-0 shadow-none" : "shadow-2xl md:rounded-3xl md:border",
           )}
         >
           <AnimatePresence>
@@ -618,142 +669,162 @@ export function ChatWindow({
               inert={realtimeVoice.isActive || undefined}
               className={cn(
                 "flex shrink-0 items-center justify-between gap-3 border-b border-border/50 bg-background/80 px-4 py-3 shadow-[0_1px_0_rgba(255,255,255,0.02)] backdrop-blur-xl sm:px-5",
-                embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]"
+                embedded ? "pt-3" : "pt-[max(0.75rem,env(safe-area-inset-top))]",
               )}
             >
-            <div className="flex min-w-0 items-center gap-3">
-              {!embedded && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="-ml-2 h-11 w-11 rounded-lg text-muted-foreground transition-colors active:scale-95 md:hidden"
-                  onClick={() => router.push("/home")}
-                  title="Back to home"
-                  aria-label="Back to home"
-                >
-                  <ChevronLeft size={24} strokeWidth={2.5} />
-                </Button>
-              )}
-
-              <div className="relative shrink-0">
-                <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-blue-500/15">
-                  <Image src="/hengo-icon.png" alt="" width={40} height={40} className="h-full w-full" />
-                </div>
-                <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
-              </div>
-              <div className="min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="truncate text-base font-semibold leading-none tracking-tight text-foreground">{title}</h3>
-                  <span className="hidden rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300 sm:inline">
-                    AI Coach
-                  </span>
-                </div>
-                <div className="mt-1.5 flex items-center gap-1.5">
-                  <span
-                    className={cn(
-                      "h-1.5 w-1.5 rounded-full",
-                      realtimeVoice.isActive ? "animate-pulse bg-blue-500" : "bg-emerald-500"
-                    )}
-                  />
-                  <p className="truncate text-xs font-medium text-muted-foreground">{coachStatus}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex shrink-0 items-center gap-2">
-              {scenario && scenarioTurnCount >= 3 && !scenarioResult?.taskCompleted && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => void evaluateScenario()}
-                  disabled={isEvaluatingScenario}
-                  className="h-11 items-center gap-1.5 rounded-lg border-emerald-500/40 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
-                >
-                  {isEvaluatingScenario ? "Checking…" : "End scenario"}
-                </Button>
-              )}
-              {/* Technical Mode + Voice toggles — full controls on tablet/desktop */}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setIsTechnicalMode(!isTechnicalMode)}
-                className={cn(
-                  "hidden h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition-colors sm:flex",
-                  isTechnicalMode
-                    ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                    : "border-border/60 bg-background/50 text-muted-foreground"
-                )}
-              >
-                {isTechnicalMode ? <Terminal size={14} /> : <Briefcase size={14} />}
-                <span>{isTechnicalMode ? "Dev Mode ON" : "General Mode"}</span>
-              </Button>
-
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleVoiceToggle}
-                disabled={!realtimeVoice.supported || (!realtimeVoice.isActive && !canInteract)}
-                title={realtimeVoice.isActive ? "End live voice practice" : "Start live Korean voice practice"}
-                aria-pressed={realtimeVoice.isActive}
-                className={cn(
-                  "h-11 min-w-11 items-center gap-2 rounded-lg px-2.5 text-xs font-semibold transition-colors sm:px-3",
-                  realtimeVoice.isActive
-                    ? "border-blue-500/40 bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-500"
-                    : "border-border/70 bg-background text-muted-foreground hover:border-blue-500/30 hover:text-foreground"
-                )}
-              >
-                {realtimeVoice.isActive ? <AudioLines size={14} /> : <Headphones size={14} />}
-                <span className="hidden sm:inline">{realtimeVoice.isActive ? "Live voice" : "Practice speaking"}</span>
-              </Button>
-
-              {onNewChat && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="hidden h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95 sm:flex"
-                  onClick={onNewChat}
-                  disabled={isStartingNewChat}
-                  title="Start fresh"
-                  aria-label="Start fresh chat"
-                >
-                  <SquarePen size={16} strokeWidth={2.5} />
-                </Button>
-              )}
-
-              {/* Mobile: same controls collapsed into one menu so the narrow header isn't a wall of icons */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              <div className="flex min-w-0 items-center gap-3">
+                {!embedded && (
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors active:scale-95 sm:hidden"
-                    aria-label="Chat options"
-                    title="Chat options"
+                    className="-ml-2 h-11 w-11 rounded-lg text-muted-foreground transition-colors active:scale-95 md:hidden"
+                    onClick={() => router.push("/home")}
+                    title="Back to home"
+                    aria-label="Back to home"
                   >
-                    <EllipsisVertical size={18} strokeWidth={2.5} />
+                    <ChevronLeft size={24} strokeWidth={2.5} />
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuCheckboxItem
-                    checked={isTechnicalMode}
-                    onCheckedChange={() => setIsTechnicalMode(!isTechnicalMode)}
-                  >
-                    {isTechnicalMode ? <Terminal size={14} className="mr-2" /> : <Briefcase size={14} className="mr-2" />}
-                    Dev Mode (technical Korean)
-                  </DropdownMenuCheckboxItem>
-                  {onNewChat && (
-                    <>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem onClick={onNewChat} disabled={isStartingNewChat}>
-                        <SquarePen size={14} className="mr-2" />
-                        Start fresh chat
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </div>
+                )}
+
+                <div className="relative shrink-0">
+                  <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-lg bg-background shadow-sm ring-1 ring-blue-500/15">
+                    <Image
+                      src="/hengo-icon.png"
+                      alt=""
+                      width={40}
+                      height={40}
+                      className="h-full w-full"
+                    />
+                  </div>
+                  <span className="absolute -right-0.5 -bottom-0.5 h-3 w-3 rounded-full border-2 border-background bg-emerald-500" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="truncate text-base font-semibold leading-none tracking-tight text-foreground">
+                      {title}
+                    </h3>
+                    <span className="hidden rounded-full bg-blue-500/10 px-2 py-0.5 text-xs font-semibold text-blue-700 dark:text-blue-300 sm:inline">
+                      AI Coach
+                    </span>
+                  </div>
+                  <div className="mt-1.5 flex items-center gap-1.5">
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        realtimeVoice.isActive ? "animate-pulse bg-blue-500" : "bg-emerald-500",
+                      )}
+                    />
+                    <p className="truncate text-xs font-medium text-muted-foreground">
+                      {coachStatus}
+                    </p>
+                  </div>
+                </div>
               </div>
+
+              <div className="flex shrink-0 items-center gap-2">
+                {scenario && scenarioTurnCount >= 3 && !scenarioResult?.taskCompleted && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => void evaluateScenario()}
+                    disabled={isEvaluatingScenario}
+                    className="h-11 items-center gap-1.5 rounded-lg border-emerald-500/40 bg-emerald-500/10 px-3 text-xs font-semibold text-emerald-700 dark:text-emerald-400"
+                  >
+                    {isEvaluatingScenario ? "Checking…" : "End scenario"}
+                  </Button>
+                )}
+                {/* Technical Mode + Voice toggles — full controls on tablet/desktop */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsTechnicalMode(!isTechnicalMode)}
+                  className={cn(
+                    "hidden h-11 items-center gap-2 rounded-lg px-3 text-xs font-semibold transition-colors sm:flex",
+                    isTechnicalMode
+                      ? "border-blue-500/50 bg-blue-500/10 text-blue-600 dark:text-blue-400"
+                      : "border-border/60 bg-background/50 text-muted-foreground",
+                  )}
+                >
+                  {isTechnicalMode ? <Terminal size={14} /> : <Briefcase size={14} />}
+                  <span>{isTechnicalMode ? "Dev Mode ON" : "General Mode"}</span>
+                </Button>
+
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleVoiceToggle}
+                  disabled={!realtimeVoice.supported || (!realtimeVoice.isActive && !canInteract)}
+                  title={
+                    realtimeVoice.isActive
+                      ? "End live voice practice"
+                      : "Start live Korean voice practice"
+                  }
+                  aria-pressed={realtimeVoice.isActive}
+                  className={cn(
+                    "h-11 min-w-11 items-center gap-2 rounded-lg px-2.5 text-xs font-semibold transition-colors sm:px-3",
+                    realtimeVoice.isActive
+                      ? "border-blue-500/40 bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-500"
+                      : "border-border/70 bg-background text-muted-foreground hover:border-blue-500/30 hover:text-foreground",
+                  )}
+                >
+                  {realtimeVoice.isActive ? <AudioLines size={14} /> : <Headphones size={14} />}
+                  <span className="hidden sm:inline">
+                    {realtimeVoice.isActive ? "Live voice" : "Practice speaking"}
+                  </span>
+                </Button>
+
+                {onNewChat && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="hidden h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground active:scale-95 sm:flex"
+                    onClick={onNewChat}
+                    disabled={isStartingNewChat}
+                    title="Start fresh"
+                    aria-label="Start fresh chat"
+                  >
+                    <SquarePen size={16} strokeWidth={2.5} />
+                  </Button>
+                )}
+
+                {/* Mobile: same controls collapsed into one menu so the narrow header isn't a wall of icons */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-11 w-11 rounded-lg border border-border/60 bg-background/50 text-muted-foreground transition-colors active:scale-95 sm:hidden"
+                      aria-label="Chat options"
+                      title="Chat options"
+                    >
+                      <EllipsisVertical size={18} strokeWidth={2.5} />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuCheckboxItem
+                      checked={isTechnicalMode}
+                      onCheckedChange={() => setIsTechnicalMode(!isTechnicalMode)}
+                    >
+                      {isTechnicalMode ? (
+                        <Terminal size={14} className="mr-2" />
+                      ) : (
+                        <Briefcase size={14} className="mr-2" />
+                      )}
+                      Dev Mode (technical Korean)
+                    </DropdownMenuCheckboxItem>
+                    {onNewChat && (
+                      <>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem onClick={onNewChat} disabled={isStartingNewChat}>
+                          <SquarePen size={14} className="mr-2" />
+                          Start fresh chat
+                        </DropdownMenuItem>
+                      </>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           )}
 
           <AnimatePresence>
@@ -777,7 +848,9 @@ export function ChatWindow({
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-500/10 text-blue-600 shadow-inner">
                   <Sparkles size={24} className="animate-pulse" />
                 </div>
-                <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">Syncing History</p>
+                <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Syncing History
+                </p>
               </div>
             )}
             <Thread components={compact ? COMPACT_THREAD_COMPONENTS : THREAD_COMPONENTS} />

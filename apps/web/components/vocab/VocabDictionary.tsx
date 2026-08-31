@@ -36,7 +36,7 @@ type VocabDictionaryProps = {
   query: string
   onUpdate: (
     id: string,
-    data: { term: string; meaning: string; example?: string; pronunciation?: string }
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
   ) => void | Promise<void>
   onDelete?: (id: string) => void | Promise<void>
   /** Enables the per-deck inline "add word" form; the deck supplies its category. */
@@ -75,7 +75,10 @@ function DeckSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="relative overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40">
+        <div
+          key={i}
+          className="relative overflow-hidden rounded-3xl border border-border bg-card p-5 shadow-sm dark:bg-slate-900/40"
+        >
           {/* top mastery bar */}
           <Skeleton className="absolute inset-x-0 top-0 h-1 rounded-none" />
           <div className="flex items-start justify-between gap-4 pt-2">
@@ -135,7 +138,7 @@ export function VocabDictionary({
 
   const filtered = useMemo(
     () => sortVocab(filterVocab(words, query, masteryFilter), sortOrder),
-    [words, query, masteryFilter, sortOrder]
+    [words, query, masteryFilter, sortOrder],
   )
   const decks = useMemo(() => groupByCategory(filtered), [filtered])
 
@@ -148,9 +151,9 @@ export function VocabDictionary({
           value === "all"
             ? words.length
             : words.filter((word) => matchesMastery(word.mastery, value)).length,
-        ])
+        ]),
       ) as Record<MasteryFilter, number>,
-    [words]
+    [words],
   )
 
   function clearFilters() {
@@ -183,79 +186,83 @@ export function VocabDictionary({
           <div className="space-y-3 p-3 sm:p-4" role="group" aria-label="Vocabulary view controls">
             <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               {MASTERY_FILTERS.map(({ value, label }) => (
-              <Button
-                key={value}
-                type="button"
-                onClick={() => setMasteryFilter(value)}
-                variant={masteryFilter === value ? "secondary" : "outline"}
-                size="sm"
-                aria-pressed={masteryFilter === value}
-                className={cn(
-                  "shrink-0 rounded-xl px-3 text-xs",
-                  masteryFilter === value
-                    ? "bg-primary/10 text-primary hover:bg-primary/15"
-                    : "text-muted-foreground"
-                )}
-              >
-                {label}
-                <span className="font-mono text-[10px] opacity-65">
-                  {filterCounts[value]}
-                </span>
-              </Button>
+                <Button
+                  key={value}
+                  type="button"
+                  onClick={() => setMasteryFilter(value)}
+                  variant={masteryFilter === value ? "secondary" : "outline"}
+                  size="sm"
+                  aria-pressed={masteryFilter === value}
+                  className={cn(
+                    "shrink-0 rounded-xl px-3 text-xs",
+                    masteryFilter === value
+                      ? "bg-primary/10 text-primary hover:bg-primary/15"
+                      : "text-muted-foreground",
+                  )}
+                >
+                  {label}
+                  <span className="font-mono text-[10px] opacity-65">{filterCounts[value]}</span>
+                </Button>
               ))}
             </div>
 
             <div className="flex items-center gap-2">
               <div className="min-w-0 flex-1 sm:max-w-56">
-              <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
-                <SelectTrigger aria-label="Sort vocabulary words" className="h-10 w-full rounded-xl bg-background shadow-none">
-                  <ArrowDownUp className="text-muted-foreground" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                {SORT_ORDERS.map(({ value, label }) => (
-                  <SelectItem key={value} value={value}>
-                    {label}
-                  </SelectItem>
-                ))}
-                </SelectContent>
-              </Select>
+                <Select
+                  value={sortOrder}
+                  onValueChange={(value) => setSortOrder(value as SortOrder)}
+                >
+                  <SelectTrigger
+                    aria-label="Sort vocabulary words"
+                    className="h-10 w-full rounded-xl bg-background shadow-none"
+                  >
+                    <ArrowDownUp className="text-muted-foreground" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SORT_ORDERS.map(({ value, label }) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-            <div className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Deck layout">
-              <Button
-                type="button"
-                onClick={() => setViewMode("list")}
-                aria-label="List view"
-                aria-pressed={viewMode === "list"}
-                variant="ghost"
-                size="icon-lg"
-                className={cn(
-                  "rounded-lg",
-                  viewMode === "list"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground"
-                )}
+              <div
+                className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1"
+                role="group"
+                aria-label="Deck layout"
               >
-                <List size={14} strokeWidth={2.5} />
-              </Button>
-              <Button
-                type="button"
-                onClick={() => setViewMode("grid")}
-                aria-label="Grid view"
-                aria-pressed={viewMode === "grid"}
-                variant="ghost"
-                size="icon-lg"
-                className={cn(
-                  "rounded-lg",
-                  viewMode === "grid"
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground"
-                )}
-              >
-                <LayoutGrid size={14} strokeWidth={2.5} />
-              </Button>
-            </div>
+                <Button
+                  type="button"
+                  onClick={() => setViewMode("list")}
+                  aria-label="List view"
+                  aria-pressed={viewMode === "list"}
+                  variant="ghost"
+                  size="icon-lg"
+                  className={cn(
+                    "rounded-lg",
+                    viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  <List size={14} strokeWidth={2.5} />
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => setViewMode("grid")}
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === "grid"}
+                  variant="ghost"
+                  size="icon-lg"
+                  className={cn(
+                    "rounded-lg",
+                    viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                  )}
+                >
+                  <LayoutGrid size={14} strokeWidth={2.5} />
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -267,7 +274,7 @@ export function VocabDictionary({
         className={cn(
           viewMode === "grid"
             ? "grid grid-cols-1 items-stretch gap-3 sm:grid-cols-2 xl:grid-cols-3"
-            : "space-y-3"
+            : "space-y-3",
         )}
       >
         {decks.map(([category, items], index) => (
@@ -313,15 +320,11 @@ export function VocabDictionary({
           </div>
           <h3 className="text-xl font-bold text-foreground">Start Your Collection</h3>
           <p className="mx-auto mt-3 max-w-xs text-[16px] font-medium leading-relaxed text-muted-foreground">
-            Save words from chat sessions or use the AI Deck Builder to start mastering Korean vocabulary.
+            Save words from chat sessions or use the AI Deck Builder to start mastering Korean
+            vocabulary.
           </p>
           {onStartAdd && (
-            <Button
-              type="button"
-              onClick={onStartAdd}
-              size="lg"
-              className="mt-6"
-            >
+            <Button type="button" onClick={onStartAdd} size="lg" className="mt-6">
               <Plus size={18} strokeWidth={2.5} />
               Add your first words
             </Button>

@@ -1,7 +1,13 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpenText, ChevronDown, ChevronUp, Headphones, MessageCircleQuestion } from "lucide-react"
+import {
+  BookOpenText,
+  ChevronDown,
+  ChevronUp,
+  Headphones,
+  MessageCircleQuestion,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -28,7 +34,8 @@ export function PersonalExamReviewCard() {
               Real-story Q&A + question catcher
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-              Do not memorize every word. Catch 1–2 keywords, choose the matching real story, and answer in 2–3 short formal sentences.
+              Do not memorize every word. Catch 1–2 keywords, choose the matching real story, and
+              answer in 2–3 short formal sentences.
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2 sm:w-auto">
@@ -58,14 +65,18 @@ export function PersonalExamReviewCard() {
                 <Headphones className="size-4 text-amber-600" /> Listening rule
               </div>
               <p className="mt-1.5 text-sm leading-6 text-muted-foreground sm:text-base">
-                Catch the yellow words first. Example: “차이점 / 어떻게 달라요” → 한국=습도·비, 캄보디아=햇빛·기온.
+                Catch the yellow words first. Example: “차이점 / 어떻게 달라요” → 한국=습도·비,
+                캄보디아=햇빛·기온.
               </p>
             </div>
 
             {PERSONAL_EXAM_QA.map((item, index) => {
               const isOpen = openQuestion === item.id
               return (
-                <div key={item.id} className="rounded-xl border border-border bg-background/60 p-4 sm:p-5">
+                <div
+                  key={item.id}
+                  className="rounded-xl border border-border bg-background/60 p-4 sm:p-5"
+                >
                   <div className="flex items-start gap-3.5">
                     <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-xs font-bold text-blue-700 dark:text-blue-300">
                       {index + 1}
@@ -73,12 +84,18 @@ export function PersonalExamReviewCard() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-3">
                         <div className="min-w-0">
-                          <p lang="ko" className="break-words text-base font-semibold leading-7 text-foreground sm:text-lg sm:leading-8">
+                          <p
+                            lang="ko"
+                            className="break-words text-base font-semibold leading-7 text-foreground sm:text-lg sm:leading-8"
+                          >
                             {item.question}
                           </p>
                           <div className="mt-2.5 flex flex-wrap gap-1.5">
                             {item.catchKeywords.map((keyword) => (
-                              <Badge key={keyword} className="border-amber-500/20 bg-amber-500/10 text-xs font-semibold text-amber-800 dark:text-amber-300">
+                              <Badge
+                                key={keyword}
+                                className="border-amber-500/20 bg-amber-500/10 text-xs font-semibold text-amber-800 dark:text-amber-300"
+                              >
                                 {keyword}
                               </Badge>
                             ))}
@@ -92,34 +109,59 @@ export function PersonalExamReviewCard() {
                         onClick={() => setOpenQuestion(isOpen ? null : item.id)}
                         className="mt-3.5 flex items-center gap-1 text-sm font-semibold text-blue-600 hover:underline dark:text-blue-400"
                       >
-                        {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+                        {isOpen ? (
+                          <ChevronUp className="size-4" />
+                        ) : (
+                          <ChevronDown className="size-4" />
+                        )}
                         {isOpen ? "답변 숨기기" : "질문 표현 + 답변 보기"}
                       </button>
 
                       {isOpen ? (
                         <div className="mt-4 space-y-4">
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">You may hear</p>
+                            <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                              You may hear
+                            </p>
                             <ul className="mt-1.5 space-y-1.5 text-sm leading-6 text-muted-foreground sm:text-base">
                               {item.questionVariants.map((variant) => (
-                                <li key={variant} lang="ko">• {variant}</li>
+                                <li key={variant} lang="ko">
+                                  • {variant}
+                                </li>
                               ))}
                             </ul>
                           </div>
                           <div className="rounded-xl bg-muted/40 p-4">
                             <div className="flex items-start justify-between gap-3">
-                              <p lang="ko" className="text-base font-medium leading-7 text-foreground sm:leading-8">
+                              <p
+                                lang="ko"
+                                className="text-base font-medium leading-7 text-foreground sm:leading-8"
+                              >
                                 {item.answer}
                               </p>
-                              <SpeakButton text={item.answer} className="shrink-0" title="답변 듣기" />
+                              <SpeakButton
+                                text={item.answer}
+                                className="shrink-0"
+                                title="답변 듣기"
+                              />
                             </div>
                             <div className="mt-3 flex flex-wrap gap-1.5">
                               {item.answerKeywords.map((keyword) => (
-                                <Badge key={keyword} variant="outline" className="text-xs font-medium">{keyword}</Badge>
+                                <Badge
+                                  key={keyword}
+                                  variant="outline"
+                                  className="text-xs font-medium"
+                                >
+                                  {keyword}
+                                </Badge>
                               ))}
                             </div>
                           </div>
-                          {item.note ? <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{item.note}</p> : null}
+                          {item.note ? (
+                            <p className="text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                              {item.note}
+                            </p>
+                          ) : null}
                         </div>
                       ) : null}
                     </div>
@@ -131,14 +173,23 @@ export function PersonalExamReviewCard() {
         ) : (
           <div className="mt-6 space-y-3">
             <p className="max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base">
-              This is the short personal version. Seonyudo and Han River cycling stay outside the main script as backup stories for follow-up questions.
+              This is the short personal version. Seonyudo and Han River cycling stay outside the
+              main script as backup stories for follow-up questions.
             </p>
             {PERSONAL_EXAM_SCRIPT.map((section) => (
-              <div key={section.id} className="rounded-xl border border-border bg-background/60 p-4 sm:p-5">
+              <div
+                key={section.id}
+                className="rounded-xl border border-border bg-background/60 p-4 sm:p-5"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">{section.title}</p>
-                    <p lang="ko" className="mt-2 whitespace-pre-line text-base font-medium leading-8 text-foreground">
+                    <p className="text-sm font-bold text-blue-600 dark:text-blue-400">
+                      {section.title}
+                    </p>
+                    <p
+                      lang="ko"
+                      className="mt-2 whitespace-pre-line text-base font-medium leading-8 text-foreground"
+                    >
                       {section.text}
                     </p>
                   </div>

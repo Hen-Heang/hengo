@@ -217,7 +217,11 @@ export function AiTaskPlanDialog({
               disabled={loading}
               className="h-11 flex-[2] gap-2 rounded-xl"
             >
-              {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
               {loading ? "Drafting…" : "Draft plan"}
             </Button>
           ) : (

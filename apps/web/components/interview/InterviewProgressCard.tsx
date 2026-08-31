@@ -7,7 +7,11 @@ import { BookOpen, TrendingDown } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { interviewApi, vocabApi } from "@/lib/api"
-import { averageScore, mostDifficultQuestions, type QuestionBankItem } from "@/lib/interview-practice"
+import {
+  averageScore,
+  mostDifficultQuestions,
+  type QuestionBankItem,
+} from "@/lib/interview-practice"
 import { INTERVIEW_VOCAB_SEED } from "@/lib/interview-vocab-seed"
 
 interface Stats {
@@ -40,7 +44,8 @@ export function InterviewProgressCard({ topicId }: { topicId: string }) {
         setStats({
           questionsPracticed: practicedCount,
           totalAnswers: answers.length,
-          avgScore: scored.length > 0 ? scored.reduce((sum, n) => sum + n, 0) / scored.length : null,
+          avgScore:
+            scored.length > 0 ? scored.reduce((sum, n) => sum + n, 0) / scored.length : null,
           difficult: mostDifficultQuestions(questions, progress, 3),
         })
       })
@@ -103,7 +108,9 @@ export function InterviewProgressCard({ topicId }: { topicId: string }) {
                 <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
                   Answers saved
                 </p>
-                <p className="mt-0.5 text-xl font-bold tabular-nums text-foreground">{stats.totalAnswers}</p>
+                <p className="mt-0.5 text-xl font-bold tabular-nums text-foreground">
+                  {stats.totalAnswers}
+                </p>
               </div>
               <div className="rounded-2xl border border-border bg-accent/5 px-3 py-2.5">
                 <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
@@ -135,8 +142,8 @@ export function InterviewProgressCard({ topicId }: { topicId: string }) {
 
             {stats.totalAnswers === 0 && (
               <p className="text-sm font-medium italic text-muted-foreground">
-                No practice history yet — start a Speaking Drill or Mock Interview to see your progress
-                here.
+                No practice history yet — start a Speaking Drill or Mock Interview to see your
+                progress here.
               </p>
             )}
           </>
@@ -150,7 +157,8 @@ export function InterviewProgressCard({ topicId }: { topicId: string }) {
               <BookOpen size={15} strokeWidth={2.5} /> Topic vocabulary
             </p>
             <p className="mt-0.5 text-xs font-medium text-muted-foreground">
-              {vocabLoaded ?? 0}/{INTERVIEW_VOCAB_SEED.length} starter words loaded into your vocab deck
+              {vocabLoaded ?? 0}/{INTERVIEW_VOCAB_SEED.length} starter words loaded into your vocab
+              deck
             </p>
           </div>
           <div className="flex items-center gap-2">
@@ -164,7 +172,12 @@ export function InterviewProgressCard({ topicId }: { topicId: string }) {
                 {isSeedingVocab ? "Loading…" : "Load starter vocabulary"}
               </Button>
             )}
-            <Button asChild size="sm" variant="outline" className="h-8 rounded-lg text-xs font-bold">
+            <Button
+              asChild
+              size="sm"
+              variant="outline"
+              className="h-8 rounded-lg text-xs font-bold"
+            >
               <Link href="/vocab">Open Vocabulary</Link>
             </Button>
           </div>

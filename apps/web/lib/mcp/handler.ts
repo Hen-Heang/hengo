@@ -36,7 +36,9 @@ export function createAuthenticatedMcpHandler(
   // per-request McpContext here — rather than inside a tool callback — is
   // still exactly one Supabase client per request, just built one layer
   // earlier so every tool registered below can close over the same one.
-  const handler = createMcpHandler((ctx) => createHengoMcpServer(buildMcpContext(ctx, config.writeEnabled) ?? undefined))
+  const handler = createMcpHandler((ctx) =>
+    createHengoMcpServer(buildMcpContext(ctx, config.writeEnabled) ?? undefined),
+  )
 
   // On failure this produces the RFC 9728 challenge:
   //   401 + WWW-Authenticate: Bearer ..., resource_metadata="<url>"

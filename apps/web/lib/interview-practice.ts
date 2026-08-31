@@ -136,9 +136,10 @@ export function summarizeQuestionProgress(
   }
   for (const question of questions) {
     const progress = progressByQuestionId[question.id]
-    const status = !progress || progress.timesPracticed === 0
-      ? "new"
-      : deriveStatus(progress.timesPracticed, progress.avgScore ?? 0)
+    const status =
+      !progress || progress.timesPracticed === 0
+        ? "new"
+        : deriveStatus(progress.timesPracticed, progress.avgScore ?? 0)
     if (status === "new") summary.newCount += 1
     else summary.practiced += 1
     if (status === "practicing") summary.practicing += 1
@@ -236,7 +237,7 @@ function dailyRank(
     question.priority === "must_practice" ? 0 : question.priority === "recommended" ? 1 : 2
   const isNew = !progress || progress.timesPracticed === 0
   const learningState = isNew ? 0 : progress.status === "strong" ? 2 : 1
-  const score = isNew ? 0 : progress.avgScore ?? 0
+  const score = isNew ? 0 : (progress.avgScore ?? 0)
   return [priority, learningState, score, question.displayOrder]
 }
 
@@ -278,12 +279,12 @@ export function selectTodaysQueue(
       dailyRank(b, progressByQuestionId[b.id] ?? null),
     ),
   )
-  const preferred = difficulty === "mixed"
-    ? ordered
-    : ordered.filter((question) => question.difficulty === difficulty)
-  const fallback = difficulty === "mixed"
-    ? []
-    : ordered.filter((question) => question.difficulty !== difficulty)
+  const preferred =
+    difficulty === "mixed"
+      ? ordered
+      : ordered.filter((question) => question.difficulty === difficulty)
+  const fallback =
+    difficulty === "mixed" ? [] : ordered.filter((question) => question.difficulty !== difficulty)
 
   for (const question of [...preferred, ...fallback]) {
     if (selected.length >= wanted) break
@@ -316,10 +317,7 @@ export function shouldRecommendRetry(score: number): boolean {
 export type RetryFlowState = "ready" | "correction" | "retrying" | "completed"
 export type RetryFlowEvent = "score" | "retry" | "retry_scored" | "skip"
 
-export function transitionRetryFlow(
-  state: RetryFlowState,
-  event: RetryFlowEvent,
-): RetryFlowState {
+export function transitionRetryFlow(state: RetryFlowState, event: RetryFlowEvent): RetryFlowState {
   if (state === "ready" && event === "score") return "correction"
   if (state === "correction" && event === "retry") return "retrying"
   if (state === "correction" && event === "skip") return "completed"
@@ -332,10 +330,7 @@ export function duplicateVersionLabel(label: string, existingLabels: string[]): 
   return existingLabels.some((existing) => existing.trim().toLocaleLowerCase() === normalized)
 }
 
-export function suggestUniqueVersionLabel(
-  preferred: string,
-  existingLabels: string[],
-): string {
+export function suggestUniqueVersionLabel(preferred: string, existingLabels: string[]): string {
   if (!duplicateVersionLabel(preferred, existingLabels)) return preferred
   let suffix = 2
   while (duplicateVersionLabel(`${preferred} ${suffix}`, existingLabels)) suffix += 1

@@ -41,7 +41,9 @@ export const POST = jsonAiRoute({
     }),
   }),
   buildPrompt: ({ mode, transcript, questionCount }) => {
-    const lines = transcript.map((t) => `${t.role === "examiner" ? "Q" : "A"}: ${t.text}`).join("\n")
+    const lines = transcript
+      .map((t) => `${t.role === "examiner" ? "Q" : "A"}: ${t.text}`)
+      .join("\n")
     return (
       "You are scoring a K-Specialist Korean speaking mock interview from its transcript. " +
       "Judge ONLY the candidate's answers (the A lines). Score each of the four official criteria " +

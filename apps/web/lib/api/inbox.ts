@@ -120,7 +120,7 @@ export const inboxApi = {
       goalId: string | null
       pinned: boolean
       status: InboxItemStatus
-    }>
+    }>,
   ): Promise<InboxItem> => {
     const { data, error } = await supabase
       .from("kori_inbox_items")
@@ -147,7 +147,8 @@ export const inboxApi = {
     if (error) throw error
   },
 
-  togglePinned: async (id: string, pinned: boolean): Promise<InboxItem> => inboxApi.update(id, { pinned }),
+  togglePinned: async (id: string, pinned: boolean): Promise<InboxItem> =>
+    inboxApi.update(id, { pinned }),
 
   archive: async (id: string): Promise<InboxItem> => inboxApi.update(id, { status: "archived" }),
 
@@ -158,7 +159,10 @@ export const inboxApi = {
   /** Converts an inbox item into a new Note, stamping the source as processed. */
   convertToNote: async (item: InboxItem): Promise<{ slug: string }> => {
     const existing = await notesApi.list()
-    const payload = buildNoteConversionPayload(item, existing.map((n) => n.slug))
+    const payload = buildNoteConversionPayload(
+      item,
+      existing.map((n) => n.slug),
+    )
     await notesApi.create(payload)
     await supabase
       .from("kori_inbox_items")

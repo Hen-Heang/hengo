@@ -39,7 +39,7 @@ export function appendScorecard(
   evaluation: InterviewEvaluation,
   now: Date = new Date(),
   id?: string,
-  mode?: string
+  mode?: string,
 ): ScorecardRecord[] {
   if (evaluation.scores.length === 0) return history
   const record: ScorecardRecord = {
@@ -75,7 +75,7 @@ export function saveScorecard(
   evaluation: InterviewEvaluation,
   now: Date = new Date(),
   id?: string,
-  mode?: string
+  mode?: string,
 ): ScorecardRecord[] {
   const next = appendScorecard(loadScorecards(), evaluation, now, id, mode)
   try {
@@ -104,12 +104,10 @@ export function toScorecardRecord(attempt: InterviewAttempt): ScorecardRecord {
  */
 export function mergeScorecards(
   local: ScorecardRecord[],
-  remote: ScorecardRecord[]
+  remote: ScorecardRecord[],
 ): ScorecardRecord[] {
   const byId = new Map<string, ScorecardRecord>()
   for (const record of local) byId.set(record.id, record)
   for (const record of remote) byId.set(record.id, record)
-  return [...byId.values()]
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .slice(-MAX_RECORDS)
+  return [...byId.values()].sort((a, b) => a.date.localeCompare(b.date)).slice(-MAX_RECORDS)
 }

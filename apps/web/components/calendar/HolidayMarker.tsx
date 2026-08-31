@@ -2,11 +2,7 @@
 
 import { format } from "date-fns"
 
-import {
-  HOLIDAY_COUNTRY_META,
-  type Holiday,
-  type HolidayCountry,
-} from "@/lib/holidays"
+import { HOLIDAY_COUNTRY_META, type Holiday, type HolidayCountry } from "@/lib/holidays"
 import { cn } from "@/lib/utils"
 import { HolidayCountryFlag } from "./HolidayCountryFlag"
 
@@ -23,23 +19,12 @@ interface HolidayMarkerProps {
   className?: string
 }
 
-export function HolidayMarker({
-  date,
-  holidays,
-  onClick,
-  variant,
-  className,
-}: HolidayMarkerProps) {
+export function HolidayMarker({ date, holidays, onClick, variant, className }: HolidayMarkerProps) {
   if (holidays.length === 0) return null
 
-  const countries = Array.from(
-    new Set(holidays.map((holiday) => holiday.country)),
-  )
+  const countries = Array.from(new Set(holidays.map((holiday) => holiday.country)))
   const summary = holidays
-    .map(
-      (holiday) =>
-        `${HOLIDAY_COUNTRY_META[holiday.country].label}: ${holiday.name}`,
-    )
+    .map((holiday) => `${HOLIDAY_COUNTRY_META[holiday.country].label}: ${holiday.name}`)
     .join("; ")
   const label = holidays.length === 1 ? holidays[0].name : `${holidays.length} holidays`
   const accentClass =
@@ -59,8 +44,7 @@ export function HolidayMarker({
       className={cn(
         "flex min-w-0 items-center justify-center gap-1 overflow-hidden rounded-md font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/70",
         variant === "month" && "h-6 shrink-0 px-0.5 text-[9px]",
-        variant === "time-grid" &&
-          "mx-auto mb-1 min-h-6 max-w-[calc(100%-0.5rem)] px-1 text-[9px]",
+        variant === "time-grid" && "mx-auto mb-1 min-h-6 max-w-[calc(100%-0.5rem)] px-1 text-[9px]",
         accentClass,
         className,
       )}
@@ -71,22 +55,11 @@ export function HolidayMarker({
             key={country}
             country={country}
             decorative
-            className={cn(
-              variant === "month"
-                ? "h-3 w-[18px] sm:h-4 sm:w-6"
-                : "h-3.5 w-[21px]",
-            )}
+            className={cn(variant === "month" ? "h-3 w-[18px] sm:h-4 sm:w-6" : "h-3.5 w-[21px]")}
           />
         ))}
       </span>
-      <span
-        className={cn(
-          "min-w-0 truncate",
-          variant === "month" && "hidden",
-        )}
-      >
-        {label}
-      </span>
+      <span className={cn("min-w-0 truncate", variant === "month" && "hidden")}>{label}</span>
     </button>
   )
 }

@@ -59,15 +59,15 @@ Apply the migration through the normal Supabase workflow before opening the dash
 
 Copy `.env.example` to `.env.local` and configure:
 
-| Variable | Required | Purpose |
-|---|---:|---|
-| `NEXT_PUBLIC_SUPABASE_URL` | yes | Existing shared Supabase project |
-| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | yes | Browser-safe Supabase key |
-| `OPENAI_API_KEY` | live AI only | Server-only provider key |
-| `OPENAI_TEXT_MODEL` | optional | Structured tutor feedback; default `gpt-5.6-terra` |
-| `OPENAI_TRANSCRIBE_MODEL` | optional | Korean transcription; default `gpt-4o-transcribe` |
-| `OPENAI_TTS_MODEL` | optional | Korean speech; default `tts-1` |
-| `KOREAN_COACH_MOCK_MODE` | optional | Explicit `true` enables local mock mode |
+| Variable                               |     Required | Purpose                                            |
+| -------------------------------------- | -----------: | -------------------------------------------------- |
+| `NEXT_PUBLIC_SUPABASE_URL`             |          yes | Existing shared Supabase project                   |
+| `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` |          yes | Browser-safe Supabase key                          |
+| `OPENAI_API_KEY`                       | live AI only | Server-only provider key                           |
+| `OPENAI_TEXT_MODEL`                    |     optional | Structured tutor feedback; default `gpt-5.6-terra` |
+| `OPENAI_TRANSCRIBE_MODEL`              |     optional | Korean transcription; default `gpt-4o-transcribe`  |
+| `OPENAI_TTS_MODEL`                     |     optional | Korean speech; default `tts-1`                     |
+| `KOREAN_COACH_MOCK_MODE`               |     optional | Explicit `true` enables local mock mode            |
 
 Never add `NEXT_PUBLIC_` to an OpenAI variable. Configure the same server-only variables in the production hosting environment.
 
@@ -133,4 +133,3 @@ Focused coverage includes scenario catalog validation, feedback/request schemas,
 8. **K-Specialist simulation.** Reuse the existing interview module’s question bank and history while adding voice turn constraints, time pressure, and presentation rehearsal.
 9. **Teacher/mentor review.** Add explicit sharing consent, scoped review access, comments, and revocation/audit controls.
 10. **Spring Boot/PostgreSQL option.** If scale or organizational requirements justify a separate backend, move the existing service and repository interfaces behind typed HTTP endpoints; migrate Supabase-owned records to PostgreSQL without changing the learner-facing contracts.
-

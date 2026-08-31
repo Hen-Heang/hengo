@@ -28,9 +28,13 @@ function makeDb() {
     from: (table: string) => ({
       select: () => ({
         eq: () => ({
-          maybeSingle: async () => ({ data: table === "kori_conversations" ? { id: CONVERSATION_ID } : null }),
+          maybeSingle: async () => ({
+            data: table === "kori_conversations" ? { id: CONVERSATION_ID } : null,
+          }),
         }),
-        maybeSingle: async () => ({ data: table === "kori_profiles" ? { korean_level: "BEGINNER" } : null }),
+        maybeSingle: async () => ({
+          data: table === "kori_profiles" ? { korean_level: "BEGINNER" } : null,
+        }),
       }),
     }),
   }
@@ -77,7 +81,9 @@ beforeEach(() => {
 describe("POST /api/ai/realtime/analyze-turn", () => {
   it("requires authentication", async () => {
     mockRequireUser.mockResolvedValue(Response.json({ error: "Not signed in" }, { status: 401 }))
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "학교에 가요" }))
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "학교에 가요" }),
+    )
     expect(res.status).toBe(401)
     expect(mockRunTurnAnalysis).not.toHaveBeenCalled()
   })
@@ -89,7 +95,9 @@ describe("POST /api/ai/realtime/analyze-turn", () => {
   })
 
   it("skips ineligible (non-Korean) turns before calling the model or spending quota", async () => {
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "hello there" }))
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "hello there" }),
+    )
     const json = await res.json()
     expect(res.status).toBe(200)
     expect(json).toMatchObject({ skipped: true, reason: "ineligible", analysis: null })
@@ -98,14 +106,23 @@ describe("POST /api/ai/realtime/analyze-turn", () => {
   })
 
   it("returns 429 without analyzing when rate limited", async () => {
-    mockCheckRateLimit.mockResolvedValue({ allowed: false, bucket: "structured", limit: 50, used: 50 })
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "학교에 가요" }))
+    mockCheckRateLimit.mockResolvedValue({
+      allowed: false,
+      bucket: "structured",
+      limit: 50,
+      used: 50,
+    })
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "학교에 가요" }),
+    )
     expect(res.status).toBe(429)
     expect(mockRunTurnAnalysis).not.toHaveBeenCalled()
   })
 
   it("analyzes a Korean turn, persists mistakes, and records success", async () => {
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }))
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }),
+    )
     const json = await res.json()
     expect(res.status).toBe(200)
     expect(json.skipped).toBe(false)
@@ -114,20 +131,31 @@ describe("POST /api/ai/realtime/analyze-turn", () => {
     expect(mockPersist).toHaveBeenCalledWith(
       expect.objectContaining({ sourceFeature: "realtime_voice", sourceId: CONVERSATION_ID }),
     )
-    expect(mockRecordUsage).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ success: true }))
+    expect(mockRecordUsage).toHaveBeenCalledWith(
+      expect.anything(),
+      expect.objectContaining({ success: true }),
+    )
   })
 
   it("degrades gracefully when analysis yields nothing (no persistence)", async () => {
     mockRunTurnAnalysis.mockResolvedValue(null)
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }))
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }),
+    )
     const json = await res.json()
     expect(json).toMatchObject({ skipped: true, reason: "no_analysis" })
     expect(mockPersist).not.toHaveBeenCalled()
   })
 
   it("does not persist when the turn is clean", async () => {
-    mockRunTurnAnalysis.mockResolvedValue({ ...analysisWithMistake(), hasErrors: false, mistakes: [] })
-    const res = await POST(post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }))
+    mockRunTurnAnalysis.mockResolvedValue({
+      ...analysisWithMistake(),
+      hasErrors: false,
+      mistakes: [],
+    })
+    const res = await POST(
+      post({ conversationId: CONVERSATION_ID, itemId: "i1", text: "저는 학교에 가요" }),
+    )
     const json = await res.json()
     expect(json.skipped).toBe(false)
     expect(mockPersist).not.toHaveBeenCalled()

@@ -92,7 +92,7 @@ export async function storeGoogleCalendarTokens(params: {
       updated_at: new Date().toISOString(),
       ...(params.refreshToken ? { refresh_token_ciphertext: encrypt(params.refreshToken) } : {}),
     },
-    { onConflict: "user_id" }
+    { onConflict: "user_id" },
   )
   if (error) throw new Error("Could not store Google Calendar connection.")
 }
@@ -102,7 +102,7 @@ export async function storeGoogleCalendarTokens(params: {
 // whether a refresh token already exists) and, later, by the Phase 5 token
 // refresh helper.
 export async function getGoogleCalendarTokens(
-  userId: string
+  userId: string,
 ): Promise<StoredGoogleCalendarTokens | null> {
   const db = serviceRoleClient()
   const { data, error } = await db

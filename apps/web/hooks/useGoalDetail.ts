@@ -61,7 +61,8 @@ export function useGoalDetail(id: string) {
     enabled: !!id,
   })
 
-  const { phases, phasesLoading, rules, rulesLoading, refetchPhases, refetchRules } = useGoalPlan(id)
+  const { phases, phasesLoading, rules, rulesLoading, refetchPhases, refetchRules } =
+    useGoalPlan(id)
 
   useEffect(() => {
     if (goalError) toast.error("Could not load this goal", { description: "Please try again." })

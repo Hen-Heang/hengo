@@ -81,16 +81,22 @@ export function TodayTasksCard() {
                   transition={{ duration: 0.2, ease: "easeOut" }}
                   role="button"
                   tabIndex={0}
-                  onClick={() => router.push(task.goal_id ? `/goals/${task.goal_id}?task=${task.id}` : "/goals/calendar")}
+                  onClick={() =>
+                    router.push(
+                      task.goal_id ? `/goals/${task.goal_id}?task=${task.id}` : "/goals/calendar",
+                    )
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter")
-                      router.push(task.goal_id ? `/goals/${task.goal_id}?task=${task.id}` : "/goals/calendar")
+                      router.push(
+                        task.goal_id ? `/goals/${task.goal_id}?task=${task.id}` : "/goals/calendar",
+                      )
                   }}
                   className={cn(
                     "flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border px-3 py-2 transition-colors",
                     overdue
                       ? "border-red-500/20 bg-red-500/3 hover:bg-red-500/5"
-                      : "border-border bg-background/40 hover:bg-accent/40"
+                      : "border-border bg-background/40 hover:bg-accent/40",
                   )}
                 >
                   <motion.button

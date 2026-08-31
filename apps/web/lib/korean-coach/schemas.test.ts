@@ -48,4 +48,3 @@ describe("Korean Coach contracts", () => {
     expect(koreanCoachPreferencesSchema.parse({}).defaultSpeechSpeed).toBe(0.75)
   })
 })
-

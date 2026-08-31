@@ -72,7 +72,12 @@ export const userApi = {
       p_limit: 10,
     })
     if (error) throw error
-    type Row = { id: string; display_name?: string | null; email?: string | null; avatar_url?: string | null }
+    type Row = {
+      id: string
+      display_name?: string | null
+      email?: string | null
+      avatar_url?: string | null
+    }
     return ((data ?? []) as Row[]).map((u) => ({
       id: u.id,
       displayName: u.display_name ?? null,
@@ -91,7 +96,7 @@ export const userApi = {
       occupation?: string
       yearsOfExperience?: number
       learningGoal?: string
-    }
+    },
   ) => {
     const { error } = await supabase.from("kori_profiles").upsert({
       id,
@@ -194,7 +199,10 @@ export interface LevelSuggestion {
 
 // Aggregates kori_skill_mastery rows (skill_code prefix) into one weighted
 // evidence bucket: attempts = sum, averageScore = attempts-weighted mean.
-function aggregateCategory(rows: Array<{ skillCode: string; masteryScore: number; attemptCount: number }>, prefix: string): CategoryEvidence {
+function aggregateCategory(
+  rows: Array<{ skillCode: string; masteryScore: number; attemptCount: number }>,
+  prefix: string,
+): CategoryEvidence {
   const matching = rows.filter((r) => r.skillCode.startsWith(prefix))
   const attempts = matching.reduce((s, r) => s + r.attemptCount, 0)
   if (attempts === 0) return { attempts: 0, averageScore: 0 }

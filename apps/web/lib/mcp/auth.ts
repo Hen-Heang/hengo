@@ -14,7 +14,12 @@
 // browser-bound and fail silently on the server (docs §5).
 import { createRemoteJWKSet, jwtVerify, type JWTPayload, type JWTVerifyGetKey } from "jose"
 import { createClient, type SupabaseClient } from "@supabase/supabase-js"
-import { OAuthError, OAuthErrorCode, type AuthInfo, type OAuthTokenVerifier } from "@modelcontextprotocol/server"
+import {
+  OAuthError,
+  OAuthErrorCode,
+  type AuthInfo,
+  type OAuthTokenVerifier,
+} from "@modelcontextprotocol/server"
 import { SUPABASE_KEY, SUPABASE_URL } from "@/lib/supabase"
 import type { McpAuthConfig } from "./config"
 

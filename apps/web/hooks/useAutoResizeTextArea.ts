@@ -7,7 +7,7 @@ import { useLayoutEffect, type RefObject } from "react"
 export function useAutoResizeTextArea(
   ref: RefObject<HTMLTextAreaElement | null>,
   value: string,
-  { minRows = 1, maxRows = 6 }: { minRows?: number; maxRows?: number } = {}
+  { minRows = 1, maxRows = 6 }: { minRows?: number; maxRows?: number } = {},
 ) {
   useLayoutEffect(() => {
     const el = ref.current

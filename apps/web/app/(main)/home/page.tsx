@@ -101,7 +101,10 @@ const shortcutStyles: Record<
 // just repointed at the four V2 Today destinations.
 function TodayShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
   return (
-    <motion.div variants={staggerContainer} className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
+    <motion.div
+      variants={staggerContainer}
+      className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4"
+    >
       {shortcuts.map((s) => {
         const style = shortcutStyles[s.tone]
 
@@ -118,25 +121,27 @@ function TodayShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
               href={s.href}
               className={cn(
                 "group relative flex h-full min-h-[132px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card/80 p-4 shadow-sm outline-none backdrop-blur-sm transition-[border-color,box-shadow,background-color] duration-200 hover:bg-card hover:shadow-lg hover:shadow-black/[0.06] focus-visible:ring-2 focus-visible:ring-ring/70 dark:bg-slate-900/45 dark:hover:bg-slate-900/70 dark:hover:shadow-black/25 sm:min-h-[144px] sm:p-5",
-                style.border
+                style.border,
               )}
             >
               <span
                 aria-hidden="true"
                 className={cn(
                   "pointer-events-none absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100",
-                  style.glow
+                  style.glow,
                 )}
               />
 
               <div className="relative flex items-start justify-between gap-3">
-                <span className={cn("flex size-10 items-center justify-center rounded-xl", style.icon)}>
+                <span
+                  className={cn("flex size-10 items-center justify-center rounded-xl", style.icon)}
+                >
                   <s.icon size={19} strokeWidth={2.1} />
                 </span>
                 <span
                   className={cn(
                     "flex size-8 translate-x-1 -translate-y-1 items-center justify-center rounded-full opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100 group-focus-visible:translate-x-0 group-focus-visible:translate-y-0 group-focus-visible:opacity-100",
-                    style.arrow
+                    style.arrow,
                   )}
                 >
                   <ArrowUpRight size={17} strokeWidth={2.2} />
@@ -156,7 +161,7 @@ function TodayShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
                 <span
                   className={cn(
                     "relative mt-auto w-fit rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                    style.badge
+                    style.badge,
                   )}
                 >
                   {s.badge}
@@ -195,7 +200,9 @@ function VocabReviewCard() {
       eyebrow="Vocabulary review"
       icon={BookOpen}
       accentColor="emerald"
-      title={hasDue ? `${dueCount} word${dueCount === 1 ? "" : "s"} ready to review` : "All caught up!"}
+      title={
+        hasDue ? `${dueCount} word${dueCount === 1 ? "" : "s"} ready to review` : "All caught up!"
+      }
       description={
         hasDue
           ? "Quick spaced-repetition review — a few minutes keeps everything fresh."
@@ -282,7 +289,8 @@ export default function HomePage() {
           </motion.span>
         </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {getTodayLabel()} · <span className="italic">오늘도 화이팅!</span> Keep it small and steady.
+          {getTodayLabel()} · <span className="italic">오늘도 화이팅!</span> Keep it small and
+          steady.
         </p>
       </motion.div>
 
@@ -323,7 +331,9 @@ function VocabAndStreakStats({ streakDays }: { streakDays: number | null }) {
 
   return (
     <p className="flex items-center gap-1.5 px-1 text-xs font-medium text-muted-foreground">
-      {streakDays != null && streakDays > 0 && <Flame size={13} className="shrink-0 text-orange-500" />}
+      {streakDays != null && streakDays > 0 && (
+        <Flame size={13} className="shrink-0 text-orange-500" />
+      )}
       {parts.join(" · ")}
       {dueCount === 0 && <PartyPopper size={13} className="shrink-0 text-emerald-500" />}
     </p>

@@ -46,9 +46,7 @@ export function TaskDetailsPanel({
         </div>
         <div>
           <p className="text-sm font-medium text-foreground/60">No task selected</p>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Click a task to view its details
-          </p>
+          <p className="mt-0.5 text-xs text-muted-foreground">Click a task to view its details</p>
         </div>
       </div>
     )
@@ -139,7 +137,7 @@ export function TaskDetailsPanel({
                     "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border-2 transition-colors duration-200",
                     selectedTask.completed
                       ? "border-emerald-500 bg-emerald-500 text-white"
-                      : "border-primary/40 bg-background hover:border-primary"
+                      : "border-primary/40 bg-background hover:border-primary",
                   )}
                   title={selectedTask.completed ? "Mark incomplete" : "Mark complete"}
                 >
@@ -153,7 +151,7 @@ export function TaskDetailsPanel({
               <h1
                 className={cn(
                   "flex-1 break-words text-2xl font-semibold leading-tight tracking-tight text-foreground transition-colors duration-300 sm:text-[1.75rem]",
-                  selectedTask.completed && "line-through opacity-40"
+                  selectedTask.completed && "line-through opacity-40",
                 )}
               >
                 {selectedTask.title || "Untitled task"}
@@ -173,7 +171,7 @@ export function TaskDetailsPanel({
                       "inline-flex items-center gap-2 rounded-full px-3 py-1 text-xs font-semibold transition-colors duration-200",
                       selectedTask.completed
                         ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                        : "bg-primary/10 text-primary hover:bg-primary/15"
+                        : "bg-primary/10 text-primary hover:bg-primary/15",
                     )}
                   >
                     {selectedTask.completed ? (
@@ -207,7 +205,7 @@ export function TaskDetailsPanel({
                     {formatTaskTimeRange(
                       selectedTask.daily_start_time,
                       selectedTask.daily_end_time,
-                      selectedTask.is_anytime
+                      selectedTask.is_anytime,
                     )}
                   </span>
                 </PropertyRow>
@@ -233,7 +231,10 @@ export function TaskDetailsPanel({
                 <span className="flex items-center gap-2.5 text-sm font-medium tracking-tight text-foreground/90">
                   <span
                     className="h-5 w-5 rounded-full"
-                    style={{ backgroundColor: taskColor, boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.12)" }}
+                    style={{
+                      backgroundColor: taskColor,
+                      boxShadow: "inset 0 0 0 1px rgba(0,0,0,0.12)",
+                    }}
                   />
                   <span className="font-mono text-xs uppercase">{taskColor}</span>
                 </span>
@@ -273,7 +274,7 @@ export function TaskDetailsPanel({
                 "flex h-11 items-center gap-2 rounded-lg px-4 text-sm font-semibold transition-colors duration-200",
                 selectedTask.completed
                   ? "border border-emerald-500/30 bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500 hover:text-white dark:text-emerald-400"
-                  : "bg-primary text-primary-foreground hover:bg-primary/90"
+                  : "bg-primary text-primary-foreground hover:bg-primary/90",
               )}
             >
               <CheckCircle2 className="h-5 w-5" />

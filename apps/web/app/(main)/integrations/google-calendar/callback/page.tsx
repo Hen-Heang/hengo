@@ -77,7 +77,9 @@ function CallbackContent() {
       {status === "processing" && (
         <>
           <Loader2 size={28} className="animate-spin text-muted-foreground" />
-          <p className="text-sm font-medium text-muted-foreground">Connecting your Google Calendar…</p>
+          <p className="text-sm font-medium text-muted-foreground">
+            Connecting your Google Calendar…
+          </p>
         </>
       )}
       {status === "success" && (

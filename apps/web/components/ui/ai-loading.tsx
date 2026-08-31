@@ -31,11 +31,7 @@ export function AiGenerating({
   }, [stage, stages.length, stageDuration])
 
   return (
-    <div
-      className={cn("flex items-center gap-3", className)}
-      role="status"
-      aria-live="polite"
-    >
+    <div className={cn("flex items-center gap-3", className)} role="status" aria-live="polite">
       <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-linear-to-br from-blue-500 to-indigo-600 text-white shadow-lg shadow-blue-500/20">
         <Sparkles size={16} className="animate-pulse" />
         <motion.span

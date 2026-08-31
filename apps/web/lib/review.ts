@@ -23,7 +23,10 @@ const ATTENTION_STATUSES: GoalHealthStatus[] = ["attention", "at_risk", "blocked
  * health_status/review_frequency columns that feature would eventually use too. */
 export function goalsNeedingAttention(goals: Goal[]): Goal[] {
   return goals.filter(
-    (g) => g.status !== "completed" && g.status !== "archived" && ATTENTION_STATUSES.includes(g.health_status),
+    (g) =>
+      g.status !== "completed" &&
+      g.status !== "archived" &&
+      ATTENTION_STATUSES.includes(g.health_status),
   )
 }
 
@@ -72,11 +75,17 @@ export function buildMorningBrief(input: {
   goals: Goal[]
 }): MorningBrief {
   const now = input.now ?? new Date()
-  const completedHabitIds = new Set(input.todaysCheckins.filter((c) => c.completed).map((c) => c.habitId))
+  const completedHabitIds = new Set(
+    input.todaysCheckins.filter((c) => c.completed).map((c) => c.habitId),
+  )
   const habitsPending = input.activeHabits.filter((h) => !completedHabitIds.has(h.id))
 
   return {
-    dateLabel: now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }),
+    dateLabel: now.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }),
     streakDays: input.streakDays,
     taskCounts: input.taskCounts,
     habitsPending,
@@ -96,8 +105,12 @@ export function formatMorningBriefContext(brief: MorningBrief): string {
     `Tasks today: ${brief.taskCounts.overdueCount} overdue, ${brief.taskCounts.scheduledCount} scheduled, ${brief.taskCounts.anytimeCount} anytime, ${brief.taskCounts.completedCount} already done`,
     `Habits: ${brief.habitsDoneCount}/${brief.habitsTotalCount} checked in so far${brief.habitsPending.length > 0 ? ` (pending: ${brief.habitsPending.map((h) => h.label).join(", ")})` : ""}`,
   ]
-  if (brief.remindersToday.length > 0) lines.push(`Reminders due: ${brief.remindersToday.map((r) => r.title).join(", ")}`)
-  if (brief.goalsAtRisk.length > 0) lines.push(`Goals needing attention: ${brief.goalsAtRisk.map((g) => `${g.title} (${g.health_status})`).join(", ")}`)
+  if (brief.remindersToday.length > 0)
+    lines.push(`Reminders due: ${brief.remindersToday.map((r) => r.title).join(", ")}`)
+  if (brief.goalsAtRisk.length > 0)
+    lines.push(
+      `Goals needing attention: ${brief.goalsAtRisk.map((g) => `${g.title} (${g.health_status})`).join(", ")}`,
+    )
   return lines.join("\n")
 }
 
@@ -118,7 +131,11 @@ export function buildEveningReviewSummary(
   now: Date = new Date(),
 ): EveningReviewSummary {
   return {
-    dateLabel: now.toLocaleDateString(undefined, { weekday: "long", month: "long", day: "numeric" }),
+    dateLabel: now.toLocaleDateString(undefined, {
+      weekday: "long",
+      month: "long",
+      day: "numeric",
+    }),
     completedCount: todaySummary?.completedCount ?? 0,
     manualActivityCount: todaySummary?.manualActivityCount ?? 0,
     hengoMinutes: todaySummary?.hengoMinutes ?? 0,
@@ -225,7 +242,9 @@ export function formatWeeklyReviewContext(summary: WeeklyReviewSummary): string 
     )
   }
   if (summary.goalsAtRisk.length > 0) {
-    lines.push(`Goals needing attention: ${summary.goalsAtRisk.map((g) => `${g.title} (${g.health_status})`).join(", ")}`)
+    lines.push(
+      `Goals needing attention: ${summary.goalsAtRisk.map((g) => `${g.title} (${g.health_status})`).join(", ")}`,
+    )
   }
   return lines.join("\n")
 }

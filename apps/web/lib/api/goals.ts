@@ -140,10 +140,14 @@ export const goalsApi = {
         ...(data.no_duration !== undefined ? { no_duration: data.no_duration } : {}),
         ...(data.status !== undefined ? { status: data.status } : {}),
         ...(data.metadata !== undefined ? { metadata: data.metadata } : {}),
-        ...(data.outcome_statement !== undefined ? { outcome_statement: data.outcome_statement } : {}),
+        ...(data.outcome_statement !== undefined
+          ? { outcome_statement: data.outcome_statement }
+          : {}),
         ...(data.motivation !== undefined ? { motivation: data.motivation } : {}),
         ...(data.baseline_summary !== undefined ? { baseline_summary: data.baseline_summary } : {}),
-        ...(data.success_definition !== undefined ? { success_definition: data.success_definition } : {}),
+        ...(data.success_definition !== undefined
+          ? { success_definition: data.success_definition }
+          : {}),
         ...(data.weekly_capacity_minutes !== undefined
           ? { weekly_capacity_minutes: data.weekly_capacity_minutes }
           : {}),
@@ -406,7 +410,11 @@ export type UpdateTaskPayload = Partial<CreateTaskPayload>
 export const tasksApi = {
   // Range query backs both the calendar and the "today" widget.
   // goalId omitted = all the user's tasks; goalId null = personal tasks only.
-  range: async (params: { from?: string; to?: string; goalId?: string | null }): Promise<Task[]> => {
+  range: async (params: {
+    from?: string
+    to?: string
+    goalId?: string | null
+  }): Promise<Task[]> => {
     let query = supabase.from("tasks").select("*").order("start_date", { ascending: true })
     if (params.from) query = query.gte("end_date", params.from)
     if (params.to) query = query.lte("start_date", params.to)
@@ -448,19 +456,15 @@ export const tasksApi = {
    * and the legacy `completed` boolean can never drift apart — this is the
    * only sanctioned way to change either (see lib/task-status.ts).
    */
-  setStatus: async (
-    id: string,
-    status: TaskStatus,
-    blockedReason?: string | null,
-  ): Promise<Task> => tasksApi.update(id, taskStatusPatch(status, blockedReason)),
+  setStatus: async (id: string, status: TaskStatus, blockedReason?: string | null): Promise<Task> =>
+    tasksApi.update(id, taskStatusPatch(status, blockedReason)),
 
   /** Toggle completion, deriving the resulting status from the schedule. */
   setCompleted: async (
     task: Pick<Task, "id" | "start_date" | "end_date">,
     completed: boolean,
     todayYmd: string,
-  ): Promise<Task> =>
-    tasksApi.update(task.id, taskCompletionPatch(completed, task, todayYmd)),
+  ): Promise<Task> => tasksApi.update(task.id, taskCompletionPatch(completed, task, todayYmd)),
 
   /**
    * Move a missed task. `reschedule_count` is incremented here (and only here)

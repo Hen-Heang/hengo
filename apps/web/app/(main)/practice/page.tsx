@@ -84,7 +84,8 @@ export default function PracticePage() {
         if (active) setMission(res)
       })
       .catch((err) => {
-        if (active) setError((prev) => prev || getApiErrorMessage(err, "Could not load today's mission."))
+        if (active)
+          setError((prev) => prev || getApiErrorMessage(err, "Could not load today's mission."))
       })
       .finally(() => {
         if (active) setMissionLoading(false)
@@ -106,7 +107,9 @@ export default function PracticePage() {
           setActivityToday(res.activityToday)
         }
       })
-      .catch(() => { /* streak is decorative — fail silently */ })
+      .catch(() => {
+        /* streak is decorative — fail silently */
+      })
     return () => {
       active = false
     }
@@ -117,7 +120,12 @@ export default function PracticePage() {
     setApplying(true)
     try {
       await levelApi.apply(suggestion.suggestedLevel)
-      setSuggestion({ ...suggestion, currentLevel: suggestion.suggestedLevel, upgradeAvailable: false, suggestedLevel: null })
+      setSuggestion({
+        ...suggestion,
+        currentLevel: suggestion.suggestedLevel,
+        upgradeAvailable: false,
+        suggestedLevel: null,
+      })
       setData((prev) => (prev ? { ...prev, userLevel: suggestion.suggestedLevel! } : prev))
     } catch {
       /* leave the banner up so the user can retry */
@@ -136,7 +144,11 @@ export default function PracticePage() {
     const scenario = data.suggestedScenario
     setStartingScenario(true)
     try {
-      const conversation = await chatApi.createConversation(`Scenario: ${scenario.title}`, "SCENARIO", scenario.id)
+      const conversation = await chatApi.createConversation(
+        `Scenario: ${scenario.title}`,
+        "SCENARIO",
+        scenario.id,
+      )
       await scenarioSessionsApi.start(scenario.id, conversation.id, item?.id ?? null)
       router.push(`/chat?conversationId=${conversation.id}`)
     } catch {
@@ -172,7 +184,12 @@ export default function PracticePage() {
   const completedCount = missionItems.filter((i) => i.status === "completed").length
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="space-y-8 pb-12">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="space-y-8 pb-12"
+    >
       <motion.div variants={itemVariants}>
         <PageHero
           eyebrow="Today"
@@ -186,9 +203,15 @@ export default function PracticePage() {
                     label: "Progress",
                     value: `${completedCount}/${missionItems.length || 0}`,
                     onClick: () =>
-                      document.getElementById("todays-mission")?.scrollIntoView({ behavior: "smooth", block: "start" }),
+                      document
+                        .getElementById("todays-mission")
+                        ?.scrollIntoView({ behavior: "smooth", block: "start" }),
                   },
-                  { label: "Streak", value: streakDays > 0 ? `${streakDays} days` : "—", href: "/history" },
+                  {
+                    label: "Streak",
+                    value: streakDays > 0 ? `${streakDays} days` : "—",
+                    href: "/history",
+                  },
                 ]
               : undefined
           }
@@ -290,12 +313,16 @@ export default function PracticePage() {
               </span>
             </div>
             {mission?.reason && (
-              <p className="mb-4 text-xs font-medium leading-relaxed text-muted-foreground">{mission.reason}</p>
+              <p className="mb-4 text-xs font-medium leading-relaxed text-muted-foreground">
+                {mission.reason}
+              </p>
             )}
             <div className="h-2 w-full overflow-hidden rounded-full bg-accent/40">
               <div
                 className="h-full rounded-full bg-emerald-500 transition-all"
-                style={{ width: `${missionItems.length ? (completedCount / missionItems.length) * 100 : 0}%` }}
+                style={{
+                  width: `${missionItems.length ? (completedCount / missionItems.length) * 100 : 0}%`,
+                }}
               />
             </div>
             <ul className="mt-5 space-y-4">
@@ -306,15 +333,23 @@ export default function PracticePage() {
                 const inner = (
                   <>
                     {done ? (
-                      <CheckCircle2 size={20} className="mt-0.5 shrink-0 text-emerald-500" strokeWidth={2.5} />
+                      <CheckCircle2
+                        size={20}
+                        className="mt-0.5 shrink-0 text-emerald-500"
+                        strokeWidth={2.5}
+                      />
                     ) : (
-                      <Circle size={20} className="mt-0.5 shrink-0 text-muted-foreground/60" strokeWidth={2.5} />
+                      <Circle
+                        size={20}
+                        className="mt-0.5 shrink-0 text-muted-foreground/60"
+                        strokeWidth={2.5}
+                      />
                     )}
                     <div className="min-w-0">
                       <span
                         className={cn(
                           "block text-sm font-bold",
-                          done ? "text-muted-foreground/60 line-through" : "text-foreground"
+                          done ? "text-muted-foreground/60 line-through" : "text-foreground",
                         )}
                       >
                         {item.title}
@@ -328,7 +363,10 @@ export default function PracticePage() {
                 return (
                   <li key={item.id}>
                     {href && !done ? (
-                      <Link href={href} className="flex items-start gap-3 hover:opacity-80 transition-opacity">
+                      <Link
+                        href={href}
+                        className="flex items-start gap-3 hover:opacity-80 transition-opacity"
+                      >
                         {inner}
                       </Link>
                     ) : isScenario && !done ? (
@@ -395,7 +433,10 @@ export default function PracticePage() {
               ) : (
                 <p className="text-sm text-muted-foreground">No reviews due — nice work.</p>
               )}
-              <ActionButton onClick={() => router.push("/vocab")} className="bg-emerald-600 hover:bg-emerald-500">
+              <ActionButton
+                onClick={() => router.push("/vocab")}
+                className="bg-emerald-600 hover:bg-emerald-500"
+              >
                 {data.dueVocabCount > 0 ? "Review vocab" : "Add more words"}
               </ActionButton>
             </Card>
@@ -405,21 +446,32 @@ export default function PracticePage() {
               icon={<RotateCcw size={20} strokeWidth={2.5} />}
               iconClass="bg-red-500/10 text-red-600 dark:text-red-400"
               eyebrow="Mistake Review"
-              title={data.dueCorrectionsCount > 0 ? `${data.dueCorrectionsCount} mistakes due` : "All caught up"}
+              title={
+                data.dueCorrectionsCount > 0
+                  ? `${data.dueCorrectionsCount} mistakes due`
+                  : "All caught up"
+              }
             >
               {data.dueCorrectionsSample.length > 0 ? (
                 <ul className="space-y-1.5 text-sm">
                   {data.dueCorrectionsSample.map((c) => (
                     <li key={c.id} className="text-foreground">
-                      <span className="text-red-600/70 line-through dark:text-red-400/70">{c.originalText}</span>
+                      <span className="text-red-600/70 line-through dark:text-red-400/70">
+                        {c.originalText}
+                      </span>
                       <span className="ml-2 font-bold">{c.correctedText}</span>
                     </li>
                   ))}
                 </ul>
               ) : (
-                <p className="text-sm text-muted-foreground">No repeated mistakes due — keep it up.</p>
+                <p className="text-sm text-muted-foreground">
+                  No repeated mistakes due — keep it up.
+                </p>
               )}
-              <ActionButton onClick={() => router.push("/chat?mode=corrections")} className="bg-red-600 hover:bg-red-500">
+              <ActionButton
+                onClick={() => router.push("/chat?mode=corrections")}
+                className="bg-red-600 hover:bg-red-500"
+              >
                 {data.dueCorrectionsCount > 0 ? "Review mistakes" : "Go to AI Coach"}
               </ActionButton>
             </Card>
@@ -452,7 +504,11 @@ export default function PracticePage() {
                 Try phrasing a message for this situation across formality levels.
               </p>
               <ActionButton
-                onClick={() => router.push(`/chat?mode=generate&category=${encodeURIComponent(data.suggestedMessageCategory)}`)}
+                onClick={() =>
+                  router.push(
+                    `/chat?mode=generate&category=${encodeURIComponent(data.suggestedMessageCategory)}`,
+                  )
+                }
                 className="bg-violet-600 hover:bg-violet-500"
                 icon={<Sparkles size={14} className="mr-2" />}
               >
@@ -468,7 +524,8 @@ export default function PracticePage() {
               title="Workplace & daily-life Q&A"
             >
               <p className="text-sm text-muted-foreground">
-                Listen to real questions, answer aloud, get feedback, and review with spaced repetition.
+                Listen to real questions, answer aloud, get feedback, and review with spaced
+                repetition.
               </p>
               <ActionButton
                 onClick={() => router.push("/phrasebook")}
@@ -501,9 +558,13 @@ function Card({
   return (
     <div className="flex flex-col rounded-3xl border border-border bg-card p-6 shadow-sm dark:bg-slate-900/40">
       <div className="flex items-center gap-3">
-        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconClass}`}>{icon}</div>
+        <div className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconClass}`}>
+          {icon}
+        </div>
         <div>
-          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground/70">{eyebrow}</p>
+          <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-muted-foreground/70">
+            {eyebrow}
+          </p>
           <h3 className="text-base font-extrabold text-foreground">{title}</h3>
         </div>
       </div>

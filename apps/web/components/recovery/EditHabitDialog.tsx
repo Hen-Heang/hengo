@@ -5,7 +5,13 @@ import { Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Dialog,
@@ -35,7 +41,12 @@ export function EditHabitDialog({
   onDelete,
 }: {
   habit: RecoveryHabit
-  onUpdate: (data: { label: string; replacementBehavior?: string | null; recoveryStatement?: string | null; trackingMode?: TrackingMode }) => Promise<unknown>
+  onUpdate: (data: {
+    label: string
+    replacementBehavior?: string | null
+    recoveryStatement?: string | null
+    trackingMode?: TrackingMode
+  }) => Promise<unknown>
   onDelete: () => Promise<unknown>
 }) {
   const [open, setOpen] = useState(false)
@@ -61,7 +72,12 @@ export function EditHabitDialog({
     if (!label.trim() || saving) return
     setSaving(true)
     try {
-      await onUpdate({ label: label.trim(), replacementBehavior: replacementBehavior.trim() || null, recoveryStatement: recoveryStatement.trim() || null, trackingMode })
+      await onUpdate({
+        label: label.trim(),
+        replacementBehavior: replacementBehavior.trim() || null,
+        recoveryStatement: recoveryStatement.trim() || null,
+        trackingMode,
+      })
       setOpen(false)
     } finally {
       setSaving(false)
@@ -88,7 +104,9 @@ export function EditHabitDialog({
         <form onSubmit={handleSave}>
           <DialogHeader>
             <DialogTitle>Edit habit</DialogTitle>
-            <DialogDescription>Update the private label, tracking mode, recovery statement, or replacement action.</DialogDescription>
+            <DialogDescription>
+              Update the private label, tracking mode, recovery statement, or replacement action.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="mt-4 space-y-4">
@@ -96,11 +114,21 @@ export function EditHabitDialog({
               <label htmlFor="edit-habit-label" className="text-sm font-semibold text-foreground">
                 Label
               </label>
-              <Input id="edit-habit-label" value={label} onChange={(e) => setLabel(e.target.value)} maxLength={80} required />
+              <Input
+                id="edit-habit-label"
+                value={label}
+                onChange={(e) => setLabel(e.target.value)}
+                maxLength={80}
+                required
+              />
             </div>
             <div className="space-y-2">
-              <label htmlFor="edit-habit-replacement" className="text-sm font-semibold text-foreground">
-                Replacement behavior <span className="font-normal text-muted-foreground">(optional)</span>
+              <label
+                htmlFor="edit-habit-replacement"
+                className="text-sm font-semibold text-foreground"
+              >
+                Replacement behavior{" "}
+                <span className="font-normal text-muted-foreground">(optional)</span>
               </label>
               <Input
                 id="edit-habit-replacement"
@@ -109,8 +137,41 @@ export function EditHabitDialog({
                 maxLength={120}
               />
             </div>
-            <div className="space-y-2"><label htmlFor="edit-tracking-mode" className="text-sm font-semibold text-foreground">Tracking mode</label><Select value={trackingMode} onValueChange={(value) => setTrackingMode(value as TrackingMode)}><SelectTrigger id="edit-tracking-mode"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="abstinence">Complete abstinence</SelectItem><SelectItem value="frequency_reduction">Frequency reduction</SelectItem><SelectItem value="time_reduction">Time reduction</SelectItem><SelectItem value="personal_limit">Personal limit</SelectItem><SelectItem value="awareness">Awareness only</SelectItem></SelectContent></Select></div>
-            <div className="space-y-2"><label htmlFor="edit-recovery-statement" className="text-sm font-semibold text-foreground">Recovery statement</label><Textarea id="edit-recovery-statement" value={recoveryStatement} onChange={(event) => setRecoveryStatement(event.target.value)} rows={3} maxLength={300} /></div>
+            <div className="space-y-2">
+              <label htmlFor="edit-tracking-mode" className="text-sm font-semibold text-foreground">
+                Tracking mode
+              </label>
+              <Select
+                value={trackingMode}
+                onValueChange={(value) => setTrackingMode(value as TrackingMode)}
+              >
+                <SelectTrigger id="edit-tracking-mode">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="abstinence">Complete abstinence</SelectItem>
+                  <SelectItem value="frequency_reduction">Frequency reduction</SelectItem>
+                  <SelectItem value="time_reduction">Time reduction</SelectItem>
+                  <SelectItem value="personal_limit">Personal limit</SelectItem>
+                  <SelectItem value="awareness">Awareness only</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <label
+                htmlFor="edit-recovery-statement"
+                className="text-sm font-semibold text-foreground"
+              >
+                Recovery statement
+              </label>
+              <Textarea
+                id="edit-recovery-statement"
+                value={recoveryStatement}
+                onChange={(event) => setRecoveryStatement(event.target.value)}
+                rows={3}
+                maxLength={300}
+              />
+            </div>
           </div>
 
           <DialogFooter className="items-center sm:justify-between">
@@ -125,12 +186,17 @@ export function EditHabitDialog({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete this habit?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This permanently deletes &quot;{habit.label}&quot; along with all its check-ins and plans. This can&apos;t be undone.
+                    This permanently deletes &quot;{habit.label}&quot; along with all its check-ins
+                    and plans. This can&apos;t be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>
-                  <AlertDialogAction disabled={deleting} onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                  <AlertDialogAction
+                    disabled={deleting}
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
                     {deleting ? "Deleting…" : "Delete"}
                   </AlertDialogAction>
                 </AlertDialogFooter>

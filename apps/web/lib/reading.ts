@@ -36,10 +36,7 @@ export interface ReadingUnit {
   quiz: QuizQuestion[]
 }
 
-export const READING_CATEGORIES: Record<
-  ReadingCategory,
-  { label: string; description: string }
-> = {
+export const READING_CATEGORIES: Record<ReadingCategory, { label: string; description: string }> = {
   DAILY_LIFE: {
     label: "Daily Life",
     description: "Podcast transcripts about everyday life in Korea",
@@ -62,10 +59,7 @@ export type StoredUnitMap = Record<string, ReadingUnit | null>
  * Merge built-in units with a stored override map.
  * A stored entry overrides the built-in with the same id; `null` hides a built-in.
  */
-export function mergeReadingUnits(
-  builtins: ReadingUnit[],
-  stored: StoredUnitMap
-): ReadingUnit[] {
+export function mergeReadingUnits(builtins: ReadingUnit[], stored: StoredUnitMap): ReadingUnit[] {
   const merged: ReadingUnit[] = []
   for (const unit of builtins) {
     const entry = stored[unit.id]

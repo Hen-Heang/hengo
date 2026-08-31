@@ -41,7 +41,11 @@ export function calculateUpdatedMastery(input: MasteryUpdateInput): number {
   // proves more); easier evidence should move it less.
   const difficultyFactor = input.difficulty === "hard" ? 1.2 : input.difficulty === "easy" ? 0.8 : 1
 
-  const weight = clamp(baseEvidenceWeight(input.attemptCount) * difficultyFactor * confidence, 0.05, 0.9)
+  const weight = clamp(
+    baseEvidenceWeight(input.attemptCount) * difficultyFactor * confidence,
+    0.05,
+    0.9,
+  )
 
   const next = currentMastery * (1 - weight) + attemptScore * weight
   return Math.round(clamp(next, 0, 100))

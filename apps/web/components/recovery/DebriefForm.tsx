@@ -28,7 +28,8 @@ export function DebriefForm({
   // The plan drafts itself from the reflection as the user types — editable,
   // never presented as final until they hit save.
   useEffect(() => {
-    if (!ifEdited) setIfText(where.trim() ? `I'm ${where.trim()} again` : "I'm in this situation again")
+    if (!ifEdited)
+      setIfText(where.trim() ? `I'm ${where.trim()} again` : "I'm in this situation again")
   }, [where, ifEdited])
 
   useEffect(() => {
@@ -66,16 +67,30 @@ export function DebriefForm({
     >
       <div>
         <p className="app-kicker">Continue recovery</p>
-        <h1 className="mt-2 text-xl font-bold text-foreground">One moment does not erase your progress.</h1>
+        <h1 className="mt-2 text-xl font-bold text-foreground">
+          One moment does not erase your progress.
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Let&apos;s protect the rest of today. Your current streak may change, but your recovery progress does not disappear.
+          Let&apos;s protect the rest of today. Your current streak may change, but your recovery
+          progress does not disappear.
         </p>
       </div>
 
       <fieldset className="space-y-3">
-        <legend className="text-sm font-semibold text-foreground">Choose one stabilizing action</legend>
+        <legend className="text-sm font-semibold text-foreground">
+          Choose one stabilizing action
+        </legend>
         <div className="grid grid-cols-2 gap-2">
-          {["Close the content", "Leave the room", "Drink water", "Take a shower", "Take a walk", "Start a safe task", "Contact support", "Prepare for sleep"].map((action) => (
+          {[
+            "Close the content",
+            "Leave the room",
+            "Drink water",
+            "Take a shower",
+            "Take a walk",
+            "Start a safe task",
+            "Contact support",
+            "Prepare for sleep",
+          ].map((action) => (
             <button
               key={action}
               type="button"
@@ -90,15 +105,24 @@ export function DebriefForm({
       </fieldset>
 
       <div className="border-t border-border pt-5">
-        <h2 className="text-base font-semibold">Private reflection <span className="font-normal text-muted-foreground">(optional)</span></h2>
-        <p className="mt-1 text-xs leading-5 text-muted-foreground">Record only what helps you prepare. Do not include private detail you do not need.</p>
+        <h2 className="text-base font-semibold">
+          Private reflection <span className="font-normal text-muted-foreground">(optional)</span>
+        </h2>
+        <p className="mt-1 text-xs leading-5 text-muted-foreground">
+          Record only what helps you prepare. Do not include private detail you do not need.
+        </p>
       </div>
 
       <div className="space-y-2">
         <label htmlFor="debrief-where" className="text-sm font-semibold text-foreground">
           Where were you?
         </label>
-        <Input id="debrief-where" value={where} onChange={(e) => setWhere(e.target.value)} placeholder="e.g. at my desk, in bed" />
+        <Input
+          id="debrief-where"
+          value={where}
+          onChange={(e) => setWhere(e.target.value)}
+          placeholder="e.g. at my desk, in bed"
+        />
       </div>
 
       <div className="space-y-2">
@@ -141,7 +165,9 @@ export function DebriefForm({
 
       {breakLink.trim() && (
         <div className="space-y-3 rounded-xl border border-border bg-card p-4">
-          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">Your plan</p>
+          <p className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+            Your plan
+          </p>
           <div className="space-y-1.5">
             <label htmlFor="debrief-if" className="text-xs font-medium text-muted-foreground">
               If

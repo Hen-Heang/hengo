@@ -55,12 +55,16 @@ export const dailyStudyContentSchema = z.object({
   dialogue: z.object({
     title: z.string(),
     situation: z.string(),
-    lines: z.array(z.object({
-      speaker: z.string(),
-      korean: z.string(),
-      romanization: z.string(),
-      english: z.string(),
-    })).min(1),
+    lines: z
+      .array(
+        z.object({
+          speaker: z.string(),
+          korean: z.string(),
+          romanization: z.string(),
+          english: z.string(),
+        }),
+      )
+      .min(1),
   }),
   roleplay: z.object({
     scenario: z.string(),
@@ -77,18 +81,15 @@ export const dailySpeakingFeedbackSchema = z.object({
   correctedAnswer: z.string(),
   naturalAlternative: z.string(),
   shortExplanation: z.string(),
-  errorCategory: z.enum([
-    "grammar",
-    "vocabulary",
-    "politeness",
-    "naturalness",
-    "meaning",
-    "none",
-  ]),
-  vocabularyToReview: z.array(z.object({
-    korean: z.string(),
-    english: z.string(),
-  })).max(5),
+  errorCategory: z.enum(["grammar", "vocabulary", "politeness", "naturalness", "meaning", "none"]),
+  vocabularyToReview: z
+    .array(
+      z.object({
+        korean: z.string(),
+        english: z.string(),
+      }),
+    )
+    .max(5),
   retryRequest: z.string(),
   communicationSuccessful: z.boolean(),
 })

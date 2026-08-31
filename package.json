@@ -9,6 +9,8 @@
     "dev:api": "node scripts/maven.mjs spring-boot:run",
     "lint": "pnpm lint:web",
     "lint:web": "pnpm --dir apps/web lint",
+    "format:web": "pnpm --dir apps/web format",
+    "format:web:check": "pnpm --dir apps/web format:check",
     "test": "pnpm test:web && pnpm test:api",
     "test:web": "pnpm --dir apps/web test",
     "test:api": "node scripts/maven.mjs test",

@@ -23,7 +23,7 @@ function PhrasebookPageContent() {
   const searchParams = useSearchParams()
   const queryMode = searchParams.get("mode")
   const [mode, setMode] = useState<StudyMode>(
-    VALID_MODES.includes(queryMode as StudyMode) ? (queryMode as StudyMode) : "phrases"
+    VALID_MODES.includes(queryMode as StudyMode) ? (queryMode as StudyMode) : "phrases",
   )
 
   // Keep the URL in sync with the active mode, so refreshing, sharing a
@@ -31,7 +31,9 @@ function PhrasebookPageContent() {
   // redirect stubs there) all land on the right tab — same pattern as the
   // AI Coach mode switcher on /chat.
   useEffect(() => {
-    router.replace(mode === "phrases" ? "/phrasebook" : `/phrasebook?mode=${mode}`, { scroll: false })
+    router.replace(mode === "phrases" ? "/phrasebook" : `/phrasebook?mode=${mode}`, {
+      scroll: false,
+    })
     // Intentionally mode-only: this reflects mode changes into the URL, it
     // shouldn't re-run when router identity changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -40,7 +42,13 @@ function PhrasebookPageContent() {
   return (
     <div className="space-y-6">
       <StudyModeTabs mode={mode} onChange={setMode} />
-      {mode === "phrases" ? <PhrasebookHome /> : mode === "reading" ? <ReadingHome /> : <FoundationsHome />}
+      {mode === "phrases" ? (
+        <PhrasebookHome />
+      ) : mode === "reading" ? (
+        <ReadingHome />
+      ) : (
+        <FoundationsHome />
+      )}
     </div>
   )
 }

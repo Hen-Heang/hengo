@@ -4,9 +4,21 @@ import { useMemo, useState } from "react"
 import { Search, Star, X } from "lucide-react"
 import { motion, AnimatePresence } from "motion/react"
 import { NoteCard } from "@/components/notes/NoteCard"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import { useNoteSearch } from "@/hooks/useNotes"
-import { filterNotesMeta, NOTE_TYPES, sortNotesMeta, type NoteMeta, type NoteType } from "@/lib/notes"
+import {
+  filterNotesMeta,
+  NOTE_TYPES,
+  sortNotesMeta,
+  type NoteMeta,
+  type NoteType,
+} from "@/lib/notes"
 import { cn } from "@/lib/utils"
 
 export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
@@ -22,7 +34,11 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
   // fetched metadata list locally (title/description/category/tags only).
   const filtered = useMemo(() => {
     const base = hasQuery ? searchResults : notes
-    const withTypeAndPin = filterNotesMeta(base, { noteType, pinnedOnly, query: hasQuery ? "" : query })
+    const withTypeAndPin = filterNotesMeta(base, {
+      noteType,
+      pinnedOnly,
+      query: hasQuery ? "" : query,
+    })
     return sortNotesMeta(withTypeAndPin)
   }, [hasQuery, searchResults, notes, noteType, pinnedOnly, query])
 
@@ -84,7 +100,7 @@ export function NoteSearch({ notes }: { notes: NoteMeta[] }) {
             "flex h-11 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors",
             pinnedOnly
               ? "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-              : "border-border text-muted-foreground hover:text-foreground"
+              : "border-border text-muted-foreground hover:text-foreground",
           )}
         >
           <Star size={14} className={pinnedOnly ? "fill-current" : ""} />

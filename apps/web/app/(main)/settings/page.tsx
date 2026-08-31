@@ -42,9 +42,22 @@ const models = [
 ]
 
 const countries = [
-  "South Korea", "Cambodia", "Vietnam", "Thailand", "Philippines", "Indonesia",
-  "Malaysia", "Singapore", "China", "Japan", "India", "United States",
-  "United Kingdom", "Canada", "Australia", "Other",
+  "South Korea",
+  "Cambodia",
+  "Vietnam",
+  "Thailand",
+  "Philippines",
+  "Indonesia",
+  "Malaysia",
+  "Singapore",
+  "China",
+  "Japan",
+  "India",
+  "United States",
+  "United Kingdom",
+  "Canada",
+  "Australia",
+  "Other",
 ]
 
 function snapshotOf(fields: {
@@ -62,7 +75,12 @@ function snapshotOf(fields: {
 
 function SectionCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40", className)}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40",
+        className,
+      )}
+    >
       {children}
     </div>
   )
@@ -70,13 +88,16 @@ function SectionCard({ children, className }: { children: React.ReactNode; class
 
 function SectionRow({ children, last }: { children: React.ReactNode; last?: boolean }) {
   return (
-    <div className={cn("px-4 py-4 sm:px-5", !last && "border-b border-border/60")}>
-      {children}
-    </div>
+    <div className={cn("px-4 py-4 sm:px-5", !last && "border-b border-border/60")}>{children}</div>
   )
 }
 
-function SectionHeader({ icon: Icon, title, description, color = "text-blue-500" }: {
+function SectionHeader({
+  icon: Icon,
+  title,
+  description,
+  color = "text-blue-500",
+}: {
   icon: React.ElementType
   title: string
   description?: string
@@ -84,7 +105,12 @@ function SectionHeader({ icon: Icon, title, description, color = "text-blue-500"
 }) {
   return (
     <div className="flex items-center gap-3">
-      <div className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/5", color)}>
+      <div
+        className={cn(
+          "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/5",
+          color,
+        )}
+      >
         <Icon size={15} strokeWidth={2} />
       </div>
       <div>
@@ -164,7 +190,10 @@ export default function SettingsPage() {
         setWeatherAlertsEnabled(data.weatherAlertsEnabled ?? false)
         setHolidayAlertsEnabled(data.holidayAlertsEnabled ?? false)
         if (data.hasProfileImage) {
-          userApi.getProfileImageUrl(userId).then(setAvatarUrl).catch(() => {})
+          userApi
+            .getProfileImageUrl(userId)
+            .then(setAvatarUrl)
+            .catch(() => {})
         }
         savedSnapshotRef.current = snapshotOf({
           displayName: data.displayName ?? "",
@@ -317,8 +346,13 @@ export default function SettingsPage() {
   }
 
   const initials = displayName
-    ? displayName.split(" ").map((w) => w[0]).join("").slice(0, 2).toUpperCase()
-    : email?.[0]?.toUpperCase() ?? "?"
+    ? displayName
+        .split(" ")
+        .map((w) => w[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : (email?.[0]?.toUpperCase() ?? "?")
 
   if (loading) {
     return (
@@ -437,7 +471,9 @@ export default function SettingsPage() {
                 <FieldLabel>Email address</FieldLabel>
                 <div className="flex h-11 items-center gap-2.5 rounded-lg border border-border bg-accent/5 px-4 opacity-60">
                   <Mail size={14} className="shrink-0 text-muted-foreground" strokeWidth={2} />
-                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">{email}</span>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold text-foreground">
+                    {email}
+                  </span>
                   <span className="hidden shrink-0 items-center gap-1 text-xs font-medium text-muted-foreground sm:flex">
                     <ShieldCheck size={10} strokeWidth={3} /> Verified
                   </span>
@@ -467,7 +503,17 @@ export default function SettingsPage() {
               className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
             >
               <option value="">Select your main goal</option>
-              {["Daily standup participation", "Team meeting communication", "Writing professional messages", "Technical discussion in Korean", "General workplace communication"].map((g) => <option key={g} value={g}>{g}</option>)}
+              {[
+                "Daily standup participation",
+                "Team meeting communication",
+                "Writing professional messages",
+                "Technical discussion in Korean",
+                "General workplace communication",
+              ].map((g) => (
+                <option key={g} value={g}>
+                  {g}
+                </option>
+              ))}
             </select>
           </SectionRow>
         </SectionCard>
@@ -526,34 +572,91 @@ export default function SettingsPage() {
       <motion.div variants={itemVariants}>
         <SectionCard>
           <SectionRow>
-            <SectionHeader icon={Globe} title="Background & Work" description="Helps the AI tailor examples to you" color="text-sky-500" />
+            <SectionHeader
+              icon={Globe}
+              title="Background & Work"
+              description="Helps the AI tailor examples to you"
+              color="text-sky-500"
+            />
           </SectionRow>
           <SectionRow last>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
                 <FieldLabel>Country</FieldLabel>
-                <select value={country} onChange={(e) => setCountry(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select
+                  value={country}
+                  onChange={(e) => setCountry(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
+                >
                   <option value="">Select country</option>
-                  {countries.map((c) => <option key={c} value={c}>{c}</option>)}
+                  {countries.map((c) => (
+                    <option key={c} value={c}>
+                      {c}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
                 <FieldLabel>Native language</FieldLabel>
-                <select value={nativeLanguage} onChange={(e) => setNativeLanguage(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select
+                  value={nativeLanguage}
+                  onChange={(e) => setNativeLanguage(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
+                >
                   <option value="">Select language</option>
-                  {["Khmer", "English", "Chinese", "Japanese", "Vietnamese", "Thai", "Indonesian", "Filipino", "Malay", "Other"].map((l) => <option key={l} value={l}>{l}</option>)}
+                  {[
+                    "Khmer",
+                    "English",
+                    "Chinese",
+                    "Japanese",
+                    "Vietnamese",
+                    "Thai",
+                    "Indonesian",
+                    "Filipino",
+                    "Malay",
+                    "Other",
+                  ].map((l) => (
+                    <option key={l} value={l}>
+                      {l}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
                 <FieldLabel>Occupation</FieldLabel>
-                <select value={occupation} onChange={(e) => setOccupation(e.target.value)} className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5">
+                <select
+                  value={occupation}
+                  onChange={(e) => setOccupation(e.target.value)}
+                  className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
+                >
                   <option value="">Select role</option>
-                  {["Frontend Developer", "Backend Developer", "Full-Stack Developer", "QA Engineer", "DevOps Engineer", "Product Manager", "Data Scientist", "Other"].map((o) => <option key={o} value={o}>{o}</option>)}
+                  {[
+                    "Frontend Developer",
+                    "Backend Developer",
+                    "Full-Stack Developer",
+                    "QA Engineer",
+                    "DevOps Engineer",
+                    "Product Manager",
+                    "Data Scientist",
+                    "Other",
+                  ].map((o) => (
+                    <option key={o} value={o}>
+                      {o}
+                    </option>
+                  ))}
                 </select>
               </div>
               <div>
                 <FieldLabel>Years of experience</FieldLabel>
-                <Input type="number" min={0} max={50} value={yearsOfExperience} onChange={(e) => setYearsOfExperience(e.target.value)} placeholder="e.g. 3" className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background" />
+                <Input
+                  type="number"
+                  min={0}
+                  max={50}
+                  value={yearsOfExperience}
+                  onChange={(e) => setYearsOfExperience(e.target.value)}
+                  placeholder="e.g. 3"
+                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
+                />
               </div>
             </div>
           </SectionRow>
@@ -580,15 +683,23 @@ export default function SettingsPage() {
                     <button
                       key={model.value}
                       type="button"
-                      onClick={() => { setPreferredModel(model.value); setCustomModel("") }}
+                      onClick={() => {
+                        setPreferredModel(model.value)
+                        setCustomModel("")
+                      }}
                       className={cn(
                         "group relative flex min-h-11 flex-col gap-0.5 rounded-lg border px-4 py-3 text-left transition-colors",
                         active
                           ? "border-sky-500/30 bg-sky-500/5 ring-1 ring-sky-500/20"
-                          : "border-border bg-accent/5 hover:border-sky-500/20 hover:bg-background"
+                          : "border-border bg-accent/5 hover:border-sky-500/20 hover:bg-background",
                       )}
                     >
-                      <p className={cn("text-sm font-semibold", active ? "text-foreground" : "text-muted-foreground")}>
+                      <p
+                        className={cn(
+                          "text-sm font-semibold",
+                          active ? "text-foreground" : "text-muted-foreground",
+                        )}
+                      >
                         {model.label}
                       </p>
                       <p className="text-xs text-muted-foreground">{model.desc}</p>
@@ -666,10 +777,20 @@ export default function SettingsPage() {
               </div>
               {push.telegramLinked ? (
                 <div className="flex items-center gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={() => push.sendTelegramTest()}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => push.sendTelegramTest()}
+                  >
                     Send test
                   </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={() => push.unlinkTelegram()}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => push.unlinkTelegram()}
+                  >
                     Disconnect
                   </Button>
                 </div>
@@ -690,9 +811,7 @@ export default function SettingsPage() {
                 </div>
                 <div className="min-w-0">
                   <p className="text-sm font-semibold text-foreground">Daily reminders</p>
-                  <p className="text-xs text-muted-foreground">
-                    Review nudge + streak saver
-                  </p>
+                  <p className="text-xs text-muted-foreground">Review nudge + streak saver</p>
                 </div>
               </div>
               <Switch
@@ -711,12 +830,20 @@ export default function SettingsPage() {
                   id="study-hour"
                   value={studyReminderHour}
                   disabled={savingReminders}
-                  onChange={(e) => saveStudyReminders(studyRemindersEnabled, Number(e.target.value))}
+                  onChange={(e) =>
+                    saveStudyReminders(studyRemindersEnabled, Number(e.target.value))
+                  }
                   className="h-11 rounded-lg border border-border bg-background px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:ring-2 focus:ring-emerald-500/20"
                 >
                   {Array.from({ length: 24 }, (_, h) => (
                     <option key={h} value={h}>
-                      {h === 0 ? "12:00 AM" : h < 12 ? `${h}:00 AM` : h === 12 ? "12:00 PM" : `${h - 12}:00 PM`}
+                      {h === 0
+                        ? "12:00 AM"
+                        : h < 12
+                          ? `${h}:00 AM`
+                          : h === 12
+                            ? "12:00 PM"
+                            : `${h - 12}:00 PM`}
                     </option>
                   ))}
                 </select>
@@ -805,15 +932,17 @@ export default function SettingsPage() {
                 <p className="text-xs text-muted-foreground">End your session</p>
               </div>
             </div>
-            <ChevronRight size={14} strokeWidth={2} className="text-muted-foreground/60 transition-transform group-hover:translate-x-0.5" />
+            <ChevronRight
+              size={14}
+              strokeWidth={2}
+              className="text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+            />
           </button>
         </SectionCard>
       </motion.div>
 
       <motion.div variants={itemVariants} className="pt-2 text-center">
-        <p className="text-xs text-muted-foreground">
-          © 2026 Hen Heang · FullStack Developer
-        </p>
+        <p className="text-xs text-muted-foreground">© 2026 Hen Heang · FullStack Developer</p>
       </motion.div>
 
       {/* Sticky save bar — only intrudes once there's something to save */}
@@ -826,7 +955,12 @@ export default function SettingsPage() {
             transition={{ duration: 0.2, ease: "easeOut" }}
             className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 mx-auto flex w-full max-w-3xl items-center gap-3 rounded-lg border border-border bg-card/95 p-3 shadow-md backdrop-blur-xl dark:bg-slate-900/90 lg:bottom-4"
           >
-            <p className={cn("flex-1 truncate px-2 text-xs font-medium", error ? "text-destructive" : "text-muted-foreground")}>
+            <p
+              className={cn(
+                "flex-1 truncate px-2 text-xs font-medium",
+                error ? "text-destructive" : "text-muted-foreground",
+              )}
+            >
               {error || "You have unsaved changes."}
             </p>
             <Button
@@ -835,9 +969,13 @@ export default function SettingsPage() {
               className="h-11 shrink-0 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-60"
             >
               {saving ? (
-                <><Loader2 size={16} className="mr-2 animate-spin" /> Saving…</>
+                <>
+                  <Loader2 size={16} className="mr-2 animate-spin" /> Saving…
+                </>
               ) : saved ? (
-                <><Check size={16} className="mr-2" strokeWidth={3} /> Saved</>
+                <>
+                  <Check size={16} className="mr-2" strokeWidth={3} /> Saved
+                </>
               ) : (
                 "Save changes"
               )}

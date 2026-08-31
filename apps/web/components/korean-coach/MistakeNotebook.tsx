@@ -2,13 +2,7 @@
 
 import { useMemo, useState } from "react"
 import Link from "next/link"
-import {
-  ArrowRight,
-  BookOpenCheck,
-  Check,
-  RotateCcw,
-  Trash2,
-} from "lucide-react"
+import { ArrowRight, BookOpenCheck, Check, RotateCcw, Trash2 } from "lucide-react"
 
 import {
   AlertDialog,
@@ -71,8 +65,8 @@ export function MistakeNotebook({
         <BookOpenCheck className="mx-auto size-9 text-muted-foreground" aria-hidden="true" />
         <h2 className="mt-4 text-lg font-semibold">No saved mistakes yet</h2>
         <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-muted-foreground">
-          Save a useful correction after a speaking attempt. Repeated patterns will be
-          deduplicated and their occurrence count will increase.
+          Save a useful correction after a speaking attempt. Repeated patterns will be deduplicated
+          and their occurrence count will increase.
         </p>
         <Button asChild className="mt-5">
           <Link href="/korean-coach/scenarios">
@@ -187,7 +181,10 @@ export function MistakeNotebook({
                         <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
                           Original
                         </p>
-                        <p className="mt-2 text-lg line-through decoration-destructive/50" lang="ko">
+                        <p
+                          className="mt-2 text-lg line-through decoration-destructive/50"
+                          lang="ko"
+                        >
                           {mistake.original}
                         </p>
                       </div>
@@ -272,8 +269,8 @@ export function MistakeNotebook({
                           <AlertDialogHeader>
                             <AlertDialogTitle>Delete this saved mistake?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This removes the correction and its review history. It does not
-                              delete the practice session.
+                              This removes the correction and its review history. It does not delete
+                              the practice session.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
@@ -295,4 +292,3 @@ export function MistakeNotebook({
     </div>
   )
 }
-

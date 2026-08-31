@@ -27,7 +27,7 @@ export function useNavigationMode(): NavigationMode {
   // the client (behind the layout's auth/mount gate), so the correct mode is
   // known before first paint and a mobile device never flashes desktop chrome.
   const [mode, setMode] = useState<NavigationMode>(() =>
-    typeof window === "undefined" ? "desktop" : navigationModeForWidth(window.innerWidth)
+    typeof window === "undefined" ? "desktop" : navigationModeForWidth(window.innerWidth),
   )
 
   useEffect(() => {

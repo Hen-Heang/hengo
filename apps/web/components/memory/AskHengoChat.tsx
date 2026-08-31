@@ -18,7 +18,10 @@ const EXAMPLE_QUESTIONS = [
   "Summarize my progress this month.",
 ]
 
-const GROUNDEDNESS_LABEL: Record<AskHengoAnswer["groundedness"], { label: string; className: string }> = {
+const GROUNDEDNESS_LABEL: Record<
+  AskHengoAnswer["groundedness"],
+  { label: string; className: string }
+> = {
   grounded: { label: "Grounded in your data", className: "text-emerald-600 dark:text-emerald-400" },
   partial: { label: "Partially grounded", className: "text-amber-600 dark:text-amber-400" },
   insufficient: { label: "Not enough data found", className: "text-muted-foreground" },
@@ -104,7 +107,9 @@ export function AskHengoChat() {
             <p className="text-sm leading-relaxed text-foreground">{exchange.answer.answer}</p>
 
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              <span className={`text-xs font-medium ${GROUNDEDNESS_LABEL[exchange.answer.groundedness].className}`}>
+              <span
+                className={`text-xs font-medium ${GROUNDEDNESS_LABEL[exchange.answer.groundedness].className}`}
+              >
                 {GROUNDEDNESS_LABEL[exchange.answer.groundedness].label}
               </span>
             </div>
@@ -132,7 +137,10 @@ export function AskHengoChat() {
               <p className="border-t border-border/60 pt-2 text-xs text-muted-foreground">
                 Noticed {exchange.answer.proposedMemories.length} new thing
                 {exchange.answer.proposedMemories.length > 1 ? "s" : ""} worth remembering —{" "}
-                <Link href="/ask-hengo/memories" className="font-medium text-primary underline-offset-2 hover:underline">
+                <Link
+                  href="/ask-hengo/memories"
+                  className="font-medium text-primary underline-offset-2 hover:underline"
+                >
                   review them
                 </Link>
                 .

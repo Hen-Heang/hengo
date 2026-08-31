@@ -21,7 +21,10 @@ import type { RomanizationMode } from "@/lib/korean-coach/schemas"
 const STATE_LABEL: Record<string, { label: string; className: string }> = {
   new: { label: "New", className: "bg-sky-500/10 text-sky-600 dark:text-sky-400" },
   learning: { label: "Learning", className: "bg-amber-500/10 text-amber-600 dark:text-amber-400" },
-  mastered: { label: "Mastered", className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400" },
+  mastered: {
+    label: "Mastered",
+    className: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
+  },
 }
 
 export function PhraseCardListItem({
@@ -49,12 +52,19 @@ export function PhraseCardListItem({
           <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
             <Badge variant="outline">{card.situation}</Badge>
             <PhraseRegisterBadge register={card.question.register} />
-            <span className={cn("inline-flex h-5 items-center rounded-full px-2 text-[11px] font-bold", STATE_LABEL[state].className)}>
+            <span
+              className={cn(
+                "inline-flex h-5 items-center rounded-full px-2 text-[11px] font-bold",
+                STATE_LABEL[state].className,
+              )}
+            >
               {STATE_LABEL[state].label}
             </span>
             {due && <Badge variant="destructive">Due</Badge>}
           </div>
-          <p className="break-keep text-lg font-bold leading-snug text-foreground [overflow-wrap:anywhere]">{card.question.korean}</p>
+          <p className="break-keep text-lg font-bold leading-snug text-foreground [overflow-wrap:anywhere]">
+            {card.question.korean}
+          </p>
           {romanizationPreference !== "never" && (
             <RevealText
               label="romanization"
@@ -65,7 +75,11 @@ export function PhraseCardListItem({
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1">
-          <SpeakButton text={card.question.korean} className="bg-accent/10" title="Listen to the question" />
+          <SpeakButton
+            text={card.question.korean}
+            className="bg-accent/10"
+            title="Listen to the question"
+          />
           {editHref && (
             <Link
               href={editHref}
@@ -104,7 +118,12 @@ export function PhraseCardListItem({
       </div>
 
       <div className="mt-3 space-y-2 border-t border-border/60 pt-3">
-        <RevealText label="English" value={card.question.english} initiallyVisible={false} textClassName="text-sm text-muted-foreground" />
+        <RevealText
+          label="English"
+          value={card.question.english}
+          initiallyVisible={false}
+          textClassName="text-sm text-muted-foreground"
+        />
         {recommended && (
           <RevealText
             label="answer"
@@ -118,7 +137,10 @@ export function PhraseCardListItem({
       {card.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-1.5">
           {card.tags.map((tag) => (
-            <span key={tag} className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-muted-foreground">
+            <span
+              key={tag}
+              className="inline-flex items-center gap-1 rounded-full bg-accent/10 px-2 py-0.5 text-[11px] font-medium text-muted-foreground"
+            >
               <Sparkles size={10} /> {tag}
             </span>
           ))}

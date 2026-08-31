@@ -20,7 +20,11 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage } from "@/lib/api"
 import { useMemoryMutations } from "@/hooks/useMemory"
-import { MEMORY_SOURCE_LABELS, validateMemoryCandidateInput, type MemoryCandidate } from "@/lib/memory"
+import {
+  MEMORY_SOURCE_LABELS,
+  validateMemoryCandidateInput,
+  type MemoryCandidate,
+} from "@/lib/memory"
 
 /** One row in the memory-approval queue. AI-proposed rows get Approve/Reject;
  * already-approved rows get Edit/Archive so the user stays in full control of
@@ -104,13 +108,31 @@ export function MemoryCandidateCard({ candidate }: { candidate: MemoryCandidate 
 
       {editing ? (
         <div className="space-y-2">
-          <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} className="min-h-16" maxLength={500} />
+          <Textarea
+            value={draft}
+            onChange={(e) => setDraft(e.target.value)}
+            className="min-h-16"
+            maxLength={500}
+          />
           {errors.fact && <p className="text-xs text-destructive">{errors.fact}</p>}
           <div className="flex justify-end gap-2">
-            <Button type="button" variant="outline" size="sm" onClick={() => { setEditing(false); setDraft(candidate.fact) }}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setEditing(false)
+                setDraft(candidate.fact)
+              }}
+            >
               Cancel
             </Button>
-            <Button type="button" size="sm" disabled={saving || Object.keys(errors).length > 0} onClick={handleSaveEdit}>
+            <Button
+              type="button"
+              size="sm"
+              disabled={saving || Object.keys(errors).length > 0}
+              onClick={handleSaveEdit}
+            >
               Save
             </Button>
           </div>
@@ -156,18 +178,28 @@ export function MemoryCandidateCard({ candidate }: { candidate: MemoryCandidate 
               </Button>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button type="button" variant="ghost" size="icon-sm" aria-label="Delete permanently">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    aria-label="Delete permanently"
+                  >
                     <Trash2 size={16} />
                   </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
                     <AlertDialogTitle>Delete this memory?</AlertDialogTitle>
-                    <AlertDialogDescription>This permanently removes it. This can&apos;t be undone.</AlertDialogDescription>
+                    <AlertDialogDescription>
+                      This permanently removes it. This can&apos;t be undone.
+                    </AlertDialogDescription>
                   </AlertDialogHeader>
                   <AlertDialogFooter>
                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={handleDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
+                    <AlertDialogAction
+                      onClick={handleDelete}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
                       Delete
                     </AlertDialogAction>
                   </AlertDialogFooter>

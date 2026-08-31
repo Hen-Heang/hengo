@@ -12,7 +12,13 @@ export interface CategoryEvidence {
   averageScore: number
 }
 
-const CATEGORY_KEYS = ["vocabulary", "grammar", "listening", "speaking", "workplaceCommunication"] as const
+const CATEGORY_KEYS = [
+  "vocabulary",
+  "grammar",
+  "listening",
+  "speaking",
+  "workplaceCommunication",
+] as const
 type CategoryKey = (typeof CATEGORY_KEYS)[number]
 
 export interface LevelEvidenceInput extends Record<CategoryKey, CategoryEvidence> {
@@ -63,7 +69,9 @@ function normalizeLevel(level: string): KoreanLevel | null {
  *  learner must still manually accept any suggested upgrade. */
 export function recommendLevel(input: LevelEvidenceInput): LevelRecommendation {
   const totalAttempts = CATEGORY_KEYS.reduce((sum, k) => sum + input[k].attempts, 0)
-  const categoriesWithEnough = CATEGORY_KEYS.filter((k) => input[k].attempts >= MIN_ATTEMPTS_PER_CATEGORY)
+  const categoriesWithEnough = CATEGORY_KEYS.filter(
+    (k) => input[k].attempts >= MIN_ATTEMPTS_PER_CATEGORY,
+  )
   const weightedScore = Math.round(
     CATEGORY_KEYS.reduce((sum, k) => sum + input[k].averageScore * WEIGHTS[k], 0),
   )
@@ -82,10 +90,13 @@ export function recommendLevel(input: LevelEvidenceInput): LevelRecommendation {
   }
   if (categoriesWithEnough.length < MIN_CATEGORIES_WITH_ENOUGH_ATTEMPTS) {
     const short = CATEGORY_KEYS.filter((k) => input[k].attempts < MIN_ATTEMPTS_PER_CATEGORY)
-    if (short.length > 0) missingEvidence.push(`more attempts in ${short.map((k) => CATEGORY_LABEL[k]).join(", ")}`)
+    if (short.length > 0)
+      missingEvidence.push(`more attempts in ${short.map((k) => CATEGORY_LABEL[k]).join(", ")}`)
   }
   if (weakCategories.length > 0) {
-    missingEvidence.push(`stronger ${weakCategories.map((k) => CATEGORY_LABEL[k]).join(", ")} performance`)
+    missingEvidence.push(
+      `stronger ${weakCategories.map((k) => CATEGORY_LABEL[k]).join(", ")} performance`,
+    )
   }
 
   const hasEnoughEvidence =
@@ -99,7 +110,9 @@ export function recommendLevel(input: LevelEvidenceInput): LevelRecommendation {
   if (!canUpgrade) {
     reason = "You're already at the highest level."
   } else if (qualifies && nextLevel) {
-    const strongest = [...CATEGORY_KEYS].sort((a, b) => input[b].averageScore - input[a].averageScore).slice(0, 2)
+    const strongest = [...CATEGORY_KEYS]
+      .sort((a, b) => input[b].averageScore - input[a].averageScore)
+      .slice(0, 2)
     reason = `Your ${strongest.map((k) => CATEGORY_LABEL[k]).join(" and ")} are ready for ${nextLevel} (weighted score ${weightedScore}/100).`
   } else if (missingEvidence.length > 0) {
     reason = `Complete ${missingEvidence.join(" and ")} before upgrading to ${nextLevel}.`

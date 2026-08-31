@@ -18,7 +18,10 @@ function format(date: Date, timeZone: string): string {
 
 /** YYYY-MM-DD for `date` in `timeZone` (defaults to now / Asia/Seoul). Falls
  *  back to Asia/Seoul if an unsupported/invalid IANA zone is passed in. */
-export function dateKeyInTimeZone(date: Date = new Date(), timeZone: string = DEFAULT_TIME_ZONE): string {
+export function dateKeyInTimeZone(
+  date: Date = new Date(),
+  timeZone: string = DEFAULT_TIME_ZONE,
+): string {
   try {
     return format(date, timeZone)
   } catch {

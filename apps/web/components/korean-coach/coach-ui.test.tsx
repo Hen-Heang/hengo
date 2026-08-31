@@ -59,4 +59,3 @@ describe("Korean Coach feedback and empty notebook rendering", () => {
     expect(screen.getByText("No saved mistakes yet")).toBeTruthy()
   })
 })
-

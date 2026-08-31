@@ -1,9 +1,5 @@
 import { describe, expect, it } from "vitest"
-import {
-  decodeTaskViewParams,
-  encodeTaskViewParams,
-  mergeTaskViewParams,
-} from "./task-view-params"
+import { decodeTaskViewParams, encodeTaskViewParams, mergeTaskViewParams } from "./task-view-params"
 import { EMPTY_TASK_FILTERS, NONE_FILTER_VALUE, type TaskFilters } from "./task-views"
 
 const decode = (query: string) => decodeTaskViewParams(new URLSearchParams(query))
@@ -143,8 +139,8 @@ describe("mergeTaskViewParams", () => {
   })
 
   it("returns an empty string when nothing is left", () => {
-    expect(mergeTaskViewParams(new URLSearchParams("chip=overdue"), EMPTY_TASK_FILTERS, "smart")).toBe(
-      "",
-    )
+    expect(
+      mergeTaskViewParams(new URLSearchParams("chip=overdue"), EMPTY_TASK_FILTERS, "smart"),
+    ).toBe("")
   })
 })

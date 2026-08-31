@@ -43,7 +43,11 @@ export function GoogleCalendarIntegrationCard() {
   }
 
   return (
-    <div className={cn("overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40")}>
+    <div
+      className={cn(
+        "overflow-hidden rounded-lg border border-border bg-card shadow-sm dark:bg-slate-900/40",
+      )}
+    >
       <div className="border-b border-border/60 px-4 py-4 sm:px-5">
         <div className="flex items-center gap-3">
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-accent/5 text-blue-500">
@@ -52,7 +56,8 @@ export function GoogleCalendarIntegrationCard() {
           <div>
             <p className="text-sm font-semibold text-foreground">Google Calendar</p>
             <p className="text-sm text-muted-foreground">
-              Show your real calendar beside Hengo tasks so you can plan around existing commitments.
+              Show your real calendar beside Hengo tasks so you can plan around existing
+              commitments.
             </p>
           </div>
         </div>
@@ -76,7 +81,13 @@ export function GoogleCalendarIntegrationCard() {
                 ? `Last synced ${format(new Date(lastSyncedAt), "MMM d, h:mm a")}`
                 : "Connected. Open Calendar to load your events."}
             </p>
-            <Button type="button" variant="outline" size="sm" onClick={handleDisconnect} disabled={disconnecting}>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleDisconnect}
+              disabled={disconnecting}
+            >
               {disconnecting ? (
                 <>
                   <Loader2 size={14} className="mr-2 animate-spin" /> Disconnecting…
@@ -88,7 +99,12 @@ export function GoogleCalendarIntegrationCard() {
           </div>
         ) : (
           <div className="space-y-2">
-            <Button type="button" size="sm" onClick={() => void handleConnect()} disabled={connecting}>
+            <Button
+              type="button"
+              size="sm"
+              onClick={() => void handleConnect()}
+              disabled={connecting}
+            >
               {connecting ? (
                 <>
                   <Loader2 size={14} className="mr-2 animate-spin" /> Connecting…
@@ -98,7 +114,8 @@ export function GoogleCalendarIntegrationCard() {
               )}
             </Button>
             <p className="text-xs leading-5 text-muted-foreground">
-              Hengo requests read-only Calendar access. Your Google events stay external and cannot be edited from Hengo.
+              Hengo requests read-only Calendar access. Your Google events stay external and cannot
+              be edited from Hengo.
             </p>
           </div>
         )}

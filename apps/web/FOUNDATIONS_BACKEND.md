@@ -30,15 +30,15 @@ Response `data`: `LessonSummary[]`
 [
   {
     "id": "alpha-1",
-    "track": "alphabet",          // "alphabet" | "grammar"
+    "track": "alphabet", // "alphabet" | "grammar"
     "order": 1,
     "title": "Basic Vowels",
     "subtitle": "The six core vowels of Hangul",
-    "level": "Intro",             // "Intro" | "Beginner" | "Elementary"
+    "level": "Intro", // "Intro" | "Beginner" | "Elementary"
     "estimatedMinutes": 6,
-    "completed": false,           // best attempt passed (accuracy >= 60)
-    "progress": 0                 // 0–100, best-attempt accuracy
-  }
+    "completed": false, // best attempt passed (accuracy >= 60)
+    "progress": 0, // 0–100, best-attempt accuracy
+  },
 ]
 ```
 
@@ -66,24 +66,24 @@ Response `data`: `LessonDetail` (`LessonSummary` + the fields below)
   "cards": [
     {
       "hangul": "ㅏ",
-      "romanization": "a",          // optional
+      "romanization": "a", // optional
       "meaning": "like 'a' in father",
-      "example": "아",              // optional
-      "exampleTranslation": "ah",   // optional
-      "note": "..."                 // optional
-    }
+      "example": "아", // optional
+      "exampleTranslation": "ah", // optional
+      "note": "...", // optional
+    },
   ],
   "exercises": [
     {
       "id": "alpha-1-e1",
-      "type": "multiple-choice",    // "multiple-choice" | "type-answer"
+      "type": "multiple-choice", // "multiple-choice" | "type-answer"
       "prompt": "Which vowel makes the 'a' sound?",
-      "options": ["ㅓ", "ㅏ", "ㅜ", "ㅡ"],  // multiple-choice only
-      "answerIndex": 1,             // multiple-choice only
-      "answer": "i",                // type-answer only (expected string)
-      "explanation": "ㅏ is the open 'a' sound."  // optional
-    }
-  ]
+      "options": ["ㅓ", "ㅏ", "ㅜ", "ㅡ"], // multiple-choice only
+      "answerIndex": 1, // multiple-choice only
+      "answer": "i", // type-answer only (expected string)
+      "explanation": "ㅏ is the open 'a' sound.", // optional
+    },
+  ],
 }
 ```
 
@@ -117,13 +117,14 @@ Response `data`: `LessonAttemptResult`
   "lessonId": "alpha-1",
   "score": 2,
   "total": 3,
-  "accuracy": 67,              // round(score/total * 100)
-  "completed": true,           // accuracy >= 60 (the pass threshold)
-  "results": [true, false, true]
+  "accuracy": 67, // round(score/total * 100)
+  "completed": true, // accuracy >= 60 (the pass threshold)
+  "results": [true, false, true],
 }
 ```
 
 Grading rules (match the frontend fallback in `useFoundations.gradeLocally`):
+
 - multiple-choice: `answer === exercise.answerIndex`
 - type-answer: `trim().toLowerCase()` equality against `exercise.answer`
 - pass threshold: `accuracy >= 60`
@@ -190,14 +191,14 @@ foundation_attempts
 
 ## Frontend touch-points (for reference)
 
-| Concern            | File                                  |
-|--------------------|---------------------------------------|
-| API calls          | `lib/api/foundations.ts`              |
-| Types (DTO shapes) | `lib/types.ts` (Foundations section)  |
-| Data hook + grading fallback | `hooks/useFoundations.ts`   |
-| Curated seed       | `lib/foundations-data.ts`             |
-| List UI            | `app/(main)/learn/page.tsx`           |
-| Lesson runner      | `components/learn/LessonRunner.tsx`   |
+| Concern                      | File                                 |
+| ---------------------------- | ------------------------------------ |
+| API calls                    | `lib/api/foundations.ts`             |
+| Types (DTO shapes)           | `lib/types.ts` (Foundations section) |
+| Data hook + grading fallback | `hooks/useFoundations.ts`            |
+| Curated seed                 | `lib/foundations-data.ts`            |
+| List UI                      | `app/(main)/learn/page.tsx`          |
+| Lesson runner                | `components/learn/LessonRunner.tsx`  |
 
 When the endpoints go live, remove the local seed fallback only if you want to
 force backend-only data — otherwise it stays as a harmless offline safety net,

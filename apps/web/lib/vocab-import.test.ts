@@ -5,7 +5,7 @@ import { prepareVocabImport } from "./vocab-import"
 describe("prepareVocabImport", () => {
   it("strips numbering and bullets while keeping translations as written", () => {
     const result = prepareVocabImport(
-      "1. 공감 (empathy)\n2) 관계 (relationship)\n• 배포 - deployment\n- 서버 : server"
+      "1. 공감 (empathy)\n2) 관계 (relationship)\n• 배포 - deployment\n- 서버 : server",
     )
     expect(result.entries).toEqual([
       "공감 (empathy)",
@@ -38,7 +38,9 @@ describe("prepareVocabImport", () => {
   })
 
   it("joins cleaned entries into the API payload", () => {
-    const result = prepareVocabImport("1. 공감 - empathy\n1. 공감 - empathy\n2. 관계 - relationship")
+    const result = prepareVocabImport(
+      "1. 공감 - empathy\n1. 공감 - empathy\n2. 관계 - relationship",
+    )
     expect(result.cleanedText).toBe("공감 - empathy\n관계 - relationship")
   })
 })

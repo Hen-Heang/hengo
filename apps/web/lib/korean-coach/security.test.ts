@@ -26,4 +26,3 @@ describe("Korean Coach client security boundary", () => {
     expect(source).not.toContain("api.openai.com")
   })
 })
-

@@ -9,11 +9,7 @@ import { Button } from "@/components/ui/button"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
-import {
-  getApiErrorMessage,
-  koreanCoachApi,
-  type KoreanCoachMistake,
-} from "@/lib/api"
+import { getApiErrorMessage, koreanCoachApi, type KoreanCoachMistake } from "@/lib/api"
 
 export default function KoreanCoachMistakesPage() {
   useSessionTimer("korean_coach")
@@ -112,4 +108,3 @@ export default function KoreanCoachMistakesPage() {
     </div>
   )
 }
-

@@ -4,7 +4,13 @@ import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { DateRangeGranularity } from "@/lib/date-utils"
 import { TIMELINE_KIND_META, type TimelineKind } from "@/lib/timeline"
 import { cn } from "@/lib/utils"
@@ -41,7 +47,11 @@ export function TimelineFilters({
   return (
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1" role="group" aria-label="Timeline range">
+        <div
+          className="flex items-center gap-1 rounded-xl border border-border bg-card p-1"
+          role="group"
+          aria-label="Timeline range"
+        >
           {GRANULARITIES.map((g) => (
             <button
               key={g.value}
@@ -50,7 +60,9 @@ export function TimelineFilters({
               aria-pressed={granularity === g.value}
               className={cn(
                 "min-h-11 rounded-lg px-3 py-2 text-sm font-semibold transition-colors",
-                granularity === g.value ? "bg-accent text-foreground" : "text-muted-foreground hover:text-foreground"
+                granularity === g.value
+                  ? "bg-accent text-foreground"
+                  : "text-muted-foreground hover:text-foreground",
               )}
             >
               {g.label}
@@ -59,13 +71,31 @@ export function TimelineFilters({
         </div>
 
         <div className="flex items-center gap-1">
-          <Button type="button" variant="outline" size="icon-sm" onClick={onPrev} aria-label="Previous period">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            onClick={onPrev}
+            aria-label="Previous period"
+          >
             <ChevronLeft size={16} />
           </Button>
-          <Button type="button" variant="outline" size="sm" onClick={onToday} className="min-w-32 justify-center">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={onToday}
+            className="min-w-32 justify-center"
+          >
             {rangeLabel}
           </Button>
-          <Button type="button" variant="outline" size="icon-sm" onClick={onNext} aria-label="Next period">
+          <Button
+            type="button"
+            variant="outline"
+            size="icon-sm"
+            onClick={onNext}
+            aria-label="Next period"
+          >
             <ChevronRight size={16} />
           </Button>
         </div>
@@ -86,7 +116,10 @@ export function TimelineFilters({
       </div>
 
       <div className="relative">
-        <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+        <Search
+          size={16}
+          className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+        />
         <Input
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}

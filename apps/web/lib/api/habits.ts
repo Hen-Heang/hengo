@@ -57,7 +57,11 @@ export const habitsApi = {
     return (data as HabitRow[]).map(toHabit)
   },
 
-  addHabit: async (data: { label: string; category: HabitCategory; identityStatement?: string }): Promise<Habit> => {
+  addHabit: async (data: {
+    label: string
+    category: HabitCategory
+    identityStatement?: string
+  }): Promise<Habit> => {
     const { data: row, error } = await supabase
       .from("kori_habits")
       .insert({
@@ -74,14 +78,21 @@ export const habitsApi = {
 
   updateHabit: async (
     id: string,
-    data: { label?: string; category?: HabitCategory; identityStatement?: string | null; active?: boolean },
+    data: {
+      label?: string
+      category?: HabitCategory
+      identityStatement?: string | null
+      active?: boolean
+    },
   ): Promise<Habit> => {
     const { data: row, error } = await supabase
       .from("kori_habits")
       .update({
         ...(data.label !== undefined ? { label: data.label } : {}),
         ...(data.category !== undefined ? { category: data.category } : {}),
-        ...(data.identityStatement !== undefined ? { identity_statement: data.identityStatement } : {}),
+        ...(data.identityStatement !== undefined
+          ? { identity_statement: data.identityStatement }
+          : {}),
         ...(data.active !== undefined ? { active: data.active } : {}),
       })
       .eq("id", id)
@@ -113,7 +124,9 @@ export const habitsApi = {
 
   // All habits' check-ins in a date range — for the Timeline aggregator
   // (lib/timeline.ts), which needs check-ins across every habit, not one.
-  getCheckinsInRange: async (params: { from?: string; to?: string } = {}): Promise<HabitCheckIn[]> => {
+  getCheckinsInRange: async (
+    params: { from?: string; to?: string } = {},
+  ): Promise<HabitCheckIn[]> => {
     let query = supabase.from("kori_habit_checkins").select("*").order("date", { ascending: false })
     if (params.from) query = query.gte("date", params.from)
     if (params.to) query = query.lte("date", params.to)

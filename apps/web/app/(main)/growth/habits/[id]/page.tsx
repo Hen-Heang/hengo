@@ -34,7 +34,13 @@ export default function HabitDetailPage() {
   const params = useParams<{ id: string }>()
   const [celebrate, setCelebrate] = useState(false)
 
-  const { habits, loading: habitsLoading, error: habitsError, updateHabit, deleteHabit } = useHabits()
+  const {
+    habits,
+    loading: habitsLoading,
+    error: habitsError,
+    updateHabit,
+    deleteHabit,
+  } = useHabits()
   const habit = habits.find((h) => h.id === params.id) ?? null
 
   const {
@@ -67,8 +73,17 @@ export default function HabitDetailPage() {
   }
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-xl space-y-5 pb-12">
-      <CompletionCelebration show={celebrate} onDone={() => setCelebrate(false)} subtitle="Checked in" />
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-xl space-y-5 pb-12"
+    >
+      <CompletionCelebration
+        show={celebrate}
+        onDone={() => setCelebrate(false)}
+        subtitle="Checked in"
+      />
 
       <motion.div variants={itemVariants} className="flex items-center justify-between">
         <Button asChild variant="ghost" size="sm" className="-ml-2">
@@ -87,11 +102,20 @@ export default function HabitDetailPage() {
         />
       </motion.div>
 
-      <motion.div variants={itemVariants} className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6">
-        <p className="text-sm font-medium text-muted-foreground">{CATEGORY_LABELS[habit.category]}</p>
-        <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-[1.75rem]">{habit.label}</h1>
+      <motion.div
+        variants={itemVariants}
+        className="rounded-lg border border-border bg-card p-5 shadow-sm sm:p-6"
+      >
+        <p className="text-sm font-medium text-muted-foreground">
+          {CATEGORY_LABELS[habit.category]}
+        </p>
+        <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-[1.75rem]">
+          {habit.label}
+        </h1>
         {habit.identityStatement && (
-          <p className="mt-2 text-sm italic text-muted-foreground">&ldquo;{habit.identityStatement}&rdquo;</p>
+          <p className="mt-2 text-sm italic text-muted-foreground">
+            &ldquo;{habit.identityStatement}&rdquo;
+          </p>
         )}
 
         <div className="mt-6 flex flex-wrap items-center gap-3">

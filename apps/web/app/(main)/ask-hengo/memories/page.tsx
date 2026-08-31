@@ -18,15 +18,20 @@ export default function AskHengoMemoriesPage() {
   const dismissed = candidates.filter((c) => c.status === "rejected" || c.status === "archived")
 
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants} className="mx-auto max-w-2xl space-y-6 pb-16">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+      className="mx-auto max-w-2xl space-y-6 pb-16"
+    >
       <motion.div variants={itemVariants}>
         <BackLink href="/ask-hengo" label="Ask Hengo" />
         <div className="mt-2 flex flex-col items-start justify-between gap-3 min-[360px]:flex-row">
           <div>
             <h1 className="text-2xl font-semibold text-foreground">Memories</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Facts Hengo has noticed or you&apos;ve told it directly. Only approved memories are ever used to answer
-              future questions.
+              Facts Hengo has noticed or you&apos;ve told it directly. Only approved memories are
+              ever used to answer future questions.
             </p>
           </div>
           <div className="shrink-0">
@@ -51,7 +56,8 @@ export default function AskHengoMemoriesPage() {
         >
           <p className="text-sm font-semibold text-foreground">No memories yet</p>
           <p className="max-w-sm text-sm text-muted-foreground">
-            Ask Hengo a question and it may notice something worth remembering — or add one yourself.
+            Ask Hengo a question and it may notice something worth remembering — or add one
+            yourself.
           </p>
         </motion.div>
       ) : (
@@ -76,9 +82,7 @@ export default function AskHengoMemoriesPage() {
           )}
           {dismissed.length > 0 && (
             <motion.div variants={itemVariants} className="space-y-3">
-              <h2 className="text-sm font-semibold text-muted-foreground">
-                Rejected / archived
-              </h2>
+              <h2 className="text-sm font-semibold text-muted-foreground">Rejected / archived</h2>
               {dismissed.map((c) => (
                 <MemoryCandidateCard key={c.id} candidate={c} />
               ))}

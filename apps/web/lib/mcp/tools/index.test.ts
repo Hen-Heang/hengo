@@ -12,7 +12,15 @@ describe("registerReadTools", () => {
     registerReadTools(fakeServer, fakeContext(fakeDb({})))
 
     expect([...tools.keys()].sort()).toEqual(
-      ["get_goal", "get_goal_tasks", "get_learning_progress", "get_today_overview", "get_weekly_progress", "list_goals", "list_tasks"].sort(),
+      [
+        "get_goal",
+        "get_goal_tasks",
+        "get_learning_progress",
+        "get_today_overview",
+        "get_weekly_progress",
+        "list_goals",
+        "list_tasks",
+      ].sort(),
     )
     for (const tool of tools.values()) {
       expect(tool.config.annotations).toMatchObject({
@@ -35,25 +43,40 @@ describe("registerReadTools", () => {
       health_status: "on_track",
       user_id: "someone-else",
       goal_stars: [{ user_id: "user-1" }],
-      tasks: [{ id: "t1", completed: true }, { id: "t2", completed: false }],
+      tasks: [
+        { id: "t1", completed: true },
+        { id: "t2", completed: false },
+      ],
       goal_key_results: [],
     }
-    registerReadTools(fakeServer, fakeContext(fakeDb({ goals: fakeQuery({ data: [goalRow], error: null, count: 3 }) })))
+    registerReadTools(
+      fakeServer,
+      fakeContext(fakeDb({ goals: fakeQuery({ data: [goalRow], error: null, count: 3 }) })),
+    )
 
     const result = await tools.get("list_goals")!.handler({ status: "active", limit: 1 })
     expect(result.isError).toBeFalsy()
-    const structured = result.structuredContent as { goals: { isOwner: boolean; isStarred: boolean }[]; total: number; truncated: boolean }
+    const structured = result.structuredContent as {
+      goals: { isOwner: boolean; isStarred: boolean }[]
+      total: number
+      truncated: boolean
+    }
     expect(structured.total).toBe(3)
     expect(structured.truncated).toBe(true)
     expect(structured.goals[0].isOwner).toBe(false) // owned by "someone-else", not user-1
     expect(structured.goals[0].isStarred).toBe(true) // starred by user-1
   })
 
-  it("get_goal never distinguishes \"doesn't exist\" from \"not yours\" — both are a plain not-found error", async () => {
+  it('get_goal never distinguishes "doesn\'t exist" from "not yours" — both are a plain not-found error', async () => {
     const { fakeServer, tools } = captureRegisteredTools()
-    registerReadTools(fakeServer, fakeContext(fakeDb({ goals: fakeQuery({ data: null, error: null }) })))
+    registerReadTools(
+      fakeServer,
+      fakeContext(fakeDb({ goals: fakeQuery({ data: null, error: null }) })),
+    )
 
-    const result = await tools.get("get_goal")!.handler({ goalId: "11111111-1111-1111-1111-111111111111" })
+    const result = await tools
+      .get("get_goal")!
+      .handler({ goalId: "11111111-1111-1111-1111-111111111111" })
     expect(result.isError).toBe(true)
     expect(result.structuredContent).toBeUndefined()
     expect(result.content[0].text.toLowerCase()).not.toMatch(/goal_id|sql|table|not yours/)
@@ -66,10 +89,22 @@ describe("registerWriteTools", () => {
     registerWriteTools(fakeServer, fakeContext(fakeDb({}), { writeEnabled: true }))
 
     expect([...tools.keys()].sort()).toEqual(
-      ["capture_korean_phrase", "capture_reflection", "complete_task", "create_goal", "create_task", "update_goal", "update_task"].sort(),
+      [
+        "capture_korean_phrase",
+        "capture_reflection",
+        "complete_task",
+        "create_goal",
+        "create_task",
+        "update_goal",
+        "update_task",
+      ].sort(),
     )
     for (const tool of tools.values()) {
-      expect(tool.config.annotations).toMatchObject({ readOnlyHint: false, destructiveHint: false, openWorldHint: false })
+      expect(tool.config.annotations).toMatchObject({
+        readOnlyHint: false,
+        destructiveHint: false,
+        openWorldHint: false,
+      })
     }
   })
 
@@ -114,9 +149,14 @@ describe("registerWriteTools", () => {
       insertCalled = true
       return tasksQuery
     }
-    registerWriteTools(fakeServer, fakeContext(fakeDb({ tasks: tasksQuery }), { writeEnabled: true }))
+    registerWriteTools(
+      fakeServer,
+      fakeContext(fakeDb({ tasks: tasksQuery }), { writeEnabled: true }),
+    )
 
-    const result = await tools.get("create_task")!.handler({ title: "Write the report", startDate: "2026-08-10" })
+    const result = await tools
+      .get("create_task")!
+      .handler({ title: "Write the report", startDate: "2026-08-10" })
     expect(result.isError).toBeFalsy()
     expect((result.structuredContent as { created: boolean }).created).toBe(false)
     expect(insertCalled).toBe(false)
@@ -148,7 +188,10 @@ describe("registerWriteTools", () => {
       updateCalled = true
       return tasksQuery
     }
-    registerWriteTools(fakeServer, fakeContext(fakeDb({ tasks: tasksQuery }), { writeEnabled: true }))
+    registerWriteTools(
+      fakeServer,
+      fakeContext(fakeDb({ tasks: tasksQuery }), { writeEnabled: true }),
+    )
 
     const result = await tools.get("complete_task")!.handler({ taskId: "task-1" })
     expect(result.isError).toBeFalsy()
@@ -160,9 +203,17 @@ describe("registerWriteTools", () => {
     const { fakeServer, tools } = captureRegisteredTools()
     registerWriteTools(
       fakeServer,
-      fakeContext(fakeDb({ kori_journal_entries: fakeQuery({ data: { id: "j1", occurred_at: "2026-08-07T00:00:00.000Z" }, error: null }) }), {
-        writeEnabled: true,
-      }),
+      fakeContext(
+        fakeDb({
+          kori_journal_entries: fakeQuery({
+            data: { id: "j1", occurred_at: "2026-08-07T00:00:00.000Z" },
+            error: null,
+          }),
+        }),
+        {
+          writeEnabled: true,
+        },
+      ),
     )
 
     const result = await tools.get("capture_reflection")!.handler({ content: "Today went well." })

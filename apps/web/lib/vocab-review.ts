@@ -54,17 +54,13 @@ export function matchesMastery(mastery: number, filter: MasteryFilter): boolean 
   }
 }
 
-export function filterVocab(
-  words: VocabItem[],
-  query: string,
-  filter: MasteryFilter
-): VocabItem[] {
+export function filterVocab(words: VocabItem[], query: string, filter: MasteryFilter): VocabItem[] {
   const q = query.trim().toLowerCase()
   return words.filter((word) => {
     if (!matchesMastery(word.mastery, filter)) return false
     if (!q) return true
     return [word.term, word.meaning, word.pronunciation ?? "", word.category, ...word.tags].some(
-      (field) => field.toLowerCase().includes(q)
+      (field) => field.toLowerCase().includes(q),
     )
   })
 }
@@ -109,7 +105,7 @@ export function computeVocabStats(words: VocabItem[]): VocabStats {
       else acc.weak += 1
       return acc
     },
-    { sum: 0, weak: 0, learning: 0, mastered: 0 }
+    { sum: 0, weak: 0, learning: 0, mastered: 0 },
   )
 
   return {

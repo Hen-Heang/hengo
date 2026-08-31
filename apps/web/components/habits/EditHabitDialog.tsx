@@ -35,7 +35,11 @@ export function EditHabitDialog({
   onDelete,
 }: {
   habit: Habit
-  onUpdate: (data: { label: string; category: HabitCategory; identityStatement?: string | null }) => Promise<unknown>
+  onUpdate: (data: {
+    label: string
+    category: HabitCategory
+    identityStatement?: string | null
+  }) => Promise<unknown>
   onDelete: () => Promise<unknown>
 }) {
   const [open, setOpen] = useState(false)
@@ -59,7 +63,11 @@ export function EditHabitDialog({
     if (!label.trim() || saving) return
     setSaving(true)
     try {
-      await onUpdate({ label: label.trim(), category, identityStatement: identityStatement.trim() || null })
+      await onUpdate({
+        label: label.trim(),
+        category,
+        identityStatement: identityStatement.trim() || null,
+      })
       setOpen(false)
     } finally {
       setSaving(false)
@@ -86,7 +94,9 @@ export function EditHabitDialog({
         <form onSubmit={handleSave}>
           <DialogHeader>
             <DialogTitle>Edit habit</DialogTitle>
-            <DialogDescription>Update the label, category, or identity statement.</DialogDescription>
+            <DialogDescription>
+              Update the label, category, or identity statement.
+            </DialogDescription>
           </DialogHeader>
 
           <div className="mt-4 space-y-4">
@@ -114,8 +124,12 @@ export function EditHabitDialog({
               />
             </div>
             <div className="space-y-2">
-              <label htmlFor="edit-habit-identity" className="text-sm font-semibold text-foreground">
-                Who is this making you? <span className="font-normal text-muted-foreground">(optional)</span>
+              <label
+                htmlFor="edit-habit-identity"
+                className="text-sm font-semibold text-foreground"
+              >
+                Who is this making you?{" "}
+                <span className="font-normal text-muted-foreground">(optional)</span>
               </label>
               <Input
                 id="edit-habit-identity"
@@ -138,7 +152,8 @@ export function EditHabitDialog({
                 <AlertDialogHeader>
                   <AlertDialogTitle>Delete this habit?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    This permanently deletes &quot;{habit.label}&quot; along with all its check-ins. This can&apos;t be undone.
+                    This permanently deletes &quot;{habit.label}&quot; along with all its check-ins.
+                    This can&apos;t be undone.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

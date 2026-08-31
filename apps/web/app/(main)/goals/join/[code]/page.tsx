@@ -56,7 +56,12 @@ export default function JoinGoalPage() {
         <ArrowLeft size={16} strokeWidth={2.5} /> Goals
       </Link>
 
-      <PageHero eyebrow="Invitation" title="Join a goal" description="You've been invited to collaborate." variant="compact" />
+      <PageHero
+        eyebrow="Invitation"
+        title="Join a goal"
+        description="You've been invited to collaborate."
+        variant="compact"
+      />
 
       <Card className="border-border bg-card/50 p-5 shadow-sm sm:p-6">
         {isPending ? (
@@ -96,7 +101,9 @@ export default function JoinGoalPage() {
                   </p>
                 )}
                 {deadline && (
-                  <p className="mt-2 text-xs font-semibold text-muted-foreground">{deadline.statusMessage}</p>
+                  <p className="mt-2 text-xs font-semibold text-muted-foreground">
+                    {deadline.statusMessage}
+                  </p>
                 )}
               </div>
             </div>

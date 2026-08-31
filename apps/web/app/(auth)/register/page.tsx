@@ -4,17 +4,22 @@ import Link from "next/link"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { AlertCircle, Eye, EyeOff, Loader2, ArrowRight, Sparkles, MessagesSquare, BookOpen, Mic } from "lucide-react"
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
+  Loader2,
+  ArrowRight,
+  Sparkles,
+  MessagesSquare,
+  BookOpen,
+  Mic,
+} from "lucide-react"
 import { motion } from "motion/react"
 
 import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
-import {
-  Field,
-  FieldContent,
-  FieldLabel,
-  FieldGroup,
-} from "@/components/ui/field"
+import { Field, FieldContent, FieldLabel, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { authApi } from "@/lib/api"
 
@@ -44,8 +49,16 @@ const LEARNING_GOALS = [
 ]
 
 const NATIVE_LANGUAGES = [
-  "Khmer", "English", "Chinese", "Japanese", "Vietnamese",
-  "Thai", "Indonesian", "Filipino", "Malay", "Other",
+  "Khmer",
+  "English",
+  "Chinese",
+  "Japanese",
+  "Vietnamese",
+  "Thai",
+  "Indonesian",
+  "Filipino",
+  "Malay",
+  "Other",
 ]
 
 const selectClass =
@@ -95,7 +108,11 @@ export default function RegisterPage() {
       }
       router.push("/home")
     } catch (error) {
-      setError(error instanceof Error ? error.message : "Registration failed. Email may already be in use.")
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Registration failed. Email may already be in use.",
+      )
     } finally {
       setLoading(false)
     }
@@ -111,7 +128,13 @@ export default function RegisterPage() {
         <div className="flex items-center justify-between lg:hidden">
           <Link href="/" className="group flex items-center gap-2.5">
             <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl shadow-sm">
-              <Image src="/hengo-icon.png" alt="" width={36} height={36} className="h-full w-full" />
+              <Image
+                src="/hengo-icon.png"
+                alt=""
+                width={36}
+                height={36}
+                className="h-full w-full"
+              />
             </span>
             <span className="text-lg font-semibold tracking-tight text-foreground">Hengo</span>
           </Link>
@@ -133,8 +156,12 @@ export default function RegisterPage() {
               <div className="flex items-center justify-between">
                 <span className="text-xs font-medium text-muted-foreground">Step {step} of 2</span>
                 <div className="flex gap-1.5">
-                  <div className={`h-1.5 w-8 rounded-full transition-colors ${step >= 1 ? "bg-blue-500" : "bg-border"}`} />
-                  <div className={`h-1.5 w-8 rounded-full transition-colors ${step >= 2 ? "bg-blue-500" : "bg-border"}`} />
+                  <div
+                    className={`h-1.5 w-8 rounded-full transition-colors ${step >= 1 ? "bg-blue-500" : "bg-border"}`}
+                  />
+                  <div
+                    className={`h-1.5 w-8 rounded-full transition-colors ${step >= 2 ? "bg-blue-500" : "bg-border"}`}
+                  />
                 </div>
               </div>
               <div className="space-y-1.5">
@@ -154,7 +181,9 @@ export default function RegisterPage() {
                 <FieldGroup className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Full name</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Full name
+                      </FieldLabel>
                       <FieldContent>
                         <Input
                           name="displayName"
@@ -169,7 +198,9 @@ export default function RegisterPage() {
                       </FieldContent>
                     </Field>
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Korean level</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Korean level
+                      </FieldLabel>
                       <FieldContent>
                         <select
                           value={koreanLevel}
@@ -177,7 +208,9 @@ export default function RegisterPage() {
                           className={selectClass}
                         >
                           {KOREAN_LEVELS.map((l) => (
-                            <option key={l.value} value={l.value}>{l.label}</option>
+                            <option key={l.value} value={l.value}>
+                              {l.label}
+                            </option>
                           ))}
                         </select>
                       </FieldContent>
@@ -185,7 +218,9 @@ export default function RegisterPage() {
                   </div>
 
                   <Field>
-                    <FieldLabel className="text-sm font-medium text-foreground/80">Email</FieldLabel>
+                    <FieldLabel className="text-sm font-medium text-foreground/80">
+                      Email
+                    </FieldLabel>
                     <FieldContent>
                       <Input
                         type="email"
@@ -201,7 +236,9 @@ export default function RegisterPage() {
                   </Field>
 
                   <Field>
-                    <FieldLabel className="text-sm font-medium text-foreground/80">Password</FieldLabel>
+                    <FieldLabel className="text-sm font-medium text-foreground/80">
+                      Password
+                    </FieldLabel>
                     <FieldContent>
                       <div className="relative">
                         <Input
@@ -234,7 +271,9 @@ export default function RegisterPage() {
                 <FieldGroup className="space-y-4">
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Country</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Country
+                      </FieldLabel>
                       <FieldContent>
                         <Input
                           placeholder="e.g. Cambodia"
@@ -245,7 +284,9 @@ export default function RegisterPage() {
                       </FieldContent>
                     </Field>
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Native language</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Native language
+                      </FieldLabel>
                       <FieldContent>
                         <select
                           value={nativeLanguage}
@@ -254,7 +295,9 @@ export default function RegisterPage() {
                         >
                           <option value="">Select language</option>
                           {NATIVE_LANGUAGES.map((l) => (
-                            <option key={l} value={l}>{l}</option>
+                            <option key={l} value={l}>
+                              {l}
+                            </option>
                           ))}
                         </select>
                       </FieldContent>
@@ -263,7 +306,9 @@ export default function RegisterPage() {
 
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Occupation</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Occupation
+                      </FieldLabel>
                       <FieldContent>
                         <select
                           value={occupation}
@@ -272,13 +317,17 @@ export default function RegisterPage() {
                         >
                           <option value="">Select role</option>
                           {OCCUPATIONS.map((o) => (
-                            <option key={o.value} value={o.value}>{o.label}</option>
+                            <option key={o.value} value={o.value}>
+                              {o.label}
+                            </option>
                           ))}
                         </select>
                       </FieldContent>
                     </Field>
                     <Field>
-                      <FieldLabel className="text-sm font-medium text-foreground/80">Years of experience</FieldLabel>
+                      <FieldLabel className="text-sm font-medium text-foreground/80">
+                        Years of experience
+                      </FieldLabel>
                       <FieldContent>
                         <Input
                           type="number"
@@ -294,7 +343,9 @@ export default function RegisterPage() {
                   </div>
 
                   <Field>
-                    <FieldLabel className="text-sm font-medium text-foreground/80">Learning goal</FieldLabel>
+                    <FieldLabel className="text-sm font-medium text-foreground/80">
+                      Learning goal
+                    </FieldLabel>
                     <FieldContent>
                       <select
                         value={learningGoal}
@@ -303,7 +354,9 @@ export default function RegisterPage() {
                       >
                         <option value="">Select your main goal</option>
                         {LEARNING_GOALS.map((g) => (
-                          <option key={g.value} value={g.value}>{g.label}</option>
+                          <option key={g.value} value={g.value}>
+                            {g.label}
+                          </option>
                         ))}
                       </select>
                     </FieldContent>
@@ -369,7 +422,10 @@ export default function RegisterPage() {
 
             <p className="mt-8 text-center text-sm text-muted-foreground">
               Already have an account?{" "}
-              <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400">
+              <Link
+                href="/login"
+                className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
                 Sign in
               </Link>
             </p>
@@ -378,8 +434,14 @@ export default function RegisterPage() {
 
         <p className="text-center text-xs leading-relaxed text-muted-foreground/80">
           By creating an account, you agree to our{" "}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">Terms</Link> and{" "}
-          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">Privacy Policy</Link>.
+          <Link href="/terms" className="underline underline-offset-2 hover:text-foreground">
+            Terms
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="underline underline-offset-2 hover:text-foreground">
+            Privacy Policy
+          </Link>
+          .
         </p>
       </div>
     </main>
@@ -387,9 +449,24 @@ export default function RegisterPage() {
 }
 
 const FEATURES = [
-  { icon: MessagesSquare, title: "AI conversation partner", desc: "Practice standups and meetings in real workplace Korean.", color: "text-sky-300" },
-  { icon: BookOpen, title: "Developer vocabulary", desc: "Spaced-repetition decks tuned to technical, on-the-job terms.", color: "text-amber-300" },
-  { icon: Mic, title: "Mock interviews", desc: "Rehearse Korean tech interviews with instant feedback.", color: "text-violet-300" },
+  {
+    icon: MessagesSquare,
+    title: "AI conversation partner",
+    desc: "Practice standups and meetings in real workplace Korean.",
+    color: "text-sky-300",
+  },
+  {
+    icon: BookOpen,
+    title: "Developer vocabulary",
+    desc: "Spaced-repetition decks tuned to technical, on-the-job terms.",
+    color: "text-amber-300",
+  },
+  {
+    icon: Mic,
+    title: "Mock interviews",
+    desc: "Rehearse Korean tech interviews with instant feedback.",
+    color: "text-violet-300",
+  },
 ]
 
 function BrandPanel() {
@@ -418,7 +495,8 @@ function BrandPanel() {
             Start speaking Korean at work with confidence.
           </h2>
           <p className="text-sm leading-relaxed text-white/70">
-            Join foreign developers learning the exact Korean they need for life inside Korean tech teams.
+            Join foreign developers learning the exact Korean they need for life inside Korean tech
+            teams.
           </p>
         </div>
 
@@ -437,9 +515,7 @@ function BrandPanel() {
         </ul>
       </div>
 
-      <p className="relative z-10 text-xs text-white/50">
-        Free to start · No credit card required
-      </p>
+      <p className="relative z-10 text-xs text-white/50">Free to start · No credit card required</p>
     </aside>
   )
 }

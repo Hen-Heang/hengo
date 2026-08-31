@@ -72,7 +72,10 @@ function CheckInRow({
   }
 
   return (
-    <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
+    <motion.div
+      variants={itemVariants}
+      className="rounded-2xl border border-border bg-card p-4 shadow-sm"
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2">
           <span
@@ -80,7 +83,7 @@ function CheckInRow({
               "rounded-full border px-2.5 py-1 text-xs font-semibold",
               event.kind === "slip"
                 ? "border-amber-500/30 bg-amber-500/5 text-amber-700 dark:text-amber-400"
-                : "border-border bg-background text-muted-foreground"
+                : "border-border bg-background text-muted-foreground",
             )}
           >
             {KIND_LABEL[event.kind]}
@@ -96,12 +99,19 @@ function CheckInRow({
             </span>
           )}
         </div>
-        <span className="shrink-0 text-xs text-muted-foreground">{formatWhen(event.occurredAt)}</span>
+        <span className="shrink-0 text-xs text-muted-foreground">
+          {formatWhen(event.occurredAt)}
+        </span>
       </div>
 
       {editing ? (
         <div className="mt-3 space-y-2">
-          <Textarea value={note} onChange={(e) => setNote(e.target.value)} rows={2} placeholder="Note (optional)" />
+          <Textarea
+            value={note}
+            onChange={(e) => setNote(e.target.value)}
+            rows={2}
+            placeholder="Note (optional)"
+          />
           <div className="flex gap-2">
             <Button size="sm" onClick={handleSave} disabled={saving}>
               {saving ? "Saving…" : "Save"}
@@ -126,7 +136,12 @@ function CheckInRow({
             <p className="text-sm text-muted-foreground italic">No note</p>
           )}
           <div className="flex shrink-0 items-center gap-1">
-            <Button variant="ghost" size="icon-sm" onClick={() => setEditing(true)} aria-label="Edit note">
+            <Button
+              variant="ghost"
+              size="icon-sm"
+              onClick={() => setEditing(true)}
+              aria-label="Edit note"
+            >
               <Pencil size={14} strokeWidth={2} />
             </Button>
             <AlertDialog>
@@ -172,7 +187,10 @@ export function CheckInsList({
 }) {
   if (events.length === 0) {
     return (
-      <motion.div variants={itemVariants} className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm">
+      <motion.div
+        variants={itemVariants}
+        className="rounded-2xl border border-border bg-card p-6 text-center shadow-sm"
+      >
         <p className="text-sm text-muted-foreground">No check-ins yet.</p>
       </motion.div>
     )

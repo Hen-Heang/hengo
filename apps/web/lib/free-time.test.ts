@@ -68,7 +68,7 @@ describe("computeFreeWindows", () => {
         { start: 7 * 60, end: 18 * 60 + 30 },
         { start: 19 * 60 + 30, end: 20 * 60 + 30 },
       ],
-      { start: 7 * 60, end: 22 * 60 + 30 }
+      { start: 7 * 60, end: 22 * 60 + 30 },
     )
     expect(windows.map(formatFreeWindow)).toEqual(["18:30–19:30", "20:30–22:30"])
   })
@@ -77,7 +77,7 @@ describe("computeFreeWindows", () => {
     const windows = computeFreeWindows(
       [{ start: 7 * 60, end: 22 * 60 + 55 }], // leaves only a 5-minute gap before 23:00
       dayBounds,
-      { minWindowMinutes: 15 }
+      { minWindowMinutes: 15 },
     )
     expect(windows).toEqual([])
   })
@@ -86,7 +86,7 @@ describe("computeFreeWindows", () => {
     const windows = computeFreeWindows(
       [{ start: 12 * 60, end: 13 * 60 }], // free 07:00-12:00 (300m) and 13:00-23:00 (600m)
       dayBounds,
-      { maxTotalMinutes: 360 }
+      { maxTotalMinutes: 360 },
     )
     expect(windows).toEqual([
       { start: 420, end: 720 }, // full first window (300m)
@@ -134,7 +134,12 @@ describe("taskBusyRanges", () => {
   it("includes timed, incomplete tasks and excludes completed and all-day tasks", () => {
     const ranges = taskBusyRanges([
       task({ id: "timed", daily_start_time: "09:00:00", daily_end_time: "10:00:00" }),
-      task({ id: "completed", completed: true, daily_start_time: "11:00:00", daily_end_time: "12:00:00" }),
+      task({
+        id: "completed",
+        completed: true,
+        daily_start_time: "11:00:00",
+        daily_end_time: "12:00:00",
+      }),
       task({ id: "anytime", is_anytime: true }),
     ])
     expect(ranges).toEqual([{ start: 9 * 60, end: 10 * 60 }])

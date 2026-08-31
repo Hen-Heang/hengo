@@ -171,9 +171,7 @@ export default function AchievementsPage() {
                   <Trophy size={22} strokeWidth={2.5} />
                 </div>
                 <div>
-                  <p className="text-xs font-medium text-muted-foreground">
-                    Level {level?.level}
-                  </p>
+                  <p className="text-xs font-medium text-muted-foreground">Level {level?.level}</p>
                   <h3 className="text-lg font-semibold text-foreground">{level?.name}</h3>
                 </div>
               </div>
@@ -203,81 +201,76 @@ export default function AchievementsPage() {
 
           {/* Badge grid */}
           <motion.div variants={itemVariants}>
-          <CardGrid minCardWidth={220}>
-            {summary.achievements.map((a, index) => {
-              const Icon = ICONS[a.icon] ?? Trophy
-              return (
-                <BlurFade
-                  key={a.code}
-                  inView
-                  delay={Math.min(index * 0.035, 0.25)}
-                  className="h-full"
-                >
-                  <div
-                    className={cn(
-                      "relative h-full overflow-hidden rounded-lg border p-4 transition-colors",
-                      a.unlocked
-                        ? "border-emerald-500/30 bg-emerald-500/5 shadow-sm"
-                        : "border-border bg-card/40 dark:bg-slate-900/20"
-                    )}
+            <CardGrid minCardWidth={220}>
+              {summary.achievements.map((a, index) => {
+                const Icon = ICONS[a.icon] ?? Trophy
+                return (
+                  <BlurFade
+                    key={a.code}
+                    inView
+                    delay={Math.min(index * 0.035, 0.25)}
+                    className="h-full"
                   >
-                    {a.code === newestUnlocked?.code ? (
-                      <BorderBeam
-                        size={70}
-                        duration={7}
-                        colorFrom="#10b981"
-                        colorTo="#3b82f6"
-                      />
-                    ) : null}
-                    <div className="flex items-start justify-between gap-3">
-                      <div
-                        className={cn(
-                          "flex h-10 w-10 items-center justify-center rounded-lg",
-                          a.unlocked
-                            ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
-                            : "bg-muted text-muted-foreground/50"
-                        )}
-                      >
-                        {a.unlocked ? (
-                          <Icon size={22} strokeWidth={2.5} />
-                        ) : (
-                          <Lock size={20} strokeWidth={2.5} />
-                        )}
-                      </div>
-                      <span
-                        className={cn(
-                          "rounded-full px-2.5 py-1 text-xs font-semibold",
-                          a.unlocked
-                            ? "bg-emerald-600 text-white"
-                            : "bg-muted text-muted-foreground/70"
-                        )}
-                      >
-                        +{a.xp} XP
-                      </span>
-                    </div>
-                    <h4
+                    <div
                       className={cn(
-                        "mt-3 text-base font-semibold",
-                        a.unlocked ? "text-foreground" : "text-muted-foreground"
+                        "relative h-full overflow-hidden rounded-lg border p-4 transition-colors",
+                        a.unlocked
+                          ? "border-emerald-500/30 bg-emerald-500/5 shadow-sm"
+                          : "border-border bg-card/40 dark:bg-slate-900/20",
                       )}
                     >
-                      {a.title}
-                    </h4>
-                    <p className="mt-1 text-sm leading-5 text-muted-foreground">{a.description}</p>
-                    <p className="mt-2 text-xs font-medium text-muted-foreground">
-                      {a.category}
-                    </p>
-                  </div>
-                </BlurFade>
-              )
-            })}
-          </CardGrid>
+                      {a.code === newestUnlocked?.code ? (
+                        <BorderBeam size={70} duration={7} colorFrom="#10b981" colorTo="#3b82f6" />
+                      ) : null}
+                      <div className="flex items-start justify-between gap-3">
+                        <div
+                          className={cn(
+                            "flex h-10 w-10 items-center justify-center rounded-lg",
+                            a.unlocked
+                              ? "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400"
+                              : "bg-muted text-muted-foreground/50",
+                          )}
+                        >
+                          {a.unlocked ? (
+                            <Icon size={22} strokeWidth={2.5} />
+                          ) : (
+                            <Lock size={20} strokeWidth={2.5} />
+                          )}
+                        </div>
+                        <span
+                          className={cn(
+                            "rounded-full px-2.5 py-1 text-xs font-semibold",
+                            a.unlocked
+                              ? "bg-emerald-600 text-white"
+                              : "bg-muted text-muted-foreground/70",
+                          )}
+                        >
+                          +{a.xp} XP
+                        </span>
+                      </div>
+                      <h4
+                        className={cn(
+                          "mt-3 text-base font-semibold",
+                          a.unlocked ? "text-foreground" : "text-muted-foreground",
+                        )}
+                      >
+                        {a.title}
+                      </h4>
+                      <p className="mt-1 text-sm leading-5 text-muted-foreground">
+                        {a.description}
+                      </p>
+                      <p className="mt-2 text-xs font-medium text-muted-foreground">{a.category}</p>
+                    </div>
+                  </BlurFade>
+                )
+              })}
+            </CardGrid>
           </motion.div>
 
           <motion.div variants={itemVariants}>
             <TipCard icon={Sparkles} title="Keep the streak alive">
-              Every correction, diary entry, chat, saved word, and listening lesson earns
-              progress toward your next badge. Show up daily to climb the levels.
+              Every correction, diary entry, chat, saved word, and listening lesson earns progress
+              toward your next badge. Show up daily to climb the levels.
             </TipCard>
           </motion.div>
         </>

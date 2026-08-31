@@ -51,12 +51,14 @@ function toEntry(item: NavItem, hint: string): Entry {
     icon: item.icon,
     color: item.color,
     href: item.href,
-    keywords: [item.label, hint, item.description ?? "", ...(item.keywords ?? [])].join(" ").toLowerCase(),
+    keywords: [item.label, hint, item.description ?? "", ...(item.keywords ?? [])]
+      .join(" ")
+      .toLowerCase(),
   }
 }
 
 const PAGE_ENTRIES: Entry[] = navSections.flatMap((section) =>
-  shippedItems(section.items).map((item) => toEntry(item, section.label))
+  shippedItems(section.items).map((item) => toEntry(item, section.label)),
 )
 
 const ENTRY_BY_ID = new Map(PAGE_ENTRIES.map((entry) => [entry.key, entry]))
@@ -69,7 +71,9 @@ const ENTRY_BY_ID = new Map(PAGE_ENTRIES.map((entry) => [entry.key, entry]))
 // Each entry's own description is its subtitle here (not the literal word
 // "Suggested" — that's reserved for the group heading and would otherwise
 // collide with it as duplicate on-screen text).
-const SUGGESTED_ENTRIES: Entry[] = primaryNavItems.map((item) => toEntry(item, item.description ?? ""))
+const SUGGESTED_ENTRIES: Entry[] = primaryNavItems.map((item) =>
+  toEntry(item, item.description ?? ""),
+)
 
 // Global actions. `href` is a plain route — no mutations happen here, the
 // destination page owns the actual creation flow. "Quick capture" is the one
@@ -119,7 +123,9 @@ const ACTION_ENTRIES: Entry[] = [
 // learning identity. "Quick capture" (Inbox), "Create goal", and "Add task"
 // are V1 productivity actions: still typeable (searchable via ACTION_ENTRIES
 // above), just not shown unprompted the moment ⌘K opens.
-const DEFAULT_ACTION_ENTRIES: Entry[] = ACTION_ENTRIES.filter((entry) => entry.key === "action-ask-ai")
+const DEFAULT_ACTION_ENTRIES: Entry[] = ACTION_ENTRIES.filter(
+  (entry) => entry.key === "action-ask-ai",
+)
 
 function matches(entry: Entry, normalized: string): boolean {
   return entry.keywords.includes(normalized) || entry.label.toLowerCase().includes(normalized)
@@ -162,7 +168,7 @@ export function QuickSwitcher({
       if (onOpenChange) onOpenChange(next)
       else setUncontrolledOpen(next)
     },
-    [onOpenChange]
+    [onOpenChange],
   )
 
   const groups: Group[] = useMemo(() => {
@@ -187,7 +193,9 @@ export function QuickSwitcher({
     // comment), not something to promote by default.
     const pages = normalized
       ? filter(PAGE_ENTRIES).filter((entry) => !recentKeys.has(entry.key))
-      : SUGGESTED_ENTRIES.filter((entry) => !recentKeys.has(entry.key) && linkPath(entry.href) !== currentPath)
+      : SUGGESTED_ENTRIES.filter(
+          (entry) => !recentKeys.has(entry.key) && linkPath(entry.href) !== currentPath,
+        )
     const actions = normalized ? filter(ACTION_ENTRIES) : DEFAULT_ACTION_ENTRIES
 
     const candidates: Group[] = [
@@ -206,9 +214,7 @@ export function QuickSwitcher({
     function handleShortcut(event: KeyboardEvent) {
       const target = event.target as HTMLElement | null
       const editing =
-        target?.tagName === "INPUT" ||
-        target?.tagName === "TEXTAREA" ||
-        target?.isContentEditable
+        target?.tagName === "INPUT" || target?.tagName === "TEXTAREA" || target?.isContentEditable
 
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault()
@@ -266,7 +272,7 @@ export function QuickSwitcher({
             compact
               ? "size-11 rounded-lg"
               : "h-9 min-w-44 justify-start gap-2.5 rounded-lg px-3 text-muted-foreground shadow-none",
-            className
+            className,
           )}
           aria-label="Open quick navigation"
         >
@@ -344,32 +350,41 @@ export function QuickSwitcher({
                         onClick={() => visit(entry)}
                         className={cn(
                           "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left outline-none transition-colors",
-                          active ? "bg-accent" : "hover:bg-accent/50"
+                          active ? "bg-accent" : "hover:bg-accent/50",
                         )}
                       >
                         <span
                           className={cn(
                             "flex size-9 shrink-0 items-center justify-center rounded-lg border border-border",
-                            active && "border-primary/30 bg-primary/10"
+                            active && "border-primary/30 bg-primary/10",
                           )}
                         >
-                          <Icon size={17} strokeWidth={2.2} className={cn(entry.color, !active && "opacity-80")} />
+                          <Icon
+                            size={17}
+                            strokeWidth={2.2}
+                            className={cn(entry.color, !active && "opacity-80")}
+                          />
                         </span>
                         <span className="min-w-0 flex-1">
                           <span
                             className={cn(
                               "block truncate text-sm font-medium",
-                              current ? "text-primary" : "text-foreground"
+                              current ? "text-primary" : "text-foreground",
                             )}
                           >
                             {entry.label}
                           </span>
-                          <span className="block truncate text-xs text-muted-foreground">{entry.hint}</span>
+                          <span className="block truncate text-xs text-muted-foreground">
+                            {entry.hint}
+                          </span>
                         </span>
                         <ArrowUpRight
                           size={15}
                           aria-hidden
-                          className={cn("shrink-0 text-muted-foreground/50", active && "text-primary")}
+                          className={cn(
+                            "shrink-0 text-muted-foreground/50",
+                            active && "text-primary",
+                          )}
                         />
                       </button>
                     )

@@ -19,7 +19,15 @@ import { Textarea } from "@/components/ui/textarea"
 import { getApiErrorMessage } from "@/lib/api"
 import { useManualActivityMutations } from "@/hooks/useManualActivities"
 
-const SUGGESTED_CATEGORIES = ["Exercise", "Deep work", "Learning", "Social", "Chore", "Rest", "Creative"]
+const SUGGESTED_CATEGORIES = [
+  "Exercise",
+  "Deep work",
+  "Learning",
+  "Social",
+  "Chore",
+  "Rest",
+  "Creative",
+]
 
 export function LogActivityDialog() {
   const [open, setOpen] = useState(false)
@@ -98,7 +106,11 @@ export function LogActivityDialog() {
                 </button>
               ))}
             </div>
-            <Input value={category} onChange={(e) => setCategory(e.target.value)} placeholder="Category (optional)" />
+            <Input
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              placeholder="Category (optional)"
+            />
             <Input
               type="number"
               min={0}
@@ -107,7 +119,12 @@ export function LogActivityDialog() {
               onChange={(e) => setDurationMinutes(e.target.value)}
               placeholder="Duration in minutes (optional)"
             />
-            <Textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Notes (optional)" className="min-h-20" />
+            <Textarea
+              value={notes}
+              onChange={(e) => setNotes(e.target.value)}
+              placeholder="Notes (optional)"
+              className="min-h-20"
+            />
           </div>
 
           <DialogFooter className="mt-4">

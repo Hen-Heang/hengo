@@ -18,11 +18,7 @@ import { toast } from "sonner"
 import { PageHero } from "@/components/app/page-hero"
 import { CardGrid } from "@/components/ui/card-grid"
 import { getApiErrorMessage } from "@/lib/api"
-import {
-  READING_CATEGORIES,
-  type ReadingCategory,
-  type ReadingProgressEntry,
-} from "@/lib/reading"
+import { READING_CATEGORIES, type ReadingCategory, type ReadingProgressEntry } from "@/lib/reading"
 import {
   getReadingProgress,
   getReadingProgressServerSnapshot,
@@ -76,12 +72,12 @@ export function ReadingHome() {
   const progress = useSyncExternalStore(
     subscribeReadingProgress,
     getReadingProgress,
-    getReadingProgressServerSnapshot
+    getReadingProgressServerSnapshot,
   )
   const units = useSyncExternalStore(
     subscribeReadingUnits,
     getAllReadingUnits,
-    getReadingUnitsServerSnapshot
+    getReadingUnitsServerSnapshot,
   )
 
   const [loaded, setLoaded] = useState(isReadingUnitsLoaded())
@@ -91,7 +87,9 @@ export function ReadingHome() {
     let active = true
     loadReadingUnits()
       .then(() => active && setLoadError(""))
-      .catch((err) => active && setLoadError(getApiErrorMessage(err, "Could not load reading units.")))
+      .catch(
+        (err) => active && setLoadError(getApiErrorMessage(err, "Could not load reading units.")),
+      )
       .finally(() => active && setLoaded(true))
     return () => {
       active = false
@@ -187,7 +185,7 @@ export function ReadingHome() {
           .filter((u) => u.category === category)
           .sort(
             (a, b) =>
-              Number(Boolean(progress[b.id]?.pinned)) - Number(Boolean(progress[a.id]?.pinned))
+              Number(Boolean(progress[b.id]?.pinned)) - Number(Boolean(progress[a.id]?.pinned)),
           )
         if (categoryUnits.length === 0) return null
         const done = categoryUnits.filter((u) => progress[u.id]?.status === "completed").length
@@ -220,7 +218,7 @@ export function ReadingHome() {
                       "group relative flex flex-col rounded-3xl border bg-card p-5 shadow-sm transition-all hover:shadow-lg active:scale-[0.99] dark:bg-slate-900/40",
                       entry.status === "completed"
                         ? "border-blue-500/30"
-                        : "border-border hover:border-blue-500/30"
+                        : "border-border hover:border-blue-500/30",
                     )}
                   >
                     <div className="flex items-start justify-between gap-3">
@@ -242,7 +240,7 @@ export function ReadingHome() {
                             "flex h-7 w-7 items-center justify-center rounded-lg border transition-all active:scale-90",
                             pinned
                               ? "border-blue-500/40 bg-blue-500/10 text-blue-600 dark:text-blue-400"
-                              : "border-border text-muted-foreground/50 hover:text-foreground"
+                              : "border-border text-muted-foreground/50 hover:text-foreground",
                           )}
                         >
                           {pinningId === unit.id ? (

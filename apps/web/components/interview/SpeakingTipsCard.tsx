@@ -1,15 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import {
-  Ban,
-  CheckCircle2,
-  ChevronDown,
-  Dumbbell,
-  Lightbulb,
-  Quote,
-  Scale,
-} from "lucide-react"
+import { Ban, CheckCircle2, ChevronDown, Dumbbell, Lightbulb, Quote, Scale } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
 import { SpeakButton } from "@/components/ui/SpeakButton"
@@ -54,7 +46,10 @@ export function SpeakingTipsCard({ defaultOpen = false }: { defaultOpen?: boolea
         </div>
         <ChevronDown
           size={20}
-          className={cn("shrink-0 text-muted-foreground transition-transform", open && "rotate-180")}
+          className={cn(
+            "shrink-0 text-muted-foreground transition-transform",
+            open && "rotate-180",
+          )}
         />
       </button>
 
@@ -215,7 +210,7 @@ function TipsSectionLabel({
           color === "violet" && "bg-violet-500/10 text-violet-600",
           color === "emerald" && "bg-emerald-500/10 text-emerald-600",
           color === "sky" && "bg-sky-500/10 text-sky-600",
-          color === "amber" && "bg-amber-500/10 text-amber-600"
+          color === "amber" && "bg-amber-500/10 text-amber-600",
         )}
       >
         {icon}

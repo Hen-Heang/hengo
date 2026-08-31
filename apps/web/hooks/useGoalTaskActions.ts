@@ -106,7 +106,8 @@ export function useGoalTaskActions({
   )
 
   const moveToBacklog = useCallback(
-    (task: Task) => run("Couldn't move that task to the backlog.", () => tasksApi.moveToBacklog(task)),
+    (task: Task) =>
+      run("Couldn't move that task to the backlog.", () => tasksApi.moveToBacklog(task)),
     [run],
   )
 

@@ -21,7 +21,12 @@ import { useIsMobile } from "@/hooks/useMobile"
 import type { Task } from "@/lib/tasks"
 import { DEFAULT_TASK_COLOR } from "@/lib/tasks"
 import { bumpEndAfterStart, hhmmToMinutes } from "@/lib/calendar"
-import { NO_GOAL, TaskFormFields, calcDurationMinutes, type TaskFormGoalOption } from "./TaskFormFields"
+import {
+  NO_GOAL,
+  TaskFormFields,
+  calcDurationMinutes,
+  type TaskFormGoalOption,
+} from "./TaskFormFields"
 import type { TaskRangePayload } from "./AddTaskDialog"
 
 interface EditTaskDialogProps {
@@ -32,7 +37,7 @@ interface EditTaskDialogProps {
     description: string,
     date: Date,
     time?: string,
-    range?: TaskRangePayload & { start_date?: Date | null; end_date?: Date | null }
+    range?: TaskRangePayload & { start_date?: Date | null; end_date?: Date | null },
   ) => void | Promise<void>
   onDeleteTask: (taskId: string) => void
   task: Task | null
@@ -187,7 +192,7 @@ export function EditTaskDialog({
         side={isMobile ? "bottom" : "right"}
         className={cn(
           "p-0 overflow-hidden flex flex-col",
-          isMobile ? "h-[92dvh] rounded-t-3xl" : "w-full sm:max-w-[480px] lg:max-w-[600px]"
+          isMobile ? "h-[92dvh] rounded-t-3xl" : "w-full sm:max-w-[480px] lg:max-w-[600px]",
         )}
       >
         <div className="flex flex-col h-full">

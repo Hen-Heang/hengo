@@ -17,7 +17,11 @@ const inputSchema = z
     status: z.enum(["active", "completed"]).optional(),
   })
   .refine(
-    (input) => input.title !== undefined || input.description !== undefined || input.targetDate !== undefined || input.status !== undefined,
+    (input) =>
+      input.title !== undefined ||
+      input.description !== undefined ||
+      input.targetDate !== undefined ||
+      input.status !== undefined,
     { message: "Provide at least one field to change." },
   )
 
@@ -31,32 +35,53 @@ export function registerUpdateGoalTool(server: McpServer, ctx: McpContext): void
         "edited from here. Obtain the goal id from list_goals first.",
       inputSchema,
       outputSchema: z.object({ goal: goalDetailSchema, changed: z.literal(true), url: z.string() }),
-      annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
+      annotations: {
+        readOnlyHint: false,
+        destructiveHint: false,
+        idempotentHint: false,
+        openWorldHint: false,
+      },
     },
-    instrumentedTool(ctx, "write", "update_goal", async ({ goalId, title, description, targetDate, status }) => {
-      const { data: existing, error: fetchError } = await ctx.db.from("goals").select("id, user_id").eq("id", goalId).maybeSingle()
-      if (fetchError) throw new Error("Could not load the goal.")
-      if (!existing || existing.user_id !== ctx.userId) {
-        return { isError: true, content: [{ type: "text" as const, text: "You don't own a goal with that id." }] }
-      }
+    instrumentedTool(
+      ctx,
+      "write",
+      "update_goal",
+      async ({ goalId, title, description, targetDate, status }) => {
+        const { data: existing, error: fetchError } = await ctx.db
+          .from("goals")
+          .select("id, user_id")
+          .eq("id", goalId)
+          .maybeSingle()
+        if (fetchError) throw new Error("Could not load the goal.")
+        if (!existing || existing.user_id !== ctx.userId) {
+          return {
+            isError: true,
+            content: [{ type: "text" as const, text: "You don't own a goal with that id." }],
+          }
+        }
 
-      const patch: Record<string, unknown> = {}
-      if (title !== undefined) patch.title = title
-      if (description !== undefined) patch.description = description
-      if (targetDate !== undefined) patch.target_date = targetDate
-      if (status !== undefined) patch.status = status
+        const patch: Record<string, unknown> = {}
+        if (title !== undefined) patch.title = title
+        if (description !== undefined) patch.description = description
+        if (targetDate !== undefined) patch.target_date = targetDate
+        if (status !== undefined) patch.status = status
 
-      const { error: updateError } = await ctx.db.from("goals").update(patch).eq("id", goalId)
-      if (updateError) throw new Error("Could not update the goal.")
+        const { error: updateError } = await ctx.db.from("goals").update(patch).eq("id", goalId)
+        if (updateError) throw new Error("Could not update the goal.")
 
-      const { data, error } = await ctx.db.from("goals").select(GOAL_SELECT).eq("id", goalId).single<GoalRow>()
-      if (error) throw new Error("Updated the goal but could not load it back.")
+        const { data, error } = await ctx.db
+          .from("goals")
+          .select(GOAL_SELECT)
+          .eq("id", goalId)
+          .single<GoalRow>()
+        if (error) throw new Error("Updated the goal but could not load it back.")
 
-      const goal = toDetail(data, ctx.userId)
-      return {
-        content: [{ type: "text" as const, text: `Updated goal "${goal.title}".` }],
-        structuredContent: { goal, changed: true as const, url: `/goals/${goal.id}` },
-      }
-    }),
+        const goal = toDetail(data, ctx.userId)
+        return {
+          content: [{ type: "text" as const, text: `Updated goal "${goal.title}".` }],
+          structuredContent: { goal, changed: true as const, url: `/goals/${goal.id}` },
+        }
+      },
+    ),
   )
 }

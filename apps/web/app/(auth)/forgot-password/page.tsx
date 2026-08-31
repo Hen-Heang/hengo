@@ -60,8 +60,9 @@ export default function ForgotPasswordPage() {
                 Check your email
               </h1>
               <p className="text-sm leading-relaxed text-muted-foreground">
-                If an account exists for <span className="font-medium text-foreground">{email}</span>, we&apos;ve
-                sent a link to reset your password.
+                If an account exists for{" "}
+                <span className="font-medium text-foreground">{email}</span>, we&apos;ve sent a link
+                to reset your password.
               </p>
             </div>
             <Link
@@ -133,7 +134,10 @@ export default function ForgotPasswordPage() {
             </form>
 
             <p className="mt-8 text-center text-sm text-muted-foreground">
-              <Link href="/login" className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400">
+              <Link
+                href="/login"
+                className="inline-flex items-center gap-1.5 font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400"
+              >
                 <ArrowLeft size={15} /> Back to sign in
               </Link>
             </p>

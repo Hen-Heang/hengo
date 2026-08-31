@@ -53,4 +53,3 @@ export function buildKoreanTutorPrompt(input: {
     "Analyze whether the learner communicated the intended meaning. Give a minimal corrected sentence and a natural alternative in polite Korean. Then ask one short follow-up question.",
   ].join("\n")
 }
-

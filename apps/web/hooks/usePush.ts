@@ -41,7 +41,9 @@ export function usePush() {
       setWebState(next)
       if (next === "enabled") toast.success("Browser notifications enabled")
       else if (next === "denied")
-        toast.error("Notifications are blocked", { description: "Allow them in your browser settings." })
+        toast.error("Notifications are blocked", {
+          description: "Allow them in your browser settings.",
+        })
       else if (next === "unsupported")
         toast.error("This browser doesn't support push notifications")
     } catch (e) {

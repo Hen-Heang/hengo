@@ -15,7 +15,11 @@ export interface SpeakingRule {
 export const SPEAKING_RULES: SpeakingRule[] = [
   {
     title: "Short is best",
-    points: ["2–3 sentences is enough", "Don't explain everything", "Stop when your point is clear"],
+    points: [
+      "2–3 sentences is enough",
+      "Don't explain everything",
+      "Stop when your point is clear",
+    ],
     takeaway: "Short = clear = confident",
   },
   {
@@ -50,7 +54,10 @@ export const SPEAKING_RULES: SpeakingRule[] = [
   },
   {
     title: "Use safety sentences",
-    points: ["Memorize the safety sentences below", "Use them to buy time or slow the examiner down"],
+    points: [
+      "Memorize the safety sentences below",
+      "Use them to buy time or slow the examiner down",
+    ],
     takeaway: "A ready sentence beats a panicked silence",
   },
   {

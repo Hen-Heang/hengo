@@ -31,18 +31,27 @@ import { containerVariants, itemVariants } from "@/lib/motion"
 import type { MessageAnalysis } from "@/lib/types"
 import { cn } from "@/lib/utils"
 
-const sources = [
-  "Slack",
-  "KakaoTalk",
-  "Meeting notes",
-  "Team chat",
-  "Other",
-]
+const sources = ["Slack", "KakaoTalk", "Meeting notes", "Team chat", "Other"]
 
 const howToTips = [
-  { label: "Pick a source", text: "Tag where the message came from so context matches the platform's tone.", icon: ScanText, color: "text-blue-500" },
-  { label: "Read the breakdown", text: "Each honorific and phrase is explained so you learn the nuance, not just the meaning.", icon: ListTree, color: "text-amber-500" },
-  { label: "Reply with confidence", text: "Copy or listen to a suggested reply that matches the right formality.", icon: MessageSquareReply, color: "text-sky-500" },
+  {
+    label: "Pick a source",
+    text: "Tag where the message came from so context matches the platform's tone.",
+    icon: ScanText,
+    color: "text-blue-500",
+  },
+  {
+    label: "Read the breakdown",
+    text: "Each honorific and phrase is explained so you learn the nuance, not just the meaning.",
+    icon: ListTree,
+    color: "text-amber-500",
+  },
+  {
+    label: "Reply with confidence",
+    text: "Copy or listen to a suggested reply that matches the right formality.",
+    icon: MessageSquareReply,
+    color: "text-sky-500",
+  },
 ]
 
 const starterPrompts = [
@@ -174,7 +183,7 @@ export function MessageAnalyzer() {
                           "min-h-11 rounded-full px-3.5 py-2 text-xs font-semibold transition-colors",
                           active
                             ? "bg-blue-600 text-white shadow-md shadow-blue-600/20"
-                            : "border border-border bg-background text-muted-foreground hover:text-foreground"
+                            : "border border-border bg-background text-muted-foreground hover:text-foreground",
                         )}
                       >
                         {s}
@@ -200,9 +209,13 @@ export function MessageAnalyzer() {
                     className="h-11 w-full rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white hover:bg-blue-500 sm:w-auto"
                   >
                     {loading ? (
-                      <><Activity size={18} className="mr-2 animate-pulse" /> Analyzing...</>
+                      <>
+                        <Activity size={18} className="mr-2 animate-pulse" /> Analyzing...
+                      </>
                     ) : (
-                      <><Sparkles size={18} strokeWidth={2.5} className="mr-2" /> Analyze Message</>
+                      <>
+                        <Sparkles size={18} strokeWidth={2.5} className="mr-2" /> Analyze Message
+                      </>
                     )}
                   </Button>
                 </div>
@@ -267,7 +280,9 @@ export function MessageAnalyzer() {
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <p className="text-[13px] font-medium leading-relaxed text-foreground/80">{result.businessContext}</p>
+                      <p className="text-[13px] font-medium leading-relaxed text-foreground/80">
+                        {result.businessContext}
+                      </p>
                     </CardContent>
                   </Card>
 
@@ -281,11 +296,15 @@ export function MessageAnalyzer() {
                     <CardContent className="space-y-3">
                       <div>
                         <p className="text-xs font-medium text-muted-foreground">Politeness</p>
-                        <p className="mt-1 text-[13px] font-bold text-foreground/80">{result.politenessLevel}</p>
+                        <p className="mt-1 text-[13px] font-bold text-foreground/80">
+                          {result.politenessLevel}
+                        </p>
                       </div>
                       <div>
                         <p className="text-xs font-medium text-muted-foreground">Tone</p>
-                        <p className="mt-1 text-[13px] font-bold text-foreground/80">{result.tone}</p>
+                        <p className="mt-1 text-[13px] font-bold text-foreground/80">
+                          {result.tone}
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -310,10 +329,14 @@ export function MessageAnalyzer() {
                             <span className="rounded-lg bg-blue-500/10 px-3 py-1.5 text-[13px] font-bold text-blue-600 dark:text-blue-400">
                               {item.fragment}
                             </span>
-                            <span className="text-[12px] font-bold text-sky-600/80 dark:text-sky-400/80">{item.meaning}</span>
+                            <span className="text-[12px] font-bold text-sky-600/80 dark:text-sky-400/80">
+                              {item.meaning}
+                            </span>
                           </div>
                           {item.note && (
-                            <p className="p-5 text-[13px] font-medium leading-relaxed text-muted-foreground">{item.note}</p>
+                            <p className="p-5 text-[13px] font-medium leading-relaxed text-muted-foreground">
+                              {item.note}
+                            </p>
                           )}
                         </motion.div>
                       ))}
@@ -325,7 +348,8 @@ export function MessageAnalyzer() {
                 {result.suggestedReplies && result.suggestedReplies.length > 0 && (
                   <div className="space-y-4">
                     <h4 className="flex items-center gap-2 px-1 text-sm font-semibold text-foreground">
-                      <MessageSquareReply size={14} className="text-muted-foreground/40" /> Suggested Replies
+                      <MessageSquareReply size={14} className="text-muted-foreground/40" />{" "}
+                      Suggested Replies
                     </h4>
                     <div className="grid gap-3">
                       {result.suggestedReplies.map((reply, i) => (
@@ -338,8 +362,12 @@ export function MessageAnalyzer() {
                         >
                           <div className="flex items-start justify-between gap-3 p-5">
                             <div className="min-w-0">
-                              <p className="text-[15px] font-bold leading-relaxed text-foreground">{reply.korean}</p>
-                              <p className="mt-1 text-[13px] font-medium text-muted-foreground">{reply.english}</p>
+                              <p className="text-[15px] font-bold leading-relaxed text-foreground">
+                                {reply.korean}
+                              </p>
+                              <p className="mt-1 text-[13px] font-medium text-muted-foreground">
+                                {reply.english}
+                              </p>
                               {reply.formality && (
                                 <span className="mt-3 inline-block rounded-full bg-accent/40 px-3 py-1 text-xs font-medium text-muted-foreground">
                                   {reply.formality}
@@ -357,11 +385,17 @@ export function MessageAnalyzer() {
                                 onClick={() => copy(reply.korean, i)}
                                 className={cn(
                                   "h-11 w-11 rounded-lg font-semibold transition-colors active:scale-95",
-                                  copied === i ? "bg-blue-500 text-white" : "bg-background shadow-sm ring-1 ring-border"
+                                  copied === i
+                                    ? "bg-blue-500 text-white"
+                                    : "bg-background shadow-sm ring-1 ring-border",
                                 )}
                                 title="Copy reply"
                               >
-                                {copied === i ? <Check size={14} strokeWidth={3} /> : <Copy size={14} strokeWidth={2.5} />}
+                                {copied === i ? (
+                                  <Check size={14} strokeWidth={3} />
+                                ) : (
+                                  <Copy size={14} strokeWidth={2.5} />
+                                )}
                               </Button>
                             </div>
                           </div>
@@ -384,7 +418,9 @@ export function MessageAnalyzer() {
                   <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-sky-500/10 text-sky-600 shadow-sm ring-1 ring-sky-500/20">
                     <Lightbulb size={18} strokeWidth={2.5} />
                   </div>
-                  <CardTitle className="text-base font-bold uppercase tracking-tight">How to use</CardTitle>
+                  <CardTitle className="text-base font-bold uppercase tracking-tight">
+                    How to use
+                  </CardTitle>
                 </div>
               </CardHeader>
               <CardContent className="space-y-5 pt-6">
@@ -394,8 +430,12 @@ export function MessageAnalyzer() {
                       <tip.icon size={16} strokeWidth={3} />
                     </div>
                     <div>
-                      <h4 className="text-[12px] font-bold uppercase tracking-wider text-foreground">{tip.label}</h4>
-                      <p className="mt-1 text-[12px] font-medium leading-relaxed text-muted-foreground">{tip.text}</p>
+                      <h4 className="text-[12px] font-bold uppercase tracking-wider text-foreground">
+                        {tip.label}
+                      </h4>
+                      <p className="mt-1 text-[12px] font-medium leading-relaxed text-muted-foreground">
+                        {tip.text}
+                      </p>
                     </div>
                   </div>
                 ))}
@@ -407,7 +447,9 @@ export function MessageAnalyzer() {
             <div className="px-2">
               <div className="mb-4 flex items-center gap-2">
                 <ScanText size={14} className="text-muted-foreground/40" />
-                <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">Try a sample</h4>
+                <h4 className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Try a sample
+                </h4>
               </div>
               <div className="grid gap-2">
                 {starterPrompts.map((prompt, i) => (
@@ -429,4 +471,3 @@ export function MessageAnalyzer() {
     </motion.div>
   )
 }
-

@@ -28,7 +28,8 @@ export function useMemoryCandidates(status: MemoryStatus | "all" = "all") {
 export function useMemoryMutations() {
   const queryClient = useQueryClient()
   const userId = getUserId()
-  const invalidateAll = () => queryClient.invalidateQueries({ queryKey: ["memory-candidates", userId] })
+  const invalidateAll = () =>
+    queryClient.invalidateQueries({ queryKey: ["memory-candidates", userId] })
 
   const create = useMutation({
     mutationFn: (input: { fact: string; category: string }) => memoryApi.create(input),
@@ -36,7 +37,8 @@ export function useMemoryMutations() {
   })
 
   const approve = useMutation({
-    mutationFn: ({ id, editedFact }: { id: string; editedFact?: string }) => memoryApi.approve(id, editedFact),
+    mutationFn: ({ id, editedFact }: { id: string; editedFact?: string }) =>
+      memoryApi.approve(id, editedFact),
     onSuccess: () => invalidateAll(),
   })
 

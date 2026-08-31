@@ -33,7 +33,13 @@ export function instrumentedTool<Args>(
   return async (args) => {
     const rateStatus = await checkRateLimit(ctx.db, ctx.userId, feature)
     if (!rateStatus.allowed) {
-      void recordToolCall(ctx, { toolName, kind, success: false, errorCode: "RATE_LIMITED", durationMs: 0 })
+      void recordToolCall(ctx, {
+        toolName,
+        kind,
+        success: false,
+        errorCode: "RATE_LIMITED",
+        durationMs: 0,
+      })
       const bucket = RATE_LIMIT_BUCKETS[bucketKey]
       return {
         isError: true,
@@ -51,14 +57,36 @@ export function instrumentedTool<Args>(
       const result = await handler(args)
       const durationMs = Math.round(performance.now() - startedAt)
       const success = !result.isError
-      void recordUsage(ctx.db, { userId: ctx.userId, feature, model: "mcp", latencyMs: durationMs, success })
+      void recordUsage(ctx.db, {
+        userId: ctx.userId,
+        feature,
+        model: "mcp",
+        latencyMs: durationMs,
+        success,
+      })
       void recordToolCall(ctx, { toolName, kind, success, durationMs })
       return result
     } catch (err) {
       const durationMs = Math.round(performance.now() - startedAt)
-      void recordUsage(ctx.db, { userId: ctx.userId, feature, model: "mcp", latencyMs: durationMs, success: false, errorCode: "INTERNAL" })
-      void recordToolCall(ctx, { toolName, kind, success: false, errorCode: "INTERNAL", durationMs })
-      return { isError: true, content: [{ type: "text" as const, text: sanitizeToolError(err, ctx.requestId) }] }
+      void recordUsage(ctx.db, {
+        userId: ctx.userId,
+        feature,
+        model: "mcp",
+        latencyMs: durationMs,
+        success: false,
+        errorCode: "INTERNAL",
+      })
+      void recordToolCall(ctx, {
+        toolName,
+        kind,
+        success: false,
+        errorCode: "INTERNAL",
+        durationMs,
+      })
+      return {
+        isError: true,
+        content: [{ type: "text" as const, text: sanitizeToolError(err, ctx.requestId) }],
+      }
     }
   }
 }

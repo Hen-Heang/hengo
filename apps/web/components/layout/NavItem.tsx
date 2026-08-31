@@ -66,9 +66,7 @@ export function NavRow({
       >
         <Icon size={iconSize} strokeWidth={2} className="shrink-0" />
         <span className="min-w-0 flex-1 truncate">{item.label}</span>
-        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold">
-          Soon
-        </span>
+        <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-semibold">Soon</span>
       </div>
     )
   }
@@ -78,7 +76,12 @@ export function NavRow({
       href={item.href}
       aria-current={active ? "page" : undefined}
       onClick={onNavigate}
-      className={cn(ROW_BASE, ROW_SIZE[variant], active ? ROW_STATE.active : ROW_STATE.idle, className)}
+      className={cn(
+        ROW_BASE,
+        ROW_SIZE[variant],
+        active ? ROW_STATE.active : ROW_STATE.idle,
+        className,
+      )}
       {...rest}
     >
       {active && <ActiveIndicator />}
@@ -127,8 +130,10 @@ export function NavIconRow({
           onClick={onNavigate}
           className={cn(
             "relative flex min-h-11 w-full flex-col items-center justify-center gap-1 rounded-lg py-2 outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
-            active ? "bg-accent text-foreground" : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
-            className
+            active
+              ? "bg-accent text-foreground"
+              : "text-muted-foreground hover:bg-accent/50 hover:text-foreground",
+            className,
           )}
         >
           {active && <ActiveIndicator />}
@@ -138,7 +143,12 @@ export function NavIconRow({
             className={cn("shrink-0", item.color, !active && "opacity-70")}
           />
           {showLabel && (
-            <span className={cn("max-w-full truncate px-1 text-xs leading-none", active && "font-semibold")}>
+            <span
+              className={cn(
+                "max-w-full truncate px-1 text-xs leading-none",
+                active && "font-semibold",
+              )}
+            >
               {name}
             </span>
           )}

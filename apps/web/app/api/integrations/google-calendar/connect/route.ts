@@ -27,7 +27,7 @@ export async function POST(req: Request) {
           "Google Calendar is not configured. Add GOOGLE_CLIENT_ID (or NEXT_PUBLIC_GOOGLE_CLIENT_ID) in Vercel.",
         code: "google_client_id_missing",
       },
-      { status: 503 }
+      { status: 503 },
     )
   }
 

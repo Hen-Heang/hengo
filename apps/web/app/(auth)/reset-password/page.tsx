@@ -133,7 +133,9 @@ export default function ResetPasswordPage() {
             <form onSubmit={handleSubmit} className="space-y-5">
               <FieldGroup>
                 <Field>
-                  <FieldLabel className="text-sm font-medium text-foreground/80">New password</FieldLabel>
+                  <FieldLabel className="text-sm font-medium text-foreground/80">
+                    New password
+                  </FieldLabel>
                   <FieldContent>
                     <div className="relative">
                       <Input

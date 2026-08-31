@@ -10,7 +10,8 @@ import { useLogActivity } from "@/hooks/useLogActivity"
 import type { HabitCategory } from "@/lib/types"
 
 export const habitsQueryKey = (userId?: string | null) => ["habits", "list", userId] as const
-export const habitCheckinsQueryKey = (habitId?: string | null) => ["habits", "checkins", habitId] as const
+export const habitCheckinsQueryKey = (habitId?: string | null) =>
+  ["habits", "checkins", habitId] as const
 
 // Unlike Recovery (one active habit at a time), Habits supports several
 // running side by side — exercise, reading, meditation, etc. — so this
@@ -29,7 +30,11 @@ export function useHabits() {
   const habits = data ?? []
   const activeHabits = habits.filter((h) => h.active)
 
-  const addHabit = async (input: { label: string; category: HabitCategory; identityStatement?: string }) => {
+  const addHabit = async (input: {
+    label: string
+    category: HabitCategory
+    identityStatement?: string
+  }) => {
     const habit = await habitsApi.addHabit(input)
     await queryClient.invalidateQueries({ queryKey: key })
     return habit
@@ -37,7 +42,12 @@ export function useHabits() {
 
   const updateHabit = async (
     id: string,
-    data: { label?: string; category?: HabitCategory; identityStatement?: string | null; active?: boolean },
+    data: {
+      label?: string
+      category?: HabitCategory
+      identityStatement?: string | null
+      active?: boolean
+    },
   ) => {
     const habit = await habitsApi.updateHabit(id, data)
     await queryClient.invalidateQueries({ queryKey: key })

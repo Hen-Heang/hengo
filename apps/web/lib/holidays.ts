@@ -16,10 +16,7 @@ export interface Holiday {
   country: HolidayCountry
 }
 
-export const HOLIDAY_COUNTRY_META: Record<
-  HolidayCountry,
-  { label: string }
-> = {
+export const HOLIDAY_COUNTRY_META: Record<HolidayCountry, { label: string }> = {
   KR: { label: "South Korea" },
   KH: { label: "Cambodia" },
 }

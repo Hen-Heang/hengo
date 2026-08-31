@@ -55,7 +55,8 @@ function todayYmd(): string {
 }
 
 export function InboxItemCard({ item }: { item: InboxItem }) {
-  const { togglePinned, archive, restore, remove, convertToNote, convertToTask, convertToJournal } = useInboxMutations()
+  const { togglePinned, archive, restore, remove, convertToNote, convertToTask, convertToJournal } =
+    useInboxMutations()
   const [busy, setBusy] = useState(false)
 
   async function run(action: () => Promise<unknown>, successMessage: string) {
@@ -82,7 +83,7 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
       className={cn(
         "rounded-lg border border-border bg-card p-4 shadow-sm transition-opacity",
         item.status !== "inbox" && "opacity-70",
-        busy && "pointer-events-none opacity-60"
+        busy && "pointer-events-none opacity-60",
       )}
     >
       <div className="flex items-start justify-between gap-3">
@@ -95,7 +96,12 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
           )}
           {item.convertedToType && (
             <Badge variant="outline">
-              → {item.convertedToType === "note" ? "Note" : item.convertedToType === "task" ? "Task" : "Journal"}
+              →{" "}
+              {item.convertedToType === "note"
+                ? "Note"
+                : item.convertedToType === "task"
+                  ? "Task"
+                  : "Journal"}
             </Badge>
           )}
         </div>
@@ -111,15 +117,30 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
             variant="ghost"
             size="icon-sm"
             aria-label={item.pinned ? "Unpin" : "Pin"}
-            onClick={() => run(() => togglePinned.mutateAsync({ id: item.id, pinned: !item.pinned }), item.pinned ? "Unpinned" : "Pinned")}
+            onClick={() =>
+              run(
+                () => togglePinned.mutateAsync({ id: item.id, pinned: !item.pinned }),
+                item.pinned ? "Unpinned" : "Pinned",
+              )
+            }
           >
-            {item.pinned ? <Pin size={16} className="fill-current text-primary" /> : <PinOff size={16} />}
+            {item.pinned ? (
+              <Pin size={16} className="fill-current text-primary" />
+            ) : (
+              <PinOff size={16} />
+            )}
           </Button>
         </div>
       </div>
 
-      {item.title && <h3 className="mt-2 break-words text-sm font-semibold text-foreground [overflow-wrap:anywhere]">{item.title}</h3>}
-      <p className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">{item.content}</p>
+      {item.title && (
+        <h3 className="mt-2 break-words text-sm font-semibold text-foreground [overflow-wrap:anywhere]">
+          {item.title}
+        </h3>
+      )}
+      <p className="mt-1.5 whitespace-pre-wrap break-words text-sm leading-relaxed text-muted-foreground [overflow-wrap:anywhere]">
+        {item.content}
+      </p>
 
       <div className="mt-3 flex flex-wrap items-center gap-1.5">
         {item.tags.map((tag) => (
@@ -152,13 +173,20 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-lg"
-                  onClick={() => run(() => convertToTask.mutateAsync({ item, date: todayYmd() }), "Added as today's task")}
+                  onClick={() =>
+                    run(
+                      () => convertToTask.mutateAsync({ item, date: todayYmd() }),
+                      "Added as today's task",
+                    )
+                  }
                 >
                   <ListChecks size={14} className="text-blue-500" /> Convert to task (today)
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="rounded-lg"
-                  onClick={() => run(() => convertToJournal.mutateAsync(item), "Added to your journal")}
+                  onClick={() =>
+                    run(() => convertToJournal.mutateAsync(item), "Added to your journal")
+                  }
                 >
                   <Sparkles size={14} className="text-amber-500" /> Convert to journal entry
                 </DropdownMenuItem>
@@ -173,8 +201,11 @@ export function InboxItemCard({ item }: { item: InboxItem }) {
             aria-label={item.status === "archived" ? "Restore" : "Archive"}
             onClick={() =>
               run(
-                () => (item.status === "archived" ? restore.mutateAsync(item.id) : archive.mutateAsync(item.id)),
-                item.status === "archived" ? "Restored to inbox" : "Archived"
+                () =>
+                  item.status === "archived"
+                    ? restore.mutateAsync(item.id)
+                    : archive.mutateAsync(item.id),
+                item.status === "archived" ? "Restored to inbox" : "Archived",
               )
             }
           >

@@ -28,10 +28,14 @@ export function useAvailableFocusWindows({
     return { timeMin: start.toISOString(), timeMax: addDays(start, 1).toISOString() }
   }, [date])
 
-  const { busy } = useGoogleCalendarFreeBusy({ enabled, timeMin: range.timeMin, timeMax: range.timeMax })
+  const { busy } = useGoogleCalendarFreeBusy({
+    enabled,
+    timeMin: range.timeMin,
+    timeMax: range.timeMax,
+  })
 
   return useMemo(
     () => getAvailableFocusWindows({ date, tasks, googleBusy: busy }),
-    [date, tasks, busy]
+    [date, tasks, busy],
   )
 }

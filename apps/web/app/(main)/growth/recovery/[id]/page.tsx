@@ -7,7 +7,12 @@ import { BackLink } from "@/components/ui/back-link"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { daysSince } from "@/lib/recovery"
-import { useRecoveryEvents, useRecoveryHabits, useRecoveryPlans, useRecoveryTriggers } from "@/hooks/useRecovery"
+import {
+  useRecoveryEvents,
+  useRecoveryHabits,
+  useRecoveryPlans,
+  useRecoveryTriggers,
+} from "@/hooks/useRecovery"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
 
 function OverviewLoadingState() {

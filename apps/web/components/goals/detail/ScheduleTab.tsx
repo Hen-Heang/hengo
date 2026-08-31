@@ -2,7 +2,16 @@
 
 import dynamic from "next/dynamic"
 import { useMemo, useState } from "react"
-import { AlertTriangle, CalendarPlus, Loader2, Pause, Play, Plus, Repeat, Trash2 } from "lucide-react"
+import {
+  AlertTriangle,
+  CalendarPlus,
+  Loader2,
+  Pause,
+  Play,
+  Plus,
+  Repeat,
+  Trash2,
+} from "lucide-react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -26,10 +35,10 @@ import { cn } from "@/lib/utils"
 
 import { ScheduleRuleDialog } from "./ScheduleRuleDialog"
 
-const Calendar = dynamic(
-  () => import("@/components/calendar/Calendar").then((m) => m.Calendar),
-  { ssr: false, loading: () => <div className="h-full w-full animate-pulse rounded-xl bg-muted/20" /> },
-)
+const Calendar = dynamic(() => import("@/components/calendar/Calendar").then((m) => m.Calendar), {
+  ssr: false,
+  loading: () => <div className="h-full w-full animate-pulse rounded-xl bg-muted/20" />,
+})
 
 interface ScheduleTabProps {
   goal: Goal
@@ -119,9 +128,13 @@ export function ScheduleTab({
               : "Every session in the next 14 days already exists.",
         })
       } else {
-        toast.success(`Created ${result.created.length} session${result.created.length === 1 ? "" : "s"}`, {
-          description: result.skipped.length > 0 ? `${result.skipped.length} already existed.` : undefined,
-        })
+        toast.success(
+          `Created ${result.created.length} session${result.created.length === 1 ? "" : "s"}`,
+          {
+            description:
+              result.skipped.length > 0 ? `${result.skipped.length} already existed.` : undefined,
+          },
+        )
       }
     } catch (err) {
       toast.error(getApiErrorMessage(err, "Couldn't create sessions from this routine."))
@@ -301,7 +314,11 @@ export function ScheduleTab({
                     onClick={() => void togglePause(rule)}
                     className="h-11 w-11 rounded-lg sm:h-8 sm:w-8"
                   >
-                    {rule.active ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+                    {rule.active ? (
+                      <Pause className="h-3.5 w-3.5" />
+                    ) : (
+                      <Play className="h-3.5 w-3.5" />
+                    )}
                   </Button>
                   <Button
                     variant="ghost"

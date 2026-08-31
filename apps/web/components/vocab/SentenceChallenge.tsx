@@ -22,7 +22,11 @@ type Props = {
   cardId: string
   term: string
   onGetChallenge: (cardId: string) => Promise<SentenceChallengeResponse>
-  onCheckSentence: (cardId: string, challengePrompt: string, attempt: string) => Promise<SentenceCheckResponse>
+  onCheckSentence: (
+    cardId: string,
+    challengePrompt: string,
+    attempt: string,
+  ) => Promise<SentenceCheckResponse>
 }
 
 export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentence }: Props) {
@@ -34,9 +38,15 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
   const [error, setError] = useState("")
 
   async function handleOpen() {
-    if (open) { setOpen(false); return }
+    if (open) {
+      setOpen(false)
+      return
+    }
     setOpen(true)
-    if (challenge) { setPhase("writing"); return }
+    if (challenge) {
+      setPhase("writing")
+      return
+    }
     setPhase("loading-challenge")
     setError("")
     try {
@@ -76,21 +86,31 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
     setPhase("loading-challenge")
     setError("")
     onGetChallenge(cardId)
-      .then((data) => { setChallenge(data); setPhase("writing") })
-      .catch(() => { setError("Could not load challenge."); setPhase("idle") })
+      .then((data) => {
+        setChallenge(data)
+        setPhase("writing")
+      })
+      .catch(() => {
+        setError("Could not load challenge.")
+        setPhase("idle")
+      })
   }
 
-  const scoreColor =
-    !result ? ""
-    : result.score >= 80 ? "text-emerald-600 dark:text-emerald-400"
-    : result.score >= 60 ? "text-amber-600 dark:text-amber-400"
-    : "text-red-600 dark:text-red-400"
+  const scoreColor = !result
+    ? ""
+    : result.score >= 80
+      ? "text-emerald-600 dark:text-emerald-400"
+      : result.score >= 60
+        ? "text-amber-600 dark:text-amber-400"
+        : "text-red-600 dark:text-red-400"
 
-  const scoreBg =
-    !result ? ""
-    : result.score >= 80 ? "border-emerald-500/20 bg-emerald-500/5"
-    : result.score >= 60 ? "border-amber-500/20 bg-amber-500/5"
-    : "border-red-500/20 bg-red-500/5"
+  const scoreBg = !result
+    ? ""
+    : result.score >= 80
+      ? "border-emerald-500/20 bg-emerald-500/5"
+      : result.score >= 60
+        ? "border-amber-500/20 bg-amber-500/5"
+        : "border-red-500/20 bg-red-500/5"
 
   return (
     <div className="mt-3">
@@ -101,15 +121,21 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
           "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left transition-all active:scale-[0.99]",
           open
             ? "border-violet-500/30 bg-violet-500/5"
-            : "border-border bg-accent/5 hover:border-violet-500/20 hover:bg-violet-500/[0.02]"
+            : "border-border bg-accent/5 hover:border-violet-500/20 hover:bg-violet-500/[0.02]",
         )}
       >
         <div className="flex items-center gap-2.5">
-          <PenLine size={14} strokeWidth={2.5} className={open ? "text-violet-600 dark:text-violet-400" : "text-muted-foreground/50"} />
-          <span className={cn(
-            "text-xs font-bold uppercase tracking-[0.18em]",
-            open ? "text-violet-600 dark:text-violet-400" : "text-muted-foreground"
-          )}>
+          <PenLine
+            size={14}
+            strokeWidth={2.5}
+            className={open ? "text-violet-600 dark:text-violet-400" : "text-muted-foreground/50"}
+          />
+          <span
+            className={cn(
+              "text-xs font-bold uppercase tracking-[0.18em]",
+              open ? "text-violet-600 dark:text-violet-400" : "text-muted-foreground",
+            )}
+          >
             Practice Sentence
           </span>
         </div>
@@ -118,7 +144,7 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
           strokeWidth={2.5}
           className={cn(
             "text-muted-foreground/40 transition-transform duration-200",
-            open && "rotate-180"
+            open && "rotate-180",
           )}
         />
       </button>
@@ -142,7 +168,9 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
               {phase === "loading-challenge" && (
                 <div className="flex items-center gap-2.5 rounded-2xl border border-border bg-accent/5 px-4 py-4">
                   <Loader2 size={16} className="animate-spin text-violet-500" />
-                  <span className="text-xs font-bold text-muted-foreground">Building your challenge...</span>
+                  <span className="text-xs font-bold text-muted-foreground">
+                    Building your challenge...
+                  </span>
                 </div>
               )}
 
@@ -151,12 +179,22 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
                   {/* Challenge prompt */}
                   <div className="rounded-2xl border border-violet-500/20 bg-violet-500/5 p-4 space-y-1.5">
                     <div className="flex items-center gap-1.5">
-                      <BookOpen size={12} strokeWidth={2.5} className="text-violet-600 dark:text-violet-400" />
-                      <span className="text-[12px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400">Task</span>
+                      <BookOpen
+                        size={12}
+                        strokeWidth={2.5}
+                        className="text-violet-600 dark:text-violet-400"
+                      />
+                      <span className="text-[12px] font-bold uppercase tracking-wide text-violet-600 dark:text-violet-400">
+                        Task
+                      </span>
                     </div>
-                    <p className="text-sm font-bold text-foreground leading-relaxed">{challenge.challengePrompt}</p>
+                    <p className="text-sm font-bold text-foreground leading-relaxed">
+                      {challenge.challengePrompt}
+                    </p>
                     {challenge.contextHint && (
-                      <p className="text-xs font-medium text-muted-foreground/70 italic">{challenge.contextHint}</p>
+                      <p className="text-xs font-medium text-muted-foreground/70 italic">
+                        {challenge.contextHint}
+                      </p>
                     )}
                   </div>
 
@@ -177,9 +215,13 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
                     className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-violet-600 text-xs font-bold uppercase tracking-[0.18em] text-white shadow-lg shadow-violet-600/20 transition-all hover:bg-violet-500 active:scale-95 disabled:opacity-40"
                   >
                     {phase === "checking" ? (
-                      <><Loader2 size={14} className="animate-spin" /> Evaluating...</>
+                      <>
+                        <Loader2 size={14} className="animate-spin" /> Evaluating...
+                      </>
                     ) : (
-                      <><CheckCircle2 size={14} strokeWidth={2.5} /> Check Answer</>
+                      <>
+                        <CheckCircle2 size={14} strokeWidth={2.5} /> Check Answer
+                      </>
                     )}
                   </button>
                 </div>
@@ -198,11 +240,22 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-1.5">
-                        {result.correct
-                          ? <CheckCircle2 size={14} className="text-emerald-600 dark:text-emerald-400" strokeWidth={2.5} />
-                          : <XCircle size={14} className="text-red-600 dark:text-red-400" strokeWidth={2.5} />
-                        }
-                        <span className={cn("text-xs font-bold uppercase tracking-wide", scoreColor)}>
+                        {result.correct ? (
+                          <CheckCircle2
+                            size={14}
+                            className="text-emerald-600 dark:text-emerald-400"
+                            strokeWidth={2.5}
+                          />
+                        ) : (
+                          <XCircle
+                            size={14}
+                            className="text-red-600 dark:text-red-400"
+                            strokeWidth={2.5}
+                          />
+                        )}
+                        <span
+                          className={cn("text-xs font-bold uppercase tracking-wide", scoreColor)}
+                        >
                           {result.correct ? "Good job" : "Keep practicing"}
                         </span>
                       </div>
@@ -215,25 +268,43 @@ export function SentenceChallenge({ cardId, term, onGetChallenge, onCheckSentenc
                   {/* Corrected / Better */}
                   {result.correctedSentence && result.correctedSentence !== attempt.trim() && (
                     <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-3 space-y-1">
-                      <span className="text-[12px] font-bold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-400">Corrected</span>
-                      <p className="text-sm font-bold text-foreground">{result.correctedSentence}</p>
+                      <span className="text-[12px] font-bold uppercase tracking-[0.18em] text-sky-600 dark:text-sky-400">
+                        Corrected
+                      </span>
+                      <p className="text-sm font-bold text-foreground">
+                        {result.correctedSentence}
+                      </p>
                     </div>
                   )}
 
                   {result.betterAlternative && (
                     <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-3 space-y-1">
                       <div className="flex items-center gap-1.5">
-                        <Star size={11} strokeWidth={2.5} className="text-amber-600 dark:text-amber-400" />
-                        <span className="text-[12px] font-bold uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400">More natural</span>
+                        <Star
+                          size={11}
+                          strokeWidth={2.5}
+                          className="text-amber-600 dark:text-amber-400"
+                        />
+                        <span className="text-[12px] font-bold uppercase tracking-[0.18em] text-amber-600 dark:text-amber-400">
+                          More natural
+                        </span>
                       </div>
-                      <p className="text-sm font-bold text-foreground">{result.betterAlternative}</p>
+                      <p className="text-sm font-bold text-foreground">
+                        {result.betterAlternative}
+                      </p>
                     </div>
                   )}
 
                   {result.grammarNote && (
                     <div className="flex items-start gap-2.5 rounded-2xl border border-border bg-accent/5 p-3">
-                      <Lightbulb size={13} strokeWidth={2.5} className="mt-0.5 shrink-0 text-muted-foreground/50" />
-                      <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">{result.grammarNote}</p>
+                      <Lightbulb
+                        size={13}
+                        strokeWidth={2.5}
+                        className="mt-0.5 shrink-0 text-muted-foreground/50"
+                      />
+                      <p className="text-xs font-medium text-muted-foreground/80 leading-relaxed">
+                        {result.grammarNote}
+                      </p>
                     </div>
                   )}
 

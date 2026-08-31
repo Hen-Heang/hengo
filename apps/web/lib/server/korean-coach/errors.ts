@@ -35,7 +35,10 @@ export class CoachServiceError extends Error {
 
 export function sanitizeProviderError(
   error: unknown,
-  fallbackCode: Extract<CoachErrorCode, "TRANSCRIPTION_FAILED" | "FEEDBACK_FAILED" | "SPEECH_FAILED">,
+  fallbackCode: Extract<
+    CoachErrorCode,
+    "TRANSCRIPTION_FAILED" | "FEEDBACK_FAILED" | "SPEECH_FAILED"
+  >,
 ): SafeCoachError {
   if (error instanceof CoachServiceError) return error.safe
 
@@ -61,4 +64,3 @@ export function sanitizeProviderError(
     status: 502,
   }
 }
-

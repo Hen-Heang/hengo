@@ -40,7 +40,15 @@ function card(overrides: Partial<PhraseCardWithProgress> = {}): PhraseCardWithPr
     difficulty: "medium",
     question: { korean: "질문", romanization: "jilmun", english: "question", register: "formal" },
     questionVariants: [],
-    answers: [{ korean: "답변", romanization: "dapbyeon", english: "answer", register: "formal", isRecommended: true }],
+    answers: [
+      {
+        korean: "답변",
+        romanization: "dapbyeon",
+        english: "answer",
+        register: "formal",
+        isRecommended: true,
+      },
+    ],
     usageNote: null,
     vocabulary: [],
     tags: [],
@@ -87,9 +95,31 @@ describe("countPhraseStates", () => {
     const now = new Date("2026-07-28T12:00:00Z")
     const cards: PhraseCardWithProgress[] = [
       card({ id: "new1", progress: null }),
-      card({ id: "learning1", progress: progress({ state: "learning", nextReviewAt: "2026-07-28T06:00:00Z", attemptCount: 1 }) }),
-      card({ id: "mastered1", progress: progress({ state: "mastered", mastery: 90, nextReviewAt: "2026-08-01T00:00:00Z", attemptCount: 5 }) }),
-      card({ id: "due-overdue", progress: progress({ state: "learning", nextReviewAt: "2026-07-01T00:00:00Z", attemptCount: 2 }) }),
+      card({
+        id: "learning1",
+        progress: progress({
+          state: "learning",
+          nextReviewAt: "2026-07-28T06:00:00Z",
+          attemptCount: 1,
+        }),
+      }),
+      card({
+        id: "mastered1",
+        progress: progress({
+          state: "mastered",
+          mastery: 90,
+          nextReviewAt: "2026-08-01T00:00:00Z",
+          attemptCount: 5,
+        }),
+      }),
+      card({
+        id: "due-overdue",
+        progress: progress({
+          state: "learning",
+          nextReviewAt: "2026-07-01T00:00:00Z",
+          attemptCount: 2,
+        }),
+      }),
     ]
     const counts = countPhraseStates(cards, now)
     expect(counts.total).toBe(4)
@@ -103,8 +133,30 @@ describe("countPhraseStates", () => {
 
 describe("filterPhraseCards", () => {
   const cards: PhraseCardWithProgress[] = [
-    card({ id: "a", category: "workplace", situation: "deadline", difficulty: "easy", question: { korean: "마감일이 언제예요?", romanization: "magamiri eonjeyeyo?", english: "When is the deadline?", register: "polite" } }),
-    card({ id: "b", category: "daily", situation: "restaurant", difficulty: "hard", question: { korean: "주문하시겠어요?", romanization: "jumunhasigesseoyo?", english: "Would you like to order?", register: "polite" } }),
+    card({
+      id: "a",
+      category: "workplace",
+      situation: "deadline",
+      difficulty: "easy",
+      question: {
+        korean: "마감일이 언제예요?",
+        romanization: "magamiri eonjeyeyo?",
+        english: "When is the deadline?",
+        register: "polite",
+      },
+    }),
+    card({
+      id: "b",
+      category: "daily",
+      situation: "restaurant",
+      difficulty: "hard",
+      question: {
+        korean: "주문하시겠어요?",
+        romanization: "jumunhasigesseoyo?",
+        english: "Would you like to order?",
+        register: "polite",
+      },
+    }),
   ]
 
   it("filters by category", () => {
@@ -122,8 +174,14 @@ describe("filterPhraseCards", () => {
   })
   it("dueOnly excludes cards with no progress or a future review date", () => {
     const dueCards = [
-      card({ id: "due", progress: progress({ nextReviewAt: new Date(Date.now() - 1000).toISOString() }) }),
-      card({ id: "not-due", progress: progress({ nextReviewAt: new Date(Date.now() + 100_000).toISOString() }) }),
+      card({
+        id: "due",
+        progress: progress({ nextReviewAt: new Date(Date.now() - 1000).toISOString() }),
+      }),
+      card({
+        id: "not-due",
+        progress: progress({ nextReviewAt: new Date(Date.now() + 100_000).toISOString() }),
+      }),
       card({ id: "no-progress", progress: null }),
     ]
     expect(filterPhraseCards(dueCards, { dueOnly: true }).map((c) => c.id)).toEqual(["due"])
@@ -133,8 +191,16 @@ describe("filterPhraseCards", () => {
 describe("selectPracticeQueue", () => {
   it("prioritizes due cards, then recently-failed, then preferred category, new cards last", () => {
     const now = new Date()
-    const overdue = card({ id: "overdue", category: "daily", progress: progress({ nextReviewAt: new Date(now.getTime() - 2 * 86_400_000).toISOString() }) })
-    const due = card({ id: "due", category: "daily", progress: progress({ nextReviewAt: new Date(now.getTime() - 1000).toISOString() }) })
+    const overdue = card({
+      id: "overdue",
+      category: "daily",
+      progress: progress({ nextReviewAt: new Date(now.getTime() - 2 * 86_400_000).toISOString() }),
+    })
+    const due = card({
+      id: "due",
+      category: "daily",
+      progress: progress({ nextReviewAt: new Date(now.getTime() - 1000).toISOString() }),
+    })
     const failed = card({ id: "failed", category: "daily" })
     const preferred = card({ id: "preferred", category: "workplace" })
     const fresh = card({ id: "fresh", category: "daily" })

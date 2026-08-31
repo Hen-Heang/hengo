@@ -53,13 +53,15 @@ function assertBoundedRange(timeMin: string, timeMax: string): void {
     throw new Error("Invalid date range.")
   }
   if (end - start > MAX_RANGE_MS) {
-    throw new Error("Date range too large — Google Calendar sync is limited to about 3 months at a time.")
+    throw new Error(
+      "Date range too large — Google Calendar sync is limited to about 3 months at a time.",
+    )
   }
 }
 
 export function normalizeGoogleEvent(
   item: GoogleEventItem,
-  calendarId: string
+  calendarId: string,
 ): ExternalCalendarEvent | null {
   if (item.status === "cancelled") return null
   const start = item.start?.dateTime ?? item.start?.date
@@ -101,7 +103,11 @@ export interface GoogleCalendarEventsResult {
 // Planner filter is "All / Hengo / Google", not per-calendar selection.
 export async function getEvents(
   userId: string,
-  { timeMin, timeMax, calendarId = "primary" }: { timeMin: string; timeMax: string; calendarId?: string }
+  {
+    timeMin,
+    timeMax,
+    calendarId = "primary",
+  }: { timeMin: string; timeMax: string; calendarId?: string },
 ): Promise<GoogleCalendarEventsResult> {
   assertBoundedRange(timeMin, timeMax)
   const accessToken = await getValidGoogleAccessToken(userId)
@@ -123,7 +129,7 @@ export async function getEvents(
 
     const res = await googleGet(
       `https://www.googleapis.com/calendar/v3/calendars/${encodeURIComponent(calendarId)}/events?${params}`,
-      accessToken
+      accessToken,
     )
     const data = (await res.json()) as {
       timeZone?: string
@@ -150,7 +156,11 @@ export interface GoogleCalendarFreeBusyResult {
 
 export async function getFreeBusy(
   userId: string,
-  { timeMin, timeMax, calendarIds = ["primary"] }: { timeMin: string; timeMax: string; calendarIds?: string[] }
+  {
+    timeMin,
+    timeMax,
+    calendarIds = ["primary"],
+  }: { timeMin: string; timeMax: string; calendarIds?: string[] },
 ): Promise<GoogleCalendarFreeBusyResult[]> {
   assertBoundedRange(timeMin, timeMax)
   const accessToken = await getValidGoogleAccessToken(userId)

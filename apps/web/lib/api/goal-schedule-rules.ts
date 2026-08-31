@@ -38,10 +38,19 @@ const scheduleRulePatchSchema = z
     recurrence_interval: z.number().int().min(1).max(52).optional(),
     days_of_week: z.array(z.number().int().min(0).max(6)).nullish(),
     day_of_month: z.number().int().min(1).max(31).nullish(),
-    start_time: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/).nullish(),
+    start_time: z
+      .string()
+      .regex(/^([01]\d|2[0-3]):[0-5]\d(:[0-5]\d)?$/)
+      .nullish(),
     duration_minutes: z.number().int().positive().max(1440).nullish(),
-    start_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
-    end_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullish(),
+    start_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .optional(),
+    end_date: z
+      .string()
+      .regex(/^\d{4}-\d{2}-\d{2}$/)
+      .nullish(),
     timezone: z.string().min(1).optional(),
     active: z.boolean().optional(),
   })
@@ -129,10 +138,14 @@ export const scheduleRulesApi = {
       days?: number
     } = {},
   ): string[] =>
-    generateOccurrences(rule, options.window ?? rollingWindow(todayYmd(), options.days ?? OCCURRENCE_WINDOW_DAYS), {
-      goalStartDate: options.goalStartDate,
-      goalTargetDate: options.goalTargetDate,
-    }),
+    generateOccurrences(
+      rule,
+      options.window ?? rollingWindow(todayYmd(), options.days ?? OCCURRENCE_WINDOW_DAYS),
+      {
+        goalStartDate: options.goalStartDate,
+        goalTargetDate: options.goalTargetDate,
+      },
+    ),
 
   /**
    * Materialise the rule's occurrences into `tasks` for the rolling window.

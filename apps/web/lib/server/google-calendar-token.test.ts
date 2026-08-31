@@ -1,11 +1,14 @@
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const { getGoogleCalendarTokens, markGoogleCalendarIntegrationError, updateGoogleCalendarAccessToken } =
-  vi.hoisted(() => ({
-    getGoogleCalendarTokens: vi.fn(),
-    markGoogleCalendarIntegrationError: vi.fn(async () => undefined),
-    updateGoogleCalendarAccessToken: vi.fn(async () => undefined),
-  }))
+const {
+  getGoogleCalendarTokens,
+  markGoogleCalendarIntegrationError,
+  updateGoogleCalendarAccessToken,
+} = vi.hoisted(() => ({
+  getGoogleCalendarTokens: vi.fn(),
+  markGoogleCalendarIntegrationError: vi.fn(async () => undefined),
+  updateGoogleCalendarAccessToken: vi.fn(async () => undefined),
+}))
 
 const { refreshGoogleAccessToken } = vi.hoisted(() => ({
   refreshGoogleAccessToken: vi.fn(),
@@ -19,15 +22,12 @@ vi.mock("@/lib/server/google-calendar-store", () => ({
 
 vi.mock("@/lib/server/google-calendar-oauth", async () => {
   const actual = await vi.importActual<typeof import("@/lib/server/google-calendar-oauth")>(
-    "@/lib/server/google-calendar-oauth"
+    "@/lib/server/google-calendar-oauth",
   )
   return { ...actual, refreshGoogleAccessToken }
 })
 
-import {
-  GoogleCalendarNotConnectedError,
-  getValidGoogleAccessToken,
-} from "./google-calendar-token"
+import { GoogleCalendarNotConnectedError, getValidGoogleAccessToken } from "./google-calendar-token"
 import { GoogleCalendarReauthRequiredError } from "./google-calendar-oauth"
 
 beforeEach(() => {
@@ -41,7 +41,7 @@ describe("getValidGoogleAccessToken", () => {
   it("throws GoogleCalendarNotConnectedError when there is no stored connection", async () => {
     getGoogleCalendarTokens.mockResolvedValue(null)
     await expect(getValidGoogleAccessToken("user-1")).rejects.toBeInstanceOf(
-      GoogleCalendarNotConnectedError
+      GoogleCalendarNotConnectedError,
     )
   })
 
@@ -91,7 +91,7 @@ describe("getValidGoogleAccessToken", () => {
     })
 
     await expect(getValidGoogleAccessToken("user-1")).rejects.toBeInstanceOf(
-      GoogleCalendarReauthRequiredError
+      GoogleCalendarReauthRequiredError,
     )
     expect(markGoogleCalendarIntegrationError).toHaveBeenCalledWith("user-1")
   })
@@ -105,7 +105,7 @@ describe("getValidGoogleAccessToken", () => {
     refreshGoogleAccessToken.mockRejectedValue(new GoogleCalendarReauthRequiredError())
 
     await expect(getValidGoogleAccessToken("user-1")).rejects.toBeInstanceOf(
-      GoogleCalendarReauthRequiredError
+      GoogleCalendarReauthRequiredError,
     )
     expect(markGoogleCalendarIntegrationError).toHaveBeenCalledWith("user-1")
     expect(updateGoogleCalendarAccessToken).not.toHaveBeenCalled()

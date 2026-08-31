@@ -6,7 +6,12 @@ import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { NavIconRow, NavRow } from "@/components/layout/NavItem"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import { isNavigationItemActive, primaryNavItems, todayItem, type NavSearchParams } from "@/lib/navigation"
+import {
+  isNavigationItemActive,
+  primaryNavItems,
+  todayItem,
+  type NavSearchParams,
+} from "@/lib/navigation"
 import { cn } from "@/lib/utils"
 
 import { ProfileMenu } from "./ProfileMenu"
@@ -53,8 +58,12 @@ export function DesktopSidebar({
           </span>
           {!collapsed && (
             <span className="min-w-0">
-              <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">Hengo</span>
-              <span className="block truncate text-xs leading-tight text-muted-foreground">Learn Korean.</span>
+              <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">
+                Hengo
+              </span>
+              <span className="block truncate text-xs leading-tight text-muted-foreground">
+                Learn Korean.
+              </span>
             </span>
           )}
         </Link>
@@ -70,7 +79,9 @@ export function DesktopSidebar({
               {collapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
             </button>
           </TooltipTrigger>
-          <TooltipContent side="right">{collapsed ? "Expand sidebar" : "Collapse sidebar"}</TooltipContent>
+          <TooltipContent side="right">
+            {collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          </TooltipContent>
         </Tooltip>
       </div>
 

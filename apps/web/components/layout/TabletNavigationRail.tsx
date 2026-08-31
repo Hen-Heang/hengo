@@ -4,7 +4,12 @@ import Image from "next/image"
 import Link from "next/link"
 
 import { NavIconRow } from "@/components/layout/NavItem"
-import { isNavigationItemActive, primaryNavItems, todayItem, type NavSearchParams } from "@/lib/navigation"
+import {
+  isNavigationItemActive,
+  primaryNavItems,
+  todayItem,
+  type NavSearchParams,
+} from "@/lib/navigation"
 
 import { ProfileMenu } from "./ProfileMenu"
 

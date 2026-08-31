@@ -40,9 +40,21 @@ export const ENERGY_LABELS = ["", "Drained", "Tired", "Steady", "Energized", "On
 /** The mission's "lightweight daily template" — four prompts, none mandatory. */
 export const DAILY_TEMPLATE_PROMPTS = [
   { key: "achievement", label: "What did I do today?", placeholder: "Shipped the login redesign…" },
-  { key: "lesson", label: "What did I learn?", placeholder: "TIL Postgres generated columns can't be volatile…" },
-  { key: "blocker", label: "What was difficult?", placeholder: "Got stuck debugging a race condition…" },
-  { key: "tomorrow", label: "What should I do tomorrow?", placeholder: "Follow up on the PR review…" },
+  {
+    key: "lesson",
+    label: "What did I learn?",
+    placeholder: "TIL Postgres generated columns can't be volatile…",
+  },
+  {
+    key: "blocker",
+    label: "What was difficult?",
+    placeholder: "Got stuck debugging a race condition…",
+  },
+  {
+    key: "tomorrow",
+    label: "What should I do tomorrow?",
+    placeholder: "Follow up on the PR review…",
+  },
 ] as const
 
 export type DailyTemplateKey = (typeof DAILY_TEMPLATE_PROMPTS)[number]["key"]
@@ -123,14 +135,24 @@ export interface JournalFilters {
 
 function matchesQuery(entry: JournalEntry, normalizedQuery: string): boolean {
   if (!normalizedQuery) return true
-  const haystack = [entry.title, entry.content, entry.achievement, entry.blocker, entry.lesson, entry.gratitude]
+  const haystack = [
+    entry.title,
+    entry.content,
+    entry.achievement,
+    entry.blocker,
+    entry.lesson,
+    entry.gratitude,
+  ]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()
   return haystack.includes(normalizedQuery)
 }
 
-export function filterJournalEntries(entries: JournalEntry[], filters: JournalFilters): JournalEntry[] {
+export function filterJournalEntries(
+  entries: JournalEntry[],
+  filters: JournalFilters,
+): JournalEntry[] {
   const normalizedQuery = filters.query?.trim().toLowerCase() ?? ""
   return entries.filter((entry) => {
     if (filters.tag && filters.tag !== "all" && !entry.tags.includes(filters.tag)) return false
@@ -140,7 +162,9 @@ export function filterJournalEntries(entries: JournalEntry[], filters: JournalFi
 }
 
 export function sortJournalEntries(entries: JournalEntry[]): JournalEntry[] {
-  return [...entries].sort((a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime())
+  return [...entries].sort(
+    (a, b) => new Date(b.occurredAt).getTime() - new Date(a.occurredAt).getTime(),
+  )
 }
 
 export function collectJournalTags(entries: JournalEntry[]): string[] {

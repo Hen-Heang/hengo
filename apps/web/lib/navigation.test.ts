@@ -118,7 +118,9 @@ describe("pathname active matching", () => {
 
   it("does not match a pathname that merely shares a prefix string", () => {
     // "/goalsomething" must not activate "/goals"
-    expect(isNavigationItemActive({ pathname: "/goalsomething", item: navItem("goals-goals") })).toBe(false)
+    expect(
+      isNavigationItemActive({ pathname: "/goalsomething", item: navItem("goals-goals") }),
+    ).toBe(false)
   })
 
   it("never marks a Coming Soon item active", () => {
@@ -181,13 +183,25 @@ describe("query-aware AI active matching", () => {
 
   it("accepts URLSearchParams as well as a raw string", () => {
     const params = new URLSearchParams({ mode: "analyze" })
-    expect(isNavigationItemActive({ pathname: "/chat", searchParams: params, item: navItem("ai-analyze") })).toBe(true)
-    expect(isNavigationItemActive({ pathname: "/chat", searchParams: params, item: aiCoachItem })).toBe(false)
+    expect(
+      isNavigationItemActive({
+        pathname: "/chat",
+        searchParams: params,
+        item: navItem("ai-analyze"),
+      }),
+    ).toBe(true)
+    expect(
+      isNavigationItemActive({ pathname: "/chat", searchParams: params, item: aiCoachItem }),
+    ).toBe(false)
   })
 
   it("accepts a plain object", () => {
     expect(
-      isNavigationItemActive({ pathname: "/chat", searchParams: { mode: "generate" }, item: navItem("ai-generate") })
+      isNavigationItemActive({
+        pathname: "/chat",
+        searchParams: { mode: "generate" },
+        item: navItem("ai-generate"),
+      }),
     ).toBe(true)
   })
 })
@@ -234,7 +248,11 @@ describe("Simplified AI + Memory/Progress navigation", () => {
   })
 
   it("lists Learn, Calendar, and History as the secondary destinations — Settings lives in the account menu", () => {
-    expect(secondaryNavItems.map((i) => i.id)).toEqual(["learn-hub", "goals-calendar", "history-hub"])
+    expect(secondaryNavItems.map((i) => i.id)).toEqual([
+      "learn-hub",
+      "goals-calendar",
+      "history-hub",
+    ])
   })
 
   it("promotes Calendar out of Plan's nested sidebar group now that it's a secondary top-level item", () => {
@@ -276,7 +294,11 @@ describe("Simplified AI + Memory/Progress navigation", () => {
 
   it("keeps Memory as a hidden-but-real registry — Notes, Memories and Ask Hengo, none visible in chrome", () => {
     const memory = navSections.find((s) => s.id === "memory")!
-    expect(memory.items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub", "memory-ask-hengo"])
+    expect(memory.items.map((i) => i.id)).toEqual([
+      "memory-notes",
+      "memory-hub",
+      "memory-ask-hengo",
+    ])
     expect(memory.items.every((i) => i.showInSidebar === false)).toBe(true)
   })
 
@@ -291,7 +313,7 @@ describe("Simplified AI + Memory/Progress navigation", () => {
         "review-achievements",
         "review-hub",
         "review-statistics",
-      ].sort()
+      ].sort(),
     )
     for (const route of ["/review/morning", "/achievements", "/statistics"]) {
       expect(getSectionForPath(route)?.id).toBe("grow")
@@ -358,7 +380,13 @@ describe("Learning Hub consolidation", () => {
 
 describe("Plan Hub consolidation (formerly Goals)", () => {
   it("keeps every Goals hub route inside the plan section", () => {
-    for (const route of ["/goals", "/goals/overview", "/goals/tasks", "/goals/calendar", "/inbox"]) {
+    for (const route of [
+      "/goals",
+      "/goals/overview",
+      "/goals/tasks",
+      "/goals/calendar",
+      "/inbox",
+    ]) {
       expect(getSectionForPath(route)?.id).toBe("plan")
     }
   })
@@ -374,7 +402,11 @@ describe("Plan Hub consolidation (formerly Goals)", () => {
   it("hides Overview, Tasks and Roadmap from the sidebar/rail while keeping them real, searchable routes", () => {
     const plan = navSections.find((s) => s.id === "plan")!
     const hidden = plan.items.filter((i) => i.showInSidebar === false)
-    expect(hidden.map((i) => i.id).sort()).toEqual(["goals-overview", "goals-roadmap", "goals-tasks"])
+    expect(hidden.map((i) => i.id).sort()).toEqual([
+      "goals-overview",
+      "goals-roadmap",
+      "goals-tasks",
+    ])
     expect(hidden.every((i) => allNavItems.includes(i))).toBe(true)
   })
 
@@ -484,7 +516,11 @@ describe("More sheet grouping", () => {
     expect(moreGroups).toHaveLength(2)
     expect(moreGroups[0]).toMatchObject({ label: "Memory" })
     expect(moreGroups[0].items.map((i) => i.id)).toEqual(["memory-notes", "memory-hub"])
-    expect(moreGroups[1].items.map((i) => i.id)).toEqual(["goals-calendar", "history-hub", "settings"])
+    expect(moreGroups[1].items.map((i) => i.id)).toEqual([
+      "goals-calendar",
+      "history-hub",
+      "settings",
+    ])
   })
 
   it("omits destinations already reachable from a bottom tab, and Ask Hengo (it's the pinned card instead)", () => {
@@ -543,8 +579,20 @@ describe("Coming Soon filtering", () => {
 
 describe("Hengo V2 primary navigation (Phase 1: product shell)", () => {
   it("has exactly five destinations, in the required order", () => {
-    expect(primaryNavItems.map((i) => i.label)).toEqual(["Today", "Vocabulary", "Practice", "Coach", "Study"])
-    expect(primaryNavItems.map((i) => i.href)).toEqual(["/home", "/vocab", "/practice", "/korean-coach", "/learn"])
+    expect(primaryNavItems.map((i) => i.label)).toEqual([
+      "Today",
+      "Vocabulary",
+      "Practice",
+      "Coach",
+      "Study",
+    ])
+    expect(primaryNavItems.map((i) => i.href)).toEqual([
+      "/home",
+      "/vocab",
+      "/practice",
+      "/korean-coach",
+      "/learn",
+    ])
   })
 
   it("keeps Study pointed at /learn — same route, only the display label changes", () => {
@@ -563,7 +611,9 @@ describe("Hengo V2 primary navigation (Phase 1: product shell)", () => {
   it("resolves active state per item, matching each item's own route", () => {
     expect(isNavigationItemActive({ pathname: "/vocab", item: navItem("learn-vocab") })).toBe(true)
     for (const route of ["/home", "/vocab", "/practice", "/korean-coach", "/learn"]) {
-      const activeCount = primaryNavItems.filter((item) => isNavigationItemActive({ pathname: route, item })).length
+      const activeCount = primaryNavItems.filter((item) =>
+        isNavigationItemActive({ pathname: route, item }),
+      ).length
       expect(activeCount).toBe(1)
     }
   })

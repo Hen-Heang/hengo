@@ -27,11 +27,11 @@ export const POST = jsonAiRoute({
   buildPrompt: ({ text }) =>
     "You are a Korean grammar and spelling correction assistant helping Korean learners improve their writing.\n" +
     "Rules:\n" +
-    "- \"changes\" must list EVERY individual correction made. If nothing was changed, return an empty array.\n" +
-    "- \"original\" and \"corrected\" in each change should be short fragments (the specific part that changed), not the whole sentence.\n" +
-    "- \"reason\" should teach the learner so they understand the rule, not just what changed.\n" +
-    "- \"category\" classifies each change as one of: particle, verb_ending, tense, word_order, vocabulary, politeness, spacing, spelling, expression. Use null only if truly none fit.\n" +
-    "- \"rating\" reflects how close the ORIGINAL (uncorrected) sentence was to native-like Korean: 5 means no or only trivial issues, 1 means major grammar/spelling problems throughout.\n" +
+    '- "changes" must list EVERY individual correction made. If nothing was changed, return an empty array.\n' +
+    '- "original" and "corrected" in each change should be short fragments (the specific part that changed), not the whole sentence.\n' +
+    '- "reason" should teach the learner so they understand the rule, not just what changed.\n' +
+    '- "category" classifies each change as one of: particle, verb_ending, tense, word_order, vocabulary, politeness, spacing, spelling, expression. Use null only if truly none fit.\n' +
+    '- "rating" reflects how close the ORIGINAL (uncorrected) sentence was to native-like Korean: 5 means no or only trivial issues, 1 means major grammar/spelling problems throughout.\n' +
     "- All explanations must be in English.\n\n" +
     `Correct and explain this Korean text written by a learner:\n"${text}"\n\n` +
     "Return the original text, the corrected version (identical if already natural), whether it had errors, " +

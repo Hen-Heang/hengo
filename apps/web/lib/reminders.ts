@@ -17,13 +17,7 @@ export type ReminderFrequency = "daily" | "weekly" | "weekdays"
 export type ReminderChannel = "web" | "telegram"
 export type ReminderStatus = "active" | "paused" | "completed" | "cancelled"
 export type ReminderEntityType =
-  | "task"
-  | "goal"
-  | "habit"
-  | "note"
-  | "inbox_item"
-  | "journal_prompt"
-  | "manual_activity"
+  "task" | "goal" | "habit" | "note" | "inbox_item" | "journal_prompt" | "manual_activity"
 
 export const REMINDER_ENTITY_LABELS: Record<ReminderEntityType, string> = {
   task: "Task",
@@ -131,7 +125,10 @@ export function describeRecurrence(rule: RecurrenceRule): string {
     const day = rule.anchorWeekday != null ? WEEKDAY_LABELS[rule.anchorWeekday] : "…"
     return `Every ${day} at ${timeLabel}`
   }
-  const days = (rule.weekdays ?? []).slice().sort().map((d) => WEEKDAY_LABELS[d])
+  const days = (rule.weekdays ?? [])
+    .slice()
+    .sort()
+    .map((d) => WEEKDAY_LABELS[d])
   return `${days.join(", ") || "…"} at ${timeLabel}`
 }
 
@@ -162,7 +159,10 @@ export function validateReminderInput(input: {
       errors.schedule = "Pick a valid time."
     } else if (input.recurrence.frequency === "weekly" && input.recurrence.anchorWeekday == null) {
       errors.schedule = "Pick which day of the week to repeat on."
-    } else if (input.recurrence.frequency === "weekdays" && (input.recurrence.weekdays ?? []).length === 0) {
+    } else if (
+      input.recurrence.frequency === "weekdays" &&
+      (input.recurrence.weekdays ?? []).length === 0
+    ) {
       errors.schedule = "Pick at least one weekday."
     }
   }

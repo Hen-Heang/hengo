@@ -36,7 +36,11 @@ export function GoalCoachChat({ goalId, goalTitle }: { goalId: string; goalTitle
     if (!message || streaming) return
     setInput("")
     const history = messages.slice(-12)
-    setMessages((prev) => [...prev, { role: "user", content: message }, { role: "assistant", content: "" }])
+    setMessages((prev) => [
+      ...prev,
+      { role: "user", content: message },
+      { role: "assistant", content: "" },
+    ])
     setStreaming(true)
     try {
       await goalsApi.coachStream(
@@ -52,13 +56,14 @@ export function GoalCoachChat({ goalId, goalTitle }: { goalId: string; goalTitle
             }
             return next
           }),
-        () => {}
+        () => {},
       )
     } catch (e) {
       setMessages((prev) => {
         const next = [...prev]
         // drop the empty assistant placeholder on failure
-        if (next[next.length - 1]?.role === "assistant" && !next[next.length - 1].content) next.pop()
+        if (next[next.length - 1]?.role === "assistant" && !next[next.length - 1].content)
+          next.pop()
         return next
       })
       toast.error(getApiErrorMessage(e, "Coach is unavailable right now."))
@@ -102,20 +107,24 @@ export function GoalCoachChat({ goalId, goalTitle }: { goalId: string; goalTitle
           </div>
         ) : (
           messages.map((m, i) => (
-            <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
+            <div
+              key={i}
+              className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}
+            >
               <div
                 className={cn(
                   "max-w-[85%] whitespace-pre-wrap rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
                   m.role === "user"
                     ? "bg-primary text-primary-foreground"
-                    : "border border-border bg-background text-foreground"
+                    : "border border-border bg-background text-foreground",
                 )}
               >
-                {m.content || (streaming && i === messages.length - 1 ? (
-                  <Loader2 className="h-4 w-4 animate-spin opacity-60" />
-                ) : (
-                  ""
-                ))}
+                {m.content ||
+                  (streaming && i === messages.length - 1 ? (
+                    <Loader2 className="h-4 w-4 animate-spin opacity-60" />
+                  ) : (
+                    ""
+                  ))}
               </div>
             </div>
           ))

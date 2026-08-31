@@ -126,13 +126,7 @@ export function hasActiveFilters(filters: TaskFilters): boolean {
 export function taskSearchHaystack(task: Task, context: TaskViewContext): string {
   const phase = context.phases.find((p) => p.id === task.phase_id)
   const keyResult = context.keyResults.find((kr) => kr.id === task.key_result_id)
-  return [
-    task.title,
-    task.description,
-    phase?.title,
-    keyResult?.title,
-    ...(task.tags ?? []),
-  ]
+  return [task.title, task.description, phase?.title, keyResult?.title, ...(task.tags ?? [])]
     .filter(Boolean)
     .join(" ")
     .toLowerCase()
@@ -147,17 +141,16 @@ export function matchesSearch(task: Task, query: string, context: TaskViewContex
   return trimmed.split(/\s+/).every((term) => haystack.includes(term))
 }
 
-export function filterTasks(
-  tasks: Task[],
-  filters: TaskFilters,
-  context: TaskViewContext,
-): Task[] {
+export function filterTasks(tasks: Task[], filters: TaskFilters, context: TaskViewContext): Task[] {
   const { todayYmd } = context
   return tasks.filter((task) => {
     if (!matchesChip(task, filters.chip, todayYmd)) return false
     if (!matchesSearch(task, filters.search, context)) return false
 
-    if (filters.statuses.length > 0 && !filters.statuses.includes(resolveTaskStatus(task, todayYmd)))
+    if (
+      filters.statuses.length > 0 &&
+      !filters.statuses.includes(resolveTaskStatus(task, todayYmd))
+    )
       return false
 
     if (filters.phaseIds.length > 0) {
@@ -197,12 +190,7 @@ export function filterTasks(
 // ── Sorting ─────────────────────────────────────────────────────────────────
 
 export type TaskSort =
-  | "smart"
-  | "scheduled_date"
-  | "impact"
-  | "recently_created"
-  | "recently_updated"
-  | "completed_date"
+  "smart" | "scheduled_date" | "impact" | "recently_created" | "recently_updated" | "completed_date"
 
 export const TASK_SORTS: { value: TaskSort; label: string }[] = [
   { value: "smart", label: "Smart priority" },

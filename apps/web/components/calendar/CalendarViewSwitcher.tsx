@@ -107,7 +107,10 @@ export function CalendarViewSwitcher({
                 >
                   <span className="sm:hidden">{compactRangeLabel(view, selectedDate)}</span>
                   <span className="hidden sm:inline">{fullLabel}</span>
-                  <CalendarDays className="h-3.5 w-3.5 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <CalendarDays
+                    className="h-3.5 w-3.5 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                 </button>
               </PopoverTrigger>
               <PopoverContent align="start" className="w-auto space-y-2">

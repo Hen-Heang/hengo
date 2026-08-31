@@ -26,7 +26,10 @@ export function GoalsHubHeader({ description, stats }: GoalsHubHeaderProps) {
       variant={stats?.length ? "default" : "compact"}
       stats={stats}
       actions={
-        <Button asChild className="h-11 w-full rounded-lg bg-blue-600 font-semibold hover:bg-blue-500 sm:w-auto sm:px-5">
+        <Button
+          asChild
+          className="h-11 w-full rounded-lg bg-blue-600 font-semibold hover:bg-blue-500 sm:w-auto sm:px-5"
+        >
           <Link href="/goals/create">
             <Plus size={18} strokeWidth={2} className="mr-2" />
             New goal

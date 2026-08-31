@@ -38,7 +38,9 @@ export const realtimeApi = {
       signal,
     })
 
-    const data = (await response.json().catch(() => ({}))) as Partial<RealtimeSessionCredentials> & {
+    const data = (await response
+      .json()
+      .catch(() => ({}))) as Partial<RealtimeSessionCredentials> & {
       error?: string
     }
     if (!response.ok || !data.clientSecret) {

@@ -66,11 +66,15 @@ export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs font-medium text-muted-foreground">{occurredLabel}</p>
-          {entry.title && <h3 className="mt-0.5 text-sm font-semibold text-foreground">{entry.title}</h3>}
+          {entry.title && (
+            <h3 className="mt-0.5 text-sm font-semibold text-foreground">{entry.title}</h3>
+          )}
         </div>
         <div className="flex items-center gap-1">
           {entry.mood != null && <Badge variant="outline">Mood: {MOOD_LABELS[entry.mood]}</Badge>}
-          {entry.energy != null && <Badge variant="outline">Energy: {ENERGY_LABELS[entry.energy]}</Badge>}
+          {entry.energy != null && (
+            <Badge variant="outline">Energy: {ENERGY_LABELS[entry.energy]}</Badge>
+          )}
         </div>
       </div>
 
@@ -98,7 +102,11 @@ export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
           {entry.gratitude}
         </p>
       )}
-      {entry.content && <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">{entry.content}</p>}
+      {entry.content && (
+        <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+          {entry.content}
+        </p>
+      )}
 
       {entry.tags.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
@@ -123,7 +131,9 @@ export function JournalEntryCard({ entry }: { entry: JournalEntry }) {
           <AlertDialogContent>
             <AlertDialogHeader>
               <AlertDialogTitle>Delete this entry?</AlertDialogTitle>
-              <AlertDialogDescription>This permanently removes the journal entry. This can&apos;t be undone.</AlertDialogDescription>
+              <AlertDialogDescription>
+                This permanently removes the journal entry. This can&apos;t be undone.
+              </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={deleting}>Cancel</AlertDialogCancel>

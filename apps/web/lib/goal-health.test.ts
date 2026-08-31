@@ -40,7 +40,9 @@ describe("computeGoalHealth", () => {
   })
 
   it("is on_track when all key results are achieved", () => {
-    const result = computeGoalHealth(baseInput({ allKeyResultsAchieved: true, outcomeProgress: 100 }))
+    const result = computeGoalHealth(
+      baseInput({ allKeyResultsAchieved: true, outcomeProgress: 100 }),
+    )
     expect(result.status).toBe("on_track")
     expect(result.reason).toMatch(/all key results are complete/i)
   })
@@ -77,13 +79,17 @@ describe("computeGoalHealth", () => {
   })
 
   it("escalates for overdue high-impact tasks even when pace is fine", () => {
-    const result = computeGoalHealth(baseInput({ outcomeProgress: 60, overdueHighImpactTaskCount: 1 }))
+    const result = computeGoalHealth(
+      baseInput({ outcomeProgress: 60, overdueHighImpactTaskCount: 1 }),
+    )
     expect(result.status).toBe("attention")
     expect(result.reason).toMatch(/overdue high-impact/)
   })
 
   it("escalates to at_risk for three or more overdue high-impact tasks", () => {
-    const result = computeGoalHealth(baseInput({ outcomeProgress: 60, overdueHighImpactTaskCount: 3 }))
+    const result = computeGoalHealth(
+      baseInput({ outcomeProgress: 60, overdueHighImpactTaskCount: 3 }),
+    )
     expect(result.status).toBe("at_risk")
   })
 

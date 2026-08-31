@@ -33,7 +33,13 @@ export interface GoalRow {
   goal_stars?: { user_id: string }[] | null
   tasks?: { id: string; completed: boolean }[] | null
   goal_key_results?:
-    | { id: string; title: string; target_value: number | null; current_value: number | null; unit: string | null }[]
+    | {
+        id: string
+        title: string
+        target_value: number | null
+        current_value: number | null
+        unit: string | null
+      }[]
     | null
 }
 
@@ -121,7 +127,12 @@ export function registerGoalTools(server: McpServer, ctx: McpContext): void {
         total: z.number(),
         truncated: z.boolean(),
       }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "list_goals", async ({ status, limit }) => {
       let query = ctx.db
@@ -158,19 +169,34 @@ export function registerGoalTools(server: McpServer, ctx: McpContext): void {
         "the two cases are indistinguishable by design.",
       inputSchema: z.object({ goalId: uuidSchema }),
       outputSchema: z.object({ goal: goalDetailSchema }),
-      annotations: { readOnlyHint: true, destructiveHint: false, idempotentHint: true, openWorldHint: false },
+      annotations: {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: false,
+      },
     },
     instrumentedTool(ctx, "read", "get_goal", async ({ goalId }) => {
-      const { data, error } = await ctx.db.from("goals").select(GOAL_SELECT).eq("id", goalId).maybeSingle()
+      const { data, error } = await ctx.db
+        .from("goals")
+        .select(GOAL_SELECT)
+        .eq("id", goalId)
+        .maybeSingle()
       if (error) throw new Error("Could not load the goal.")
       if (!data) {
-        return { isError: true, content: [{ type: "text" as const, text: "No goal found with that id." }] }
+        return {
+          isError: true,
+          content: [{ type: "text" as const, text: "No goal found with that id." }],
+        }
       }
 
       const goal = toDetail(data as GoalRow, ctx.userId)
       return {
         content: [
-          { type: "text" as const, text: `${goal.title} — ${goal.status}${goal.isOwner ? "" : " (shared with you)"}` },
+          {
+            type: "text" as const,
+            text: `${goal.title} — ${goal.status}${goal.isOwner ? "" : " (shared with you)"}`,
+          },
         ],
         structuredContent: { goal },
       }

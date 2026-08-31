@@ -158,7 +158,11 @@ export function ManagementPanel({
               </h3>
               <div className="mt-3 space-y-4">
                 <Row title="Edit goal" description="Details, dates, and visuals.">
-                  <Button variant="outline" onClick={onEdit} className="h-11 rounded-xl text-xs font-semibold">
+                  <Button
+                    variant="outline"
+                    onClick={onEdit}
+                    className="h-11 rounded-xl text-xs font-semibold"
+                  >
                     Edit
                   </Button>
                 </Row>

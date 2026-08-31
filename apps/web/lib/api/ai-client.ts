@@ -29,4 +29,3 @@ export async function aiPost<T>(path: string, body: unknown): Promise<T> {
   }
   return (await res.json()) as T
 }
-

@@ -372,7 +372,10 @@ export const KOREAN_COACH_SCENARIOS: KoreanScenario[] = [
     koreanTitle: "배달 기사님과 통화하기",
     englishTitle: "Calling a delivery driver",
     description: "Give a short location instruction over the phone.",
-    learningObjectives: ["Identify your building or entrance", "Give a concise delivery instruction"],
+    learningObjectives: [
+      "Identify your building or entrance",
+      "Give a concise delivery instruction",
+    ],
     usefulVocabulary: [
       { korean: "입구", meaning: "entrance" },
       { korean: "문 앞", meaning: "in front of the door" },
@@ -400,4 +403,3 @@ export function validateKoreanCoachScenarios(
 export function getKoreanCoachScenario(id: string): KoreanScenario | undefined {
   return KOREAN_COACH_SCENARIOS.find((scenario) => scenario.id === id)
 }
-

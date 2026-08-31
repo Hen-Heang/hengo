@@ -65,11 +65,7 @@ export const notesApi = {
   },
 
   get: async (slug: string): Promise<Note> => {
-    const { data, error } = await supabase
-      .from("kori_notes")
-      .select("*")
-      .eq("slug", slug)
-      .single()
+    const { data, error } = await supabase.from("kori_notes").select("*").eq("slug", slug).single()
     if (error) throw error
     return toNote(data as NoteRow)
   },
@@ -145,7 +141,8 @@ export const notesApi = {
     return toNote(row as NoteRow)
   },
 
-  togglePinned: async (slug: string, pinned: boolean): Promise<Note> => notesApi.update(slug, { pinned }),
+  togglePinned: async (slug: string, pinned: boolean): Promise<Note> =>
+    notesApi.update(slug, { pinned }),
 
   remove: async (slug: string) => {
     const { error } = await supabase.from("kori_notes").delete().eq("slug", slug)

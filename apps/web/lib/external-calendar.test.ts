@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest"
 
-import { GOOGLE_CALENDAR_COLOR, toCalendarTask, type ExternalCalendarEvent } from "./external-calendar"
+import {
+  GOOGLE_CALENDAR_COLOR,
+  toCalendarTask,
+  type ExternalCalendarEvent,
+} from "./external-calendar"
 
 function event(overrides: Partial<ExternalCalendarEvent> = {}): ExternalCalendarEvent {
   return {

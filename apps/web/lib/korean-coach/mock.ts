@@ -12,12 +12,17 @@ export function createMockTutorFeedback(
       summary: "Your meaning was understandable. This is mock feedback for local UI development.",
       grammar: {
         isCorrect: false,
-        explanation: "Mock mode shows the feedback layout without sending content to an AI service.",
+        explanation:
+          "Mock mode shows the feedback layout without sending content to an AI service.",
       },
       naturalness: { score: 70, explanation: "The sentence can be made slightly more natural." },
-      vocabulary: { score: 75, explanation: "The key idea was communicated with simple vocabulary." },
+      vocabulary: {
+        score: 75,
+        explanation: "The key idea was communicated with simple vocabulary.",
+      },
       communication: { score: 80, explanation: "The main meaning was understandable." },
-      fluencyObservation: "A transcript cannot measure pronunciation; try saying the corrected sentence smoothly.",
+      fluencyObservation:
+        "A transcript cannot measure pronunciation; try saying the corrected sentence smoothly.",
       wordsToRetry: [],
     },
     correctedSentence: {
@@ -53,4 +58,3 @@ export function createMockTutorFeedback(
 export function isKoreanCoachMockMode(): boolean {
   return process.env.KOREAN_COACH_MOCK_MODE === "true"
 }
-

@@ -47,12 +47,7 @@ export function TechIcon({ slug, name, size = 22, className }: TechIconProps) {
   const { icon: Icon, color } = ICON_MAP[key] ?? FALLBACK
 
   return (
-    <Icon
-      size={size}
-      style={{ color }}
-      className={cn("shrink-0", className)}
-      aria-hidden="true"
-    />
+    <Icon size={size} style={{ color }} className={cn("shrink-0", className)} aria-hidden="true" />
   )
 }
 

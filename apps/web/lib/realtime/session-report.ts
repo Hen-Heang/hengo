@@ -82,23 +82,25 @@ function buildCorrections(corrections: MetricsCorrection[]): ReportCorrection[] 
   }
 
   const seen = new Set<string>()
-  return flat
-    // Important first, preserving encounter order within each group.
-    .sort((a, b) => Number(b.important) - Number(a.important))
-    .filter((item) => {
-      const key = `${item.original}→${item.corrected}`
-      if (seen.has(key)) return false
-      seen.add(key)
-      return true
-    })
-    .slice(0, MAX_REPORT_CORRECTIONS)
-    .map((item) => ({
-      original: item.original,
-      corrected: item.corrected,
-      natural: item.natural,
-      explanation: item.explanation,
-      grammarPoint: item.grammarPoint,
-    }))
+  return (
+    flat
+      // Important first, preserving encounter order within each group.
+      .sort((a, b) => Number(b.important) - Number(a.important))
+      .filter((item) => {
+        const key = `${item.original}→${item.corrected}`
+        if (seen.has(key)) return false
+        seen.add(key)
+        return true
+      })
+      .slice(0, MAX_REPORT_CORRECTIONS)
+      .map((item) => ({
+        original: item.original,
+        corrected: item.corrected,
+        natural: item.natural,
+        explanation: item.explanation,
+        grammarPoint: item.grammarPoint,
+      }))
+  )
 }
 
 function buildVocabulary(corrections: MetricsCorrection[]): ReportVocab[] {

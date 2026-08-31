@@ -69,17 +69,20 @@ describe("loadMcpAuthConfig", () => {
   })
 
   it.each(["", "false", "1", "yes", "nonsense"])(
-    'treats MCP_WRITE_ENABLED=%j as false — it never falls open on an unrecognised value',
+    "treats MCP_WRITE_ENABLED=%j as false — it never falls open on an unrecognised value",
     (value) => {
       setEnv({ ...VALID, MCP_WRITE_ENABLED: value })
       expect(loadMcpAuthConfig().writeEnabled).toBe(false)
     },
   )
 
-  it.each(["true", "TRUE", " True "])('enables writes for %j (case/whitespace-insensitive "true")', (value) => {
-    setEnv({ ...VALID, MCP_WRITE_ENABLED: value })
-    expect(loadMcpAuthConfig().writeEnabled).toBe(true)
-  })
+  it.each(["true", "TRUE", " True "])(
+    'enables writes for %j (case/whitespace-insensitive "true")',
+    (value) => {
+      setEnv({ ...VALID, MCP_WRITE_ENABLED: value })
+      expect(loadMcpAuthConfig().writeEnabled).toBe(true)
+    },
+  )
 
   it("rejects a non-https resource URL outside localhost", () => {
     setEnv({ ...VALID, MCP_RESOURCE_URL: "http://hengo.example.com/mcp" })

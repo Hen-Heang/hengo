@@ -1,24 +1,13 @@
-"use client";
+"use client"
 
-import {
-  memo,
-  useCallback,
-  useRef,
-  useState,
-  type FC,
-  type PropsWithChildren,
-} from "react";
-import { ChevronDownIcon, LoaderIcon } from "lucide-react";
-import { cva, type VariantProps } from "class-variance-authority";
-import { useScrollLock } from "@assistant-ui/react";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { cn } from "@/lib/utils";
+import { memo, useCallback, useRef, useState, type FC, type PropsWithChildren } from "react"
+import { ChevronDownIcon, LoaderIcon } from "lucide-react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { useScrollLock } from "@assistant-ui/react"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { cn } from "@/lib/utils"
 
-const ANIMATION_DURATION = 200;
+const ANIMATION_DURATION = 200
 
 const toolGroupVariants = cva("aui-tool-group-root group/tool-group w-full", {
   variants: {
@@ -29,17 +18,17 @@ const toolGroupVariants = cva("aui-tool-group-root group/tool-group w-full", {
     },
   },
   defaultVariants: { variant: "outline" },
-});
+})
 
 export type ToolGroupRootProps = Omit<
   React.ComponentProps<typeof Collapsible>,
   "open" | "onOpenChange"
 > &
   VariantProps<typeof toolGroupVariants> & {
-    open?: boolean;
-    onOpenChange?: (open: boolean) => void;
-    defaultOpen?: boolean;
-  };
+    open?: boolean
+    onOpenChange?: (open: boolean) => void
+    defaultOpen?: boolean
+  }
 
 function ToolGroupRoot({
   className,
@@ -50,23 +39,23 @@ function ToolGroupRoot({
   children,
   ...props
 }: ToolGroupRootProps) {
-  const collapsibleRef = useRef<HTMLDivElement>(null);
-  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen);
-  const lockScroll = useScrollLock(collapsibleRef, ANIMATION_DURATION);
+  const collapsibleRef = useRef<HTMLDivElement>(null)
+  const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen)
+  const lockScroll = useScrollLock(collapsibleRef, ANIMATION_DURATION)
 
-  const isControlled = controlledOpen !== undefined;
-  const isOpen = isControlled ? controlledOpen : uncontrolledOpen;
+  const isControlled = controlledOpen !== undefined
+  const isOpen = isControlled ? controlledOpen : uncontrolledOpen
 
   const handleOpenChange = useCallback(
     (open: boolean) => {
-      lockScroll();
+      lockScroll()
       if (!isControlled) {
-        setUncontrolledOpen(open);
+        setUncontrolledOpen(open)
       }
-      controlledOnOpenChange?.(open);
+      controlledOnOpenChange?.(open)
     },
     [lockScroll, isControlled, controlledOnOpenChange],
-  );
+  )
 
   return (
     <Collapsible
@@ -75,11 +64,7 @@ function ToolGroupRoot({
       data-variant={variant ?? "outline"}
       open={isOpen}
       onOpenChange={handleOpenChange}
-      className={cn(
-        toolGroupVariants({ variant }),
-        "group/tool-group-root",
-        className,
-      )}
+      className={cn(toolGroupVariants({ variant }), "group/tool-group-root", className)}
       style={
         {
           "--animation-duration": `${ANIMATION_DURATION}ms`,
@@ -89,7 +74,7 @@ function ToolGroupRoot({
     >
       {children}
     </Collapsible>
-  );
+  )
 }
 
 function ToolGroupTrigger({
@@ -98,10 +83,10 @@ function ToolGroupTrigger({
   className,
   ...props
 }: React.ComponentProps<typeof CollapsibleTrigger> & {
-  count: number;
-  active?: boolean;
+  count: number
+  active?: boolean
 }) {
-  const label = `${count} tool ${count === 1 ? "call" : "calls"}`;
+  const label = `${count} tool ${count === 1 ? "call" : "calls"}`
 
   return (
     <CollapsibleTrigger
@@ -152,7 +137,7 @@ function ToolGroupTrigger({
         )}
       />
     </CollapsibleTrigger>
-  );
+  )
 }
 
 function ToolGroupContent({
@@ -193,29 +178,29 @@ function ToolGroupContent({
         {children}
       </div>
     </CollapsibleContent>
-  );
+  )
 }
 
-type ToolGroupComponent = FC<
-  PropsWithChildren<{ startIndex: number; endIndex: number }>
-> & {
-  Root: typeof ToolGroupRoot;
-  Trigger: typeof ToolGroupTrigger;
-  Content: typeof ToolGroupContent;
-};
+type ToolGroupComponent = FC<PropsWithChildren<{ startIndex: number; endIndex: number }>> & {
+  Root: typeof ToolGroupRoot
+  Trigger: typeof ToolGroupTrigger
+  Content: typeof ToolGroupContent
+}
 
-const ToolGroupImpl: FC<
-  PropsWithChildren<{ startIndex: number; endIndex: number }>
-> = ({ children, startIndex, endIndex }) => {
-  const toolCount = endIndex - startIndex + 1;
+const ToolGroupImpl: FC<PropsWithChildren<{ startIndex: number; endIndex: number }>> = ({
+  children,
+  startIndex,
+  endIndex,
+}) => {
+  const toolCount = endIndex - startIndex + 1
 
   return (
     <ToolGroupRoot>
       <ToolGroupTrigger count={toolCount} />
       <ToolGroupContent>{children}</ToolGroupContent>
     </ToolGroupRoot>
-  );
-};
+  )
+}
 
 /**
  * @deprecated This wrapper targets the legacy `components.ToolGroup` prop
@@ -223,17 +208,11 @@ const ToolGroupImpl: FC<
  * a `groupBy` returning `"group-tool"` and compose `ToolGroupRoot` /
  * `ToolGroupTrigger` / `ToolGroupContent` directly. See `thread.tsx`.
  */
-const ToolGroup = memo(ToolGroupImpl) as unknown as ToolGroupComponent;
+const ToolGroup = memo(ToolGroupImpl) as unknown as ToolGroupComponent
 
-ToolGroup.displayName = "ToolGroup";
-ToolGroup.Root = ToolGroupRoot;
-ToolGroup.Trigger = ToolGroupTrigger;
-ToolGroup.Content = ToolGroupContent;
+ToolGroup.displayName = "ToolGroup"
+ToolGroup.Root = ToolGroupRoot
+ToolGroup.Trigger = ToolGroupTrigger
+ToolGroup.Content = ToolGroupContent
 
-export {
-  ToolGroup,
-  ToolGroupRoot,
-  ToolGroupTrigger,
-  ToolGroupContent,
-  toolGroupVariants,
-};
+export { ToolGroup, ToolGroupRoot, ToolGroupTrigger, ToolGroupContent, toolGroupVariants }

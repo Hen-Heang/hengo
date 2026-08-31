@@ -149,11 +149,14 @@ export interface TaskStatusPatch {
 }
 
 /** Write a status. Always mirrors `completed`, and clears a stale block note. */
-export function taskStatusPatch(status: TaskStatus, blockedReason?: string | null): TaskStatusPatch {
+export function taskStatusPatch(
+  status: TaskStatus,
+  blockedReason?: string | null,
+): TaskStatusPatch {
   return {
     status,
     completed: status === "completed",
-    blocked_reason: status === "blocked" ? (blockedReason?.trim() || null) : null,
+    blocked_reason: status === "blocked" ? blockedReason?.trim() || null : null,
   }
 }
 

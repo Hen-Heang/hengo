@@ -23,7 +23,9 @@ export default function LearnPage() {
     >
       <motion.div variants={item}>
         <p className="app-kicker">Learning Hub</p>
-        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">Study</h1>
+        <h1 className="mt-2 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+          Study
+        </h1>
         <p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
           Build the Korean you need for work and daily life.
         </p>

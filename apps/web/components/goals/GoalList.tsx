@@ -121,7 +121,14 @@ type GoalActionHandlers = {
 // Star + complete/edit/delete menu, shared by the grid card and the table row
 // so the owner controls stay identical across views. `size` tunes the touch
 // target (kept >= 44px everywhere, per accessibility guidance).
-function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onToggleComplete }: GoalActionHandlers & { size: string }) {
+function GoalActions({
+  goal,
+  size,
+  onDeleteGoal,
+  onEditGoal,
+  onToggleStar,
+  onToggleComplete,
+}: GoalActionHandlers & { size: string }) {
   const isCompleted = goal.status === "completed"
   return (
     <div className="flex shrink-0 items-center gap-1" onClick={(e) => e.stopPropagation()}>
@@ -136,19 +143,27 @@ function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onTog
           "rounded-lg",
           goal.isStarred
             ? "bg-amber-500/10 text-amber-500 hover:bg-amber-500/20"
-            : "text-muted-foreground/60 hover:bg-amber-500/10 hover:text-amber-500"
+            : "text-muted-foreground/60 hover:bg-amber-500/10 hover:text-amber-500",
         )}
       >
         <Star className={cn("h-4 w-4", goal.isStarred && "fill-current")} />
       </Button>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" aria-label="Goal actions" className={cn(size, "rounded-lg hover:bg-foreground/5")}>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Goal actions"
+            className={cn(size, "rounded-lg hover:bg-foreground/5")}
+          >
             <MoreHorizontal className="h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-44 rounded-lg p-2 shadow-md">
-          <DropdownMenuItem className="rounded-lg font-medium" onSelect={() => onToggleComplete?.(goal.id)}>
+          <DropdownMenuItem
+            className="rounded-lg font-medium"
+            onSelect={() => onToggleComplete?.(goal.id)}
+          >
             {isCompleted ? (
               <RotateCcw className="mr-3 h-4 w-4 text-blue-500" />
             ) : (
@@ -156,11 +171,18 @@ function GoalActions({ goal, size, onDeleteGoal, onEditGoal, onToggleStar, onTog
             )}
             {isCompleted ? "Reopen goal" : "Mark complete"}
           </DropdownMenuItem>
-          <DropdownMenuItem className="rounded-lg font-medium" onSelect={(e) => onEditGoal?.(goal, e as unknown as React.MouseEvent)}>
+          <DropdownMenuItem
+            className="rounded-lg font-medium"
+            onSelect={(e) => onEditGoal?.(goal, e as unknown as React.MouseEvent)}
+          >
             <Pencil className="mr-3 h-4 w-4 text-primary" /> Edit
           </DropdownMenuItem>
           <DropdownMenuSeparator className="my-2" />
-          <DropdownMenuItem variant="destructive" className="rounded-lg font-medium" onSelect={(e) => onDeleteGoal(goal, e as unknown as React.MouseEvent)}>
+          <DropdownMenuItem
+            variant="destructive"
+            className="rounded-lg font-medium"
+            onSelect={(e) => onDeleteGoal(goal, e as unknown as React.MouseEvent)}
+          >
             <Trash2 className="mr-3 h-4 w-4" /> Delete
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -185,7 +207,7 @@ function GoalIcon({
     <div
       className={cn(
         "relative shrink-0 overflow-hidden bg-primary/10 font-bold text-primary ring-1 ring-primary/10",
-        className
+        className,
       )}
       onClick={(e) => e.stopPropagation()}
     >
@@ -206,7 +228,10 @@ function HealthDot({ status, reason }: { status: Goal["health_status"]; reason?:
   const styling = getHealthStatusStyling(status)
   return (
     <span className="inline-flex min-w-0 items-center gap-1.5" title={reason ?? undefined}>
-      <span className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styling.dotColor)} aria-hidden="true" />
+      <span
+        className={cn("h-1.5 w-1.5 shrink-0 rounded-full", styling.dotColor)}
+        aria-hidden="true"
+      />
       <span className="truncate">{GOAL_HEALTH_LABELS[status]}</span>
     </span>
   )
@@ -216,16 +241,27 @@ function HealthDot({ status, reason }: { status: Goal["health_status"]; reason?:
 // title (or a fallback when there's nothing open), and a chevron. Not its own
 // button: clicking it bubbles to the card/row's own onClick (open the goal),
 // same as the rest of the card body.
-function NextActionBlock({ nextAction, className }: { nextAction: ReturnType<typeof selectNextBestAction>; className?: string }) {
+function NextActionBlock({
+  nextAction,
+  className,
+}: {
+  nextAction: ReturnType<typeof selectNextBestAction>
+  className?: string
+}) {
   return (
     <div className={className}>
-      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">Next action</p>
+      <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground/60">
+        Next action
+      </p>
       {nextAction ? (
         <div className="mt-1 flex items-center gap-1.5">
           <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">
             {nextAction.task.title || nextAction.task.description || "Untitled task"}
           </span>
-          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50" aria-hidden="true" />
+          <ChevronRight
+            className="h-3.5 w-3.5 shrink-0 text-muted-foreground/50"
+            aria-hidden="true"
+          />
         </div>
       ) : (
         <p className="mt-1 text-sm font-medium text-muted-foreground">No next action scheduled</p>
@@ -252,7 +288,7 @@ export function GoalList({
   const [viewMode, setViewMode] = useState<"grid" | "list">(() =>
     typeof localStorage !== "undefined" && localStorage.getItem("dg_goal_view") === "grid"
       ? "grid"
-      : "list"
+      : "list",
   )
 
   const setView = (next: "grid" | "list") => {
@@ -280,7 +316,7 @@ export function GoalList({
       // Propagate the saved icon into the cached list so it survives refetch
       // and navigation instead of living only in local override state.
       queryClient.setQueryData<Goal[]>(goalsQueryKey(currentUser), (prev) =>
-        prev?.map((g) => (g.id === goal.id ? { ...g, ...updated } : g))
+        prev?.map((g) => (g.id === goal.id ? { ...g, ...updated } : g)),
       )
       toast.success(emoji ? "Icon updated" : "Icon removed")
     } catch {
@@ -316,9 +352,12 @@ export function GoalList({
           <Target size={28} strokeWidth={1.5} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold tracking-tight">{emptyState?.title ?? "No goals found"}</h3>
+          <h3 className="text-lg font-semibold tracking-tight">
+            {emptyState?.title ?? "No goals found"}
+          </h3>
           <p className="mt-2 max-w-sm text-sm font-medium text-muted-foreground">
-            {emptyState?.description ?? "Try adjusting your filters or create a new goal to get started."}
+            {emptyState?.description ??
+              "Try adjusting your filters or create a new goal to get started."}
           </p>
         </div>
       </div>
@@ -329,10 +368,12 @@ export function GoalList({
     <div className="space-y-4">
       <div className="flex items-center justify-end">
         <div className="relative flex gap-1 rounded-lg bg-foreground/5 p-1">
-          {([
-            { mode: "list", Icon: List, label: "List view" },
-            { mode: "grid", Icon: LayoutGrid, label: "Grid view" },
-          ] as const).map(({ mode, Icon, label }) => (
+          {(
+            [
+              { mode: "list", Icon: List, label: "List view" },
+              { mode: "grid", Icon: LayoutGrid, label: "Grid view" },
+            ] as const
+          ).map(({ mode, Icon, label }) => (
             <button
               key={mode}
               onClick={() => setView(mode)}
@@ -340,7 +381,9 @@ export function GoalList({
               aria-pressed={viewMode === mode}
               className={cn(
                 "relative flex h-11 w-11 items-center justify-center rounded-lg transition-colors",
-                viewMode === mode ? "text-foreground" : "text-muted-foreground/50 hover:text-foreground"
+                viewMode === mode
+                  ? "text-foreground"
+                  : "text-muted-foreground/50 hover:text-foreground",
               )}
             >
               {viewMode === mode && (
@@ -369,7 +412,7 @@ export function GoalList({
           className={cn(
             viewMode === "grid"
               ? "grid grid-cols-1 gap-4 sm:gap-5 md:grid-cols-2 xl:grid-cols-3"
-              : "flex flex-col gap-2.5"
+              : "flex flex-col gap-2.5",
           )}
         >
           {goals.map((goal, i) => {
@@ -381,7 +424,8 @@ export function GoalList({
             const goalProgress = computeGoalProgress(goal.taskCounts, goal.keyResults ?? [])
             const total = goalProgress.activityProgress.total
             const done = goalProgress.activityProgress.completed
-            const progress = goalProgress.outcomeProgress ?? goalProgress.activityProgress.percentage
+            const progress =
+              goalProgress.outcomeProgress ?? goalProgress.activityProgress.percentage
             // List-level health: no per-goal task-detail fetch here, so overdue
             // high-impact / inactivity signals are omitted (0 / null) — the
             // goal detail page computes those from the full task list.
@@ -405,7 +449,11 @@ export function GoalList({
             // logic duplicated here. Not shown once a goal is completed.
             const nextAction = isCompleted
               ? null
-              : selectNextBestAction({ tasks: goal.tasks ?? [], keyResults: goal.keyResults ?? [], todayYmd })
+              : selectNextBestAction({
+                  tasks: goal.tasks ?? [],
+                  keyResults: goal.keyResults ?? [],
+                  todayYmd,
+                })
             const goalIcon = getGoalIcon(goal)
             const isOpening = openingGoalId === goal.id
             const isOwner = currentUser != null && String(currentUser) === String(goal.user_id)
@@ -434,7 +482,7 @@ export function GoalList({
                   aria-label={`Open goal: ${goal.title}`}
                   className={cn(
                     "group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-lg border border-border/60 bg-card/40 px-3 py-3 transition-all duration-200 hover:border-border hover:bg-card/70 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
-                    isOpening && "border-primary/40 ring-2 ring-primary"
+                    isOpening && "border-primary/40 ring-2 ring-primary",
                   )}
                 >
                   <GoalIcon
@@ -444,7 +492,10 @@ export function GoalList({
                     className="h-11 w-11 rounded-xl text-lg"
                   />
                   <div className="min-w-0 flex-1">
-                    <h3 title={goal.title} className="truncate text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary">
+                    <h3
+                      title={goal.title}
+                      className="truncate text-sm font-semibold tracking-tight text-foreground transition-colors group-hover:text-primary"
+                    >
                       {goal.title}
                     </h3>
                     <div className="mt-1 flex items-center gap-2 text-xs font-medium text-muted-foreground">
@@ -466,7 +517,9 @@ export function GoalList({
                           style={{ background: progressGradient(progress) }}
                         />
                       </div>
-                      <span className="shrink-0 tabular-nums">{done}/{total}</span>
+                      <span className="shrink-0 tabular-nums">
+                        {done}/{total}
+                      </span>
                     </div>
                     {!isCompleted && (
                       <div className="mt-1 flex items-center gap-1 text-xs text-muted-foreground">
@@ -475,7 +528,9 @@ export function GoalList({
                         </span>
                         <span className="min-w-0 flex-1 truncate">
                           {nextAction
-                            ? nextAction.task.title || nextAction.task.description || "Untitled task"
+                            ? nextAction.task.title ||
+                              nextAction.task.description ||
+                              "Untitled task"
                             : "No next action scheduled"}
                         </span>
                       </div>
@@ -484,7 +539,9 @@ export function GoalList({
                   <span className="hidden shrink-0 text-[11px] font-medium text-muted-foreground sm:inline">
                     {deadlineFooterText}
                   </span>
-                  <span className="shrink-0 text-sm font-semibold tabular-nums text-primary">{progress}%</span>
+                  <span className="shrink-0 text-sm font-semibold tabular-nums text-primary">
+                    {progress}%
+                  </span>
                   {isOpening ? (
                     <div className="h-5 w-5 shrink-0 animate-spin rounded-full border-2 border-primary border-t-transparent" />
                   ) : (
@@ -520,7 +577,7 @@ export function GoalList({
                 <Card
                   className={cn(
                     "h-full overflow-hidden rounded-lg border border-border/60 bg-card/40 transition-all duration-200 hover:border-border hover:bg-card/70 hover:shadow-sm focus-visible:ring-2 focus-visible:ring-ring dark:bg-slate-900/40",
-                    isOpening && "border-primary/40 ring-2 ring-primary"
+                    isOpening && "border-primary/40 ring-2 ring-primary",
                   )}
                   onClick={open}
                   onKeyDown={(event) => {
@@ -571,7 +628,9 @@ export function GoalList({
                     <div className="mt-4 space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-medium text-muted-foreground">Progress</span>
-                        <span className="text-sm font-semibold tabular-nums text-foreground">{progress}%</span>
+                        <span className="text-sm font-semibold tabular-nums text-foreground">
+                          {progress}%
+                        </span>
                       </div>
                       <div className="h-1.5 w-full overflow-hidden rounded-full bg-foreground/8">
                         <motion.div

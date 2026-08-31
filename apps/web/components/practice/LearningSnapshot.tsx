@@ -48,7 +48,9 @@ function Tile({
         <Icon size={18} strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">{eyebrow}</p>
+        <p className="text-[11px] font-bold uppercase tracking-wide text-muted-foreground">
+          {eyebrow}
+        </p>
         <p className="mt-0.5 truncate text-sm font-bold text-foreground">{title}</p>
         <p className="mt-1 truncate text-xs font-medium text-muted-foreground/70">{detail}</p>
       </div>
@@ -63,17 +65,19 @@ export function LearningSnapshot() {
   const readingProgress = useSyncExternalStore(
     subscribeReadingProgress,
     getReadingProgress,
-    getReadingProgressServerSnapshot
+    getReadingProgressServerSnapshot,
   )
   const readingUnits = useSyncExternalStore(
     subscribeReadingUnits,
     getAllReadingUnits,
-    getReadingUnitsServerSnapshot
+    getReadingUnitsServerSnapshot,
   )
 
   const [listeningLessons, setListeningLessons] = useState<ListeningLesson[] | null>(null)
   const [listeningAttempts, setListeningAttempts] = useState<ListeningAttemptRecord[] | null>(null)
-  const [recentAchievement, setRecentAchievement] = useState<Achievement | null | undefined>(undefined)
+  const [recentAchievement, setRecentAchievement] = useState<Achievement | null | undefined>(
+    undefined,
+  )
   const [scorecardCount] = useState(() => loadScorecards().length)
   const [latestScore] = useState(() => {
     const history = loadScorecards()
@@ -111,17 +115,18 @@ export function LearningSnapshot() {
 
   const readingCompleted = useMemo(
     () => readingUnits.filter((u) => readingProgress[u.id]?.status === "completed").length,
-    [readingUnits, readingProgress]
+    [readingUnits, readingProgress],
   )
 
   const listeningAvgAccuracy = useMemo(() => {
     if (!listeningAttempts || listeningAttempts.length === 0) return null
     return Math.round(
-      listeningAttempts.reduce((sum, a) => sum + a.accuracy, 0) / listeningAttempts.length
+      listeningAttempts.reduce((sum, a) => sum + a.accuracy, 0) / listeningAttempts.length,
     )
   }, [listeningAttempts])
 
-  const ready = listeningLessons !== null && listeningAttempts !== null && recentAchievement !== undefined
+  const ready =
+    listeningLessons !== null && listeningAttempts !== null && recentAchievement !== undefined
 
   if (!ready) {
     return (
@@ -139,7 +144,11 @@ export function LearningSnapshot() {
         icon={BookOpenText}
         iconClass="bg-sky-500/10 text-sky-600 dark:text-sky-400"
         eyebrow="Reading"
-        title={readingUnits.length > 0 ? `${readingCompleted}/${readingUnits.length} units` : "No units yet"}
+        title={
+          readingUnits.length > 0
+            ? `${readingCompleted}/${readingUnits.length} units`
+            : "No units yet"
+        }
         detail={readingCompleted > 0 ? "Keep reading to finish the set" : "Start your first unit"}
         href="/phrasebook?mode=reading"
       />
@@ -147,7 +156,11 @@ export function LearningSnapshot() {
         icon={Headphones}
         iconClass="bg-violet-500/10 text-violet-600 dark:text-violet-400"
         eyebrow="Listening"
-        title={listeningAttempts && listeningAttempts.length > 0 ? `${listeningAvgAccuracy}% accuracy` : "No attempts yet"}
+        title={
+          listeningAttempts && listeningAttempts.length > 0
+            ? `${listeningAvgAccuracy}% accuracy`
+            : "No attempts yet"
+        }
         detail={
           listeningAttempts && listeningAttempts.length > 0
             ? `${listeningAttempts.length} attempt${listeningAttempts.length === 1 ? "" : "s"} · ${listeningLessons?.length ?? 0} lessons`
@@ -160,7 +173,11 @@ export function LearningSnapshot() {
         iconClass="bg-amber-500/10 text-amber-600 dark:text-amber-400"
         eyebrow="Exam Prep"
         title={latestScore !== null ? `Last score ${latestScore}/5` : "No mocks yet"}
-        detail={scorecardCount > 0 ? `${scorecardCount} mock${scorecardCount === 1 ? "" : "s"} scored` : "Try a mock interview"}
+        detail={
+          scorecardCount > 0
+            ? `${scorecardCount} mock${scorecardCount === 1 ? "" : "s"} scored`
+            : "Try a mock interview"
+        }
         href="/interview"
       />
       <Tile
@@ -168,7 +185,9 @@ export function LearningSnapshot() {
         iconClass="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
         eyebrow="Achievements"
         title={recentAchievement ? recentAchievement.title : "None unlocked yet"}
-        detail={recentAchievement ? `+${recentAchievement.xp} XP earned` : "Keep practicing to unlock one"}
+        detail={
+          recentAchievement ? `+${recentAchievement.xp} XP earned` : "Keep practicing to unlock one"
+        }
         href="/achievements"
       />
     </div>

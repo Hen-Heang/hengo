@@ -44,13 +44,21 @@ export async function POST(req: Request): Promise<Response> {
 
   const rateStatus = await checkRateLimit(db, user.id, "tts")
   if (!rateStatus.allowed) {
-    return Response.json({ error: `Daily text-to-speech limit reached (${rateStatus.limit}/day). Try again tomorrow.` }, { status: 429 })
+    return Response.json(
+      {
+        error: `Daily text-to-speech limit reached (${rateStatus.limit}/day). Try again tomorrow.`,
+      },
+      { status: 429 },
+    )
   }
 
   const rawBody = await req.json().catch(() => ({}))
   const parsed = inputSchema.safeParse(rawBody)
   if (!parsed.success) {
-    return Response.json({ error: "Invalid request", details: parsed.error.issues.map((i) => i.message) }, { status: 400 })
+    return Response.json(
+      { error: "Invalid request", details: parsed.error.issues.map((i) => i.message) },
+      { status: 400 },
+    )
   }
   const { text, voice, instructions, speed } = parsed.data
 
@@ -87,7 +95,10 @@ export async function POST(req: Request): Promise<Response> {
       success: false,
       errorCode: `http_${res.status}`,
     })
-    return Response.json({ error: `TTS failed: ${res.status} ${detail.slice(0, 200)}` }, { status: 500 })
+    return Response.json(
+      { error: `TTS failed: ${res.status} ${detail.slice(0, 200)}` },
+      { status: 500 },
+    )
   }
 
   void recordUsage(db, {

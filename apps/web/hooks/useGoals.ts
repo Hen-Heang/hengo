@@ -22,8 +22,7 @@ const sortGoals = (list: Goal[], opt: SortOption): Goal[] => {
         cmp = (a.title || "").localeCompare(b.title || "")
         break
       case "target_date":
-        cmp =
-          new Date(a.target_date || 0).getTime() - new Date(b.target_date || 0).getTime()
+        cmp = new Date(a.target_date || 0).getTime() - new Date(b.target_date || 0).getTime()
         break
       case "status":
         cmp = String(a.status || "").localeCompare(String(b.status || ""))
@@ -106,7 +105,7 @@ export const useGoals = () => {
       setCurrentPage(1)
       toast.success("Success!", { description: "Your goal has been created." })
     },
-    [queryClient, key]
+    [queryClient, key],
   )
 
   const deleteGoal = useCallback(
@@ -114,9 +113,7 @@ export const useGoals = () => {
       setIsDeleting(goalId)
       try {
         await goalsApi.remove(goalId) // backend cascades tasks
-        queryClient.setQueryData<Goal[]>(key, (prev) =>
-          (prev || []).filter((g) => g.id !== goalId)
-        )
+        queryClient.setQueryData<Goal[]>(key, (prev) => (prev || []).filter((g) => g.id !== goalId))
         toast.success("Goal deleted", { description: "Your goal has been removed." })
       } catch (err) {
         console.error("Error deleting goal:", err)
@@ -127,7 +124,7 @@ export const useGoals = () => {
         setGoalToDelete(null)
       }
     },
-    [queryClient, key]
+    [queryClient, key],
   )
 
   const confirmDelete = useCallback((goal: Goal, event: React.MouseEvent) => {
@@ -150,7 +147,7 @@ export const useGoals = () => {
 
       const apply = (starred: boolean) =>
         queryClient.setQueryData<Goal[]>(key, (list) =>
-          (list || []).map((g) => (g.id === goalId ? { ...g, isStarred: starred } : g))
+          (list || []).map((g) => (g.id === goalId ? { ...g, isStarred: starred } : g)),
         )
 
       apply(nextStarred)
@@ -162,7 +159,7 @@ export const useGoals = () => {
         toast.error("Couldn't update star", { description: "Please try again." })
       }
     },
-    [userId, queryClient, key]
+    [userId, queryClient, key],
   )
 
   // Optimistic complete/reopen toggle: flip cached status, persist, roll back
@@ -177,7 +174,7 @@ export const useGoals = () => {
 
       const apply = (status: string) =>
         queryClient.setQueryData<Goal[]>(key, (list) =>
-          (list || []).map((g) => (g.id === goalId ? { ...g, status } : g))
+          (list || []).map((g) => (g.id === goalId ? { ...g, status } : g)),
         )
 
       apply(nextStatus)
@@ -194,7 +191,7 @@ export const useGoals = () => {
         })
       }
     },
-    [queryClient, key]
+    [queryClient, key],
   )
 
   return {
