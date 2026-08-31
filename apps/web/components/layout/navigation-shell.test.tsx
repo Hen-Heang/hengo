@@ -255,20 +255,14 @@ describe("MobileHeader", () => {
     expect(isDetailRoute("/growth/habits/h1")).toBe(true)
   })
 
-  it("moves Quick Capture into the root-page top bar", () => {
+  it("shows the root-page top bar without a Quick Capture (Inbox) button — V2 hides Inbox promotion", () => {
     render(<MobileHeader pathname="/goals" searchParams={undefined} onOpenSearch={vi.fn()} />)
     expect(screen.getByRole("heading", { name: "Goals" })).toBeTruthy()
-    expect(screen.getByRole("button", { name: "Quick capture" })).toBeTruthy()
+    expect(screen.queryByRole("button", { name: "Quick capture" })).toBeNull()
     expect(screen.getByRole("button", { name: "Search" })).toBeTruthy()
     expect(screen.getByRole("button", { name: /notifications/i })).toBeTruthy()
     expect(screen.queryByRole("button", { name: "Go back" })).toBeNull()
     expect(screen.queryByRole("link", { name: /profile/i })).toBeNull()
-  })
-
-  it("opens the shared Quick Capture dialog from the top bar", () => {
-    render(<MobileHeader pathname="/goals" searchParams={undefined} onOpenSearch={vi.fn()} />)
-    fireEvent.click(screen.getByRole("button", { name: "Quick capture" }))
-    expect(openQuickCapture).toHaveBeenCalledOnce()
   })
 
   it("gives Settings its own icon on the root-page bar — V2's bottom nav has no More sheet to hold it", () => {
@@ -288,14 +282,14 @@ describe("MobileHeader", () => {
     expect(screen.queryByRole("button", { name: /notifications/i })).toBeNull()
   })
 
-  it("keeps Quick Capture in the detail-page top-bar menu", async () => {
+  it("drops Quick Capture (Inbox) from the detail-page top-bar menu too", async () => {
     render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />)
     fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
       button: 0,
       ctrlKey: false,
     })
-    fireEvent.click(await screen.findByRole("menuitem", { name: "Quick capture" }))
-    expect(openQuickCapture).toHaveBeenCalledOnce()
+    expect(await screen.findByRole("menuitem", { name: "Search" })).toBeTruthy()
+    expect(screen.queryByRole("menuitem", { name: "Quick capture" })).toBeNull()
   })
 
   it("goes back through the router", () => {
@@ -537,21 +531,35 @@ describe("QuickSwitcher", () => {
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
   })
 
-  it("groups results into Pages and Actions", async () => {
+  it("shows V2's own destinations as a 'Suggested' group before typing — not the full V1 page catalog", async () => {
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
-    expect(screen.getByText("Pages")).toBeTruthy()
-    expect(screen.getByText("Actions")).toBeTruthy()
+    expect(screen.getByText("Suggested")).toBeTruthy()
+    expect(screen.queryByText("Pages")).toBeNull()
+    expect(screen.getByRole("option", { name: /vocabulary/i })).toBeTruthy()
+    expect(screen.queryByRole("option", { name: /^goals$/i })).toBeNull()
   })
 
-  it("offers Create goal, Add task and Ask AI actions", async () => {
+  it("switches to the full 'Pages' catalog once the user types a query", async () => {
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
-    for (const label of ["Create goal", "Add task", "Ask AI"]) {
-      expect(screen.getByRole("option", { name: new RegExp(label, "i") })).toBeTruthy()
-    }
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "habit" } })
+    expect(screen.getByText("Pages")).toBeTruthy()
+    expect(screen.getByRole("option", { name: /habits/i })).toBeTruthy()
+  })
+
+  it("offers only Ask AI by default — Create goal and Add task (Goals/Tasks) stay search-only", async () => {
+    render(<QuickSwitcher />)
+    fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
+    await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
+    expect(screen.getByRole("option", { name: /ask ai/i })).toBeTruthy()
+    expect(screen.queryByRole("option", { name: /create goal/i })).toBeNull()
+    expect(screen.queryByRole("option", { name: /add task/i })).toBeNull()
+
+    fireEvent.change(screen.getByRole("combobox"), { target: { value: "create goal" } })
+    expect(screen.getByRole("option", { name: /create goal/i })).toBeTruthy()
   })
 
   it("surfaces a Recent group from locally stored destinations", async () => {

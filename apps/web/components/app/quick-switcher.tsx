@@ -18,6 +18,7 @@ import {
   aiCoachItem,
   linkPath,
   navSections,
+  primaryNavItems,
   shippedItems,
   type NavItem,
 } from "@/lib/navigation"
@@ -59,6 +60,16 @@ const PAGE_ENTRIES: Entry[] = navSections.flatMap((section) =>
 )
 
 const ENTRY_BY_ID = new Map(PAGE_ENTRIES.map((entry) => [entry.key, entry]))
+
+// V2's five flat destinations, shown as the default "Suggested" group before
+// the user types anything. The full PAGE_ENTRIES catalog above (every V1
+// surface included — Goals, Habits, Achievements, Interview, …) stays fully
+// searchable — that's the intentional backward-compat index — but it should
+// never dump itself unprompted the moment ⌘K opens.
+// Each entry's own description is its subtitle here (not the literal word
+// "Suggested" — that's reserved for the group heading and would otherwise
+// collide with it as duplicate on-screen text).
+const SUGGESTED_ENTRIES: Entry[] = primaryNavItems.map((item) => toEntry(item, item.description ?? ""))
 
 // Global actions. `href` is a plain route — no mutations happen here, the
 // destination page owns the actual creation flow. "Quick capture" is the one
@@ -103,6 +114,12 @@ const ACTION_ENTRIES: Entry[] = [
     keywords: "ai ask coach chat assistant korean speaking help",
   },
 ]
+
+// Default (empty-query) actions — only the one that matches V2's Korean-
+// learning identity. "Quick capture" (Inbox), "Create goal", and "Add task"
+// are V1 productivity actions: still typeable (searchable via ACTION_ENTRIES
+// above), just not shown unprompted the moment ⌘K opens.
+const DEFAULT_ACTION_ENTRIES: Entry[] = ACTION_ENTRIES.filter((entry) => entry.key === "action-ask-ai")
 
 function matches(entry: Entry, normalized: string): boolean {
   return entry.keywords.includes(normalized) || entry.label.toLowerCase().includes(normalized)
@@ -162,14 +179,21 @@ export function QuickSwitcher({
       .slice(0, 4)
     const recentKeys = new Set(recent.map((entry) => entry.key))
 
+    // Empty query: don't dump the full page/action catalog unprompted — a
+    // lot of it is hidden V1 surfaces (Goals, Habits, Achievements, Interview,
+    // …). Show V2's own destinations instead. The full catalog stays fully
+    // searchable the moment the user types anything — that's the intentional
+    // backward-compat index (see `lib/navigation.ts`'s `primaryNavItems`
+    // comment), not something to promote by default.
+    const pages = normalized
+      ? filter(PAGE_ENTRIES).filter((entry) => !recentKeys.has(entry.key))
+      : SUGGESTED_ENTRIES.filter((entry) => !recentKeys.has(entry.key) && linkPath(entry.href) !== currentPath)
+    const actions = normalized ? filter(ACTION_ENTRIES) : DEFAULT_ACTION_ENTRIES
+
     const candidates: Group[] = [
       { id: "recent", label: "Recent", entries: filter(recent) },
-      {
-        id: "pages",
-        label: "Pages",
-        entries: filter(PAGE_ENTRIES).filter((entry) => !recentKeys.has(entry.key) || Boolean(normalized)),
-      },
-      { id: "actions", label: "Actions", entries: filter(ACTION_ENTRIES) },
+      { id: "pages", label: normalized ? "Pages" : "Suggested", entries: pages },
+      { id: "actions", label: "Actions", entries: actions },
     ]
 
     return candidates.filter((group) => group.entries.length > 0)

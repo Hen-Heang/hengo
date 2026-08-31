@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MoreHorizontal, Search, Settings, Zap } from "lucide-react"
+import { ArrowLeft, MoreHorizontal, Search, Settings } from "lucide-react"
 
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -19,7 +19,6 @@ import {
   linkPath,
   type NavSearchParams,
 } from "@/lib/navigation"
-import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 import { useMobileHeaderTitleValue } from "./mobile-header-title"
 
@@ -37,6 +36,11 @@ export function isDetailRoute(pathname: string): boolean {
  * but Settings has its own icon here on root pages — V2's bottom bar has no
  * "More" sheet to hold it anymore (see `MobileBottomNav`), and detail routes
  * are the only other place it's reachable (the "More actions" menu below).
+ * V2 Phase 7: the "Quick capture" action (Inbox) was dropped from both the
+ * root action row and the detail-page menu — Inbox is on the hide list, and a
+ * persistent header button was the last unconditional promotion of it left in
+ * the shell. `openQuickCapture()` / `QuickCaptureDialog` are untouched, still
+ * reachable by searching the Quick Switcher.
  */
 export function MobileHeader({
   pathname,
@@ -82,9 +86,6 @@ export function MobileHeader({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="min-w-48 rounded-xl">
-            <DropdownMenuItem onClick={() => openQuickCapture()} className="rounded-lg">
-              <Zap size={16} className="text-amber-500" /> Quick capture
-            </DropdownMenuItem>
             <DropdownMenuItem onClick={onOpenSearch} className="rounded-lg">
               <Search size={16} /> Search
             </DropdownMenuItem>
@@ -97,14 +98,6 @@ export function MobileHeader({
         </DropdownMenu>
       ) : (
         <>
-          <button
-            type="button"
-            onClick={() => openQuickCapture()}
-            aria-label="Quick capture"
-            className={ACTION_BUTTON}
-          >
-            <Zap size={20} className="text-amber-500" />
-          </button>
           <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
             <Search size={20} />
           </button>
