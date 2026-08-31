@@ -230,7 +230,13 @@ function buildWeaknessCandidate(ctx: MissionContext, alreadyPresent: Set<Mission
 
   const reason = `Your ${skillLabel(weakest.skillCode)} skill is at ${Math.round(weakest.masteryScore)}% mastery — this practices it directly.`
   if (type === "listening") return buildListeningCandidate(ctx, 0.3, reason, [weakest.skillCode])
-  if (type === "interview") return buildInterviewCandidate(0.3, reason, [weakest.skillCode])
+  if (type === "interview") {
+    // Only steer toward mock-interview practice when there's a real exam to
+    // prep for — otherwise fall back to general speaking practice, which
+    // exercises the same underlying skill without implying an exam exists.
+    if (!ctx.upcomingExam) return buildScenarioCandidate(ctx, 0.3, reason, [weakest.skillCode])
+    return buildInterviewCandidate(0.3, reason, [weakest.skillCode])
+  }
   return buildScenarioCandidate(ctx, 0.3, reason, [weakest.skillCode])
 }
 
@@ -258,9 +264,13 @@ function buildGoalCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItem
 const VARIETY_TYPES: MissionItemType[] = ["scenario", "listening", "vocab_review", "correction_review", "interview"]
 
 function buildVarietyCandidate(ctx: MissionContext, alreadyPresent: Set<MissionItemType>): Candidate | null {
-  // The type that appears least (or not at all) in recent activity.
+  // The type that appears least (or not at all) in recent activity. Interview
+  // only enters the rotation when there's a real active exam — otherwise
+  // "haven't practiced interview in a while" would make it look neglected
+  // for every learner who has simply never taken a mock interview.
+  const varietyTypes = ctx.upcomingExam ? VARIETY_TYPES : VARIETY_TYPES.filter((t) => t !== "interview")
   const counts = new Map<MissionItemType, number>()
-  for (const type of VARIETY_TYPES) counts.set(type, 0)
+  for (const type of varietyTypes) counts.set(type, 0)
   for (const feature of ctx.recentFeatures) {
     if (counts.has(feature as MissionItemType)) counts.set(feature as MissionItemType, (counts.get(feature as MissionItemType) ?? 0) + 1)
   }

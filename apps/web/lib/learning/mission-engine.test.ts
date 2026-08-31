@@ -144,6 +144,58 @@ describe("buildDailyMission", () => {
     expect(plan.items.length).toBeGreaterThan(0)
   })
 
+  it("does not surface an interview mission from a weak interview skill when no exam is active", () => {
+    const ctx = baseContext({
+      weakSkills: [{ skillCode: "interview.confidence", masteryScore: 10 }],
+      upcomingExam: null,
+    })
+    const plan = buildDailyMission(ctx)
+    const types = plan.items.map((i) => i.type)
+    expect(types).not.toContain("interview")
+    // Falls back to general speaking practice (scenario) instead of dropping
+    // the weak-skill targeting entirely.
+    const scenarioItem = plan.items.find((i) => i.type === "scenario")
+    expect(scenarioItem?.skillCodes).toContain("interview.confidence")
+  })
+
+  it("surfaces an interview mission from a weak interview skill once an exam is active", () => {
+    const ctx = baseContext({
+      weakSkills: [{ skillCode: "interview.confidence", masteryScore: 10 }],
+      upcomingExam: { date: "2026-09-01", type: "K-Specialist" },
+    })
+    const plan = buildDailyMission(ctx)
+    const types = plan.items.map((i) => i.type)
+    expect(types).toContain("interview")
+  })
+
+  it("excludes interview from the variety rotation when no exam is active, even if it's the most-neglected type", () => {
+    const ctx = baseContext({
+      recentFeatures: [
+        "scenario", "scenario", "scenario",
+        "listening", "listening", "listening",
+        "vocab_review", "vocab_review", "vocab_review",
+        "correction_review", "correction_review", "correction_review",
+      ],
+      upcomingExam: null,
+    })
+    const plan = buildDailyMission(ctx)
+    expect(plan.items.map((i) => i.type)).not.toContain("interview")
+  })
+
+  it("allows interview back into the variety rotation once an exam is active", () => {
+    const ctx = baseContext({
+      recentFeatures: [
+        "scenario", "scenario", "scenario",
+        "listening", "listening", "listening",
+        "vocab_review", "vocab_review", "vocab_review",
+        "correction_review", "correction_review", "correction_review",
+      ],
+      upcomingExam: { date: "2026-09-01", type: "K-Specialist" },
+    })
+    const plan = buildDailyMission(ctx)
+    expect(plan.items.map((i) => i.type)).toContain("interview")
+  })
+
   it("prefers a neglected feature for the variety slot", () => {
     const ctx = baseContext({
       recentFeatures: ["scenario", "scenario", "scenario"],

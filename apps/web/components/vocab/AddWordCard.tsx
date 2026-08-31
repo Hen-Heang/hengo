@@ -87,12 +87,19 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
           placeholder="Term (한국어) *"
           className={inputClass}
           lang="ko"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave()
+          }}
         />
         <input
           value={meaning}
           onChange={(e) => setMeaning(e.target.value)}
           placeholder="Meaning (English) *"
           className={inputClass}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave()
+          }}
         />
         <input
           value={example}
@@ -100,6 +107,9 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
           placeholder="Example sentence (optional)"
           className={`${inputClass} sm:col-span-2`}
           lang="ko"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave()
+          }}
         />
         <div className="sm:col-span-2">
           <input

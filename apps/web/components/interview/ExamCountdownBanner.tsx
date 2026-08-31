@@ -6,10 +6,10 @@ import { ArrowRight, FileText, GraduationCap } from "lucide-react"
 
 import {
   EXAM_DATETIME,
-  EXAM_END_DATETIME,
   SCRIPT_DUE_DATE,
   countdownTo,
   daysUntil,
+  isExamActive,
 } from "@/lib/study-plan"
 
 const UNITS = [
@@ -45,8 +45,9 @@ export function ExamCountdownBanner() {
 
   if (!mounted) return null
 
-  // Hide only once the exam day is fully over — keep showing it "until you finish".
-  if (now.getTime() > new Date(EXAM_END_DATETIME).getTime()) return null
+  // Hide once there's no active/upcoming exam at all — including once the
+  // exam day is fully over ("until you finish", then gone for good).
+  if (!isExamActive(now)) return null
 
   const cd = countdownTo(EXAM_DATETIME, now)
   const daysToScript = daysUntil(SCRIPT_DUE_DATE, now)

@@ -16,6 +16,7 @@ import {
   moreGroups,
   navItem,
   navSections,
+  primaryNavItems,
   primarySections,
   secondaryNavItems,
   sectionRoutePrefixes,
@@ -537,6 +538,69 @@ describe("Coming Soon filtering", () => {
   it("shippedItems / comingSoonItems partition a list", () => {
     const grow = navSections.find((s) => s.id === "grow")!.items
     expect(shippedItems(grow).length + comingSoonItems(grow).length).toBe(grow.length)
+  })
+})
+
+describe("Hengo V2 primary navigation (Phase 1: product shell)", () => {
+  it("has exactly five destinations, in the required order", () => {
+    expect(primaryNavItems.map((i) => i.label)).toEqual(["Today", "Vocabulary", "Practice", "Coach", "Study"])
+    expect(primaryNavItems.map((i) => i.href)).toEqual(["/home", "/vocab", "/practice", "/korean-coach", "/learn"])
+  })
+
+  it("keeps Study pointed at /learn — same route, only the display label changes", () => {
+    const study = primaryNavItems.find((i) => i.label === "Study")!
+    expect(study.href).toBe("/learn")
+    // The underlying registry item keeps its own title for page headers/breadcrumbs.
+    expect(getActiveNavItem("/learn")?.label).toBe("Learn")
+  })
+
+  it("keeps Coach pointed at /korean-coach — same route, only the display label changes", () => {
+    const coach = primaryNavItems.find((i) => i.label === "Coach")!
+    expect(coach.href).toBe("/korean-coach")
+    expect(getActiveNavItem("/korean-coach")?.label).toBe("Korean Coach")
+  })
+
+  it("resolves active state per item, matching each item's own route", () => {
+    expect(isNavigationItemActive({ pathname: "/vocab", item: navItem("learn-vocab") })).toBe(true)
+    for (const route of ["/home", "/vocab", "/practice", "/korean-coach", "/learn"]) {
+      const activeCount = primaryNavItems.filter((item) => isNavigationItemActive({ pathname: route, item })).length
+      expect(activeCount).toBe(1)
+    }
+  })
+
+  it("keeps every route it points to fully registered — reachable, titled, matchable — beyond just this list", () => {
+    for (const item of primaryNavItems) {
+      expect(getActiveNavItem(item.href)).toBeDefined()
+    }
+  })
+
+  it("still leaves every removed-from-chrome route registered and reachable by URL", () => {
+    for (const route of [
+      "/goals",
+      "/goals/tasks",
+      "/goals/calendar",
+      "/inbox",
+      "/roadmap",
+      "/growth/habits",
+      "/growth/recovery",
+      "/growth/journal",
+      "/progress",
+      "/achievements",
+      "/statistics",
+      "/review/morning",
+      "/history",
+      "/timeline",
+      "/notes",
+      "/ask-hengo/memories",
+      "/chat",
+      "/scenarios",
+      "/interview",
+      "/settings",
+    ]) {
+      expect(getActiveNavItem(route)).toBeDefined()
+    }
+    expect(getActiveNavItem("/chat", "mode=analyze")).toBeDefined()
+    expect(getActiveNavItem("/chat", "mode=generate")).toBeDefined()
   })
 })
 

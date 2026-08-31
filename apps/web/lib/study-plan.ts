@@ -220,6 +220,20 @@ export function countdownTo(targetIso: string, now: Date = new Date()): Countdow
   }
 }
 
+/**
+ * Whether the K-Specialist exam is still ahead of or ongoing for `now` — the
+ * single source of truth for "is there an active exam right now", shared by
+ * the countdown banner (hide once the exam day is over) and the daily
+ * mission generator (only let the `interview` mission type get selected
+ * while an exam is genuinely upcoming/in progress, see lib/api/missions.ts).
+ * There's no per-account exam-date field — this is one fixed date the whole
+ * app shares — so once EXAM_END_DATETIME passes this permanently returns
+ * false until the constants above are updated for a future exam cycle.
+ */
+export function isExamActive(now: Date = new Date()): boolean {
+  return now.getTime() <= new Date(EXAM_END_DATETIME).getTime()
+}
+
 /** Whole calendar days from `today` until `dateIso` (negative if past). */
 export function daysUntil(dateIso: string, today: Date = new Date()): number {
   const target = toDateOnly(dateIso).getTime()

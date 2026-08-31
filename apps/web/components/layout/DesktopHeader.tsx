@@ -1,6 +1,6 @@
 "use client"
 
-import { Sparkles, Zap } from "lucide-react"
+import { Sparkles } from "lucide-react"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
 import { NotificationBell } from "@/components/notifications/NotificationBell"
@@ -8,7 +8,6 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Button } from "@/components/ui/button"
 import { openHengoCoach } from "@/lib/hengo-coach-bus"
 import { getActiveNavItem, getSectionForPath, type NavSearchParams } from "@/lib/navigation"
-import { openQuickCapture } from "@/lib/quick-capture-bus"
 
 import { BreadcrumbTrail } from "./PageHeader"
 import { ProfileMenu } from "./ProfileMenu"
@@ -45,16 +44,6 @@ export function DesktopHeader({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          onClick={() => openQuickCapture()}
-          className="h-9 gap-1.5 rounded-lg px-3"
-        >
-          <Zap data-icon="inline-start" className="size-4 text-amber-500" aria-hidden="true" />
-          Quick capture
-        </Button>
         <Button
           id="hengo-coach-header-trigger"
           type="button"

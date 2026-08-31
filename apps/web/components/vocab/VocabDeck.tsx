@@ -104,6 +104,10 @@ function DeckAddForm({ category, onAdd }: { category: string; onAdd: NonNullable
           placeholder="Term (한국어) *"
           className={inputClass}
           lang="ko"
+          autoFocus
+          onKeyDown={(e) => {
+            if (e.key === "Enter") handleSave()
+          }}
         />
         <input
           value={meaning}

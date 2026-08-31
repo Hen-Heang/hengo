@@ -2,61 +2,38 @@
 
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
-import { ChevronDown, PanelLeftClose, PanelLeftOpen } from "lucide-react"
+import { PanelLeftClose, PanelLeftOpen } from "lucide-react"
 
 import { NavIconRow, NavRow } from "@/components/layout/NavItem"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
-import {
-  isNavigationItemActive,
-  secondaryNavItems,
-  todayItem,
-  visibleSidebarItems,
-  workspaceNavSections,
-  type NavItem,
-  type NavSearchParams,
-} from "@/lib/navigation"
+import { isNavigationItemActive, primaryNavItems, todayItem, type NavSearchParams } from "@/lib/navigation"
 import { cn } from "@/lib/utils"
 
 import { ProfileMenu } from "./ProfileMenu"
-import { WorkspaceFlyout } from "./WorkspaceFlyout"
 
 export const SIDEBAR_EXPANDED_WIDTH = 232
 export const SIDEBAR_COLLAPSED_WIDTH = 72
 
-const sidebarSections = workspaceNavSections
-
+/**
+ * V2's five-destination sidebar: Today, Vocabulary, Practice, Coach, Study —
+ * `primaryNavItems` from `lib/navigation.ts`, flat, in order. No expandable
+ * workspace groups, no flyouts — with only five destinations there is nothing
+ * to collapse. Everything else the app still supports (Goals, Habits,
+ * Recovery, Progress, Notes, Settings, general AI chat, …) stays a real,
+ * registered route reachable by direct URL and the Quick Switcher; it simply
+ * has no row here.
+ */
 export function DesktopSidebar({
   pathname,
   searchParams,
   collapsed,
   onToggleCollapsed,
-  activeSectionId,
 }: {
   pathname: string
   searchParams: NavSearchParams
   collapsed: boolean
   onToggleCollapsed: () => void
-  activeSectionId?: string
 }) {
-  // Track what the user explicitly *closed* rather than what's open, so the
-  // section holding the current route is always expanded by derivation — it
-  // can never be collapsed out from under the selected route, and no effect is
-  // needed to reopen it on navigation.
-  const [closedSections, setClosedSections] = useState<string[]>(() =>
-    sidebarSections.filter((s) => s.id !== (activeSectionId ?? "plan")).map((s) => s.id)
-  )
-  const isSectionOpen = (id: string) => id === activeSectionId || !closedSections.includes(id)
-
-  // Which collapsed-mode flyout is open — only one at a time, same as the
-  // tablet rail.
-  const [openFlyoutId, setOpenFlyoutId] = useState<string | null>(null)
-  // Learn's flat link lights up whenever the current route belongs to its
-  // section, mirroring the primary-section fallback below (a hidden child
-  // still activates its parent).
-  const learnActive = activeSectionId === "learn"
-
   return (
     <aside
       aria-label="Main navigation"
@@ -77,9 +54,7 @@ export function DesktopSidebar({
           {!collapsed && (
             <span className="min-w-0">
               <span className="block truncate text-[15px] font-semibold leading-tight text-foreground">Hengo</span>
-              <span className="block truncate text-xs leading-tight text-muted-foreground">
-                Plan, grow, remember.
-              </span>
+              <span className="block truncate text-xs leading-tight text-muted-foreground">Learn Korean.</span>
             </span>
           )}
         </Link>
@@ -102,124 +77,18 @@ export function DesktopSidebar({
       <div className="mx-3 h-px bg-border" />
 
       <nav aria-label="Primary" className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
-        {/* Today */}
-        {collapsed ? (
-          <NavIconRow
-            item={todayItem}
-            active={isNavigationItemActive({ pathname, searchParams, item: todayItem })}
-          />
-        ) : (
-          <NavRow
-            item={todayItem}
-            active={isNavigationItemActive({ pathname, searchParams, item: todayItem })}
-          />
-        )}
-
-        {/* Labelled, collapsible groups */}
-        {sidebarSections.map((section) => {
-          const items = visibleSidebarItems(section)
-          const soonItems = section.items.filter((i) => i.soon)
-          const sectionActive = section.id === activeSectionId
-
-          // A section with nothing left to show individually (Learn — its
-          // children all live behind /learn now) collapses into one plain
-          // link. Nothing to expand, so no chevron and no flyout.
-          if (items.length === 0) {
-            const flatItem: NavItem = {
-              id: `section-${section.id}`,
-              href: section.href,
-              label: section.label,
-              icon: section.icon,
-              color: section.color,
-            }
-            return collapsed ? (
-              <NavIconRow key={section.id} item={flatItem} active={sectionActive} />
-            ) : (
-              <NavRow key={section.id} item={flatItem} active={sectionActive} />
-            )
-          }
-
-          // Collapsed: one icon per group, opening the same accessible flyout
-          // the tablet rail uses. Listing every child as a flat icon column
-          // would overflow the rail and lose the grouping entirely.
-          if (collapsed) {
-            return (
-              <WorkspaceFlyout
-                key={section.id}
-                section={section}
-                pathname={pathname}
-                searchParams={searchParams}
-                active={sectionActive}
-                open={openFlyoutId === section.id}
-                onOpenChange={(next) => setOpenFlyoutId(next ? section.id : null)}
-              />
-            )
-          }
-
-          const open = isSectionOpen(section.id)
-
-          return (
-            <Collapsible
-              key={section.id}
-              open={open}
-              onOpenChange={(next) => {
-                // Never let the group holding the current route close.
-                if (!next && sectionActive) return
-                setClosedSections((current) =>
-                  next ? current.filter((id) => id !== section.id) : [...current, section.id]
-                )
-              }}
-              className="pt-2"
-            >
-              <CollapsibleTrigger
-                className={cn(
-                  "flex w-full items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-ring",
-                  sectionActive ? "text-foreground" : "text-muted-foreground hover:text-foreground"
-                )}
-              >
-                <section.icon
-                  size={13}
-                  strokeWidth={2.4}
-                  className={cn("shrink-0", section.color, !sectionActive && "opacity-70")}
-                />
-                <span className="flex-1 text-left">{section.label}</span>
-                <ChevronDown
-                  size={14}
-                  aria-hidden
-                  className={cn("shrink-0 transition-transform", open && "rotate-180")}
-                />
-              </CollapsibleTrigger>
-              <CollapsibleContent className="space-y-0.5 pt-1">
-                {items.map((item) => (
-                  <NavRow
-                    key={item.id}
-                    item={item}
-                    active={isNavigationItemActive({ pathname, searchParams, item })}
-                  />
-                ))}
-                {/* Coming Soon kept quiet — one muted line, not a block of rows. */}
-                {soonItems.length > 0 && (
-                  <p className="px-3 pt-1 text-xs text-muted-foreground/60">
-                    Coming soon: {soonItems.map((i) => i.label).join(", ")}
-                  </p>
-                )}
-              </CollapsibleContent>
-            </Collapsible>
-          )
-        })}
-      </nav>
-
-      {/* Secondary destinations (Learn) + Account */}
-      <div className="space-y-1 border-t border-border px-3 py-3">
-        {secondaryNavItems.map((item) => {
-          const active =
-            item.id === "learn-hub" ? learnActive : isNavigationItemActive({ pathname, searchParams, item })
+        {primaryNavItems.map((item) => {
+          const active = isNavigationItemActive({ pathname, searchParams, item })
           return collapsed ? (
             <NavIconRow key={item.id} item={item} active={active} />
           ) : (
             <NavRow key={item.id} item={item} active={active} />
           )
         })}
+      </nav>
+
+      {/* Account */}
+      <div className="space-y-1 border-t border-border px-3 py-3">
         <ProfileMenu collapsed={collapsed} />
       </div>
     </aside>

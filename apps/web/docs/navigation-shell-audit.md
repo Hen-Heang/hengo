@@ -1,5 +1,12 @@
 # Navigation shell audit & redesign
 
+> **Superseded (2026-08-31).** This document records the V1 grouped-workspace
+> shell — expandable Plan/Grow sections, four mobile tabs plus a "More" sheet.
+> Hengo V2 replaced that with five flat destinations (Today · Vocabulary ·
+> Practice · Coach · Study) and no More sheet. Kept for the rationale and the
+> before/after analysis, which still explain why the shell is structured the
+> way it is; see [`HENGO_V2.md`](../../../docs/HENGO_V2.md) for what's current.
+
 **Date:** 2026-07-24
 **Scope:** application shell + navigation IA for `app/(main)/*`. No page-content
 redesign, no schema changes, no routes removed.

@@ -1228,21 +1228,38 @@ export function ReviewSession({ dueToday, dueCount, allWords, loading, onRate, f
                 <p className="mt-1 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">Saved</p>
               </div>
             </div>
-            <button
-              type="button"
-              disabled={loading || deckSize === 0}
-              onClick={() => setIsOpen(true)}
-              className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition-all hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-40 sm:px-6"
-            >
-              <Sparkles size={18} strokeWidth={2.5} />
-              {loading
-                ? "Loading…"
-                : deckSize === 0
-                  ? "No words yet"
-                  : isDueSession
-                    ? `Review ${filteredDueToday.length}`
-                    : "Practice"}
-            </button>
+            <div className="flex flex-col items-stretch gap-1.5">
+              {/* One tap goes straight into flashcards — the setup screen
+                  (mode + category picker) is opt-in via "Customize" below,
+                  not a required stop on the way to reviewing. */}
+              <button
+                type="button"
+                disabled={loading || deckSize === 0}
+                onClick={() => {
+                  setIsOpen(true)
+                  startQuiz()
+                }}
+                className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-emerald-600 px-5 text-sm font-semibold text-white shadow-lg shadow-emerald-600/25 transition-all hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-40 sm:px-6"
+              >
+                <Sparkles size={18} strokeWidth={2.5} />
+                {loading
+                  ? "Loading…"
+                  : deckSize === 0
+                    ? "No words yet"
+                    : isDueSession
+                      ? `Review ${filteredDueToday.length}`
+                      : "Practice"}
+              </button>
+              {deckSize > 0 && !loading && (
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(true)}
+                  className="text-center text-[11px] font-semibold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  Customize session
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
