@@ -21,7 +21,7 @@ export default function AppError({
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background px-6 text-center text-foreground">
       <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl shadow-sm ring-1 ring-border/50">
-        <Image src="/hengo-icon.svg" alt="Hengo Logo" width={56} height={56} className="h-full w-full" />
+        <Image src="/hengo-icon.png" alt="Hengo Logo" width={56} height={56} className="h-full w-full" />
       </div>
 
       <p className="mt-8 text-sm font-bold uppercase tracking-[0.2em] text-muted-foreground/60">Error</p>

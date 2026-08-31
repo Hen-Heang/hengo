@@ -220,6 +220,16 @@ export default function HomePage() {
   const { phrase } = useDailyPhrase()
   const { streakDays } = useStreak()
 
+  // "Continue Study" is meant to deep-link into whatever the learner was
+  // doing under /learn — but Practice and Coach already have their own
+  // dedicated tiles above, so if the last "learn" visit was one of those
+  // routes, fall back to the hub instead of duplicating a tile's href.
+  const lastLearnHref = getLastVisited("learn", "/learn")
+  const continueStudyHref =
+    lastLearnHref === "/practice" || lastLearnHref.startsWith("/korean-coach")
+      ? "/learn"
+      : lastLearnHref
+
   const shortcuts: Shortcut[] = [
     {
       href: "/practice",
@@ -244,7 +254,7 @@ export default function HomePage() {
       tone: "coach",
     },
     {
-      href: getLastVisited("learn", "/learn"),
+      href: continueStudyHref,
       label: "Continue Study",
       description: "Pick up where you left off",
       icon: GraduationCap,
