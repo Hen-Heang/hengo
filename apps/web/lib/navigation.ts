@@ -677,13 +677,37 @@ function section(id: NavSectionId): NavSection {
   return navSections.find((s) => s.id === id)!
 }
 
-// ─── Visible navigation (separate from the route registry above) ─────────────
+// ─── V2 primary navigation ─────────────────────────────────────────────────────
 //
-// Everything above this line is the full route registry: every real
-// destination, used for active-matching, breadcrumbs, titles, and search.
-// Only the two lists below decide what actually gets a row in the sidebar /
-// tablet rail's primary and secondary areas — Today is rendered on its own by
-// the shell.
+// Hengo V2 narrows the whole product to Korean learning. `primaryNavItems` is
+// the ONLY list the desktop sidebar, tablet rail, and mobile bottom bar render
+// as their own row — five flat destinations, no expandable workspace groups,
+// no "More" overflow. Everything else in `navSections` above (Goals, Habits,
+// Recovery, Journal, Progress, Achievements, Statistics, History, Notes,
+// Memories, Ask Hengo, general AI chat, Scenarios, Exam Prep, …) stays a real,
+// registered route — used for page titles, breadcrumbs, active-state
+// matching, and the Quick Switcher — it just has no chrome row anymore.
+// Coach and Study reuse their registry item's href/icon/match via spread,
+// only overriding `id` (so the display variant doesn't collide with the
+// registry item elsewhere) and `label` (a shorter, V2-only display name — the
+// underlying route's own page title/breadcrumb is untouched), the same
+// pattern the old `bottomTabs`'s `tab-learn` override used.
+export const primaryNavItems: NavItem[] = [
+  todayItem,
+  navItem("learn-vocab"),
+  navItem("learn-practice"),
+  { ...navItem("learn-korean-coach"), id: "primary-coach", label: "Coach" },
+  { ...navItem("learn-hub"), id: "primary-study", label: "Study" },
+]
+
+// ─── V1 workspace grouping (superseded by `primaryNavItems` above) ───────────
+//
+// Everything below in this section is the pre-V2 grouped-sidebar model (Plan/
+// Grow expandable workspaces, a Learn/Calendar/History secondary row, and a
+// mobile "More" sheet). No longer wired into any shell component — V2's flat
+// five-item nav replaced it — but left in place and still exported/tested
+// since the underlying routes it lists are all still real and some of this
+// may be revisited by a later V2 phase instead of being deleted outright.
 
 /**
  * The only sections that render as a real, expandable primary group in the
@@ -820,7 +844,8 @@ export function getActiveNavItem(pathname: string, searchParams?: NavSearchParam
   return allNavItems.find((item) => isNavigationItemActive({ pathname, searchParams, item }))
 }
 
-// ─── Mobile bottom bar ────────────────────────────────────────────────────────
+// ─── Mobile bottom bar (V1 — superseded, `MobileBottomNav` now renders
+// `primaryNavItems` directly) ──────────────────────────────────────────────────
 
 /**
  * Four routed mobile destinations. The fifth slot ("More") is a sheet
@@ -857,7 +882,9 @@ export function getActiveBottomTabIndex(pathname: string, searchParams?: NavSear
   return isMoreRoute(pathname, searchParams) ? bottomTabs.length : -1
 }
 
-// ─── "More" sheet grouping ────────────────────────────────────────────────────
+// ─── "More" sheet grouping (V1 — superseded, `MoreNavigationSheet` is no
+// longer mounted by `AppShell`; V2's five `primaryNavItems` need no overflow
+// sheet) ────────────────────────────────────────────────────────────────────
 
 export type MoreGroup = {
   id: string

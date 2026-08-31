@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useCallback, useEffect, useState } from "react"
+import { Suspense, useEffect, useState } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 
 import { QuickSwitcher } from "@/components/app/quick-switcher"
@@ -10,7 +10,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { useMobileKeyboard } from "@/hooks/useMobileKeyboard"
 import { useNavigationMode } from "@/hooks/useNavigationMode"
 import { useSidebarState } from "@/hooks/useSidebarState"
-import { getActiveNavItem, getSectionForPath } from "@/lib/navigation"
+import { getActiveNavItem } from "@/lib/navigation"
 import { recordRecentNavId } from "@/lib/last-visited"
 import { cn } from "@/lib/utils"
 
@@ -19,7 +19,6 @@ import { DesktopSidebar, SIDEBAR_COLLAPSED_WIDTH, SIDEBAR_EXPANDED_WIDTH } from 
 import { MobileBottomNav } from "./MobileBottomNav"
 import { MobileHeader } from "./MobileHeader"
 import { MobileHeaderTitleProvider } from "./mobile-header-title"
-import { MoreNavigationSheet } from "./MoreNavigationSheet"
 import { RAIL_WIDTH, TabletNavigationRail } from "./TabletNavigationRail"
 
 /**
@@ -47,20 +46,13 @@ function SidebarChrome({ collapsed, onToggleCollapsed }: { collapsed: boolean; o
       searchParams={searchParams}
       collapsed={collapsed}
       onToggleCollapsed={onToggleCollapsed}
-      activeSectionId={getSectionForPath(pathname, searchParams)?.id}
     />
   )
 }
 
 function RailChrome() {
   const { pathname, searchParams } = useNavLocation()
-  return (
-    <TabletNavigationRail
-      pathname={pathname}
-      searchParams={searchParams}
-      activeSectionId={getSectionForPath(pathname, searchParams)?.id}
-    />
-  )
+  return <TabletNavigationRail pathname={pathname} searchParams={searchParams} />
 }
 
 function DesktopHeaderChrome() {
@@ -73,28 +65,9 @@ function MobileHeaderChrome({ onOpenSearch }: { onOpenSearch: () => void }) {
   return <MobileHeader pathname={pathname} searchParams={searchParams} onOpenSearch={onOpenSearch} />
 }
 
-function BottomNavChrome({ onOpenMore, moreOpen }: { onOpenMore: () => void; moreOpen: boolean }) {
+function BottomNavChrome() {
   const { pathname, searchParams } = useNavLocation()
-  return (
-    <MobileBottomNav
-      pathname={pathname}
-      searchParams={searchParams}
-      onOpenMore={onOpenMore}
-      moreOpen={moreOpen}
-    />
-  )
-}
-
-function MoreSheetChrome({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
-  const { pathname, searchParams } = useNavLocation()
-  return (
-    <MoreNavigationSheet
-      open={open}
-      onOpenChange={onOpenChange}
-      pathname={pathname}
-      searchParams={searchParams}
-    />
-  )
+  return <MobileBottomNav pathname={pathname} searchParams={searchParams} />
 }
 
 /** Records the current destination for the Quick Switcher's Recent group. */
@@ -117,14 +90,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const mode = useNavigationMode()
   const isKeyboardOpen = useMobileKeyboard()
   const { collapsed, toggle } = useSidebarState()
-  // The More sheet is pinned to the route it was opened on, so navigating
-  // closes it by derivation — no effect, no stale-open sheet after a back swipe.
-  const [more, setMore] = useState<{ open: boolean; route: string }>({ open: false, route: pathname })
-  const moreOpen = more.open && more.route === pathname
-  const setMoreOpen = useCallback(
-    (open: boolean) => setMore({ open, route: pathname }),
-    [pathname]
-  )
   const [searchOpen, setSearchOpen] = useState(false)
 
   const isMobile = mode === "mobile"
@@ -255,13 +220,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         {showBottomNav && (
           <NavSuspense>
-            <BottomNavChrome onOpenMore={() => setMoreOpen(true)} moreOpen={moreOpen} />
+            <BottomNavChrome />
           </NavSuspense>
         )}
-
-        <NavSuspense>
-          <MoreSheetChrome open={moreOpen} onOpenChange={setMoreOpen} />
-        </NavSuspense>
 
         {/* Mobile has no header slot for the switcher's own button, so it gets
             a triggerless instance driven by the header's Search action. Only

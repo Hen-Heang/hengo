@@ -32,9 +32,11 @@ export function isDetailRoute(pathname: string): boolean {
 }
 
 /**
- * Contextual mobile header. Root pages get a title plus at most two actions;
- * detail pages get `Back | Title | ⋯`. Profile, Settings and level all moved
- * off this bar — they live in the More sheet now.
+ * Contextual mobile header. Root pages get a title plus a row of actions;
+ * detail pages get `Back | Title | ⋯`. Profile and level stay off this bar,
+ * but Settings has its own icon here on root pages — V2's bottom bar has no
+ * "More" sheet to hold it anymore (see `MobileBottomNav`), and detail routes
+ * are the only other place it's reachable (the "More actions" menu below).
  */
 export function MobileHeader({
   pathname,
@@ -106,6 +108,9 @@ export function MobileHeader({
           <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
             <Search size={20} />
           </button>
+          <Link href="/settings" aria-label="Settings" className={ACTION_BUTTON}>
+            <Settings size={20} />
+          </Link>
           <ThemeToggle className="h-11 w-11 rounded-xl border-border bg-card shadow-sm" />
           <NotificationBell />
         </>
