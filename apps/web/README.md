@@ -21,6 +21,16 @@
 
 ---
 
+> ### Hengo V2 — focused Korean learning
+>
+> As of **2026-08-31**, Hengo's product surface is deliberately narrowed to Korean learning. Visible navigation is five destinations: **Today · Vocabulary · Practice · Coach · Study**.
+>
+> This README still documents the full V1 feature set below, and that documentation remains accurate as an *implementation* reference — the productivity, growth, second-brain, progress, general-AI, and K-Specialist exam-prep features all still exist and still work by direct URL. They are simply no longer part of the primary product surface: hidden from navigation and the home page, not deleted, with all data intact.
+>
+> See **[docs/HENGO_V2.md](../../docs/HENGO_V2.md)** for the V2 product direction, what is hidden and how backward compatibility is preserved, and the architecture decisions behind it.
+
+---
+
 ## Table of Contents
 
 1. [Hero](#hengo)

@@ -45,5 +45,6 @@ Project-specific documentation remains with each application:
 
 - [Web README](apps/web/README.md)
 - [API README](apps/api/README.md)
+- [Hengo V2 product direction](docs/HENGO_V2.md)
 - [Migration notes](docs/MONOREPO_MIGRATION.md)
 - [Notion MCP workflow](docs/NOTION_MCP.md)
