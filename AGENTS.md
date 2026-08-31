@@ -1,5 +1,16 @@
 # AGENTS.md
 
+## Session continuity
+
+Read `HANDOFF.md` first, before exploring the repo — it's a live snapshot of
+current focus, recent changes, and open items. Only read `HANDOFF_HISTORY.md`
+if older context is actually needed (its latest five entries are usually
+enough).
+
+Before ending a session that changed meaningful state, move `HANDOFF.md`'s
+current content into a new dated entry at the top of `HANDOFF_HISTORY.md`,
+then overwrite `HANDOFF.md` with the new snapshot.
+
 ## Repository
 
 Hengo is a monorepo containing two independent applications:
@@ -36,6 +47,21 @@ Run Maven directly from `apps/api` when needed:
 ```
 
 On Windows PowerShell, use `./mvnw.cmd` instead.
+
+## Which agent to delegate to
+
+Four scoped subagents live in `.claude/agents/`, so a task doesn't have to
+load both stacks' context into one conversation:
+
+| Task touches | Agent | Notes |
+| --- | --- | --- |
+| `apps/web` only | `dev-frontend` | Next.js/TS/Supabase/AI routes |
+| `apps/api` only | `dev-backend` | Spring Boot/MyBatis — imported backup, not the live backend |
+| Supabase schema/RLS/migrations | `db-meta-manager` | Live, Orbit-shared database — confirm before applying |
+| Reviewing a diff/PR before merge | `mr-reviewer` | Hengo-specific boundary checks, read-only |
+
+For anything crossing both apps, or general repo work, stay in the main
+session rather than forcing it into one scoped agent.
 
 ## Boundaries
 
