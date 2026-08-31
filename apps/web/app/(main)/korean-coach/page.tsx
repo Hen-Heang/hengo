@@ -9,7 +9,6 @@ import {
   Flame,
   Headphones,
   Mic,
-  RotateCcw,
   Settings2,
   ShieldCheck,
   Sparkles,
@@ -134,23 +133,15 @@ export default function KoreanCoachDashboardPage() {
     <div className="space-y-6 pb-14">
       <PageHero
         eyebrow="AI Korean Voice Coach"
-        title="Practise what you need to say"
-        description="Listen first, answer in Korean, get a short correction, and try the natural sentence again."
+        title="What do you want to practice saying?"
+        description="Pick a scenario, answer out loud in Korean, get a short correction, and try the natural sentence again."
         actions={
-          <>
-            <Button asChild size="lg" className="min-h-11 flex-1 sm:flex-none">
-              <Link href="/korean-coach/scenarios">
-                <Mic aria-hidden="true" />
-                Start Practice
-              </Link>
-            </Button>
-            <Button asChild size="lg" variant="outline" className="min-h-11 flex-1 sm:flex-none">
-              <Link href="/korean-coach/mistakes">
-                <RotateCcw aria-hidden="true" />
-                Review Mistakes
-              </Link>
-            </Button>
-          </>
+          <Button asChild size="lg" className="min-h-11 flex-1 sm:flex-none">
+            <Link href="/korean-coach/scenarios">
+              <Mic aria-hidden="true" />
+              Start speaking
+            </Link>
+          </Button>
         }
         stats={[
           {
@@ -179,10 +170,11 @@ export default function KoreanCoachDashboardPage() {
         <div className="mb-3 flex items-center justify-between gap-3">
           <div>
             <h2 id="practice-modes" className="text-lg font-semibold">
-              Choose how to practise
+              More ways to practise
             </h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Start with listening, speaking, or a correction you have seen before.
+              Pick a scenario to speak, sharpen your listening, or review a correction you have
+              seen before.
             </p>
           </div>
           <Button asChild variant="ghost" size="icon" aria-label="Korean Coach preferences">
@@ -197,7 +189,7 @@ export default function KoreanCoachDashboardPage() {
               <div className="mb-2 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Mic aria-hidden="true" />
               </div>
-              <CardTitle>Speaking scenarios</CardTitle>
+              <CardTitle>Speaking</CardTitle>
               <CardDescription>Answer one workplace or daily-life question at a time.</CardDescription>
             </CardHeader>
             <CardContent>
@@ -213,13 +205,16 @@ export default function KoreanCoachDashboardPage() {
               <div className="mb-2 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <Headphones aria-hidden="true" />
               </div>
-              <CardTitle>Listening challenge</CardTitle>
-              <CardDescription>Listen without a transcript, then check what you understood.</CardDescription>
+              <CardTitle>Listening</CardTitle>
+              <CardDescription>
+                Listen to a generated Korean conversation, then check your comprehension with a
+                quiz.
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <Button asChild variant="outline" className="w-full">
-                <Link href="/korean-coach/listening">
-                  Start listening <ArrowRight aria-hidden="true" />
+                <Link href="/listening">
+                  Open listening practice <ArrowRight aria-hidden="true" />
                 </Link>
               </Button>
             </CardContent>
@@ -229,7 +224,7 @@ export default function KoreanCoachDashboardPage() {
               <div className="mb-2 flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
                 <BookOpenCheck aria-hidden="true" />
               </div>
-              <CardTitle>Mistake notebook</CardTitle>
+              <CardTitle>Review mistakes</CardTitle>
               <CardDescription>
                 {dashboard.frequentMistakes.length > 0
                   ? `${dashboard.frequentMistakes.length} repeated pattern${dashboard.frequentMistakes.length === 1 ? "" : "s"} need attention.`
