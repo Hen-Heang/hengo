@@ -2,29 +2,10 @@ import Link from "next/link"
 import { CheckCircle2, PartyPopper, Sparkles } from "lucide-react"
 
 import { Skeleton } from "@/components/ui/skeleton"
+import { missionItemSummary } from "@/lib/learning/mission-item-display"
 import { skillLabel } from "@/lib/learning/skills"
-import type { MissionItemType } from "@/lib/learning/mission-engine"
 import { cn } from "@/lib/utils"
-import type { DailyMission, MissionItem } from "@/lib/api"
-
-// One dominant, itemized summary of `mission.items` — the same items
-// `/practice` already tracks (kori_daily_missions / kori_daily_mission_items)
-// — so the learner sees exactly what "Start today's practice" leads to
-// before tapping it, without a second dashboard's worth of numbers.
-function itemSummary(item: MissionItem): string {
-  const n = item.targetCount || 1
-  const plural = (noun: string) => `${n} ${noun}${n === 1 ? "" : "s"}`
-  const byType: Record<MissionItemType, string> = {
-    vocab_review: `${plural("word")} to review`,
-    correction_review: `${plural("mistake")} to retry`,
-    phrase_review: `${plural("phrase card")} to practice`,
-    daily_phrase: "1 phrase to learn",
-    listening: "1 listening activity",
-    scenario: "1 speaking scenario",
-    interview: "1 mock interview",
-  }
-  return byType[item.type] ?? item.title
-}
+import type { DailyMission } from "@/lib/api"
 
 export function TodayMissionCard({
   mission,
@@ -103,7 +84,7 @@ export function TodayMissionCard({
                 strokeWidth={2.5}
                 className={cn("shrink-0", done ? "text-emerald-500" : "text-muted-foreground/30")}
               />
-              {itemSummary(item)}
+              {missionItemSummary(item)}
             </li>
           )
         })}
