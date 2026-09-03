@@ -1,0 +1,33 @@
+name: Format Core Foundations PR
+
+on:
+  push:
+    branches:
+      - feat/core-korean-foundations
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/core-korean-foundations
+
+      - uses: ./.github/actions/setup-web
+
+      - name: Format Core Foundations file
+        run: |
+          pnpm --dir apps/web exec prettier --write lib/foundations-core-korean.ts
+
+      - name: Commit formatting and remove temporary workflow
+        run: |
+          rm .github/workflows/format-core-foundations-pr.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/web/lib/foundations-core-korean.ts .github/workflows/format-core-foundations-pr.yml
+          git commit -m "style(learn): format Core Korean foundations"
+          git push origin HEAD:feat/core-korean-foundations
