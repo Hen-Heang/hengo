@@ -66,7 +66,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         romanization: "gwanhyeongsa",
         meaning: "Comes directly before a noun to point out or describe which one.",
         example: "이 방법 · 그 문제 · 저 사람 · 어떤 작업 · 무슨 일",
-        exampleTranslation: "this method · that problem · that person · which task · what kind of work",
+        exampleTranslation:
+          "this method · that problem · that person · which task · what kind of work",
       },
       {
         hangul: "수사 — numeral",
@@ -80,7 +81,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         romanization: "josa",
         meaning: "Small markers attached to nouns that show their role or relationship.",
         example: "은/는 · 이/가 · 을/를 · 에 · 에서 · 도 · 만",
-        exampleTranslation: "topic · subject · object · location/time · action location · also · only",
+        exampleTranslation:
+          "topic · subject · object · location/time · action location · also · only",
       },
       {
         hangul: "감탄사 — interjection",
@@ -255,7 +257,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         romanization: "gae / beon / dae / gwon / jang",
         meaning: "things / times or number / machines-vehicles / books / flat items-pages",
         example: "파일 두 개 · 세 번 · 컴퓨터 한 대 · 책 두 권 · 종이 한 장",
-        exampleTranslation: "two files · three times · one computer · two books · one sheet of paper",
+        exampleTranslation:
+          "two files · three times · one computer · two books · one sheet of paper",
       },
       {
         hangul: "시 / 분 / 살 / 층",
@@ -286,7 +289,12 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         id: "grammar-21-e2",
         type: "multiple-choice",
         prompt: "Which system is normally used for minutes in 3:10?",
-        options: ["Native Korean", "Sino-Korean", "Either with no difference", "English numbers only"],
+        options: [
+          "Native Korean",
+          "Sino-Korean",
+          "Either with no difference",
+          "English numbers only",
+        ],
         answerIndex: 1,
         explanation: "Hours use native Korean numbers, while minutes use Sino-Korean numbers.",
       },
@@ -469,7 +477,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         prompt: "Which sentence is the more formal status-report style?",
         options: ["확인했어요.", "확인했습니다.", "확인해.", "확인했어."],
         answerIndex: 1,
-        explanation: "-습니다/-ㅂ니다 is the formal polite style often used in workplace reporting.",
+        explanation:
+          "-습니다/-ㅂ니다 is the formal polite style often used in workplace reporting.",
       },
       {
         id: "grammar-23-e3",
@@ -503,21 +512,24 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
       {
         hangul: "-(으)면 될까요?",
         romanization: "-(eu)myeon doelkkayo?",
-        meaning: "What should I do / would it be okay if I do ...? Useful when confirming a process.",
+        meaning:
+          "What should I do / would it be okay if I do ...? Useful when confirming a process.",
         example: "이건 어떻게 처리하면 될까요?",
         exampleTranslation: "How should I handle this?",
       },
       {
         hangul: "-(으)ㄹ 것 같습니다",
         romanization: "-(eu)l geot gatseumnida",
-        meaning: "I think it will / it seems it will. A formal way to soften a prediction or concern.",
+        meaning:
+          "I think it will / it seems it will. A formal way to soften a prediction or concern.",
         example: "일정이 조금 늦어질 것 같습니다.",
         exampleTranslation: "I think the schedule may be slightly delayed.",
       },
       {
         hangul: "-겠습니다 / -드리겠습니다",
         romanization: "-getseumnida / -deurigetseumnida",
-        meaning: "Formal intention/commitment; 드리겠습니다 adds a humble 'for you' nuance when suitable.",
+        meaning:
+          "Formal intention/commitment; 드리겠습니다 adds a humble 'for you' nuance when suitable.",
         example: "확인하고 다시 말씀드리겠습니다.",
         exampleTranslation: "I will check and get back to you.",
       },
@@ -526,7 +538,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
         romanization: "-(eu)l yejeongimnida",
         meaning: "It is planned/scheduled to ...; useful for realistic schedule updates.",
         example: "내일까지 완료할 예정입니다.",
-        exampleTranslation: "It is planned to be completed by tomorrow / I plan to complete it by tomorrow.",
+        exampleTranslation:
+          "It is planned to be completed by tomorrow / I plan to complete it by tomorrow.",
       },
       {
         hangul: "-(으)ㄴ/는데요",
@@ -549,13 +562,9 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
       {
         id: "grammar-24-e1",
         type: "multiple-choice",
-        prompt: "You are unsure how to handle a task. Which sentence is the most useful confirmation pattern?",
-        options: [
-          "어떻게 처리하면 될까요?",
-          "처리합니다.",
-          "처리하지 마세요.",
-          "처리했어요?",
-        ],
+        prompt:
+          "You are unsure how to handle a task. Which sentence is the most useful confirmation pattern?",
+        options: ["어떻게 처리하면 될까요?", "처리합니다.", "처리하지 마세요.", "처리했어요?"],
         answerIndex: 0,
         explanation: "-(으)면 될까요? politely asks what action/process is appropriate.",
       },
@@ -575,7 +584,8 @@ export const CORE_KOREAN_FOUNDATIONS: LessonDetail[] = [
       {
         id: "grammar-24-e3",
         type: "type-answer",
-        prompt: "Complete: 수정했습니다. 다시 확인 ___드립니다. (I've fixed it. Please check again.)",
+        prompt:
+          "Complete: 수정했습니다. 다시 확인 ___드립니다. (I've fixed it. Please check again.)",
         answer: "부탁",
         explanation: "확인 부탁드립니다 is a common concise formal workplace request.",
       },
