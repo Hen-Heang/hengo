@@ -117,3 +117,29 @@ corrections already have their own dedicated pages. Only `vocab_review` and
 `daily_phrase` get an inline Korean-first *preview* (real due words / the
 actual phrase) before the CTA — everything else shows the mission item's own
 `title`/`reason` text, which is already real and specific.
+
+## Session 3 notes
+
+**The speak→correct→retry loop was already mostly built.** `CoachFeedback.tsx`
+already renders structured sections (transcript → understood meaning →
+corrected sentence → natural alternative → explanation → listen → retry →
+continue → save mistake) in the required order, and the AI prompt
+(`lib/korean-coach/tutor-prompt.ts`) already tells the model to flag only
+errors that block meaning or sound inappropriate at beginner level, and to
+suggest a retry only when an important correction exists — i.e. Phase 5's
+"don't correct every tiny difference" was already prompt-level policy. The
+only real defect: literal numbered prefixes ("1. What you said", "7. Try
+Again", …) baked into user-facing copy, which read as leftover implementation
+labels — removed; `coach-ui.test.tsx`'s ordering assertions use substring
+matching so they still pass.
+
+**Coach's landing page** got the same treatment as `/home`/`/practice`: one
+dominant card (the deterministically-picked `recommendedScenario`, its
+`learningObjectives` as "why this" tags, one "Start speaking" CTA straight
+into `/korean-coach/practice/[id]`), three compact secondary links (Other
+scenarios / Listening / Review mistakes), and a small streak line. The
+4-stat `PageHero`, the separate "Recommended next"/"Repeated mistakes"/
+"Recent sessions" cards, the voice-privacy disclosure, and "Delete history"
+all moved: recent sessions to new `/korean-coach/history` (same 5-session
+cap `getDashboard` already returned — no new query), the rest into a new
+"Data & privacy" section on `/korean-coach/preferences`.

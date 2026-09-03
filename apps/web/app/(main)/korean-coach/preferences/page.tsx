@@ -2,9 +2,20 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Save, Settings2 } from "lucide-react"
+import { ArrowLeft, Save, Settings2, ShieldCheck, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ErrorBanner } from "@/components/ui/error-banner"
@@ -24,6 +35,7 @@ export default function KoreanCoachPreferencesPage() {
   const [preferences, setPreferences] = useState<KoreanCoachPreferences | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
 
   useEffect(() => {
@@ -67,6 +79,19 @@ export default function KoreanCoachPreferencesPage() {
       setError(getApiErrorMessage(cause, "Preferences could not be saved."))
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function deleteHistory() {
+    setDeleting(true)
+    setError("")
+    try {
+      await koreanCoachApi.deleteAllPracticeHistory()
+      toast.success("Korean Coach history deleted")
+    } catch (cause) {
+      setError(getApiErrorMessage(cause, "Practice history could not be deleted."))
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -232,6 +257,49 @@ export default function KoreanCoachPreferencesPage() {
                   ))}
                 </select>
               </label>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <ShieldCheck className="size-4 text-primary" aria-hidden="true" />
+                <CardTitle>Data &amp; privacy</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-sm leading-6 text-muted-foreground">
+                Your recording is sent to an AI service for transcription and feedback. Do not
+                record sensitive workplace or personal information. Hengo saves the transcript and
+                learning feedback, not the raw recording.
+              </p>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button type="button" variant="outline" className="text-destructive">
+                    <Trash2 aria-hidden="true" />
+                    Delete Korean Coach history
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete complete practice history?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      This permanently removes Korean Coach sessions, attempts, and saved coach
+                      mistakes. Your other Hengo learning history is not affected.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={deleteHistory}
+                      disabled={deleting}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      {deleting ? "Deleting…" : "Delete history"}
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
 

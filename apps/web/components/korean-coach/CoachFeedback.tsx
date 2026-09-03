@@ -95,7 +95,7 @@ export function CoachFeedback({
       <Card>
         <CardContent className="space-y-6">
           <PhraseBlock
-            title="1. What you said · speech recognition result"
+            title="What you said · speech recognition result"
             korean={feedback.transcript}
             romanization=""
             english=""
@@ -104,13 +104,13 @@ export function CoachFeedback({
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              2. What was understood
+              What was understood
             </p>
             <p className="mt-2 leading-7">{feedback.understoodMeaning}</p>
           </div>
 
           <PhraseBlock
-            title="3. Corrected Korean"
+            title="Corrected Korean"
             korean={feedback.correctedSentence.korean}
             romanization={feedback.correctedSentence.romanization}
             english={feedback.correctedSentence.english}
@@ -119,7 +119,7 @@ export function CoachFeedback({
           />
 
           <PhraseBlock
-            title="4. Natural Korean"
+            title="Natural Korean"
             korean={feedback.alternativeSentence.korean}
             romanization={feedback.alternativeSentence.romanization}
             english={feedback.alternativeSentence.english}
@@ -128,7 +128,7 @@ export function CoachFeedback({
 
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-              5. Short explanation
+              Short explanation
             </p>
             <p className="mt-2 leading-7">{feedback.feedback.summary}</p>
             {!feedback.feedback.grammar.isCorrect && (
@@ -142,7 +142,7 @@ export function CoachFeedback({
             <div className="mb-3 flex items-center gap-2">
               <Volume2 className="size-4 text-primary" aria-hidden="true" />
               <p className="text-xs font-semibold uppercase tracking-[0.1em] text-muted-foreground">
-                6. Listen to the correction
+                Listen to the correction
               </p>
             </div>
             <CoachAudioPlayer
@@ -184,7 +184,7 @@ export function CoachFeedback({
         <CardContent className="space-y-2">
           <Button type="button" size="lg" className="w-full" onClick={onTryAgain} disabled={busy}>
             <RotateCcw aria-hidden="true" />
-            7. Try Again
+            Try Again
           </Button>
           <Button
             type="button"
@@ -194,7 +194,7 @@ export function CoachFeedback({
             onClick={onContinue}
             disabled={busy}
           >
-            8. Continue conversation
+            Continue conversation
             <ArrowRight aria-hidden="true" />
           </Button>
           {feedback.mistakes.length > 0 && (
@@ -207,7 +207,7 @@ export function CoachFeedback({
               disabled={busy || mistakesSaved}
             >
               {mistakesSaved ? <BookmarkCheck aria-hidden="true" /> : <Save aria-hidden="true" />}
-              {mistakesSaved ? "9. Saved to mistakes" : "9. Save to mistakes"}
+              {mistakesSaved ? "Saved to mistakes" : "Save to mistakes"}
             </Button>
           )}
         </CardContent>
