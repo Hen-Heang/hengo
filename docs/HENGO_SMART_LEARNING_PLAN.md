@@ -1,0 +1,95 @@
+# Hengo smart Korean learning loop — plan
+
+## Current flow
+
+`/home` greets the learner, then shows a `VocabReviewCard` (due count +
+mastered/total) as the visually primary element, followed by four
+equal-weight shortcut tiles (Today's Practice, Daily Phrase, Speak & Coach,
+Continue Study) and a one-line stats footer (due/mastered/streak). All four
+shortcuts render at the same size — nothing tells the learner which one
+actually matters today.
+
+Meanwhile `/practice` already builds a real personalized checklist:
+`missionsApi.getOrCreateToday()` calls `lib/learning/mission-engine.ts`'s
+`buildDailyMission()`, a deterministic function that weighs due vocabulary,
+due corrections, due phrase cards, the weakest measured skill
+(`kori_skill_mastery`), an active exam or stated goal, and feature variety
+into an ordered set of `DailyMissionItemPlan`s, persisted once per
+(user, Korea-calendar day) to `kori_daily_missions` /
+`kori_daily_mission_items`. `missionsApi.refreshProgress()` re-checks each
+item against real evidence (graded SRS cards, a learned daily phrase,
+completed scenario/listening/interview attempts) rather than trusting that a
+page was opened. None of this reaches `/home` today — the Today page and the
+mission engine are built by the same codebase but never talk to each other.
+
+## Target flow
+
+`/home` becomes the single place that answers "what should I practice
+today?", using the mission that already exists:
+
+1. One dominant **Today's Korean** card: estimated minutes
+   (`mission.estimatedMinutes`), an itemized breakdown of what's in it (due
+   vocab / due phrases / due corrections / listening / speaking, from
+   `mission.items`), `completed/total` progress, the mission's own
+   human-readable `reason` string, and a single primary CTA — **Start
+   today's practice** → `/practice`.
+2. A compact **Needs attention** row naming the weakest skill(s)
+   (`mission.focusSkillCodes` → `skillLabel()`), shown only when real
+   weak-skill data exists.
+3. Streak, folded in as a small supporting line, not a stat box.
+4. Three secondary shortcuts, visually subordinate to the mission card: Add a
+   word (`/vocab`), Continue study (existing `lib/last-visited.ts` deep
+   link), Speak with Coach (`/korean-coach`). "Today's Practice" and "Daily
+   Phrase" stop being separate tiles — both are now folded into the mission
+   card, since the mission already includes a `daily_phrase` item whenever
+   it isn't learned yet.
+
+`/practice` is untouched this session (Session 2 per the phased plan) — it
+keeps its own local mission fetch. Both surfaces read the same
+`kori_daily_missions` row for the same calendar day, so they can never
+disagree.
+
+## Data mapping
+
+| UI element | Source |
+| --- | --- |
+| Estimated minutes | `mission.estimatedMinutes` |
+| Item breakdown | `mission.items[].type` + `.targetCount`, formatted per type |
+| Progress `n/total` | `mission.items.filter(i => i.status === "completed").length` / `mission.items.length` |
+| Supporting explanation | `mission.reason` (already assembled from up to two real item reasons) |
+| Needs attention | `mission.focusSkillCodes.map(skillLabel)`, capped at 2 |
+| Streak | `useStreak()` (existing hook, `kori_activity_log`-backed) |
+| Continue study href | `getLastVisited("learn", "/learn")` (existing) |
+
+No new Supabase tables or columns. No database migration.
+
+## UX gaps closed
+
+- The learner previously had to pick among four equally-weighted tiles
+  before doing anything; now there's one obvious next action.
+- Vocabulary due count, weak skills, and the daily phrase were three
+  separate, uncoordinated signals; the mission engine already unifies them
+  into one prioritized plan — `/home` just needed to read it.
+- "Needs attention" was nowhere on `/home` despite `kori_skill_mastery`
+  already tracking it.
+
+## Files likely to change (this session)
+
+- `apps/web/hooks/useDailyMission.ts` — new. TanStack Query wrapper around
+  `missionsApi.getOrCreateToday()` + `.refreshProgress()`, same shape as
+  `useVocab`/`useStreak`/`useDailyPhrase`, so `/practice` can adopt it in a
+  later session without another data-fetching rewrite.
+- `apps/web/app/(main)/home/page.tsx` — replace `VocabReviewCard` +
+  four-tile shortcut grid with the mission-first layout.
+- `apps/web/components/home/TodayMissionCard.tsx` — new primary card.
+- Existing `WorkspacePosterCard`, `useVocab`, `useDailyPhrase`, `useStreak`
+  stay as-is; the daily-phrase tile is dropped from `/home` but the hook
+  remains available for `/practice`.
+
+## Implementation phases (unchanged from the master brief)
+
+Session 1 (this session): `/home` only. Session 2: `/practice` becomes a
+focused step-by-step session. Session 3: Coach simplification. Session 4:
+correction → future-practice wiring. Session 5: vocabulary capture/review
+hierarchy. Session 6: skill-aware `/learn`. Each session waits for approval
+before starting.
