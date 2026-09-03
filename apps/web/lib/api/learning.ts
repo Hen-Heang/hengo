@@ -31,6 +31,7 @@ type CorrectionRow = {
   id: string
   original_text: string
   corrected_text: string
+  natural_version: string | null
   explanation: string | null
   grammar_points: string[]
   mastery: number
@@ -41,16 +42,24 @@ type CorrectionRow = {
   lapses: number
   created_at: string
   error_category?: string | null
+  severity?: "minor" | "important" | null
+  occurrence_count?: number | null
 }
 
 function toCorrectionReview(row: CorrectionRow): CorrectionReview & { createdAt: string } {
+  const naturalVersion = row.natural_version?.trim()
   return {
     createdAt: row.created_at,
     id: row.id,
     originalText: row.original_text,
     correctedText: row.corrected_text,
+    naturalVersion:
+      naturalVersion && naturalVersion !== row.corrected_text.trim() ? naturalVersion : undefined,
     explanation: row.explanation ?? undefined,
     grammarPoints: row.grammar_points ?? [],
+    errorCategory: row.error_category ?? undefined,
+    severity: row.severity ?? undefined,
+    occurrenceCount: row.occurrence_count ?? 1,
     mastery: row.mastery,
     nextReviewDate: row.next_review_date,
     easeFactor: row.ease_factor,

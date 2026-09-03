@@ -143,3 +143,49 @@ scenarios / Listening / Review mistakes), and a small streak line. The
 all moved: recent sessions to new `/korean-coach/history` (same 5-session
 cap `getDashboard` already returned — no new query), the rest into a new
 "Data & privacy" section on `/korean-coach/preferences`.
+
+## Session 4 notes
+
+**Most of the correction→future-practice loop already existed.**
+`lib/learning/corrections.ts`'s `planCorrectionUpsert` already tracks
+`occurrence_count` by fingerprint and treats a repeated *important* mistake
+like an SRS "AGAIN" (mastery drops, resets toward the front of the queue) —
+"fingerprint/pattern tracked" and "repeated mistakes increase priority" were
+already real. `correctionApi.getDueReviews()` already feeds
+`buildCorrectionCandidate` in the mission engine, and `CorrectionsReview.tsx`
+(rendered at `/chat?mode=corrections`, which is exactly where the mission's
+`correction_review` step already links) already lets the learner retry and
+grade with the same SRS ratings vocab uses — closing "learner retries →
+mastery improves → stop surfacing" via the existing interval-growth
+mechanism (same pattern as vocab SRS: never a hard cutoff, intervals just
+grow long enough to stop appearing "due" — deliberately not changed, per
+"don't rewrite SRS spacing calculations").
+
+**The real gap**: `kori_corrections` already stores `natural_version`,
+`error_category`, `severity`, and `occurrence_count`, but `CorrectionReview`
+(`lib/types.ts`) and `toCorrectionReview()` (`lib/api/learning.ts`) silently
+dropped all four before they ever reached a component. Added them to the
+type/mapper (additive, no schema change) and surfaced `naturalVersion` (a
+new "Natural Korean" block, shown only when it differs from the minimal
+correction) and `occurrenceCount` (a "Seen N×" badge) in
+`CorrectionsReview.tsx`, plus a `SpeakButton` on the corrected sentence —
+completing the brief's "original / corrected / natural version / explanation
+/ grammar point / listen / retry" checklist for the one correction surface
+that's actually wired to the daily mission. `errorCategory`/`severity` are
+typed and available but not rendered, matching "don't display unnecessary
+internal metadata."
+
+**A second, unmerged mistake-tracking system**: Korean Coach's "Save to
+mistakes" writes to a separate table (`coach_review_count`/`coach_mastered`
+fields, via `koreanCoachApi.saveMistakes`/`listMistakes`/`updateMistake`),
+with its own notebook (`/korean-coach/mistakes`) and its own retry/mastery
+model (boolean mastered + a review counter, not the continuous SRS
+mastery/interval `kori_corrections` and vocab use). The mission engine's
+`buildCorrectionCandidate` never reads from it, so a Coach speaking mistake
+never resurfaces in a future daily mission the way a chat/manual-check
+correction does. **Deliberately not merged this session** — the two systems
+use genuinely different mastery models, and reconciling them (shared due-set,
+shared retry/grading UI, or a converted schema) is a real design decision,
+not a mechanical fix, and touches a flow (voice recording/grading) that
+can't be verified live in this environment. Recommended as a scoped decision
+for a future session rather than a default to implement.
