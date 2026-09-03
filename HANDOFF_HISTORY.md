@@ -9,6 +9,47 @@ its old content here as a dated entry before overwriting.
 
 ---
 
+## 2026-08-31 (d)
+
+### Snapshot
+
+- **Branch:** `main` (aligned with `origin/main`)
+- **Last commit:** 48ef886 — update new logo
+
+### Current focus
+
+**Repository and branch cleanup was complete.** PRs #1 through #14 were all
+merged, including Hengo V2 in PR #13 and the workflow tooling in PR #14. No open
+or draft PRs remained.
+
+The remote branch list had been reduced from 19 branches to three intentional
+ones: `main`, `archive/hengo-v1-2026-08-31` (V1 snapshot), and
+`v0/hen-heang-12e5395f` (one unique unmerged commit touching three root-level
+chat components). Sixteen merged, superseded, or duplicate remote branches were
+deleted, and a stale local tracking ref for the already-deleted PR #1 branch was
+pruned.
+
+### Working tree at the time
+
+- A pre-existing staged formatting/tooling change set of 616 files (21,253
+  insertions, 9,661 deletions) covering Prettier configuration, a composite
+  GitHub Action, workflow edits, package changes, and broad formatting. It was
+  to be preserved and reviewed before committing.
+- GitHub CLI authentication was still invalid, though authenticated Git
+  operations worked.
+
+### Next steps at the time
+
+- Review and test the staged 616-file formatting/tooling change set before
+  committing it. *(Resolved 2026-09-03: landed as 2d4106d "add new ci",
+  618 files, 21,327 insertions, 9,680 deletions.)*
+- Decide whether `v0/hen-heang-12e5395f` was still valuable — 215 commits behind
+  `main`, but its single commit was never merged. *(Still open.)*
+- Optionally rewrite `apps/web/docs/navigation-shell-audit.md`, marked
+  superseded but not rewritten. *(Still open.)*
+- `lib/learning/corrections.test.ts` failed on a hardcoded date aged past
+  "today", pre-existing and unrelated to V2. *(Still open.)*
+
 ## 2026-08-31 (c)
 
 ### Snapshot
