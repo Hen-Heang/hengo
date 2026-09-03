@@ -276,8 +276,14 @@ export interface CorrectionReview {
   id: string
   originalText: string
   correctedText: string
+  /** More natural phrasing than `correctedText`'s minimal fix, when they differ. */
+  naturalVersion?: string
   explanation?: string
   grammarPoints: string[]
+  errorCategory?: string
+  severity?: "minor" | "important"
+  /** How many times this same mistake (by fingerprint) has recurred. */
+  occurrenceCount: number
   mastery: number
   nextReviewDate: string
   easeFactor: number

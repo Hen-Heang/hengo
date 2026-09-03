@@ -1,7 +1,8 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { Suspense, useMemo, useState } from "react"
 import Link from "next/link"
+import { useSearchParams } from "next/navigation"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowUpRight,
@@ -54,6 +55,14 @@ const itemVariants = {
 } as const
 
 export default function VocabPage() {
+  return (
+    <Suspense fallback={null}>
+      <VocabPageContent />
+    </Suspense>
+  )
+}
+
+function VocabPageContent() {
   const {
     dueToday,
     dueCount,
@@ -71,6 +80,10 @@ export default function VocabPage() {
   useSessionTimer("vocab")
   const [query, setQuery] = useState("")
   const [addOpen, setAddOpen] = useState(false)
+  // "/vocab?tab=phrases" (used by the daily_phrase mission step) lands
+  // directly on the Phrases tab instead of the vocabulary deck.
+  const searchParams = useSearchParams()
+  const defaultTab = searchParams.get("tab") === "phrases" ? "phrases" : "vocabulary"
   // Set by a deck's "Review this deck" button; consumed by ReviewSession to
   // jump straight into a scoped Memory Lab session for that category.
   const [focusCategory, setFocusCategory] = useState<string | null>(null)
@@ -150,7 +163,7 @@ export default function VocabPage() {
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <Tabs defaultValue="vocabulary" className="gap-0">
+        <Tabs defaultValue={defaultTab} className="gap-0">
           <TabsList className="grid h-12 w-full grid-cols-2 rounded-2xl border border-border/70 bg-muted/60 p-1 sm:max-w-md">
             <TabsTrigger value="vocabulary" className="rounded-xl px-3 font-semibold">
               <LibraryBig />
@@ -308,6 +321,7 @@ export default function VocabPage() {
         totalCount={words.length}
         existingTerms={words.map((word) => word.term)}
         onAdd={addWord}
+        onUpdate={updateWord}
         onGenerate={handleGenerate}
         onImport={handleImport}
       />

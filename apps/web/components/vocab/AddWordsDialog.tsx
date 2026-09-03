@@ -21,6 +21,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddWordCard } from "@/components/vocab/AddWordCard"
 import { DeckBuilder } from "@/components/vocab/DeckBuilder"
 import { TextbookImport } from "@/components/vocab/TextbookImport"
+import type { VocabItem } from "@/lib/types"
 
 type AddWordsDialogProps = {
   open: boolean
@@ -36,7 +37,12 @@ type AddWordsDialogProps = {
     term: string
     meaning: string
     example?: string
-  }) => Promise<unknown>
+  }) => Promise<VocabItem>
+  /** Lets a bare-term quick capture get its meaning filled in by AI afterward. */
+  onUpdate: (
+    id: string,
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
+  ) => Promise<void>
   onGenerate: (category: string) => Promise<void>
   onImport: (deckName: string, text: string) => Promise<number>
 }
@@ -55,6 +61,7 @@ export function AddWordsDialog({
   totalCount,
   existingTerms,
   onAdd,
+  onUpdate,
   onGenerate,
   onImport,
 }: AddWordsDialogProps) {
@@ -78,7 +85,7 @@ export function AddWordsDialog({
         </TabsTrigger>
       </TabsList>
       <TabsContent value="manual" className="pt-2">
-        <AddWordCard embedded categories={topics} onAdd={onAdd} />
+        <AddWordCard embedded categories={topics} onAdd={onAdd} onUpdate={onUpdate} />
       </TabsContent>
       <TabsContent value="ai" className="pt-2">
         <DeckBuilder embedded dueCount={dueCount} totalCount={totalCount} onGenerate={onGenerate} />

@@ -254,8 +254,13 @@ export function VocabCard({ item, onReview, onUpdate, onDelete }: VocabCardProps
                   [{item.pronunciation}]
                 </p>
               )}
-              <p className="mt-2 text-lg font-bold text-muted-foreground leading-tight [overflow-wrap:anywhere] sm:text-xl">
-                {item.meaning}
+              <p
+                className={cn(
+                  "mt-2 text-lg font-bold leading-tight [overflow-wrap:anywhere] sm:text-xl",
+                  item.meaning ? "text-muted-foreground" : "italic text-muted-foreground/50",
+                )}
+              >
+                {item.meaning || "No meaning yet — tap to add"}
               </p>
             </div>
 

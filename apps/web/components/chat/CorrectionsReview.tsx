@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "motion/react"
 import { Badge } from "@/components/ui/badge"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
+import { SpeakButton } from "@/components/ui/SpeakButton"
 import { cn } from "@/lib/utils"
 import { correctionApi, getApiErrorMessage } from "@/lib/api"
 import { formatInterval, previewIntervalDays, RATINGS, type ReviewRating } from "@/lib/srs"
@@ -145,9 +146,14 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
               transition={{ duration: 0.25 }}
               className="rounded-3xl border-2 border-b-[6px] border-border bg-card p-6 dark:bg-slate-900/60 sm:p-8"
             >
-              <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
-                What you wrote
-              </p>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[12px] font-bold uppercase tracking-wide text-muted-foreground">
+                  What you wrote
+                </p>
+                {card.occurrenceCount > 1 && (
+                  <Badge variant="outline">Seen {card.occurrenceCount}×</Badge>
+                )}
+              </div>
               <p className="mt-2 break-keep text-2xl font-bold leading-snug text-red-700 line-through dark:text-red-400 sm:text-3xl">
                 {card.originalText}
               </p>
@@ -167,13 +173,29 @@ export function CorrectionsReview({ onDone }: { onDone?: () => void }) {
                   className="mt-6 space-y-4"
                 >
                   <div className="rounded-2xl border-2 border-emerald-500/40 bg-emerald-500/[0.06] p-5 dark:bg-emerald-500/[0.08]">
-                    <p className="text-[12px] font-bold uppercase tracking-wide text-emerald-700/70 dark:text-emerald-400/70">
-                      Correct
-                    </p>
-                    <p className="mt-1 break-keep text-2xl font-bold leading-snug text-foreground sm:text-3xl">
-                      {card.correctedText}
-                    </p>
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="min-w-0">
+                        <p className="text-[12px] font-bold uppercase tracking-wide text-emerald-700/70 dark:text-emerald-400/70">
+                          Correct
+                        </p>
+                        <p className="mt-1 break-keep text-2xl font-bold leading-snug text-foreground sm:text-3xl">
+                          {card.correctedText}
+                        </p>
+                      </div>
+                      <SpeakButton text={card.correctedText} className="shrink-0" />
+                    </div>
                   </div>
+
+                  {card.naturalVersion && (
+                    <div className="rounded-2xl border-2 border-sky-500/30 bg-sky-500/[0.05] p-5 dark:bg-sky-500/[0.07]">
+                      <p className="text-[12px] font-bold uppercase tracking-wide text-sky-700/70 dark:text-sky-400/70">
+                        Natural Korean
+                      </p>
+                      <p className="mt-1 break-keep text-xl font-bold leading-snug text-foreground">
+                        {card.naturalVersion}
+                      </p>
+                    </div>
+                  )}
 
                   {card.explanation && (
                     <p className="text-sm leading-6 text-muted-foreground">{card.explanation}</p>
