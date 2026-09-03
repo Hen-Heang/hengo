@@ -325,7 +325,10 @@ function CompletionSummary({
         </div>
       </motion.div>
 
-      <motion.ul variants={itemVariants} className="space-y-2 rounded-3xl border border-border bg-card p-5 dark:bg-slate-900/40">
+      <motion.ul
+        variants={itemVariants}
+        className="space-y-2 rounded-3xl border border-border bg-card p-5 dark:bg-slate-900/40"
+      >
         {mission.items.map((item) => (
           <li key={item.id} className="flex items-center gap-2 text-sm text-foreground">
             <CheckCircle2 size={15} strokeWidth={2.5} className="shrink-0 text-emerald-500" />

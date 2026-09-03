@@ -80,7 +80,9 @@ function SecondaryShortcuts({ shortcuts }: { shortcuts: Shortcut[] }) {
                 style.border,
               )}
             >
-              <span className={cn("flex size-6 items-center justify-center rounded-full", style.icon)}>
+              <span
+                className={cn("flex size-6 items-center justify-center rounded-full", style.icon)}
+              >
                 <s.icon size={13} strokeWidth={2.2} />
               </span>
               {s.label}

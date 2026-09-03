@@ -342,7 +342,9 @@ export function VocabDeck({
                         <p
                           className={cn(
                             "truncate text-sm sm:text-base",
-                            item.meaning ? "text-muted-foreground" : "italic text-muted-foreground/50",
+                            item.meaning
+                              ? "text-muted-foreground"
+                              : "italic text-muted-foreground/50",
                           )}
                         >
                           {item.meaning || "No meaning yet"}

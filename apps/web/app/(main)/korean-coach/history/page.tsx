@@ -80,7 +80,9 @@ export default function KoreanCoachHistoryPage() {
                   <div>
                     <p className="font-medium">
                       {scenario?.englishTitle ??
-                        (session.mode === "listening" ? "Listening challenge" : "Speaking practice")}
+                        (session.mode === "listening"
+                          ? "Listening challenge"
+                          : "Speaking practice")}
                     </p>
                     <p className="mt-1 text-xs text-muted-foreground">
                       {new Date(session.endedAt ?? session.startedAt).toLocaleDateString()} ·{" "}
@@ -88,7 +90,10 @@ export default function KoreanCoachHistoryPage() {
                       {session.completedTurns} turns
                     </p>
                   </div>
-                  <ArrowRight className="size-4 shrink-0 text-muted-foreground" aria-hidden="true" />
+                  <ArrowRight
+                    className="size-4 shrink-0 text-muted-foreground"
+                    aria-hidden="true"
+                  />
                 </Link>
               </li>
             )
