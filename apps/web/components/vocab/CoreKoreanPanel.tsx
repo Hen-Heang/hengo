@@ -71,7 +71,10 @@ export function CoreKoreanPanel({ words, loading }: CoreKoreanPanelProps) {
           <div className="min-w-0 flex-1">
             <p className="app-kicker">Learning foundation</p>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <h2 id="core-korean-title" className="text-lg font-semibold text-foreground sm:text-xl">
+              <h2
+                id="core-korean-title"
+                className="text-lg font-semibold text-foreground sm:text-xl"
+              >
                 Core Korean 300
               </h2>
               {complete ? (

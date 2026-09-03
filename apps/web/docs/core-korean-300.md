@@ -6,16 +6,16 @@ It is intentionally a **coverage layer over the learner's existing vocabulary**,
 
 ## Curriculum shape
 
-| Group | Count | Default level |
-| --- | ---: | --- |
-| Essential verbs | 60 | A1 |
-| Descriptive verbs | 40 | A1 |
-| Daily-life nouns | 60 | A1 |
-| Function/question/adverb words | 30 | A1 |
-| Numbers, time, and counters | 30 | A1 |
-| Workplace Korean | 40 | A2 |
-| Developer Korean | 40 | A2 |
-| **Total** | **300** | |
+| Group                          |   Count | Default level |
+| ------------------------------ | ------: | ------------- |
+| Essential verbs                |      60 | A1            |
+| Descriptive verbs              |      40 | A1            |
+| Daily-life nouns               |      60 | A1            |
+| Function/question/adverb words |      30 | A1            |
+| Numbers, time, and counters    |      30 | A1            |
+| Workplace Korean               |      40 | A2            |
+| Developer Korean               |      40 | A2            |
+| **Total**                      | **300** |               |
 
 The authored source of truth is `lib/core-korean-vocab.ts`.
 

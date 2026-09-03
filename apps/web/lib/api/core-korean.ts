@@ -1,10 +1,7 @@
 import { romanize } from "es-hangul"
 
 import { requireUserId } from "@/lib/auth-store"
-import {
-  normalizeCoreKoreanTerm,
-  type CoreKoreanEntry,
-} from "@/lib/core-korean-vocab"
+import { normalizeCoreKoreanTerm, type CoreKoreanEntry } from "@/lib/core-korean-vocab"
 import { supabase } from "@/lib/supabase"
 
 function autoPronunciation(term: string): string | null {

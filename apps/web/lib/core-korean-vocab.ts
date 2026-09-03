@@ -417,9 +417,7 @@ export function normalizeCoreKoreanTerm(value: string): string {
   return value.normalize("NFC").trim().replace(/\s+/g, " ").toLocaleLowerCase("ko-KR")
 }
 
-const CORE_TERM_SET = new Set(
-  CORE_KOREAN_300.map((entry) => normalizeCoreKoreanTerm(entry.term)),
-)
+const CORE_TERM_SET = new Set(CORE_KOREAN_300.map((entry) => normalizeCoreKoreanTerm(entry.term)))
 
 export function isCoreKoreanWord(word: Pick<VocabItem, "term">): boolean {
   return CORE_TERM_SET.has(normalizeCoreKoreanTerm(word.term))
