@@ -88,8 +88,32 @@ No new Supabase tables or columns. No database migration.
 
 ## Implementation phases (unchanged from the master brief)
 
-Session 1 (this session): `/home` only. Session 2: `/practice` becomes a
-focused step-by-step session. Session 3: Coach simplification. Session 4:
-correction → future-practice wiring. Session 5: vocabulary capture/review
-hierarchy. Session 6: skill-aware `/learn`. Each session waits for approval
-before starting.
+Session 1: `/home` only (done). Session 2: `/practice` becomes a focused
+step-by-step session (done, see below). Session 3: Coach simplification.
+Session 4: correction → future-practice wiring. Session 5: vocabulary
+capture/review hierarchy. Session 6: skill-aware `/learn`. Each session waits
+for approval before starting.
+
+## Session 2 notes
+
+**A second, parallel "daily practice" system already existed**:
+`/practice/today` (`components/daily-study/DailyStudyPlanPage.tsx`) is a
+fully-built session UI over `kori_daily_study_plans` — weekday-topic content
+(`lib/daily-study-plan.ts`), busy/normal/office pacing, and a real
+speak→correct→retry loop (`VoicePractice.tsx`). It predates the mission
+engine, is generic (not personalized to due/weak data), and is hidden from
+nav. This session deliberately did **not** merge the two systems — `/practice`
+now builds its focused flow on the mission engine (personalized, tied to real
+due/weak evidence and to `/home`'s card), and `/practice/today` is untouched.
+Whether to retire, merge, or keep both as separate modes is a product
+decision for a later session, not an engineering default.
+
+**Reuse over rebuild**: rather than embedding new interactive UI for every
+mission item type, `/practice`'s focused step hands off via one CTA to the
+feature that already owns that interaction — `/vocab` already has a complete,
+polished flashcard reviewer (`components/vocab/ReviewSession.tsx`); `/vocab`'s
+Phrases tab already renders `DailyPhraseCard`; listening/scenario/interview/
+corrections already have their own dedicated pages. Only `vocab_review` and
+`daily_phrase` get an inline Korean-first *preview* (real due words / the
+actual phrase) before the CTA — everything else shows the mission item's own
+`title`/`reason` text, which is already real and specific.
