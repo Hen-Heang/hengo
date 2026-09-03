@@ -226,3 +226,34 @@ verify it live (auth-gated route) was judged riskier than the edge case it
 guards against. Also left alone: `vocabApi.update()` doesn't persist
 `exampleTranslation` (only `generate`/import do) — a pre-existing asymmetry,
 not something this session's capture-speed fix needed to touch.
+
+## Session 6 notes
+
+`/learn` kept its four existing module cards (Workplace & Daily Phrases,
+Foundations, Reading, Listening — unchanged, now under an "Explore" label)
+and gained two new sections above them, both reusing existing deterministic
+data rather than inventing anything in React:
+
+- **"Your Korean"** — five skill-group averages (Speaking, Listening,
+  Vocabulary, Grammar, Reading) computed by new
+  `lib/learning/skill-groups.ts` (`summarizeStudyGroups`, unit-tested) from
+  `kori_skill_mastery` (`skillsApi.getMastery()`, via new
+  `hooks/useSkillMastery.ts`). `SKILL_TAXONOMY`'s 7 categories collapse
+  deterministically: `communication` + `speaking` → Speaking, `interview` is
+  **excluded** entirely (exam-prep skills are gated behind
+  `isExamActive()` and would misrepresent everyday progress if blended in).
+  A group with zero attempted skills reports "Not started", never a
+  fabricated 0% — raw skill events/scores are untouched, this only changes
+  how they're grouped for display.
+- **"Recommended next"** — the same `kori_daily_missions` data `/home` and
+  `/practice` already read (`useDailyMission`, shared cache), specifically
+  its first not-yet-completed item — already the mission engine's
+  highest-weighted pick, not a second priority calculation. The CTA reuses
+  `missionItemHref`/`missionItemCtaLabel` from Session 2's
+  `mission-item-display.ts`; a scenario item hands off to `/practice`
+  instead of duplicating its conversation/session-creation flow here.
+
+No LLM involved in either section — both are pure reads of
+already-computed, already-tested deterministic data, matching Phase 10's
+"deterministic engine → selected activity, never an LLM asked what to
+study."

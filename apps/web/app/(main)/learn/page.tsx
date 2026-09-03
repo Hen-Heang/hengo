@@ -3,7 +3,12 @@
 import { motion, useReducedMotion } from "motion/react"
 
 import { LearningModuleCard } from "@/components/learn/LearningModuleCard"
+import { StudyRecommendation } from "@/components/learn/StudyRecommendation"
+import { StudySkillSummary } from "@/components/learn/StudySkillSummary"
+import { useDailyMission } from "@/hooks/useDailyMission"
+import { useSkillMastery } from "@/hooks/useSkillMastery"
 import { learningModules } from "@/lib/learning-modules"
+import { summarizeStudyGroups } from "@/lib/learning/skill-groups"
 import { containerVariants, itemVariants } from "@/lib/motion"
 
 export default function LearnPage() {
@@ -13,6 +18,10 @@ export default function LearnPage() {
   const reduceMotion = useReducedMotion()
   const container = reduceMotion ? undefined : containerVariants
   const item = reduceMotion ? undefined : itemVariants
+
+  const { mastery, loading: masteryLoading } = useSkillMastery()
+  const { mission, loading: missionLoading } = useDailyMission()
+  const groups = summarizeStudyGroups(mastery)
 
   return (
     <motion.div
@@ -31,9 +40,20 @@ export default function LearnPage() {
         </p>
       </motion.div>
 
+      <motion.div variants={item}>
+        <StudySkillSummary groups={groups} loading={masteryLoading} />
+      </motion.div>
+
+      <motion.div variants={item}>
+        <StudyRecommendation mission={mission} loading={missionLoading} />
+      </motion.div>
+
       <motion.section variants={item} aria-labelledby="study-modules" className="space-y-3.5">
-        <h2 id="study-modules" className="sr-only">
-          Study modules
+        <h2
+          id="study-modules"
+          className="text-xs font-bold uppercase tracking-[0.14em] text-muted-foreground"
+        >
+          Explore
         </h2>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {learningModules.map((module) => (
