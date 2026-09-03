@@ -325,7 +325,7 @@ export function VocabDeck({
                     <button
                       type="button"
                       onClick={() => setExpandedId(item.id)}
-                      aria-label={`Open ${item.term}, ${item.meaning}`}
+                      aria-label={`Open ${item.term}${item.meaning ? `, ${item.meaning}` : ""}`}
                       className="flex min-w-0 flex-1 items-center gap-3 rounded-xl px-2 py-2.5 text-left transition-colors hover:bg-accent/5 focus-visible:outline-none focus-visible:ring-3 focus-visible:ring-ring/40"
                     >
                       <div className="min-w-0 flex-1">
@@ -339,8 +339,13 @@ export function VocabDeck({
                             </span>
                           ) : null}
                         </div>
-                        <p className="truncate text-sm text-muted-foreground sm:text-base">
-                          {item.meaning}
+                        <p
+                          className={cn(
+                            "truncate text-sm sm:text-base",
+                            item.meaning ? "text-muted-foreground" : "italic text-muted-foreground/50",
+                          )}
+                        >
+                          {item.meaning || "No meaning yet"}
                         </p>
                       </div>
                       <span

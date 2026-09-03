@@ -189,3 +189,40 @@ shared retry/grading UI, or a converted schema) is a real design decision,
 not a mechanical fix, and touches a flow (voice recording/grading) that
 can't be verified live in this environment. Recommended as a scoped decision
 for a future session rather than a default to implement.
+
+## Session 5 notes
+
+**Most of Phase 7 already existed**: `ReviewSession`'s launch card already
+leads with "X due for review" + one CTA (matches the brief's mockup almost
+exactly), and the word library/search already sit below it — the priority
+order (capture → review → library) was already right. `PageHero`'s 4-stat
+row was left as-is — it's a single compact line, not the multi-card
+dashboards Sessions 1-3 removed, and Phase 7 doesn't call it out.
+
+**The real gap**: `AddWordCard`'s quick-capture form (`canSave = term &&
+meaning && !saving`) required a meaning to save at all, directly
+contradicting "meaning optional while typing" / "don't force users through
+a huge form just to capture one word." `kori_vocab_cards.meaning` is
+`NOT NULL` but has no default — confirmed live via Supabase that an empty
+string satisfies it (the textbook-import path already saves blank meanings
+today) — so **no migration was needed**.
+
+Fixed: only the Korean term is required now. Pressing Enter right after
+typing the term saves immediately. If meaning was left blank, a background
+`vocabApi.lookup()` call (existing AI endpoint, already used by
+`ReviewSession`'s flashcard hint) fills in meaning + example afterward via
+`updateWord` — capture never waits on it, and a lookup failure just leaves
+the word saved with a blank meaning, still fully usable and editable by
+hand. `VocabCard`/`VocabDeck` (the dictionary list, where "enrich later" is
+actually discoverable) get a muted "No meaning yet — tap to add" fallback
+instead of a blank line.
+
+**Deliberately not touched**: `ReviewSession`'s quiz modes (flashcard/
+choice/recall/listening/sentence) don't guard against a blank meaning —
+a card could theoretically reach an active quiz before its background
+enrichment resolves. Left alone: the window is a second or two in practice,
+and patching a 1855-line, heavily-used component without being able to
+verify it live (auth-gated route) was judged riskier than the edge case it
+guards against. Also left alone: `vocabApi.update()` doesn't persist
+`exampleTranslation` (only `generate`/import do) — a pre-existing asymmetry,
+not something this session's capture-speed fix needed to touch.

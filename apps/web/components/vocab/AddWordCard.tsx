@@ -6,7 +6,8 @@ import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
-import { getApiErrorMessage } from "@/lib/api"
+import { getApiErrorMessage, vocabApi } from "@/lib/api"
+import type { VocabItem } from "@/lib/types"
 
 type AddWordCardProps = {
   /** Existing topics, offered as suggestions (user can also type a new one). */
@@ -16,27 +17,54 @@ type AddWordCardProps = {
     term: string
     meaning: string
     example?: string
-  }) => Promise<unknown>
+  }) => Promise<VocabItem>
+  /**
+   * Lets a bare-term capture (no meaning typed) get enriched in the
+   * background right after saving — capture never waits on this.
+   */
+  onUpdate?: (
+    id: string,
+    data: { term: string; meaning: string; example?: string; pronunciation?: string },
+  ) => Promise<void>
   /** Renders without the card chrome/header, for use inside the Add Words dialog. */
   embedded?: boolean
 }
 
-export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCardProps) {
+export function AddWordCard({ categories, onAdd, onUpdate, embedded = false }: AddWordCardProps) {
   const [term, setTerm] = useState("")
   const [meaning, setMeaning] = useState("")
   const [example, setExample] = useState("")
   const [category, setCategory] = useState("")
   const [saving, setSaving] = useState(false)
 
-  const canSave = term.trim() && meaning.trim() && !saving
+  // Only the Korean term is required — capture should take seconds. A blank
+  // meaning gets a best-effort AI fill-in afterward (see enrich() below); the
+  // word is real and saved either way, with or without that follow-up.
+  const canSave = term.trim() && !saving
+
+  async function enrich(id: string, savedTerm: string) {
+    try {
+      const looked = await vocabApi.lookup(savedTerm)
+      await onUpdate?.(id, {
+        term: savedTerm,
+        meaning: looked.definition,
+        example: looked.example ?? undefined,
+      })
+    } catch {
+      // Best-effort — the word is already saved with a blank meaning either
+      // way; the learner can always fill it in by editing the card.
+    }
+  }
 
   async function handleSave() {
     if (!canSave) return
     setSaving(true)
     try {
-      await onAdd({
-        term: term.trim(),
-        meaning: meaning.trim(),
+      const trimmedTerm = term.trim()
+      const trimmedMeaning = meaning.trim()
+      const saved = await onAdd({
+        term: trimmedTerm,
+        meaning: trimmedMeaning,
         example: example.trim() || undefined,
         category: category.trim() || undefined,
       })
@@ -47,6 +75,7 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
       setMeaning("")
       setExample("")
       // Keep the category so adding several words to one topic is quick.
+      if (!trimmedMeaning) void enrich(saved.id, trimmedTerm)
     } catch (e) {
       toast.error("Could not add word", { description: getApiErrorMessage(e, "Please try again.") })
     } finally {
@@ -77,8 +106,7 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
               Add a Word
             </h3>
             <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground sm:text-[16px]">
-              Type your own term and meaning. Use the topic field to add it to an existing deck or
-              create a new one.
+              Type a Korean word and save — meaning is optional, Hengo can fill it in for you.
             </p>
           </div>
           <div className="hidden h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-600 sm:flex">
@@ -102,7 +130,7 @@ export function AddWordCard({ categories, onAdd, embedded = false }: AddWordCard
         <input
           value={meaning}
           onChange={(e) => setMeaning(e.target.value)}
-          placeholder="Meaning (English) *"
+          placeholder="Meaning (English) — optional, AI can fill this in"
           className={inputClass}
           onKeyDown={(e) => {
             if (e.key === "Enter") handleSave()

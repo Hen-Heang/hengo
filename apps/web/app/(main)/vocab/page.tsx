@@ -321,6 +321,7 @@ function VocabPageContent() {
         totalCount={words.length}
         existingTerms={words.map((word) => word.term)}
         onAdd={addWord}
+        onUpdate={updateWord}
         onGenerate={handleGenerate}
         onImport={handleImport}
       />
