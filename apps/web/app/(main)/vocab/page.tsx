@@ -25,6 +25,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { DailyPhraseCard } from "@/components/practice/DailyPhraseCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddWordsDialog } from "@/components/vocab/AddWordsDialog"
+import { CoreKoreanPanel } from "@/components/vocab/CoreKoreanPanel"
 import { ReviewSession } from "@/components/vocab/ReviewSession"
 import { VocabDictionary } from "@/components/vocab/VocabDictionary"
 import { useLogActivity } from "@/hooks/useLogActivity"
@@ -191,6 +192,8 @@ function VocabPageContent() {
               onFocusHandled={() => setFocusCategory(null)}
             />
 
+            <CoreKoreanPanel words={words} loading={loading} />
+
             {error ? <ErrorBanner>{error}</ErrorBanner> : null}
 
             <section aria-labelledby="word-library-title" className="space-y-4 sm:space-y-5">
@@ -228,7 +231,7 @@ function VocabPageContent() {
                   <Input
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
-                    placeholder={`Search Korean, English, deck, or tag…`}
+                    placeholder="Search Korean, English, deck, or tag…"
                     aria-label={`Search ${words.length} saved vocabulary words`}
                     className="h-11 min-w-0 flex-1 border-0 bg-transparent px-2 shadow-none focus-visible:ring-0"
                   />
