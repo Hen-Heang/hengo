@@ -17,7 +17,7 @@ import { PageHero } from "@/components/app/page-hero"
 import { ErrorBanner } from "@/components/ui/error-banner"
 import { Skeleton } from "@/components/ui/skeleton"
 import { useFoundationsLessons } from "@/hooks/useFoundations"
-import { seedLessonsByTrack } from "@/lib/foundations-data"
+import { seedLessonsByTrack } from "@/lib/foundations-curriculum"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
 import { containerVariants, itemVariants } from "@/lib/motion"
 import { cn } from "@/lib/utils"
@@ -48,7 +48,7 @@ const TRACKS: Array<{
     key: "grammar",
     label: "Grammar",
     icon: SpellCheck2,
-    blurb: "Build basic sentences",
+    blurb: "Core grammar for daily life & work",
     count: seedLessonsByTrack("grammar").length,
   },
 ]
@@ -82,7 +82,7 @@ export function FoundationsHome() {
         <PageHero
           eyebrow="Foundations"
           title="Korean Foundations"
-          description="Start from the very beginning — learn to read Hangul and build your first Korean sentences, one short lesson at a time."
+          description="Start from the beginning, then build the core Korean you need for daily life and work — Hangul, sentence structure, numbers, time, honorifics, and practical grammar."
           stats={[
             { label: "Lessons", value: loading ? "..." : `${lessons.length}` },
             { label: "Completed", value: loading ? "..." : `${completedCount}` },

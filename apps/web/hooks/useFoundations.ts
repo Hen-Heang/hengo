@@ -8,7 +8,7 @@ import {
   FOUNDATIONS_CURRICULUM_VERSION,
   seedLessonById,
   seedLessonsByTrack,
-} from "@/lib/foundations-data"
+} from "@/lib/foundations-curriculum"
 import { getUserId } from "@/lib/auth-store"
 import { useLogActivity } from "@/hooks/useLogActivity"
 import type { LearnTrack, LessonAttemptResult, LessonDetail, LessonSummary } from "@/lib/types"
