@@ -13,7 +13,7 @@ what's summarized below.
 
 ## Current focus
 
-**Account-specific Korean pattern practice was added to the live Hengo
+**Account-specific Korean pattern practice was expanded in the live Hengo
 Supabase project** (`dnzqgnejwyucenghugrb`) for `henheang15@gmail.com`
 (`auth.users.id = 31dec390-4b91-4516-bcc0-a0f5f9045217`). No schema or
 application-code change was needed because the existing Phrasebook already
@@ -21,14 +21,24 @@ supports collections, cards, speaking practice, and review progress.
 
 A pinned collection was created idempotently:
 
-- Collection: `실전 한국어 문형 연습` / `Real-Situation Korean Patterns`
+- Collection: `직장·일상 실전 한국어 문형 22` /
+  `22 Essential Work & Daily Korean Patterns`
 - Collection ID: `83a5152d-c4bf-4b59-99e5-2d8cf5c0e400`
 - Source key: `mentor-real-situation-patterns`
-- Four active, user-editable cards cover:
+- Seed/content version: 2
+- Twenty-two active, user-editable cards cover the original mentor patterns
+  plus high-utility work and daily-life situations.
+- Original patterns:
   - `믿기지 않을 정도로 ~`
   - `~했을 뿐이에요`
   - `~에 대해서는 잘 모르겠어요`
   - quoted clause + `~라고/다고 생각하다`
+- Added workplace language: work in progress, completion estimates, blockers,
+  clarification, permission, checking and following up, suggestions, respectful
+  disagreement, completion reports, and polite refusal/availability.
+- Added daily-life language: intentions, decided plans, past experience, things
+  the learner wants to try, café ordering, exchanges/refunds, directions, and
+  appointments.
 
 Each card uses a realistic workplace prompt, romanization, English meaning,
 alternate answers, usage/register guidance, vocabulary, and recall-oriented
@@ -38,13 +48,17 @@ recommended workplace answer uses polite `~라고 생각하세요?`.
 ## Verification
 
 - Live Auth lookup found exactly the requested account, with a recent sign-in.
-- The collection is pinned and owns exactly four active cards in positions 0–3.
+- The collection is pinned and owns exactly 22 active cards in positions 0–21,
+  with 22 distinct positions.
+- Category distribution is 10 workplace, 8 daily-life, and 4 original mentor
+  pattern cards.
 - All questions are JSON objects; all answer lists are non-empty; every card has
-  a recommended answer.
+  a recommended answer. Required Korean, romanization, English, register,
+  vocabulary, and tags all passed live integrity queries.
 - `kori_phrase_collections` and `kori_phrase_cards` both have RLS enabled with
   their existing per-owner policies.
-- Stable per-user source keys make the data write safe to rerun without
-  duplicating the collection or cards.
+- Stable per-user source keys make both the original and expanded data writes
+  safe to rerun without duplicating the collection or cards.
 
 ## Working tree
 

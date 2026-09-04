@@ -9,6 +9,25 @@ its old content here as a dated entry before overwriting.
 
 ---
 
+## 2026-09-04 (a)
+
+### Snapshot
+
+- **Branch:** `main` (aligned with `origin/main` before handoff edits)
+- **Last commit:** b232872 — Merge pull request #17 from Hen-Heang/feat/core-korean-300
+
+### Current focus
+
+An initial account-specific Phrasebook collection was added to live Hengo
+Supabase for `henheang15@gmail.com`: `실전 한국어 문형 연습` / `Real-Situation
+Korean Patterns` (`83a5152d-c4bf-4b59-99e5-2d8cf5c0e400`). It contained four
+active cards based on the learner's mentor-provided patterns, was pinned, used
+stable per-user source keys, and required no schema or application-code change.
+
+The four-card version was verified for Auth ownership, JSON shape, recommended
+answers, RLS, and idempotency. It was then expanded later the same day into the
+22-card practical work-and-daily-life curriculum recorded in `HANDOFF.md`.
+
 ## 2026-09-03 (a)
 
 ### Snapshot
