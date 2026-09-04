@@ -9,6 +9,60 @@ its old content here as a dated entry before overwriting.
 
 ---
 
+## 2026-09-03 (a)
+
+### Snapshot
+
+- **Branch:** `main` (aligned with `origin/main`)
+- **Last commit:** 2d4106d — add new ci
+
+### Current focus
+
+**Supabase performance audit and RLS cleanup.** The live `hengo` project
+(`dnzqgnejwyucenghugrb`, ap-northeast-2) was audited with the Supabase MCP
+advisors. Performance lints went from **91 to 65**: `auth_rls_initplan` (10) and
+`multiple_permissive_policies` (16) both reached zero.
+
+One migration was applied and mirrored into the repo as
+`apps/web/supabase/migrations/20260903013902_perf_rls_policy_consolidation.sql`.
+It removed duplicate permissive owner policies from the four `kori_focus_*`
+tables while retaining their restrictive owner guards, rewrote remaining bare
+`auth.uid()` policy calls as `(select auth.uid())`, and pinned `search_path` on
+`public.kori_next_reminder_run`. Access predicates and roles were preserved.
+
+Verification found no remaining bare `auth.uid()` in the affected policies,
+each focus table had four per-action policies plus one restrictive guard, and
+`lib/recovery-security.test.ts` passed 6/6.
+
+### Working tree at the time
+
+- The migration file above was untracked and uncommitted, although already
+  applied to the live database.
+- The prior 616-file formatting/tooling set had landed as 2d4106d (`add new ci`).
+- GitHub CLI authentication might still have been invalid; authenticated Git
+  operations worked independently.
+
+### Next steps at the time
+
+- Commit the new migration file. *(Resolved after this snapshot.)*
+- Leave the 46 unused-index and 19 unindexed-foreign-key advisories alone until
+  table sizes justify revisiting them.
+- Human decisions remained for `vector`/`pg_net` in `public` and leaked-password
+  protection being disabled.
+- Older open items remained: assess `v0/hen-heang-12e5395f`, optionally rewrite
+  `apps/web/docs/navigation-shell-audit.md`, and fix the aged hardcoded date in
+  `lib/learning/corrections.test.ts`.
+
+### Notes
+
+- The apps remain independent: `apps/web` uses Next.js/Supabase, while
+  `apps/api` is an imported backup and is not the live backend.
+- V2 features hidden from navigation must not be treated as safe to delete.
+- The repository migration folder is not a complete live-schema ledger; query
+  live Supabase before making schema claims.
+- Running jsdom suites on Node 25 requires
+  `NODE_OPTIONS=--no-experimental-webstorage`.
+
 ## 2026-08-31 (d)
 
 ### Snapshot
