@@ -9,7 +9,8 @@ import {
 } from "@/lib/learning/mission-engine"
 import { EXAM_DATE, isExamActive } from "@/lib/study-plan"
 import type { SkillCode } from "@/lib/learning/skills"
-import { correctionApi, dailyPhraseApi, listeningApi, scenarioApi } from "./learning"
+import { correctionApi, dailyPhraseApi, scenarioApi } from "./learning"
+import { listeningApi } from "./listening"
 import { vocabApi } from "./vocab"
 import { skillsApi } from "./skills"
 import { phrasebookApi } from "./phrasebook"
@@ -331,17 +332,20 @@ export const missionsApi = {
       } else if (item.type === "listening") {
         const topic = item.referenceIds[0]
         if (topic) {
+          // Curated lessons are created ahead of time, so completion evidence
+          // must be the learner's attempt time, not the lesson's creation time.
           const { data: lessons } = await supabase
             .from("kori_listening_lessons")
             .select("id")
             .eq("topic", topic)
-            .gte("created_at", mission.createdAt)
           const lessonIds = (lessons ?? []).map((l) => l.id as string)
           if (lessonIds.length > 0) {
             const { data: attempts } = await supabase
               .from("kori_listening_attempts")
               .select("id")
+              .eq("user_id", userId)
               .in("lesson_id", lessonIds)
+              .gte("created_at", mission.createdAt)
               .limit(1)
             completed = Boolean(attempts && attempts.length > 0)
             progressCount = completed ? 1 : 0
