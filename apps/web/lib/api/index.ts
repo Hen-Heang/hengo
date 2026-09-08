@@ -16,6 +16,9 @@ export * from "./goal-plan-phases"
 export * from "./goal-schedule-rules"
 export * from "./progress"
 export * from "./learning"
+// Explicit override: Listening V2.1 reuses curated Supabase lessons first,
+// while all other learning APIs continue to come from ./learning.
+export { listeningApi } from "./listening"
 export * from "./foundations"
 export * from "./tts"
 export * from "./realtime"
