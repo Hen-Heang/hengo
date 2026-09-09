@@ -272,6 +272,13 @@ export default function SettingsPage() {
     router.replace("/login")
   }
 
+  // "Your name" used to render here in the same weight and colour a real
+  // name would use, and again just below as the input's placeholder — the
+  // same words as a value and as a prompt. Fall back to the email local part,
+  // which is a real thing about this account; only when there is no email
+  // either does the card ask, and then it reads as an invitation.
+  const emailLocalPart = email.split("@")[0]
+  const resolvedName = displayName.trim() || emailLocalPart
   const initials = displayName
     ? displayName
         .split(" ")
@@ -376,9 +383,15 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-semibold text-foreground">
-                  {displayName || "Your name"}
-                </p>
+                {resolvedName ? (
+                  <p className="truncate text-base font-semibold text-foreground">
+                    {resolvedName}
+                  </p>
+                ) : (
+                  <p className="truncate text-base font-medium text-muted-foreground/70">
+                    Add your name
+                  </p>
+                )}
                 <p className="truncate text-xs font-medium text-muted-foreground">{email}</p>
               </div>
             </div>
@@ -390,7 +403,7 @@ export default function SettingsPage() {
                 <Input
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={emailLocalPart || "Your name"}
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
                 />
               </div>
