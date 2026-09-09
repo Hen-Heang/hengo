@@ -28,7 +28,12 @@ const title = "Hengo — Korean for Developers"
 const description =
   "Practice workplace Korean, prepare for interviews, and build consistent learning habits with an AI coach made for developers."
 
+// Absolute base for resolving relative OG/Twitter image URLs. Without it Next
+// falls back to http://localhost:3000 and every social card points at a machine
+// nobody else can reach. Defaults to the production origin so a deploy that
+// forgets to set the env var still emits correct absolute URLs.
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "https://hengo.henheang.site"),
   title: {
     default: title,
     template: "%s · Hengo",
