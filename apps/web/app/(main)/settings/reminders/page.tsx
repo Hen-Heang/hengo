@@ -24,7 +24,7 @@ export default function RemindersSettingsPage() {
       className="mx-auto max-w-2xl space-y-6 pb-16"
     >
       <motion.div variants={itemVariants}>
-        <BackLink href="/settings" label="Settings" />
+        <BackLink href="/settings" label="Settings" desktopOnly />
         <h1 className="mt-2 text-xl font-bold text-foreground">Reminders</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Everything you&apos;ve set a reminder for — tasks, habits, notes, inbox items, journal,

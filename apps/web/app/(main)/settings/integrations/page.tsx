@@ -49,7 +49,7 @@ export default function IntegrationsSettingsPage() {
       </Suspense>
 
       <motion.div variants={itemVariants}>
-        <BackLink href="/settings" label="Settings" />
+        <BackLink href="/settings" label="Settings" desktopOnly />
         <h1 className="mt-2 text-xl font-bold text-foreground">Integrations</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           Connect external calendars and services to Hengo.
