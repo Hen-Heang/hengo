@@ -70,9 +70,7 @@ function summarizeBook(words: VocabItem[], sourceTag: string) {
   const total = snapshots.length
   const mastered = snapshots.filter((item) => item.mastery >= 80).length
   const averageMastery =
-    total === 0
-      ? 0
-      : Math.round(snapshots.reduce((sum, item) => sum + item.mastery, 0) / total)
+    total === 0 ? 0 : Math.round(snapshots.reduce((sum, item) => sum + item.mastery, 0) / total)
 
   return {
     total,
@@ -104,7 +102,10 @@ export function EssentialBooksPanel({ words, loading }: EssentialBooksPanelProps
           </div>
           <div className="min-w-0 flex-1">
             <p className="app-kicker">Essential Korean books</p>
-            <h2 id="essential-books-title" className="mt-1 text-lg font-semibold text-foreground sm:text-xl">
+            <h2
+              id="essential-books-title"
+              className="mt-1 text-lg font-semibold text-foreground sm:text-xl"
+            >
               Beginner → Intermediate core path
             </h2>
             <p className="mt-1.5 max-w-2xl text-sm leading-6 text-muted-foreground">
@@ -117,15 +118,24 @@ export function EssentialBooksPanel({ words, loading }: EssentialBooksPanelProps
         <div className="grid gap-3 lg:grid-cols-2">
           {summaries.map((book) => {
             const { stats } = book
-            const masteredPercent = stats.total === 0 ? 0 : Math.round((stats.mastered / stats.total) * 100)
+            const masteredPercent =
+              stats.total === 0 ? 0 : Math.round((stats.mastered / stats.total) * 100)
 
             return (
-              <article key={book.key} className="rounded-2xl border border-border/60 bg-muted/25 p-4 sm:p-5">
+              <article
+                key={book.key}
+                className="rounded-2xl border border-border/60 bg-muted/25 p-4 sm:p-5"
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="font-semibold text-foreground">{book.title}</h3>
-                      <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", book.accent)}>
+                      <span
+                        className={cn(
+                          "rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                          book.accent,
+                        )}
+                      >
                         {book.key === "beginner" ? "Beginner" : "Intermediate"}
                       </span>
                     </div>
@@ -150,11 +160,27 @@ export function EssentialBooksPanel({ words, loading }: EssentialBooksPanelProps
                       {loading ? "…" : `${masteredPercent}%`}
                     </span>
                   </div>
-                  <div className="mt-2 h-2 overflow-hidden rounded-full bg-muted" role="progressbar" aria-label={`${book.title} mastery`} aria-valuemin={0} aria-valuemax={100} aria-valuenow={masteredPercent}>
-                    <div className={cn("h-full rounded-full transition-[width] duration-300", book.progress)} style={{ width: `${masteredPercent}%` }} />
+                  <div
+                    className="mt-2 h-2 overflow-hidden rounded-full bg-muted"
+                    role="progressbar"
+                    aria-label={`${book.title} mastery`}
+                    aria-valuemin={0}
+                    aria-valuemax={100}
+                    aria-valuenow={masteredPercent}
+                  >
+                    <div
+                      className={cn(
+                        "h-full rounded-full transition-[width] duration-300",
+                        book.progress,
+                      )}
+                      style={{ width: `${masteredPercent}%` }}
+                    />
                   </div>
                   <p className="mt-2 text-xs text-muted-foreground">
-                    Average card mastery: <span className="font-semibold text-foreground">{loading ? "…" : `${stats.averageMastery}%`}</span>
+                    Average card mastery:{" "}
+                    <span className="font-semibold text-foreground">
+                      {loading ? "…" : `${stats.averageMastery}%`}
+                    </span>
                   </p>
                 </div>
               </article>
@@ -164,11 +190,15 @@ export function EssentialBooksPanel({ words, loading }: EssentialBooksPanelProps
 
         <div className="flex flex-col gap-2 border-t border-border/60 pt-4 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
           <p>
-            <span className="font-semibold text-foreground">{loading ? "…" : totalSelected}</span> curated source terms are represented across both book paths.
+            <span className="font-semibold text-foreground">{loading ? "…" : totalSelected}</span>{" "}
+            curated source terms are represented across both book paths.
           </p>
           <p className="inline-flex items-center gap-1.5">
             <CheckCircle2 size={14} aria-hidden="true" />
-            <span className="font-semibold text-foreground">{loading ? "…" : totalMastered}</span> mastered
+            <span className="font-semibold text-foreground">
+              {loading ? "…" : totalMastered}
+            </span>{" "}
+            mastered
           </p>
         </div>
       </div>
@@ -184,8 +214,12 @@ type MetricProps = {
 function Metric({ label, value }: MetricProps) {
   return (
     <div className="min-w-0 rounded-xl bg-background px-2.5 py-2.5 ring-1 ring-border/50 sm:px-3">
-      <p className="font-mono text-sm font-semibold tabular-nums text-foreground sm:text-base">{value}</p>
-      <p className="mt-0.5 truncate text-[10px] font-medium text-muted-foreground sm:text-[11px]">{label}</p>
+      <p className="font-mono text-sm font-semibold tabular-nums text-foreground sm:text-base">
+        {value}
+      </p>
+      <p className="mt-0.5 truncate text-[10px] font-medium text-muted-foreground sm:text-[11px]">
+        {label}
+      </p>
     </div>
   )
 }
