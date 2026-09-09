@@ -31,6 +31,7 @@ import { authApi, userApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
+import { isCalendarIntegrationsEnabled } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 
 const countries = [
@@ -494,7 +495,10 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Integrations */}
+      {/* Integrations — hidden until Plan is navigable (see
+          lib/feature-flags.ts). The code and the privacy copy stay put; only
+          the entry point and the page body are gated. */}
+      {isCalendarIntegrationsEnabled() && (
       <motion.div variants={itemVariants}>
         <SectionCard>
           <button
@@ -516,6 +520,7 @@ export default function SettingsPage() {
           </button>
         </SectionCard>
       </motion.div>
+      )}
 
       {/* Background + Work */}
       <motion.div variants={itemVariants}>

@@ -11,3 +11,20 @@
  */
 export const isMoneyFlowIntegrationEnabled = (): boolean =>
   process.env.NEXT_PUBLIC_FEATURE_MONEY_FLOW === "true"
+
+/**
+ * The Integrations settings section (/settings/integrations) and its Google
+ * Calendar card. Off by default until Plan ships.
+ *
+ * The card's whole value proposition is showing your real calendar beside
+ * Hengo tasks — but Tasks and Calendar live in the Plan section, and V2's
+ * five-item nav has no entry for it (see `primaryNavItems` in
+ * lib/navigation.ts). Asking for third-party calendar access to populate a
+ * page with no front door is a bad trade, so the section is hidden rather
+ * than removed. Turn this on in the same release that gives Plan a nav entry.
+ *
+ * Hiding never strands an existing connection: the page still renders for a
+ * learner who is already connected, so "Disconnect" is always reachable.
+ */
+export const isCalendarIntegrationsEnabled = (): boolean =>
+  process.env.NEXT_PUBLIC_FEATURE_INTEGRATIONS === "true"
