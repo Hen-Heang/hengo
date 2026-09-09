@@ -26,6 +26,7 @@ import { DailyPhraseCard } from "@/components/practice/DailyPhraseCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddWordsDialog } from "@/components/vocab/AddWordsDialog"
 import { CoreKoreanPanel } from "@/components/vocab/CoreKoreanPanel"
+import { EssentialBooksPanel } from "@/components/vocab/EssentialBooksPanel"
 import { ReviewSession, type AutoStart } from "@/components/vocab/ReviewSession"
 import { VocabDictionary } from "@/components/vocab/VocabDictionary"
 import { useLogActivity } from "@/hooks/useLogActivity"
@@ -210,6 +211,7 @@ function VocabPageContent() {
             />
 
             <CoreKoreanPanel words={words} loading={loading} />
+            <EssentialBooksPanel words={words} loading={loading} />
 
             {error ? <ErrorBanner>{error}</ErrorBanner> : null}
 
