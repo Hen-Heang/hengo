@@ -363,9 +363,7 @@ export default function SettingsPage() {
               </div>
               <div className="min-w-0 flex-1">
                 {resolvedName ? (
-                  <p className="truncate text-base font-semibold text-foreground">
-                    {resolvedName}
-                  </p>
+                  <p className="truncate text-base font-semibold text-foreground">{resolvedName}</p>
                 ) : (
                   <p className="truncate text-base font-medium text-muted-foreground/70">
                     Add your name
@@ -389,7 +387,11 @@ export default function SettingsPage() {
                   value={displayName}
                   onChange={(e) => {
                     setDisplayName(e.target.value)
-                    saveProfileField("displayName", { displayName: e.target.value }, TEXT_DEBOUNCE_MS)
+                    saveProfileField(
+                      "displayName",
+                      { displayName: e.target.value },
+                      TEXT_DEBOUNCE_MS,
+                    )
                   }}
                   placeholder={emailLocalPart || "Your name"}
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
@@ -469,27 +471,27 @@ export default function SettingsPage() {
           lib/feature-flags.ts). The code and the privacy copy stay put; only
           the entry point and the page body are gated. */}
       {isCalendarIntegrationsEnabled() && (
-      <motion.div variants={itemVariants}>
-        <SectionCard>
-          <button
-            type="button"
-            onClick={() => router.push("/settings/integrations")}
-            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
-          >
-            <SectionHeader
-              icon={CalendarDays}
-              title="Integrations"
-              description="Connect Google Calendar and other services"
-              color="text-blue-500"
-            />
-            <ChevronRight
-              size={14}
-              strokeWidth={2}
-              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
-            />
-          </button>
-        </SectionCard>
-      </motion.div>
+        <motion.div variants={itemVariants}>
+          <SectionCard>
+            <button
+              type="button"
+              onClick={() => router.push("/settings/integrations")}
+              className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+            >
+              <SectionHeader
+                icon={CalendarDays}
+                title="Integrations"
+                description="Connect Google Calendar and other services"
+                color="text-blue-500"
+              />
+              <ChevronRight
+                size={14}
+                strokeWidth={2}
+                className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+              />
+            </button>
+          </SectionCard>
+        </motion.div>
       )}
 
       {/* Background + Work */}
@@ -775,7 +777,6 @@ export default function SettingsPage() {
       <motion.div variants={itemVariants} className="pt-2 text-center">
         <p className="text-xs text-muted-foreground">© 2026 Hen Heang · FullStack Developer</p>
       </motion.div>
-
     </motion.div>
   )
 }

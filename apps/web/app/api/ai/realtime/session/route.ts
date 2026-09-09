@@ -16,10 +16,7 @@ import {
   type RealtimeRecentMistake,
   type RealtimeScenarioContext,
 } from "@/lib/realtime/session-context"
-import {
-  KOREAN_LEARNING_GOAL_PROMPT,
-  type KoreanLearningGoal,
-} from "@/lib/korean-coach/schemas"
+import { KOREAN_LEARNING_GOAL_PROMPT, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 
 const REALTIME_FEATURE = "realtime_session"
 

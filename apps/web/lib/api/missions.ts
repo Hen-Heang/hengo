@@ -1,10 +1,7 @@
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
 import { dateKeyInTimeZone, DEFAULT_TIME_ZONE } from "@/lib/date-key"
-import {
-  DEFAULT_DAILY_GOAL_MINUTES,
-  type KoreanLearningGoal,
-} from "@/lib/korean-coach/schemas"
+import { DEFAULT_DAILY_GOAL_MINUTES, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 import {
   buildDailyMission,
   type MissionContext,

@@ -11,10 +11,7 @@ import {
   SUPABASE_URL,
 } from "@/lib/supabase"
 import { DEFAULT_ALLOWED_MODEL, resolveAllowedModel } from "@/lib/server/models"
-import {
-  KOREAN_LEARNING_GOAL_PROMPT,
-  type KoreanLearningGoal,
-} from "@/lib/korean-coach/schemas"
+import { KOREAN_LEARNING_GOAL_PROMPT, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 import { checkRateLimit, recordUsage, RATE_LIMIT_BUCKETS } from "@/lib/server/ai-limits"
 
 // Thrown by a buildPrompt function to signal "this is bad input" (400)
