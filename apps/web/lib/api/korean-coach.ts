@@ -375,7 +375,6 @@ export const koreanCoachApi = {
       romanizationMode: data.romanization_mode,
       defaultSpeechSpeed: Number(data.default_speech_speed),
       dailyPracticeGoalMinutes: data.daily_practice_goal_minutes,
-      preferredPracticeDurationMinutes: data.preferred_practice_duration_minutes,
       correctionStrictness: data.correction_strictness,
     })
   },
@@ -392,7 +391,6 @@ export const koreanCoachApi = {
       romanization_mode: preferences.romanizationMode,
       default_speech_speed: preferences.defaultSpeechSpeed,
       daily_practice_goal_minutes: preferences.dailyPracticeGoalMinutes,
-      preferred_practice_duration_minutes: preferences.preferredPracticeDurationMinutes,
       correction_strictness: preferences.correctionStrictness,
       updated_at: new Date().toISOString(),
     })

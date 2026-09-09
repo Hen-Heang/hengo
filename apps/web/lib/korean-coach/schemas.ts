@@ -107,14 +107,22 @@ export const speechRequestSchema = z.object({
   speed: speechSpeedSchema.default(1),
 })
 
+/** Fallback for a learner with no preferences row yet. Matches the column
+ *  default in the korean_voice_coach migration — keep the two in step. */
+export const DEFAULT_DAILY_GOAL_MINUTES = 10
+
 export const koreanCoachPreferencesSchema = z.object({
   level: koreanCoachLevelSchema.default("beginner"),
   mainGoal: koreanLearningGoalSchema.default("workplace"),
   explanationLanguage: z.literal("English").default("English"),
   romanizationMode: romanizationModeSchema.default("on-request"),
   defaultSpeechSpeed: speechSpeedSchema.default(0.75),
-  dailyPracticeGoalMinutes: z.number().int().min(5).max(120).default(10),
-  preferredPracticeDurationMinutes: z.number().int().min(5).max(60).default(10),
+  dailyPracticeGoalMinutes: z
+    .number()
+    .int()
+    .min(5)
+    .max(120)
+    .default(DEFAULT_DAILY_GOAL_MINUTES),
   correctionStrictness: correctionStrictnessSchema.default("balanced"),
 })
 

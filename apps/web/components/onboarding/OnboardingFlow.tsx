@@ -5,8 +5,12 @@ import { ArrowRight, Check, Gauge, GraduationCap, Sparkles, Target } from "lucid
 
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog"
-import { userApi, getApiErrorMessage } from "@/lib/api"
-import { setDailyGoalMinutes } from "@/lib/onboarding-store"
+import { userApi, koreanCoachApi, getApiErrorMessage } from "@/lib/api"
+import {
+  KOREAN_LEARNING_GOAL_LABEL,
+  koreanLearningGoalSchema,
+  type KoreanLearningGoal,
+} from "@/lib/korean-coach/schemas"
 import { cn } from "@/lib/utils"
 
 const LEVEL_OPTIONS = [
@@ -15,15 +19,11 @@ const LEVEL_OPTIONS = [
   { value: "ADVANCED", label: "Advanced", desc: "Fluent situations", emoji: "🌳" },
 ]
 
-// Same option set as the Settings "Learning goal" field, so an onboarding
-// answer and a later Settings edit stay on the same vocabulary.
-const GOAL_OPTIONS = [
-  "Daily standup participation",
-  "Team meeting communication",
-  "Writing professional messages",
-  "Technical discussion in Korean",
-  "General workplace communication",
-]
+// The app's one goal vocabulary — the same enum /korean-coach/preferences
+// edits and every prompt reads. This used to be a fifth, workplace-only list
+// of its own, which is how a learner could answer "Team meeting
+// communication" here and still see "Workplace Korean" selected there.
+const GOAL_OPTIONS = koreanLearningGoalSchema.options
 
 const TARGET_OPTIONS = [
   { minutes: 5, label: "Casual", desc: "5 min / day" },
@@ -39,7 +39,7 @@ type OnboardingFlowProps = {
 export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
   const [step, setStep] = useState(0)
   const [level, setLevel] = useState<string | null>(null)
-  const [goal, setGoal] = useState<string | null>(null)
+  const [goal, setGoal] = useState<KoreanLearningGoal | null>(null)
   const [target, setTarget] = useState<number | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState("")
@@ -72,8 +72,22 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
     setSaving(true)
     setError("")
     try {
-      await userApi.completeOnboarding(userId, { koreanLevel: level, learningGoal: goal })
-      setDailyGoalMinutes(target)
+      // completeOnboarding still writes kori_profiles.learning_goal: it is
+      // the cross-device "wizard already done" sentinel app/(main)/layout.tsx
+      // checks. The answers themselves live on the coach preferences row,
+      // which is what the rest of the app actually reads.
+      const current = await koreanCoachApi.getPreferences()
+      await Promise.all([
+        userApi.completeOnboarding(userId, {
+          koreanLevel: level,
+          learningGoal: KOREAN_LEARNING_GOAL_LABEL[goal],
+        }),
+        koreanCoachApi.savePreferences({
+          ...current,
+          mainGoal: goal,
+          dailyPracticeGoalMinutes: target,
+        }),
+      ])
       onDone()
     } catch (err) {
       setError(getApiErrorMessage(err, "Could not save your answers. Please try again."))
@@ -132,7 +146,7 @@ export function OnboardingFlow({ userId, onDone }: OnboardingFlowProps) {
               GOAL_OPTIONS.map((g) => (
                 <OptionCard key={g} selected={goal === g} onClick={() => setGoal(g)}>
                   <span className="min-w-0 flex-1 text-left text-sm font-semibold text-foreground">
-                    {g}
+                    {KOREAN_LEARNING_GOAL_LABEL[g]}
                   </span>
                 </OptionCard>
               ))}

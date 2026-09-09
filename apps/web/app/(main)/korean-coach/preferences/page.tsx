@@ -224,24 +224,12 @@ export default function KoreanCoachPreferencesPage() {
                 </select>
               </label>
 
+              {/* One minutes control, not two. "Preferred session length"
+                  sat right beside this one, also in minutes, with a name a
+                  learner could not tell apart — and nothing read it. This is
+                  the number that actually drives the daily plan: it budgets
+                  today's mission and fills the Daily Goal ring. */}
               <label className="space-y-2 text-sm font-medium">
-                Preferred session length
-                <select
-                  className={selectClass}
-                  value={String(preferences.preferredPracticeDurationMinutes)}
-                  onChange={(event) =>
-                    update("preferredPracticeDurationMinutes", Number(event.target.value))
-                  }
-                >
-                  {[5, 10, 15, 20, 30].map((minutes) => (
-                    <option key={minutes} value={minutes}>
-                      {minutes} minutes
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="space-y-2 text-sm font-medium sm:col-span-2">
                 Daily practice goal
                 <select
                   className={selectClass}
