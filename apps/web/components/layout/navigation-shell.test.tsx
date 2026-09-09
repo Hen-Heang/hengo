@@ -53,7 +53,7 @@ import { MobileBottomNav } from "./MobileBottomNav"
 import { MobileHeader, isDetailRoute } from "./MobileHeader"
 import { MoreNavigationSheet } from "./MoreNavigationSheet"
 import { TooltipProvider } from "@/components/ui/tooltip"
-import { navSections, sidebarSections } from "@/lib/navigation"
+import { navSections } from "@/lib/navigation"
 
 // Radix needs these in jsdom.
 beforeAll(() => {
@@ -301,13 +301,7 @@ describe("MobileHeader", () => {
 
   it("has no overflow menu on a detail route — Search and Settings are direct", () => {
     const onOpenSearch = vi.fn()
-    render(
-      <MobileHeader
-        pathname="/goals/abc-123"
-        searchParams={undefined}
-        onOpenSearch={onOpenSearch}
-      />,
-    )
+    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={onOpenSearch} />)
     expect(screen.queryByRole("button", { name: "More actions" })).toBeNull()
     fireEvent.click(screen.getByRole("button", { name: "Search" }))
     expect(onOpenSearch).toHaveBeenCalledOnce()
@@ -360,53 +354,25 @@ describe("DesktopSidebar", () => {
     return onToggle
   }
 
-  // V2 rendered five destinations here and left ~28 built routes reachable
-  // only by typing in the Quick Switcher. The sidebar now renders every
-  // shipped destination grouped by section (`sidebarSections`), so browsing
-  // finds the whole product.
-  it("renders every shipped destination, grouped by section", () => {
+  it("shows exactly Hengo V2's five destinations as flat links, in order — no expandable groups", () => {
     setup("/practice", false)
     const nav = screen.getByRole("navigation", { name: "Primary" })
     const links = within(nav).getAllByRole("link")
-
-    const expected = sidebarSections.flatMap((section) => section.items)
-    expect(links.map((el) => el.textContent)).toEqual(expected.map((item) => item.label))
-    expect(links.map((el) => el.getAttribute("href"))).toEqual(expected.map((item) => item.href))
-
-    // Each section contributes a heading naming the group.
-    for (const section of sidebarSections) {
-      expect(within(nav).getByRole("heading", { name: section.label })).toBeTruthy()
-    }
-  })
-
-  it("leaves Coming Soon placeholders out — they have no page behind them", () => {
-    setup("/practice", false)
-    const nav = screen.getByRole("navigation", { name: "Primary" })
-    for (const label of ["Deep Work", "Mood", "Rewards"]) {
-      expect(within(nav).queryByText(label)).toBeNull()
-    }
-  })
-
-  it("surfaces the routes V2 hid, so they are reachable without searching", () => {
-    setup("/practice", false)
-    for (const label of [
-      "Goals",
-      "Calendar",
-      "Inbox",
-      "History",
-      "Notes",
-      "Memories",
-      "Ask Hengo",
-      "Hengo Coach",
-      "Progress",
-      "Habits",
-      "Recovery",
-      "Listening",
-      "Reading",
-      "Phrasebook",
-    ]) {
-      expect(screen.getByRole("link", { name: label })).toBeTruthy()
-    }
+    expect(links.map((el) => el.textContent)).toEqual([
+      "Today",
+      "Vocabulary",
+      "Practice",
+      "Coach",
+      "Study",
+    ])
+    expect(links.map((el) => el.getAttribute("href"))).toEqual([
+      "/home",
+      "/vocab",
+      "/practice",
+      "/korean-coach",
+      "/learn",
+    ])
+    expect(screen.queryByRole("button", { name: /plan|grow/i })).toBeNull()
   })
 
   it("marks the current destination active", () => {
@@ -425,10 +391,32 @@ describe("DesktopSidebar", () => {
     expect(screen.getByRole("link", { name: "Study" }).getAttribute("aria-current")).toBe("page")
   })
 
+  it("never renders removed V1 destinations — Goals, Calendar, History, Notes, Memories, Ask Hengo, Hengo Coach, or its mode variants", () => {
+    setup("/practice", false)
+    for (const label of [
+      "Goals",
+      "Calendar",
+      "Inbox",
+      "History",
+      "Notes",
+      "Memories",
+      "Ask Hengo",
+      "Hengo Coach",
+      "Analyze",
+      "Generate",
+      "Corrections",
+      "Progress",
+      "Habits",
+      "Recovery",
+    ]) {
+      expect(screen.queryByRole("link", { name: label })).toBeNull()
+    }
+  })
+
   it("gives every collapsed icon an accessible name", () => {
     setup("/practice", true)
-    for (const item of sidebarSections.flatMap((section) => section.items)) {
-      expect(screen.getByRole("link", { name: item.label })).toBeTruthy()
+    for (const name of ["Today", "Vocabulary", "Practice", "Coach", "Study"]) {
+      expect(screen.getByRole("link", { name })).toBeTruthy()
     }
   })
 
@@ -583,23 +571,14 @@ describe("QuickSwitcher", () => {
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
   })
 
-  // Before typing, the palette is a browse view: every shipped destination in
-  // its section group, so ⌘K shows what the app contains instead of five
-  // entries. Previously this listed only V2's five and hid the rest behind a
-  // search the user had to know to run.
-  it("browses the full catalog by section before typing", async () => {
+  it("shows V2's own destinations as a 'Suggested' group before typing — not the full V1 page catalog", async () => {
     render(<QuickSwitcher />)
     fireEvent.click(screen.getByRole("button", { name: "Open quick navigation" }))
     await waitFor(() => expect(screen.getByRole("listbox")).toBeTruthy())
-    expect(screen.queryByText("Suggested")).toBeNull()
+    expect(screen.getByText("Suggested")).toBeTruthy()
     expect(screen.queryByText("Pages")).toBeNull()
-    // Section headings — getAllByText because a section label can also appear
-    // inside an entry's own description text.
-    for (const label of ["Learn", "Plan", "Grow", "Memory"]) {
-      expect(screen.getAllByText(label).length).toBeGreaterThan(0)
-    }
     expect(screen.getByRole("option", { name: /vocabulary/i })).toBeTruthy()
-    expect(screen.getByRole("option", { name: /^goals$/i })).toBeTruthy()
+    expect(screen.queryByRole("option", { name: /^goals$/i })).toBeNull()
   })
 
   it("switches to the full 'Pages' catalog once the user types a query", async () => {
