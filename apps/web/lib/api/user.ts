@@ -25,7 +25,6 @@ type ProfileRow = {
   learning_goal: string | null
   study_reminders_enabled: boolean
   study_reminder_hour: number | null
-  weather_alerts_enabled: boolean | null
   holiday_alerts_enabled: boolean | null
   avatar_url: string | null
 }
@@ -43,7 +42,6 @@ function toCamel(row: ProfileRow | null) {
     learningGoal: row?.learning_goal ?? null,
     studyRemindersEnabled: row?.study_reminders_enabled ?? false,
     studyReminderHour: row?.study_reminder_hour ?? 20,
-    weatherAlertsEnabled: row?.weather_alerts_enabled ?? false,
     holidayAlertsEnabled: row?.holiday_alerts_enabled ?? false,
     hasProfileImage: Boolean(row?.avatar_url),
     avatarUrl: row?.avatar_url ?? null,
@@ -124,14 +122,6 @@ export const userApi = {
     const { error } = await supabase
       .from("kori_profiles")
       .update({ study_reminders_enabled: enabled, study_reminder_hour: hour })
-      .eq("id", id)
-    if (error) throw error
-  },
-
-  updateWeatherAlerts: async (id: string, enabled: boolean) => {
-    const { error } = await supabase
-      .from("kori_profiles")
-      .update({ weather_alerts_enabled: enabled })
       .eq("id", id)
     if (error) throw error
   },
