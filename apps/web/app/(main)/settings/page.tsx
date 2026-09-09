@@ -34,32 +34,11 @@ import { usePush } from "@/hooks/usePush"
 import { isCalendarIntegrationsEnabled } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
 
-const countries = [
-  "South Korea",
-  "Cambodia",
-  "Vietnam",
-  "Thailand",
-  "Philippines",
-  "Indonesia",
-  "Malaysia",
-  "Singapore",
-  "China",
-  "Japan",
-  "India",
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Other",
-]
-
 function snapshotOf(fields: {
   displayName: string
   koreanLevel: string
-  country: string
   nativeLanguage: string
   occupation: string
-  yearsOfExperience: string
 }) {
   return JSON.stringify(fields)
 }
@@ -136,10 +115,8 @@ export default function SettingsPage() {
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
   const [koreanLevel, setKoreanLevel] = useState("BEGINNER")
-  const [country, setCountry] = useState("")
   const [nativeLanguage, setNativeLanguage] = useState("")
   const [occupation, setOccupation] = useState("")
-  const [yearsOfExperience, setYearsOfExperience] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -163,10 +140,8 @@ export default function SettingsPage() {
         setDisplayName(data.displayName ?? "")
         setEmail(data.email ?? "")
         setKoreanLevel(data.koreanLevel ?? "BEGINNER")
-        setCountry(data.country ?? "")
         setNativeLanguage(data.nativeLanguage ?? "")
         setOccupation(data.occupation ?? "")
-        setYearsOfExperience(data.yearsOfExperience != null ? String(data.yearsOfExperience) : "")
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
         setHolidayAlertsEnabled(data.holidayAlertsEnabled ?? false)
@@ -179,10 +154,8 @@ export default function SettingsPage() {
         savedSnapshotRef.current = snapshotOf({
           displayName: data.displayName ?? "",
           koreanLevel: data.koreanLevel ?? "BEGINNER",
-          country: data.country ?? "",
           nativeLanguage: data.nativeLanguage ?? "",
           occupation: data.occupation ?? "",
-          yearsOfExperience: data.yearsOfExperience != null ? String(data.yearsOfExperience) : "",
         })
       })
       .finally(() => setLoading(false))
@@ -253,10 +226,8 @@ export default function SettingsPage() {
   const currentSnapshot = snapshotOf({
     displayName,
     koreanLevel,
-    country,
     nativeLanguage,
     occupation,
-    yearsOfExperience,
   })
   const isDirty = savedSnapshotRef.current !== null && savedSnapshotRef.current !== currentSnapshot
 
@@ -271,10 +242,8 @@ export default function SettingsPage() {
       await userApi.updateProfile(userId, {
         displayName,
         koreanLevel,
-        country: country || undefined,
         nativeLanguage: nativeLanguage || undefined,
         occupation: occupation || undefined,
-        yearsOfExperience: yearsOfExperience ? Number(yearsOfExperience) : undefined,
       })
       savedSnapshotRef.current = currentSnapshot
       setSaved(true)
@@ -529,27 +498,21 @@ export default function SettingsPage() {
             <SectionHeader
               icon={Globe}
               title="Background & Work"
-              description="Helps the AI tailor examples to you"
+              description="Your native language sets what glosses are written in; your role sets what the AI's examples are about"
               color="text-sky-500"
             />
           </SectionRow>
           <SectionRow last>
+            {/* Two fields, not four. Country produced one weak prompt line
+                ("From: X") and Years of experience was never read by anything
+                at all — both are still collected once at registration, so
+                nothing is lost by not asking again here. The two that survive
+                each change the output in a way you can point at: native
+                language decides the gloss language, occupation is what the
+                system prompt means by "ground examples in the learner's job".
+                See learnerProfileBlock in lib/server/ai.ts and
+                buildRealtimeInstructions in lib/realtime/session-context.ts. */}
             <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <FieldLabel>Country</FieldLabel>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
-                >
-                  <option value="">Select country</option>
-                  {countries.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
               <div>
                 <FieldLabel>Native language</FieldLabel>
                 <select
@@ -599,18 +562,6 @@ export default function SettingsPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <FieldLabel>Years of experience</FieldLabel>
-                <Input
-                  type="number"
-                  min={0}
-                  max={50}
-                  value={yearsOfExperience}
-                  onChange={(e) => setYearsOfExperience(e.target.value)}
-                  placeholder="e.g. 3"
-                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
-                />
               </div>
             </div>
           </SectionRow>
