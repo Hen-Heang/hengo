@@ -26,6 +26,10 @@ import {
 import type { VocabItem } from "@/lib/types"
 
 export type VocabViewMode = "list" | "grid"
+type BookFilter = "all" | "beginner-book" | "intermediate-book" | "core-300"
+type LevelFilter = "all" | "beginner" | "intermediate"
+type PriorityFilter = "all" | "p1" | "p2"
+type PosFilter = "all" | "verb" | "noun" | "adjective" | "adverb" | "other"
 
 type VocabDictionaryProps = {
   words: VocabItem[]
@@ -71,6 +75,40 @@ function groupByCategory(words: VocabItem[]) {
   return Object.entries(groups).sort((a, b) => b[1].length - a[1].length)
 }
 
+function hasTag(word: VocabItem, tag: string) {
+  return word.tags?.includes(tag) ?? false
+}
+
+function matchesMetadata(
+  word: VocabItem,
+  book: BookFilter,
+  level: LevelFilter,
+  priority: PriorityFilter,
+  pos: PosFilter,
+) {
+  if (book === "beginner-book" && !hasTag(word, "source:2000-essential-beginner")) return false
+  if (book === "intermediate-book" && !hasTag(word, "source:2000-essential-intermediate")) return false
+  if (book === "core-300" && !hasTag(word, "core:300")) return false
+
+  if (level === "beginner" && !hasTag(word, "level:beginner")) return false
+  if (level === "intermediate" && !hasTag(word, "level:intermediate")) return false
+
+  if (priority === "p1" && !hasTag(word, "priority:p1")) return false
+  if (priority === "p2" && !hasTag(word, "priority:p2")) return false
+
+  if (pos !== "all") {
+    const mainPos = ["verb", "noun", "adjective", "adverb"] as const
+    if (pos === "other") {
+      if (mainPos.some((item) => hasTag(word, `pos:${item}`))) return false
+      if (!(word.tags ?? []).some((tag) => tag.startsWith("pos:"))) return false
+    } else if (!hasTag(word, `pos:${pos}`)) {
+      return false
+    }
+  }
+
+  return true
+}
+
 function DeckSkeleton() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
@@ -112,6 +150,34 @@ const MASTERY_FILTERS: { value: MasteryFilter; label: string }[] = [
   { value: "mastered", label: "Mastered" },
 ]
 
+const BOOK_FILTERS: { value: BookFilter; label: string }[] = [
+  { value: "all", label: "All books" },
+  { value: "beginner-book", label: "2000 Essential · Beginner" },
+  { value: "intermediate-book", label: "2000 Essential · Intermediate" },
+  { value: "core-300", label: "Core Korean 300" },
+]
+
+const LEVEL_FILTERS: { value: LevelFilter; label: string }[] = [
+  { value: "all", label: "All levels" },
+  { value: "beginner", label: "Beginner" },
+  { value: "intermediate", label: "Intermediate" },
+]
+
+const PRIORITY_FILTERS: { value: PriorityFilter; label: string }[] = [
+  { value: "all", label: "All priorities" },
+  { value: "p1", label: "P1 · Must know" },
+  { value: "p2", label: "P2 · Next layer" },
+]
+
+const POS_FILTERS: { value: PosFilter; label: string }[] = [
+  { value: "all", label: "All parts of speech" },
+  { value: "verb", label: "Verb" },
+  { value: "noun", label: "Noun" },
+  { value: "adjective", label: "Adjective" },
+  { value: "adverb", label: "Adverb" },
+  { value: "other", label: "Other POS" },
+]
+
 const SORT_ORDERS: { value: SortOrder; label: string }[] = [
   { value: "alpha", label: "A → Z" },
   { value: "mastery-asc", label: "Weakest first" },
@@ -132,32 +198,56 @@ export function VocabDictionary({
   onClearSearch,
 }: VocabDictionaryProps) {
   const [masteryFilter, setMasteryFilter] = useState<MasteryFilter>("all")
+  const [bookFilter, setBookFilter] = useState<BookFilter>("all")
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>("all")
+  const [priorityFilter, setPriorityFilter] = useState<PriorityFilter>("all")
+  const [posFilter, setPosFilter] = useState<PosFilter>("all")
   const [sortOrder, setSortOrder] = useState<SortOrder>("alpha")
   const [viewMode, setViewMode] = useState<VocabViewMode>("list")
-  const isFiltering = query.trim().length > 0 || masteryFilter !== "all"
+
+  const metadataFiltered = useMemo(
+    () =>
+      words.filter((word) =>
+        matchesMetadata(word, bookFilter, levelFilter, priorityFilter, posFilter),
+      ),
+    [words, bookFilter, levelFilter, priorityFilter, posFilter],
+  )
 
   const filtered = useMemo(
-    () => sortVocab(filterVocab(words, query, masteryFilter), sortOrder),
-    [words, query, masteryFilter, sortOrder],
+    () => sortVocab(filterVocab(metadataFiltered, query, masteryFilter), sortOrder),
+    [metadataFiltered, query, masteryFilter, sortOrder],
   )
   const decks = useMemo(() => groupByCategory(filtered), [filtered])
 
-  // Per-bucket counts so the filter chips advertise the result before selection.
+  const isFiltering =
+    query.trim().length > 0 ||
+    masteryFilter !== "all" ||
+    bookFilter !== "all" ||
+    levelFilter !== "all" ||
+    priorityFilter !== "all" ||
+    posFilter !== "all"
+
+  // Counts respect book/level/priority/POS/search filters, but ignore the selected
+  // progress bucket so learners can see how many cards are available in each state.
   const filterCounts = useMemo(
     () =>
       Object.fromEntries(
         MASTERY_FILTERS.map(({ value }) => [
           value,
-          value === "all"
-            ? words.length
-            : words.filter((word) => matchesMastery(word.mastery, value)).length,
+          filterVocab(metadataFiltered, query, value).filter((word) =>
+            value === "all" ? true : matchesMastery(word.mastery, value),
+          ).length,
         ]),
       ) as Record<MasteryFilter, number>,
-    [words],
+    [metadataFiltered, query],
   )
 
   function clearFilters() {
     setMasteryFilter("all")
+    setBookFilter("all")
+    setLevelFilter("all")
+    setPriorityFilter("all")
+    setPosFilter("all")
     onClearSearch?.()
   }
 
@@ -183,57 +273,101 @@ export function VocabDictionary({
             ) : null}
           </div>
 
-          <div className="space-y-3 p-3 sm:p-4" role="group" aria-label="Vocabulary view controls">
-            <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-              {MASTERY_FILTERS.map(({ value, label }) => (
-                <Button
-                  key={value}
-                  type="button"
-                  onClick={() => setMasteryFilter(value)}
-                  variant={masteryFilter === value ? "secondary" : "outline"}
-                  size="sm"
-                  aria-pressed={masteryFilter === value}
-                  className={cn(
-                    "shrink-0 rounded-xl px-3 text-xs",
-                    masteryFilter === value
-                      ? "bg-primary/10 text-primary hover:bg-primary/15"
-                      : "text-muted-foreground",
-                  )}
-                >
-                  {label}
-                  <span className="font-mono text-[10px] opacity-65">{filterCounts[value]}</span>
-                </Button>
-              ))}
+          <div className="space-y-4 p-3 sm:p-4" role="group" aria-label="Vocabulary view controls">
+            <div>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Book · level · priority · part of speech
+              </p>
+              <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+                <Select value={bookFilter} onValueChange={(value) => setBookFilter(value as BookFilter)}>
+                  <SelectTrigger aria-label="Filter vocabulary by book" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {BOOK_FILTERS.map(({ value, label }) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={levelFilter} onValueChange={(value) => setLevelFilter(value as LevelFilter)}>
+                  <SelectTrigger aria-label="Filter vocabulary by level" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {LEVEL_FILTERS.map(({ value, label }) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as PriorityFilter)}>
+                  <SelectTrigger aria-label="Filter vocabulary by priority" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PRIORITY_FILTERS.map(({ value, label }) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={posFilter} onValueChange={(value) => setPosFilter(value as PosFilter)}>
+                  <SelectTrigger aria-label="Filter vocabulary by part of speech" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {POS_FILTERS.map(({ value, label }) => (
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="min-w-0 flex-1 sm:max-w-56">
-                <Select
-                  value={sortOrder}
-                  onValueChange={(value) => setSortOrder(value as SortOrder)}
-                >
-                  <SelectTrigger
-                    aria-label="Sort vocabulary words"
-                    className="h-10 w-full rounded-xl bg-background shadow-none"
+            <div>
+              <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+                Progress
+              </p>
+              <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {MASTERY_FILTERS.map(({ value, label }) => (
+                  <Button
+                    key={value}
+                    type="button"
+                    onClick={() => setMasteryFilter(value)}
+                    variant={masteryFilter === value ? "secondary" : "outline"}
+                    size="sm"
+                    aria-pressed={masteryFilter === value}
+                    className={cn(
+                      "shrink-0 rounded-xl px-3 text-xs",
+                      masteryFilter === value
+                        ? "bg-primary/10 text-primary hover:bg-primary/15"
+                        : "text-muted-foreground",
+                    )}
                   >
+                    {label}
+                    <span className="font-mono text-[10px] opacity-65">{filterCounts[value]}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 border-t border-border/50 pt-3">
+              <div className="min-w-0 flex-1 sm:max-w-56">
+                <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
+                  <SelectTrigger aria-label="Sort vocabulary words" className="h-10 w-full rounded-xl bg-background shadow-none">
                     <ArrowDownUp className="text-muted-foreground" />
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {SORT_ORDERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>
-                        {label}
-                      </SelectItem>
+                      <SelectItem key={value} value={value}>{label}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div
-                className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1"
-                role="group"
-                aria-label="Deck layout"
-              >
+              <div className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Deck layout">
                 <Button
                   type="button"
                   onClick={() => setViewMode("list")}
@@ -241,10 +375,7 @@ export function VocabDictionary({
                   aria-pressed={viewMode === "list"}
                   variant="ghost"
                   size="icon-lg"
-                  className={cn(
-                    "rounded-lg",
-                    viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground",
-                  )}
+                  className={cn("rounded-lg", viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground")}
                 >
                   <List size={14} strokeWidth={2.5} />
                 </Button>
@@ -255,10 +386,7 @@ export function VocabDictionary({
                   aria-pressed={viewMode === "grid"}
                   variant="ghost"
                   size="icon-lg"
-                  className={cn(
-                    "rounded-lg",
-                    viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground",
-                  )}
+                  className={cn("rounded-lg", viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground")}
                 >
                   <LayoutGrid size={14} strokeWidth={2.5} />
                 </Button>
@@ -305,7 +433,7 @@ export function VocabDictionary({
           <SearchX size={32} strokeWidth={1.5} className="mb-4 text-muted-foreground/60" />
           <h3 className="text-base font-semibold text-foreground">No matching words</h3>
           <p className="mt-1 max-w-sm text-sm leading-6 text-muted-foreground">
-            Try a different spelling, deck, tag, or mastery level.
+            Try a different book, level, priority, part of speech, spelling, or progress filter.
           </p>
           <Button type="button" variant="outline" onClick={clearFilters} className="mt-4">
             Reset search and filters
@@ -315,7 +443,7 @@ export function VocabDictionary({
 
       {!loading && !words.length ? (
         <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border bg-accent/5 p-10 text-center sm:rounded-3xl sm:p-16">
-          <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-muted/10 text-muted-foreground/60 mb-6">
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-muted/10 text-muted-foreground/60">
             <Layers3 size={40} strokeWidth={1.5} />
           </div>
           <h3 className="text-xl font-bold text-foreground">Start Your Collection</h3>
