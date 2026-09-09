@@ -18,6 +18,7 @@ import {
   aiCoachItem,
   linkPath,
   navSections,
+  primaryNavItems,
   settingsItem,
   shippedItems,
   type NavItem,
@@ -62,7 +63,9 @@ function toEntry(item: NavItem, hint: string): Entry {
 // isn't on every surface. Building this list purely from navSections
 // therefore left the one page every learner eventually needs as the one page
 // they couldn't search for. Appended explicitly, since there is no section to
-// fold it into.
+// fold it into. It stays out of SUGGESTED_ENTRIES below: that group is the
+// five primary destinations, and Settings is a utility page you go to on
+// purpose, not something to promote before the learner has typed anything.
 const PAGE_ENTRIES: Entry[] = [
   ...navSections.flatMap((section) =>
     shippedItems(section.items).map((item) => toEntry(item, section.label)),
@@ -72,26 +75,17 @@ const PAGE_ENTRIES: Entry[] = [
 
 const ENTRY_BY_ID = new Map(PAGE_ENTRIES.map((entry) => [entry.key, entry]))
 
-// The pre-typing browse view: the same shipped destinations as PAGE_ENTRIES,
-// kept in their section groups so opening ⌘K shows what the app actually
-// contains rather than five entries. Typing collapses these back into one
-// flat, ranked "Pages" group — browsing wants structure, searching doesn't.
-const BROWSE_GROUPS: { id: string; label: string; entries: Entry[] }[] = navSections
-  .map((section) => ({
-    id: `section-${section.id}`,
-    label: section.label,
-    // Each entry's own description is its subtitle here — repeating the
-    // section label would just duplicate the group heading above it.
-    entries: shippedItems(section.items).map((item) => toEntry(item, item.description ?? "")),
-  }))
-  .filter((group) => group.entries.length > 0)
-  // …and it gets a group of its own in the browse view for the same reason:
-  // no nav row means ⌘K is the only place it can be stumbled upon.
-  .concat({
-    id: "section-account",
-    label: "Account",
-    entries: [toEntry(settingsItem, "Profile, preferences & account")],
-  })
+// V2's five flat destinations, shown as the default "Suggested" group before
+// the user types anything. The full PAGE_ENTRIES catalog above (every V1
+// surface included — Goals, Habits, Achievements, Interview, …) stays fully
+// searchable — that's the intentional backward-compat index — but it should
+// never dump itself unprompted the moment ⌘K opens.
+// Each entry's own description is its subtitle here (not the literal word
+// "Suggested" — that's reserved for the group heading and would otherwise
+// collide with it as duplicate on-screen text).
+const SUGGESTED_ENTRIES: Entry[] = primaryNavItems.map((item) =>
+  toEntry(item, item.description ?? ""),
+)
 
 // Global actions. `href` is a plain route — no mutations happen here, the
 // destination page owns the actual creation flow. "Quick capture" is the one
@@ -203,29 +197,22 @@ export function QuickSwitcher({
       .slice(0, 4)
     const recentKeys = new Set(recent.map((entry) => entry.key))
 
+    // Empty query: don't dump the full page/action catalog unprompted — a
+    // lot of it is hidden V1 surfaces (Goals, Habits, Achievements, Interview,
+    // …). Show V2's own destinations instead. The full catalog stays fully
+    // searchable the moment the user types anything — that's the intentional
+    // backward-compat index (see `lib/navigation.ts`'s `primaryNavItems`
+    // comment), not something to promote by default.
+    const pages = normalized
+      ? filter(PAGE_ENTRIES).filter((entry) => !recentKeys.has(entry.key))
+      : SUGGESTED_ENTRIES.filter(
+          (entry) => !recentKeys.has(entry.key) && linkPath(entry.href) !== currentPath,
+        )
     const actions = normalized ? filter(ACTION_ENTRIES) : DEFAULT_ACTION_ENTRIES
-
-    // Empty query: browse the whole catalog by section. Typing switches to one
-    // flat ranked list — with 33 destinations, grouping a search result set
-    // scatters the best match down the page.
-    const pageGroups: Group[] = normalized
-      ? [
-          {
-            id: "pages",
-            label: "Pages",
-            entries: filter(PAGE_ENTRIES).filter((entry) => !recentKeys.has(entry.key)),
-          },
-        ]
-      : BROWSE_GROUPS.map((group) => ({
-          ...group,
-          entries: group.entries.filter(
-            (entry) => !recentKeys.has(entry.key) && linkPath(entry.href) !== currentPath,
-          ),
-        }))
 
     const candidates: Group[] = [
       { id: "recent", label: "Recent", entries: filter(recent) },
-      ...pageGroups,
+      { id: "pages", label: normalized ? "Pages" : "Suggested", entries: pages },
       { id: "actions", label: "Actions", entries: actions },
     ]
 
