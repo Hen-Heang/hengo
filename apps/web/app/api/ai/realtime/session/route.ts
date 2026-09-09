@@ -16,6 +16,7 @@ import {
   type RealtimeRecentMistake,
   type RealtimeScenarioContext,
 } from "@/lib/realtime/session-context"
+import { KOREAN_LEARNING_GOAL_PROMPT, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 
 const REALTIME_FEATURE = "realtime_session"
 
@@ -76,6 +77,7 @@ export async function POST(req: Request): Promise<Response> {
     { data: profile },
     { data: historyRows },
     { data: mistakeRows },
+    { data: coachPreferences },
   ] = await Promise.all([
     db
       .from("kori_conversations")
@@ -84,7 +86,7 @@ export async function POST(req: Request): Promise<Response> {
       .maybeSingle(),
     db
       .from("kori_profiles")
-      .select("display_name, korean_level, occupation, learning_goal, native_language, country")
+      .select("display_name, korean_level, occupation, native_language, country")
       .maybeSingle(),
     db
       .from("kori_messages")
@@ -98,6 +100,7 @@ export async function POST(req: Request): Promise<Response> {
       .eq("severity", "important")
       .order("last_seen_at", { ascending: false })
       .limit(5),
+    db.from("kori_korean_coach_preferences").select("main_goal").maybeSingle(),
   ])
 
   if (conversationError || !conversation) {
@@ -139,13 +142,18 @@ export async function POST(req: Request): Promise<Response> {
     }))
     .filter((mistake) => mistake.original && mistake.corrected)
 
+  const coachGoal = coachPreferences?.main_goal as KoreanLearningGoal | null | undefined
+
   const instructions = buildRealtimeInstructions({
     learnerName: cleanProfileValue(profile?.display_name, 60) ?? "the learner",
     level,
     conversationType: conversation.conversation_type,
     technicalMode,
     occupation: cleanProfileValue(profile?.occupation),
-    learningGoal: cleanProfileValue(profile?.learning_goal),
+    // One goal setting for the whole app — kori_korean_coach_preferences
+    // .main_goal, set at /korean-coach/preferences. Rendered through the same
+    // label map the text chat prompt uses so the two can't drift.
+    learningGoal: coachGoal ? KOREAN_LEARNING_GOAL_PROMPT[coachGoal] : null,
     nativeLanguage: cleanProfileValue(profile?.native_language, 60),
     country: cleanProfileValue(profile?.country, 60),
     scenario,

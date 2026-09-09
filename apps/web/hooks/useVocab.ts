@@ -42,14 +42,50 @@ async function fetchWords(): Promise<VocabData> {
     vocabApi.getDueCount(),
   ])
 
+  const savedWords = Array.isArray(savedData) ? savedData.map(normalizeWord) : []
+
+  // Due is a subset of saved by definition — both are rows of kori_vocab_cards,
+  // one filtered by next_review. If the count exceeds the collection we did not
+  // over-count the due rows, we under-read the collection (a silently truncated
+  // getSavedWords is what did it before). Shout in dev rather than rendering
+  // "1,107 due of 1,000 saved" again.
+  if (process.env.NODE_ENV !== "production" && dueCount > savedWords.length) {
+    console.error(
+      `[vocab] impossible stats: ${dueCount} due > ${savedWords.length} saved. ` +
+        "getSavedWords is returning an incomplete collection — check its pagination.",
+    )
+  }
+
   return {
-    savedWords: Array.isArray(savedData) ? savedData.map(normalizeWord) : [],
+    savedWords,
     dueWords: Array.isArray(dueData) ? dueData.map(normalizeWord) : [],
     dueCount,
   }
 }
 
 export const vocabQueryKey = (userId?: string | null) => ["vocab", userId] as const
+
+// Nested under vocabQueryKey's prefix on purpose: useVocab's invalidate()
+// passes ["vocab", userId], which TanStack matches by prefix — so grading a
+// card refreshes this count too instead of leaving Study showing a stale one.
+export const vocabDueCountQueryKey = (userId?: string | null) =>
+  ["vocab", userId, "due-count"] as const
+
+/**
+ * Just the backlog size, from the same `vocabApi.getDueCount` the full
+ * `useVocab` reads — for surfaces that need to say "N words are still due"
+ * without pulling the learner's entire collection (a 1,000-row fetch) to get
+ * there. Anything that also renders cards should use `useVocab` instead.
+ */
+export function useVocabDueCount() {
+  const userId = getUserId()
+  const { data, isPending } = useQuery({
+    queryKey: vocabDueCountQueryKey(userId),
+    queryFn: vocabApi.getDueCount,
+    enabled: userId != null,
+  })
+  return { dueCount: data ?? 0, loading: isPending }
+}
 
 export function useVocab() {
   const userId = getUserId()

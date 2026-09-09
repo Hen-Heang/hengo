@@ -10,6 +10,23 @@ export const koreanLearningGoalSchema = z.enum([
   "presentation",
   "general",
 ])
+
+/** Prose for each goal, for the one place the slug leaves the app: the
+ *  tutoring system prompt (lib/server/ai.ts's learnerProfileBlock). Keep these
+ *  phrased as what the learner is working toward, not as a UI label. */
+export const KOREAN_LEARNING_GOAL_LABEL: Record<KoreanLearningGoal, string> = {
+  workplace: "Workplace Korean",
+  "daily-life": "Daily life",
+  presentation: "K-Specialist presentation",
+  general: "General conversation",
+}
+
+export const KOREAN_LEARNING_GOAL_PROMPT: Record<KoreanLearningGoal, string> = {
+  workplace: "workplace Korean — standups, meetings, and written messages with colleagues",
+  "daily-life": "everyday Korean — shops, transport, appointments, and neighbours",
+  presentation: "delivering a K-Specialist presentation in Korean, including Q&A",
+  general: "general conversational Korean",
+}
 export const speechSpeedSchema = z.union([z.literal(0.75), z.literal(1), z.literal(1.25)])
 export const koreanCoachPracticeModeSchema = z.enum(["speaking", "listening"])
 
@@ -90,14 +107,17 @@ export const speechRequestSchema = z.object({
   speed: speechSpeedSchema.default(1),
 })
 
+/** Fallback for a learner with no preferences row yet. Matches the column
+ *  default in the korean_voice_coach migration — keep the two in step. */
+export const DEFAULT_DAILY_GOAL_MINUTES = 10
+
 export const koreanCoachPreferencesSchema = z.object({
   level: koreanCoachLevelSchema.default("beginner"),
   mainGoal: koreanLearningGoalSchema.default("workplace"),
   explanationLanguage: z.literal("English").default("English"),
   romanizationMode: romanizationModeSchema.default("on-request"),
   defaultSpeechSpeed: speechSpeedSchema.default(0.75),
-  dailyPracticeGoalMinutes: z.number().int().min(5).max(120).default(10),
-  preferredPracticeDurationMinutes: z.number().int().min(5).max(60).default(10),
+  dailyPracticeGoalMinutes: z.number().int().min(5).max(120).default(DEFAULT_DAILY_GOAL_MINUTES),
   correctionStrictness: correctionStrictnessSchema.default("balanced"),
 })
 

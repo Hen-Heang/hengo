@@ -1,12 +1,13 @@
-// Tracks whether the first-run onboarding wizard has been shown, and holds the
-// daily-target preference it collects. Both are client-only (no backend column
-// for either), scoped per user id so a shared browser doesn't leak state
-// across accounts. The daily goal minutes value also feeds
-// progressApi.getDashboard's "Daily Goal" ring.
+// Tracks whether the first-run onboarding wizard has been shown. Client-only,
+// scoped per user id so a shared browser doesn't leak state across accounts.
+//
+// The daily-target the wizard collects used to live here too, in
+// localStorage under "hengo:daily-goal-minutes" with a default of 15 — which
+// is where /home's "Today's Korean · 15 min" came from. It is now
+// kori_korean_coach_preferences.daily_practice_goal_minutes, the same value
+// /korean-coach/preferences edits, so there is one daily goal instead of a
+// per-browser one and a server one that never agreed.
 const ONBOARDING_KEY_PREFIX = "hengo:onboarding:"
-const DAILY_GOAL_KEY = "hengo:daily-goal-minutes"
-
-export const DEFAULT_DAILY_GOAL_MINUTES = 15
 
 export function hasCompletedOnboarding(userId: string | null): boolean {
   if (typeof window === "undefined" || !userId) return true
@@ -16,16 +17,4 @@ export function hasCompletedOnboarding(userId: string | null): boolean {
 export function markOnboardingComplete(userId: string | null) {
   if (typeof window === "undefined" || !userId) return
   window.localStorage.setItem(ONBOARDING_KEY_PREFIX + userId, "done")
-}
-
-export function getDailyGoalMinutes(): number {
-  if (typeof window === "undefined") return DEFAULT_DAILY_GOAL_MINUTES
-  const raw = window.localStorage.getItem(DAILY_GOAL_KEY)
-  const parsed = raw ? Number(raw) : NaN
-  return Number.isFinite(parsed) && parsed > 0 ? parsed : DEFAULT_DAILY_GOAL_MINUTES
-}
-
-export function setDailyGoalMinutes(minutes: number) {
-  if (typeof window === "undefined") return
-  window.localStorage.setItem(DAILY_GOAL_KEY, String(minutes))
 }

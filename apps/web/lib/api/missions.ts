@@ -1,7 +1,7 @@
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
 import { dateKeyInTimeZone, DEFAULT_TIME_ZONE } from "@/lib/date-key"
-import { getDailyGoalMinutes } from "@/lib/onboarding-store"
+import { DEFAULT_DAILY_GOAL_MINUTES, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 import {
   buildDailyMission,
   type MissionContext,
@@ -126,6 +126,7 @@ async function fetchMission(userId: string, dateKey: string): Promise<DailyMissi
 async function buildContext(dateKey: string): Promise<MissionContext> {
   const [
     profileRes,
+    coachPrefsRes,
     dueVocabulary,
     dueVocabularyCount,
     dueCorrections,
@@ -135,7 +136,14 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
     activity,
     duePhrases,
   ] = await Promise.all([
-    supabase.from("kori_profiles").select("korean_level, learning_goal").maybeSingle(),
+    supabase.from("kori_profiles").select("korean_level").maybeSingle(),
+    // Goal and minute budget both come from the one page that sets them
+    // (/korean-coach/preferences) — not kori_profiles.learning_goal, and no
+    // longer a localStorage daily target that only that browser could see.
+    supabase
+      .from("kori_korean_coach_preferences")
+      .select("main_goal, daily_practice_goal_minutes")
+      .maybeSingle(),
     vocabApi.getDueWords(),
     vocabApi.getDueCount(),
     correctionApi.getDueReviews(),
@@ -155,8 +163,8 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
   return {
     dateKey,
     koreanLevel: profileRes.data?.korean_level ?? "BEGINNER",
-    learningGoal: profileRes.data?.learning_goal ?? null,
-    availableMinutes: getDailyGoalMinutes(),
+    learningGoal: (coachPrefsRes.data?.main_goal as KoreanLearningGoal | undefined) ?? null,
+    availableMinutes: coachPrefsRes.data?.daily_practice_goal_minutes ?? DEFAULT_DAILY_GOAL_MINUTES,
     dueVocabulary: dueVocabulary.map((v) => ({ id: v.id, term: v.term, meaning: v.meaning })),
     dueVocabularyCount,
     dueCorrections: dueCorrections.map((c) => ({

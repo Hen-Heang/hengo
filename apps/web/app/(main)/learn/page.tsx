@@ -7,6 +7,7 @@ import { StudyRecommendation } from "@/components/learn/StudyRecommendation"
 import { StudySkillSummary } from "@/components/learn/StudySkillSummary"
 import { useDailyMission } from "@/hooks/useDailyMission"
 import { useSkillMastery } from "@/hooks/useSkillMastery"
+import { useVocabDueCount } from "@/hooks/useVocab"
 import { learningModules } from "@/lib/learning-modules"
 import { summarizeStudyGroups } from "@/lib/learning/skill-groups"
 import { containerVariants, itemVariants } from "@/lib/motion"
@@ -21,6 +22,7 @@ export default function LearnPage() {
 
   const { mastery, loading: masteryLoading } = useSkillMastery()
   const { mission, loading: missionLoading } = useDailyMission()
+  const { dueCount, loading: dueLoading } = useVocabDueCount()
   const groups = summarizeStudyGroups(mastery)
 
   return (
@@ -45,7 +47,12 @@ export default function LearnPage() {
       </motion.div>
 
       <motion.div variants={item}>
-        <StudyRecommendation mission={mission} loading={missionLoading} />
+        <StudyRecommendation
+          mission={mission}
+          loading={missionLoading}
+          dueCount={dueCount}
+          dueLoading={dueLoading}
+        />
       </motion.div>
 
       <motion.section variants={item} aria-labelledby="study-modules" className="space-y-3.5">

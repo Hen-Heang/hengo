@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Mail,
-  Cpu,
   CheckCircle2,
   LogOut,
   ChevronRight,
@@ -17,12 +16,10 @@ import {
   Bell,
   Send,
   AlarmClock,
-  CloudRain,
-  Check,
   Target,
   Type,
 } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -33,45 +30,10 @@ import { authApi, userApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
+import { FieldSaveStatus } from "@/components/ui/field-save-status"
+import { TEXT_DEBOUNCE_MS, useFieldAutosave } from "@/hooks/useFieldAutosave"
+import { isCalendarIntegrationsEnabled } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
-
-const models = [
-  { value: "gpt-5-mini", label: "GPT-5 mini", desc: "Latest · recommended" },
-  { value: "gpt-4o", label: "GPT-4o", desc: "Balanced performance" },
-  { value: "gpt-4o-mini", label: "GPT-4o mini", desc: "Fast & efficient" },
-]
-
-const countries = [
-  "South Korea",
-  "Cambodia",
-  "Vietnam",
-  "Thailand",
-  "Philippines",
-  "Indonesia",
-  "Malaysia",
-  "Singapore",
-  "China",
-  "Japan",
-  "India",
-  "United States",
-  "United Kingdom",
-  "Canada",
-  "Australia",
-  "Other",
-]
-
-function snapshotOf(fields: {
-  displayName: string
-  koreanLevel: string
-  country: string
-  nativeLanguage: string
-  occupation: string
-  yearsOfExperience: string
-  learningGoal: string
-  model: string
-}) {
-  return JSON.stringify(fields)
-}
 
 function SectionCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -121,11 +83,12 @@ function SectionHeader({
   )
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children, status }: { children: React.ReactNode; status?: React.ReactNode }) {
   return (
-    <label className="mb-1.5 block px-1 text-sm font-medium text-muted-foreground">
-      {children}
-    </label>
+    <div className="mb-1.5 flex items-center justify-between gap-2 px-1">
+      <label className="text-sm font-medium text-muted-foreground">{children}</label>
+      {status}
+    </div>
   )
 }
 
@@ -142,31 +105,22 @@ const itemVariants = {
 export default function SettingsPage() {
   const router = useRouter()
   const push = usePush()
+  const { saveField, stateOf } = useFieldAutosave()
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
   const [koreanLevel, setKoreanLevel] = useState("BEGINNER")
-  const [country, setCountry] = useState("")
   const [nativeLanguage, setNativeLanguage] = useState("")
   const [occupation, setOccupation] = useState("")
-  const [yearsOfExperience, setYearsOfExperience] = useState("")
-  const [learningGoal, setLearningGoal] = useState("")
-  const [preferredModel, setPreferredModel] = useState("gpt-5-mini")
-  const [customModel, setCustomModel] = useState("")
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [studyRemindersEnabled, setStudyRemindersEnabled] = useState(true)
   const [studyReminderHour, setStudyReminderHour] = useState(20)
   const [savingReminders, setSavingReminders] = useState(false)
-  const [weatherAlertsEnabled, setWeatherAlertsEnabled] = useState(false)
-  const [savingWeatherAlerts, setSavingWeatherAlerts] = useState(false)
   const [holidayAlertsEnabled, setHolidayAlertsEnabled] = useState(false)
   const [savingHolidayAlerts, setSavingHolidayAlerts] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const savedSnapshotRef = useRef<string | null>(null)
 
   useEffect(() => {
     const userId = getUserId()
@@ -177,17 +131,10 @@ export default function SettingsPage() {
         setDisplayName(data.displayName ?? "")
         setEmail(data.email ?? "")
         setKoreanLevel(data.koreanLevel ?? "BEGINNER")
-        setCountry(data.country ?? "")
         setNativeLanguage(data.nativeLanguage ?? "")
         setOccupation(data.occupation ?? "")
-        setYearsOfExperience(data.yearsOfExperience != null ? String(data.yearsOfExperience) : "")
-        setLearningGoal(data.learningGoal ?? "")
-        const model = data.preferredModel ?? "gpt-5-mini"
-        setPreferredModel(model)
-        if (!models.some((m) => m.value === model)) setCustomModel(model)
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
-        setWeatherAlertsEnabled(data.weatherAlertsEnabled ?? false)
         setHolidayAlertsEnabled(data.holidayAlertsEnabled ?? false)
         if (data.hasProfileImage) {
           userApi
@@ -195,16 +142,6 @@ export default function SettingsPage() {
             .then(setAvatarUrl)
             .catch(() => {})
         }
-        savedSnapshotRef.current = snapshotOf({
-          displayName: data.displayName ?? "",
-          koreanLevel: data.koreanLevel ?? "BEGINNER",
-          country: data.country ?? "",
-          nativeLanguage: data.nativeLanguage ?? "",
-          occupation: data.occupation ?? "",
-          yearsOfExperience: data.yearsOfExperience != null ? String(data.yearsOfExperience) : "",
-          learningGoal: data.learningGoal ?? "",
-          model,
-        })
       })
       .finally(() => setLoading(false))
   }, [])
@@ -225,21 +162,6 @@ export default function SettingsPage() {
       toast.error("Could not save study reminders", { description: "Please try again." })
     } finally {
       setSavingReminders(false)
-    }
-  }
-
-  async function saveWeatherAlerts(enabled: boolean) {
-    const userId = getUserId()
-    if (!userId) return
-    setWeatherAlertsEnabled(enabled)
-    setSavingWeatherAlerts(true)
-    try {
-      await userApi.updateWeatherAlerts(userId, enabled)
-    } catch {
-      setWeatherAlertsEnabled(!enabled)
-      toast.error("Could not save weather alerts", { description: "Please try again." })
-    } finally {
-      setSavingWeatherAlerts(false)
     }
   }
 
@@ -286,46 +208,31 @@ export default function SettingsPage() {
     }
   }
 
-  const activeModel = customModel || preferredModel
-
-  const currentSnapshot = snapshotOf({
-    displayName,
-    koreanLevel,
-    country,
-    nativeLanguage,
-    occupation,
-    yearsOfExperience,
-    learningGoal,
-    model: activeModel,
-  })
-  const isDirty = savedSnapshotRef.current !== null && savedSnapshotRef.current !== currentSnapshot
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault()
+  // Every profile field autosaves and confirms next to itself — same contract
+  // as /korean-coach/preferences, and as the notification switches on this
+  // page, which have always saved on change. updateProfile writes the whole
+  // row, so each call sends the current value of the others too; `overrides`
+  // supplies the just-changed value, since the state update that triggered it
+  // has not been applied to this render's closure yet.
+  function saveProfileField(
+    field: string,
+    overrides: Partial<{ displayName: string; nativeLanguage: string; occupation: string }>,
+    debounceMs = 0,
+  ) {
     const userId = getUserId()
     if (!userId) return
-    setSaving(true)
-    setError("")
-    setSaved(false)
-    try {
-      await userApi.updateProfile(userId, {
-        displayName,
-        koreanLevel,
-        country: country || undefined,
-        nativeLanguage: nativeLanguage || undefined,
-        occupation: occupation || undefined,
-        yearsOfExperience: yearsOfExperience ? Number(yearsOfExperience) : undefined,
-        learningGoal: learningGoal || undefined,
-      })
-      await userApi.updatePreferredModel(userId, activeModel)
-      savedSnapshotRef.current = currentSnapshot
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-    } catch {
-      setError("Failed to save. Please try again.")
-    } finally {
-      setSaving(false)
-    }
+    const next = { displayName, nativeLanguage, occupation, ...overrides }
+    saveField(
+      field,
+      () =>
+        userApi.updateProfile(userId, {
+          displayName: next.displayName,
+          koreanLevel,
+          nativeLanguage: next.nativeLanguage || undefined,
+          occupation: next.occupation || undefined,
+        }),
+      debounceMs,
+    )
   }
 
   function handleClose() {
@@ -345,6 +252,13 @@ export default function SettingsPage() {
     router.replace("/login")
   }
 
+  // "Your name" used to render here in the same weight and colour a real
+  // name would use, and again just below as the input's placeholder — the
+  // same words as a value and as a prompt. Fall back to the email local part,
+  // which is a real thing about this account; only when there is no email
+  // either does the card ask, and then it reads as an invitation.
+  const emailLocalPart = email.split("@")[0]
+  const resolvedName = displayName.trim() || emailLocalPart
   const initials = displayName
     ? displayName
         .split(" ")
@@ -386,11 +300,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <motion.form
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      onSubmit={handleSave}
       className="mx-auto max-w-3xl space-y-5 pb-24"
     >
       {/* Header */}
@@ -449,21 +362,38 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-base font-semibold text-foreground">
-                  {displayName || "Your name"}
-                </p>
+                {resolvedName ? (
+                  <p className="truncate text-base font-semibold text-foreground">{resolvedName}</p>
+                ) : (
+                  <p className="truncate text-base font-medium text-muted-foreground/70">
+                    Add your name
+                  </p>
+                )}
                 <p className="truncate text-xs font-medium text-muted-foreground">{email}</p>
+                {/* Avatar upload is the one action here that isn't a field
+                    autosave, so it reports next to the avatar rather than
+                    through FieldSaveStatus. */}
+                {error && <p className="mt-1 text-xs font-medium text-destructive">{error}</p>}
               </div>
             </div>
           </SectionRow>
           <SectionRow last>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <FieldLabel>Display name</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("displayName")} />}>
+                  Display name
+                </FieldLabel>
                 <Input
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Your name"
+                  onChange={(e) => {
+                    setDisplayName(e.target.value)
+                    saveProfileField(
+                      "displayName",
+                      { displayName: e.target.value },
+                      TEXT_DEBOUNCE_MS,
+                    )
+                  }}
+                  placeholder={emailLocalPart || "Your name"}
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
                 />
               </div>
@@ -484,38 +414,30 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Learning goal */}
+      {/* Learning goal lives in Korean Coach preferences — the single source
+          of truth (kori_korean_coach_preferences.main_goal) that both the
+          tutoring prompt and Coach's scenario recommendation read. This page
+          used to carry a second, competing list writing a different column;
+          it's a link now so there is only ever one control. */}
       <motion.div variants={itemVariants}>
         <SectionCard>
-          <SectionRow>
+          <button
+            type="button"
+            onClick={() => router.push("/korean-coach/preferences")}
+            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+          >
             <SectionHeader
               icon={Target}
               title="Learning goal"
               description="Shapes the scenarios and phrasing the AI practices with you"
               color="text-violet-500"
             />
-          </SectionRow>
-          <SectionRow last>
-            <FieldLabel>What are you working toward?</FieldLabel>
-            <select
-              value={learningGoal}
-              onChange={(e) => setLearningGoal(e.target.value)}
-              className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
-            >
-              <option value="">Select your main goal</option>
-              {[
-                "Daily standup participation",
-                "Team meeting communication",
-                "Writing professional messages",
-                "Technical discussion in Korean",
-                "General workplace communication",
-              ].map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </SectionRow>
+            <ChevronRight
+              size={14}
+              strokeWidth={2}
+              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+            />
+          </button>
         </SectionCard>
       </motion.div>
 
@@ -545,28 +467,32 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Integrations */}
-      <motion.div variants={itemVariants}>
-        <SectionCard>
-          <button
-            type="button"
-            onClick={() => router.push("/settings/integrations")}
-            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
-          >
-            <SectionHeader
-              icon={CalendarDays}
-              title="Integrations"
-              description="Connect Google Calendar and other services"
-              color="text-blue-500"
-            />
-            <ChevronRight
-              size={14}
-              strokeWidth={2}
-              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
-            />
-          </button>
-        </SectionCard>
-      </motion.div>
+      {/* Integrations — hidden until Plan is navigable (see
+          lib/feature-flags.ts). The code and the privacy copy stay put; only
+          the entry point and the page body are gated. */}
+      {isCalendarIntegrationsEnabled() && (
+        <motion.div variants={itemVariants}>
+          <SectionCard>
+            <button
+              type="button"
+              onClick={() => router.push("/settings/integrations")}
+              className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+            >
+              <SectionHeader
+                icon={CalendarDays}
+                title="Integrations"
+                description="Connect Google Calendar and other services"
+                color="text-blue-500"
+              />
+              <ChevronRight
+                size={14}
+                strokeWidth={2}
+                className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+              />
+            </button>
+          </SectionCard>
+        </motion.div>
+      )}
 
       {/* Background + Work */}
       <motion.div variants={itemVariants}>
@@ -575,32 +501,31 @@ export default function SettingsPage() {
             <SectionHeader
               icon={Globe}
               title="Background & Work"
-              description="Helps the AI tailor examples to you"
+              description="Your native language sets what glosses are written in; your role sets what the AI's examples are about"
               color="text-sky-500"
             />
           </SectionRow>
           <SectionRow last>
+            {/* Two fields, not four. Country produced one weak prompt line
+                ("From: X") and Years of experience was never read by anything
+                at all — both are still collected once at registration, so
+                nothing is lost by not asking again here. The two that survive
+                each change the output in a way you can point at: native
+                language decides the gloss language, occupation is what the
+                system prompt means by "ground examples in the learner's job".
+                See learnerProfileBlock in lib/server/ai.ts and
+                buildRealtimeInstructions in lib/realtime/session-context.ts. */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <FieldLabel>Country</FieldLabel>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
-                >
-                  <option value="">Select country</option>
-                  {countries.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <FieldLabel>Native language</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("nativeLanguage")} />}>
+                  Native language
+                </FieldLabel>
                 <select
                   value={nativeLanguage}
-                  onChange={(e) => setNativeLanguage(e.target.value)}
+                  onChange={(e) => {
+                    setNativeLanguage(e.target.value)
+                    saveProfileField("nativeLanguage", { nativeLanguage: e.target.value })
+                  }}
                   className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
                 >
                   <option value="">Select language</option>
@@ -623,10 +548,15 @@ export default function SettingsPage() {
                 </select>
               </div>
               <div>
-                <FieldLabel>Occupation</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("occupation")} />}>
+                  Occupation
+                </FieldLabel>
                 <select
                   value={occupation}
-                  onChange={(e) => setOccupation(e.target.value)}
+                  onChange={(e) => {
+                    setOccupation(e.target.value)
+                    saveProfileField("occupation", { occupation: e.target.value })
+                  }}
                   className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
                 >
                   <option value="">Select role</option>
@@ -645,80 +575,6 @@ export default function SettingsPage() {
                     </option>
                   ))}
                 </select>
-              </div>
-              <div>
-                <FieldLabel>Years of experience</FieldLabel>
-                <Input
-                  type="number"
-                  min={0}
-                  max={50}
-                  value={yearsOfExperience}
-                  onChange={(e) => setYearsOfExperience(e.target.value)}
-                  placeholder="e.g. 3"
-                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
-                />
-              </div>
-            </div>
-          </SectionRow>
-        </SectionCard>
-      </motion.div>
-
-      {/* AI Model */}
-      <motion.div variants={itemVariants}>
-        <SectionCard>
-          <SectionRow>
-            <SectionHeader
-              icon={Cpu}
-              title="AI Model"
-              description="Powers your conversations and feedback"
-              color="text-sky-500"
-            />
-          </SectionRow>
-          <SectionRow last>
-            <div className="space-y-4">
-              <div className="grid gap-2 sm:grid-cols-3">
-                {models.map((model) => {
-                  const active = preferredModel === model.value && !customModel
-                  return (
-                    <button
-                      key={model.value}
-                      type="button"
-                      onClick={() => {
-                        setPreferredModel(model.value)
-                        setCustomModel("")
-                      }}
-                      className={cn(
-                        "group relative flex min-h-11 flex-col gap-0.5 rounded-lg border px-4 py-3 text-left transition-colors",
-                        active
-                          ? "border-sky-500/30 bg-sky-500/5 ring-1 ring-sky-500/20"
-                          : "border-border bg-accent/5 hover:border-sky-500/20 hover:bg-background",
-                      )}
-                    >
-                      <p
-                        className={cn(
-                          "text-sm font-semibold",
-                          active ? "text-foreground" : "text-muted-foreground",
-                        )}
-                      >
-                        {model.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{model.desc}</p>
-                      {active && (
-                        <div className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]" />
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div>
-                <FieldLabel>Custom model</FieldLabel>
-                <Input
-                  value={customModel}
-                  onChange={(e) => setCustomModel(e.target.value)}
-                  placeholder="e.g. gpt-4-turbo"
-                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-mono text-xs transition-colors focus:bg-background"
-                />
               </div>
             </div>
           </SectionRow>
@@ -851,29 +707,6 @@ export default function SettingsPage() {
             )}
           </SectionRow>
 
-          {/* Weather alerts */}
-          <SectionRow>
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-sky-500/10 text-sky-500">
-                  <CloudRain size={14} strokeWidth={2} />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-foreground">Weather alerts</p>
-                  <p className="text-xs text-muted-foreground">
-                    Rain, heat, cold, or storms in Yeongdeungpo-gu, Seoul
-                  </p>
-                </div>
-              </div>
-              <Switch
-                checked={weatherAlertsEnabled}
-                disabled={savingWeatherAlerts}
-                onCheckedChange={(v) => saveWeatherAlerts(v)}
-                aria-label="Toggle weather alerts"
-              />
-            </div>
-          </SectionRow>
-
           {/* Holiday alerts */}
           <SectionRow>
             <div className="flex items-center justify-between gap-4">
@@ -944,45 +777,6 @@ export default function SettingsPage() {
       <motion.div variants={itemVariants} className="pt-2 text-center">
         <p className="text-xs text-muted-foreground">© 2026 Hen Heang · FullStack Developer</p>
       </motion.div>
-
-      {/* Sticky save bar — only intrudes once there's something to save */}
-      <AnimatePresence>
-        {(isDirty || saving || saved) && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 mx-auto flex w-full max-w-3xl items-center gap-3 rounded-lg border border-border bg-card/95 p-3 shadow-md backdrop-blur-xl dark:bg-slate-900/90 lg:bottom-4"
-          >
-            <p
-              className={cn(
-                "flex-1 truncate px-2 text-xs font-medium",
-                error ? "text-destructive" : "text-muted-foreground",
-              )}
-            >
-              {error || "You have unsaved changes."}
-            </p>
-            <Button
-              type="submit"
-              disabled={saving || !isDirty}
-              className="h-11 shrink-0 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-60"
-            >
-              {saving ? (
-                <>
-                  <Loader2 size={16} className="mr-2 animate-spin" /> Saving…
-                </>
-              ) : saved ? (
-                <>
-                  <Check size={16} className="mr-2" strokeWidth={3} /> Saved
-                </>
-              ) : (
-                "Save changes"
-              )}
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.form>
+    </motion.div>
   )
 }

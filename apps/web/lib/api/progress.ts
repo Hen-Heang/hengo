@@ -9,7 +9,7 @@ import type {
 import type { LearningMetric } from "@/lib/goals"
 import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
-import { getDailyGoalMinutes } from "@/lib/onboarding-store"
+import { DEFAULT_DAILY_GOAL_MINUTES } from "@/lib/korean-coach/schemas"
 import { longestStreak } from "@/lib/habits"
 
 // Dashboard / streak / achievements, computed client-side from Supabase counts
@@ -324,6 +324,7 @@ export const progressApi = {
       dueVocab,
       dueCorrections,
       dates,
+      coachPrefs,
     ] = await Promise.all([
       supabase
         .from("kori_activity_log")
@@ -347,6 +348,12 @@ export const progressApi = {
         .select("id", { count: "exact", head: true })
         .lte("next_review_date", now.toISOString()),
       getActivityDates(),
+      // The single daily practice goal (/korean-coach/preferences) — the same
+      // number that budgets today's mission on /home.
+      supabase
+        .from("kori_korean_coach_preferences")
+        .select("daily_practice_goal_minutes")
+        .maybeSingle(),
     ])
 
     const weekRows = activityWeek.data ?? []
@@ -370,7 +377,8 @@ export const progressApi = {
       })
     }
 
-    const DAILY_GOAL_MINUTES = getDailyGoalMinutes()
+    const DAILY_GOAL_MINUTES =
+      coachPrefs.data?.daily_practice_goal_minutes ?? DEFAULT_DAILY_GOAL_MINUTES
     const stats: DashboardStats = {
       streakDays: computeStreak(dates).streakDays,
       weeklyMinutes,

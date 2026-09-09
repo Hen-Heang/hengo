@@ -1,12 +1,13 @@
 "use client"
 
-import { useId, useState } from "react"
+import { useId, useMemo, useState } from "react"
 import { motion, AnimatePresence } from "motion/react"
 import { BrainCircuit, ChevronDown, FolderOpen, Plus, X } from "lucide-react"
 import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { getApiErrorMessage } from "@/lib/api"
+import { computeVocabStats } from "@/lib/vocab-review"
 import type { VocabItem } from "@/lib/types"
 import { VocabCard } from "@/components/vocab/VocabCard"
 import { SpeakButton } from "@/components/ui/SpeakButton"
@@ -170,15 +171,19 @@ export function VocabDeck({
   const [expandedId, setExpandedId] = useState<string | null>(null)
   // Snapshot of "now" for due-date checks — taken once on mount so render stays
   // pure; due counts refresh with the next data change/navigation, which is fine.
-  const [now] = useState(() => Date.now())
+  const [now] = useState(() => new Date())
   const isOpen = open || forceOpen
 
-  const avgMastery = items.length
-    ? Math.round(items.reduce((sum, w) => sum + w.mastery, 0) / items.length)
-    : 0
-  const dueCount = items.filter(
-    (w) => w.nextReview && new Date(w.nextReview).getTime() <= now,
-  ).length
+  // Same aggregation the page hero and the Deck health panel run, scoped to
+  // this deck — so a deck's "N due" badge and the page's "Due now" are the
+  // same question asked of the same predicate, not two hand-rolled loops.
+  // (The old inline version parsed nextReview with `new Date(...)`, which
+  // reads a malformed value as NaN and therefore never due, where isDue's
+  // string compare would call it due.)
+  const { averageMastery: avgMastery, due: dueCount } = useMemo(
+    () => computeVocabStats(items, now),
+    [items, now],
+  )
   // A taste of what's inside, so closed grid cards aren't just a name + number.
   const preview = items
     .slice(0, 3)

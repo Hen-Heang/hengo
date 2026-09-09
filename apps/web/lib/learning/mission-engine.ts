@@ -4,6 +4,7 @@ import {
   skillsForScenarioCategory,
   type SkillCode,
 } from "@/lib/learning/skills"
+import { KOREAN_LEARNING_GOAL_LABEL, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 
 // Deterministic daily-mission selection. No Math.random anywhere — the same
 // MissionContext always produces the same DailyMissionPlan, which is what
@@ -55,7 +56,8 @@ export interface ListeningCandidate {
 export interface MissionContext {
   dateKey: string
   koreanLevel: string
-  learningGoal: string | null
+  /** The single goal setting (kori_korean_coach_preferences.main_goal). */
+  learningGoal: KoreanLearningGoal | null
   availableMinutes: number
   dueVocabulary: DueVocabularyItem[]
   dueVocabularyCount: number
@@ -279,7 +281,7 @@ function buildGoalCandidate(
     return buildScenarioCandidate(
       ctx,
       0.2,
-      `This ties back to your goal: "${ctx.learningGoal}".`,
+      `This ties back to your goal: "${KOREAN_LEARNING_GOAL_LABEL[ctx.learningGoal]}".`,
       [],
     )
   }

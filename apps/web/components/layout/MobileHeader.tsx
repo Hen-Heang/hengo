@@ -2,16 +2,10 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { ArrowLeft, MoreHorizontal, Search, Settings } from "lucide-react"
+import { ArrowLeft, Search, Settings } from "lucide-react"
 
 import { NotificationBell } from "@/components/notifications/NotificationBell"
 import { ThemeToggle } from "@/components/theme-toggle"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   allNavItems,
   getActiveNavItem,
@@ -31,11 +25,15 @@ export function isDetailRoute(pathname: string): boolean {
 }
 
 /**
- * Contextual mobile header. Root pages get a title plus a row of actions;
- * detail pages get `Back | Title | ⋯`. Profile and level stay off this bar,
- * but Settings has its own icon here on root pages — V2's bottom bar has no
- * "More" sheet to hold it anymore (see `MobileBottomNav`), and detail routes
- * are the only other place it's reachable (the "More actions" menu below).
+ * Contextual mobile header. Root pages get a title plus a full row of
+ * actions; detail pages get `Back | Title | Search Settings` — the same two
+ * affordances, rendered directly rather than folded into a "⋯" menu. The menu
+ * held exactly Search and Settings, and on a settings sub-page one of the two
+ * was a no-op ("Settings", from inside Settings); one tap to reach either is
+ * strictly better than two everywhere else. Profile and level stay off this
+ * bar, but Settings keeps an icon on both variants — V2's bottom bar has no
+ * "More" sheet to hold it anymore (see `MobileBottomNav`), so this header is
+ * the only chrome that offers it.
  * V2 Phase 7: the "Quick capture" action (Inbox) was dropped from both the
  * root action row and the detail-page menu — Inbox is on the hide list, and a
  * persistent header button was the last unconditional promotion of it left in
@@ -78,37 +76,18 @@ export function MobileHeader({
         {title}
       </h1>
 
-      {detail ? (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button type="button" aria-label="More actions" className={ACTION_BUTTON}>
-              <MoreHorizontal size={20} />
-            </button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="min-w-48 rounded-xl">
-            <DropdownMenuItem onClick={onOpenSearch} className="rounded-lg">
-              <Search size={16} /> Search
-            </DropdownMenuItem>
-            <DropdownMenuItem asChild className="rounded-lg">
-              <Link href="/settings">
-                <Settings size={16} /> Settings
-              </Link>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      ) : (
+      <button type="button" onClick={onOpenSearch} aria-label="Search" className={ACTION_BUTTON}>
+        <Search size={20} />
+      </button>
+      <Link href="/settings" aria-label="Settings" className={ACTION_BUTTON}>
+        <Settings size={20} />
+      </Link>
+
+      {/* Theme and notifications stay off detail pages: five 44px targets
+          don't fit beside a back button and a title on a 390px screen, and
+          both are one tap away on any root page. */}
+      {!detail && (
         <>
-          <button
-            type="button"
-            onClick={onOpenSearch}
-            aria-label="Search"
-            className={ACTION_BUTTON}
-          >
-            <Search size={20} />
-          </button>
-          <Link href="/settings" aria-label="Settings" className={ACTION_BUTTON}>
-            <Settings size={20} />
-          </Link>
           <ThemeToggle className="h-11 w-11 rounded-xl border-border bg-card shadow-sm" />
           <NotificationBell />
         </>

@@ -169,16 +169,24 @@ describe("sortVocab", () => {
   })
 })
 
+const NOW = new Date("2026-09-09T12:00:00.000Z")
+const PAST = "2026-09-08T12:00:00.000Z"
+const FUTURE = "2026-09-10T12:00:00.000Z"
+
 describe("computeVocabStats", () => {
   it("buckets words and averages mastery", () => {
-    const stats = computeVocabStats([
-      word({ mastery: 90 }),
-      word({ mastery: 80 }),
-      word({ mastery: 60 }),
-      word({ mastery: 10 }),
-    ])
+    const stats = computeVocabStats(
+      [
+        word({ mastery: 90, nextReview: FUTURE }),
+        word({ mastery: 80, nextReview: FUTURE }),
+        word({ mastery: 60, nextReview: PAST }),
+        word({ mastery: 10, nextReview: PAST }),
+      ],
+      NOW,
+    )
     expect(stats).toEqual({
       total: 4,
+      due: 2,
       weak: 1,
       learning: 1,
       mastered: 2,
@@ -187,12 +195,71 @@ describe("computeVocabStats", () => {
   })
 
   it("returns zeroed stats for an empty deck", () => {
-    expect(computeVocabStats([])).toEqual({
+    expect(computeVocabStats([], NOW)).toEqual({
       total: 0,
+      due: 0,
       weak: 0,
       learning: 0,
       mastered: 0,
       averageMastery: 0,
     })
+  })
+
+  it("counts a word due at exactly now", () => {
+    const stats = computeVocabStats([word({ nextReview: NOW.toISOString() })], NOW)
+    expect(stats.due).toBe(1)
+  })
+})
+
+// The /vocab audit found the page reporting 1,107 words due out of 1,000
+// saved, and a Learning bucket permanently stuck at 0 next to a full-width
+// Weak bar. Neither state can be produced by this module — due is counted
+// from the same array as total, and the bands partition 0-100 — so these
+// pin that down before someone reintroduces a second, divergent computation.
+describe("computeVocabStats invariants", () => {
+  // Deliberately lumpy: every band, both sides of both boundaries, due and
+  // not-due mixed through, plus the malformed nextReview normalizeWord
+  // produces for a row with no date.
+  const collection: VocabItem[] = [
+    word({ id: "a", mastery: 0, nextReview: PAST }),
+    word({ id: "b", mastery: 49, nextReview: FUTURE }),
+    word({ id: "c", mastery: 50, nextReview: PAST }),
+    word({ id: "d", mastery: 79, nextReview: FUTURE }),
+    word({ id: "e", mastery: 80, nextReview: PAST }),
+    word({ id: "f", mastery: 100, nextReview: FUTURE }),
+    word({ id: "g", mastery: 12, nextReview: "-" }),
+  ]
+
+  it("never reports more due than saved", () => {
+    const stats = computeVocabStats(collection, NOW)
+    expect(stats.due).toBeLessThanOrEqual(stats.total)
+  })
+
+  it("partitions the collection — the three buckets sum to the total", () => {
+    const stats = computeVocabStats(collection, NOW)
+    expect(stats.weak + stats.learning + stats.mastered).toBe(stats.total)
+    expect(stats.total).toBe(collection.length)
+  })
+
+  it("holds both invariants for every prefix of the collection", () => {
+    for (let n = 0; n <= collection.length; n++) {
+      const stats = computeVocabStats(collection.slice(0, n), NOW)
+      expect(stats.due).toBeLessThanOrEqual(stats.total)
+      expect(stats.weak + stats.learning + stats.mastered).toBe(stats.total)
+    }
+  })
+
+  it("makes Learning reachable — 50 is the floor, 80 the ceiling", () => {
+    expect(computeVocabStats([word({ mastery: 49 })], NOW).learning).toBe(0)
+    expect(computeVocabStats([word({ mastery: 50 })], NOW).learning).toBe(1)
+    expect(computeVocabStats([word({ mastery: 79 })], NOW).learning).toBe(1)
+    expect(computeVocabStats([word({ mastery: 80 })], NOW).learning).toBe(0)
+  })
+
+  it("agrees with the filter chips, so a bucket count matches what clicking it lists", () => {
+    const stats = computeVocabStats(collection, NOW)
+    expect(filterVocab(collection, "", "weak")).toHaveLength(stats.weak)
+    expect(filterVocab(collection, "", "learning")).toHaveLength(stats.learning)
+    expect(filterVocab(collection, "", "mastered")).toHaveLength(stats.mastered)
   })
 })

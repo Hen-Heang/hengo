@@ -11,6 +11,7 @@ import {
   SUPABASE_URL,
 } from "@/lib/supabase"
 import { DEFAULT_ALLOWED_MODEL, resolveAllowedModel } from "@/lib/server/models"
+import { KOREAN_LEARNING_GOAL_PROMPT, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 import { checkRateLimit, recordUsage, RATE_LIMIT_BUCKETS } from "@/lib/server/ai-limits"
 
 // Thrown by a buildPrompt function to signal "this is bad input" (400)
@@ -19,9 +20,9 @@ export class InputValidationError extends Error {}
 
 export const DEFAULT_MODEL = DEFAULT_ALLOWED_MODEL
 
-// Requested model names come from client-controlled input (profile
-// preference, request body) — always resolve through the allowlist instead
-// of passing an arbitrary string into the OpenAI model factory.
+// Call with no argument for the configured default (that is every caller
+// today). The optional name still resolves through the allowlist so an
+// arbitrary string can never reach the OpenAI model factory.
 export function aiModel(name?: string | null) {
   return openai(resolveAllowedModel(name))
 }
@@ -69,7 +70,10 @@ export const FORMALITY_LABELS = "반말 (casual), 존댓말 (polite), or 격식�
 
 export interface LearnerProfile {
   occupation?: string | null
-  learningGoal?: string | null
+  /** The single goal setting, from kori_korean_coach_preferences.main_goal
+   *  (/korean-coach/preferences). kori_profiles.learning_goal used to feed
+   *  this and no longer does — see the 2026-09-09 backfill migration. */
+  mainGoal?: KoreanLearningGoal | null
   nativeLanguage?: string | null
   country?: string | null
 }
@@ -81,7 +85,9 @@ export function learnerProfileBlock(profile: LearnerProfile | null | undefined):
   if (!profile) return ""
   const lines: string[] = []
   if (profile.occupation) lines.push(`- Job: ${profile.occupation}`)
-  if (profile.learningGoal) lines.push(`- Main learning goal: ${profile.learningGoal}`)
+  if (profile.mainGoal) {
+    lines.push(`- Main learning goal: ${KOREAN_LEARNING_GOAL_PROMPT[profile.mainGoal]}`)
+  }
   if (profile.nativeLanguage) {
     lines.push(
       `- Native language: ${profile.nativeLanguage} — for hard words you may add a short gloss in ${profile.nativeLanguage} in addition to English.`,

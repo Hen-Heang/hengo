@@ -8,6 +8,9 @@ import { toast } from "sonner"
 
 import { BackLink } from "@/components/ui/back-link"
 import { GoogleCalendarIntegrationCard } from "@/components/settings/GoogleCalendarIntegrationCard"
+import { Skeleton } from "@/components/ui/skeleton"
+import { useGoogleCalendarIntegration } from "@/hooks/useGoogleCalendarIntegration"
+import { isCalendarIntegrationsEnabled } from "@/lib/feature-flags"
 import { containerVariants, itemVariants } from "@/lib/motion"
 
 // Handles the redirect back from the Google Calendar OAuth callback
@@ -37,6 +40,13 @@ function ConnectionResultHandler() {
 }
 
 export default function IntegrationsSettingsPage() {
+  // Hidden until Plan is navigable (lib/feature-flags.ts). Someone who
+  // connected while the section was live keeps the full card, so their only
+  // route to "Disconnect" never disappears behind a flag flip.
+  const { connected, isLoading } = useGoogleCalendarIntegration()
+  const enabled = isCalendarIntegrationsEnabled()
+  const showCard = enabled || connected
+
   return (
     <motion.div
       initial="hidden"
@@ -49,15 +59,29 @@ export default function IntegrationsSettingsPage() {
       </Suspense>
 
       <motion.div variants={itemVariants}>
-        <BackLink href="/settings" label="Settings" />
+        <BackLink href="/settings" label="Settings" desktopOnly />
         <h1 className="mt-2 text-xl font-bold text-foreground">Integrations</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          Connect external calendars and services to Hengo.
+          {showCard
+            ? "Connect external calendars and services to Hengo."
+            : "Calendar connections are not available yet."}
         </p>
       </motion.div>
 
       <motion.div variants={itemVariants}>
-        <GoogleCalendarIntegrationCard />
+        {isLoading ? (
+          <Skeleton className="h-44 w-full rounded-lg" />
+        ) : showCard ? (
+          <GoogleCalendarIntegrationCard />
+        ) : (
+          <div className="rounded-lg border border-dashed border-border bg-card/50 px-6 py-12 text-center">
+            <p className="text-sm font-semibold text-foreground">Not available yet</p>
+            <p className="mx-auto mt-1 max-w-sm text-sm text-muted-foreground">
+              Connecting a calendar is only useful once you can see your tasks and schedule
+              alongside it. This comes back when the Plan section ships.
+            </p>
+          </div>
+        )}
       </motion.div>
     </motion.div>
   )

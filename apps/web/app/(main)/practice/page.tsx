@@ -18,6 +18,7 @@ import { useVocab } from "@/hooks/useVocab"
 import {
   chatApi,
   getApiErrorMessage,
+  nextReviewBatchSize,
   scenarioApi,
   scenarioSessionsApi,
   type DailyMission,
@@ -44,10 +45,16 @@ export default function PracticePage() {
   useSessionTimer("practice")
   const { mission, loading, error, refreshMission } = useDailyMission()
   const { streakDays } = useStreak()
+  // Same cache VocabPreview below already reads — the completion screen needs
+  // the backlog size so it can offer another batch instead of dead-ending.
+  const { dueCount, loading: vocabLoading } = useVocab()
 
   const items = mission?.items ?? []
   const completedCount = items.filter((i) => i.status === "completed").length
-  const allDone = items.length > 0 && completedCount === items.length
+  // A mission with no items has nothing to step through — treat it like a
+  // finished one so the learner gets the caught-up screen (and any extra reps
+  // that are waiting) rather than an empty progress bar.
+  const allDone = items.length === 0 || completedCount === items.length
 
   const [viewIndex, setViewIndex] = useState<number | null>(null)
   const prevStatusRef = useRef<Record<string, MissionItem["status"]>>({})
@@ -104,7 +111,12 @@ export default function PracticePage() {
   if (allDone) {
     return (
       <div className="mx-auto max-w-2xl px-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:px-6 sm:pt-6">
-        <CompletionSummary mission={mission} streakDays={streakDays} />
+        <CompletionSummary
+          mission={mission}
+          streakDays={streakDays}
+          dueCount={dueCount}
+          dueLoading={vocabLoading}
+        />
       </div>
     )
   }
@@ -304,10 +316,15 @@ function DailyPhrasePreview() {
 function CompletionSummary({
   mission,
   streakDays,
+  dueCount,
+  dueLoading,
 }: {
   mission: DailyMission
   streakDays: number | null
+  dueCount: number
+  dueLoading: boolean
 }) {
+  const nextBatch = nextReviewBatchSize(dueCount)
   return (
     <motion.div
       initial="hidden"
@@ -320,22 +337,26 @@ function CompletionSummary({
           <PartyPopper size={22} strokeWidth={2.2} />
         </span>
         <div>
-          <h1 className="text-lg font-bold text-foreground">Nice work!</h1>
-          <p className="text-sm text-muted-foreground">Today&apos;s practice is complete.</p>
+          <h1 className="text-lg font-bold text-foreground">Daily goal complete!</h1>
+          <p className="text-sm text-muted-foreground">
+            You finished everything today&apos;s plan asked for.
+          </p>
         </div>
       </motion.div>
 
-      <motion.ul
-        variants={itemVariants}
-        className="space-y-2 rounded-3xl border border-border bg-card p-5 dark:bg-slate-900/40"
-      >
-        {mission.items.map((item) => (
-          <li key={item.id} className="flex items-center gap-2 text-sm text-foreground">
-            <CheckCircle2 size={15} strokeWidth={2.5} className="shrink-0 text-emerald-500" />
-            {missionItemSummary(item)}
-          </li>
-        ))}
-      </motion.ul>
+      {mission.items.length > 0 && (
+        <motion.ul
+          variants={itemVariants}
+          className="space-y-2 rounded-3xl border border-border bg-card p-5 dark:bg-slate-900/40"
+        >
+          {mission.items.map((item) => (
+            <li key={item.id} className="flex items-center gap-2 text-sm text-foreground">
+              <CheckCircle2 size={15} strokeWidth={2.5} className="shrink-0 text-emerald-500" />
+              {missionItemSummary(item)}
+            </li>
+          ))}
+        </motion.ul>
+      )}
 
       {mission.focusSkillCodes.length > 0 && (
         <motion.p variants={itemVariants} className="px-1 text-xs text-muted-foreground">
@@ -353,12 +374,50 @@ function CompletionSummary({
         </motion.p>
       )}
 
+      {/* The daily plan is done, but the SRS backlog usually isn't — so the
+          screen offers the next batch instead of ending the session. Extra
+          reps are framed as optional: the streak and the daily goal are
+          already banked either way. */}
       <motion.div variants={itemVariants}>
+        {dueLoading ? (
+          <Skeleton className="h-44 w-full rounded-3xl" />
+        ) : nextBatch > 0 ? (
+          <div className="rounded-3xl border border-violet-500/20 bg-violet-500/[0.04] p-5 dark:bg-violet-500/[0.07]">
+            <p className="text-sm font-bold text-foreground">Want to keep going?</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              {dueCount.toLocaleString()} {dueCount === 1 ? "word is" : "words are"} still due for
+              review. Anything past here is optional — today&apos;s goal is already met.
+            </p>
+            <Link
+              href="/vocab?review=session"
+              className="mt-4 flex h-12 w-full items-center justify-center rounded-xl bg-violet-600 text-sm font-bold text-white shadow-sm shadow-violet-600/20 transition-colors hover:bg-violet-500 active:scale-[0.985] dark:bg-violet-500 dark:hover:bg-violet-400"
+            >
+              Review {nextBatch} more
+            </Link>
+            <Link
+              href="/vocab?review=setup"
+              className="mt-2 flex h-12 w-full items-center justify-center rounded-xl border border-border bg-background text-sm font-bold text-foreground transition-colors hover:bg-accent"
+            >
+              Choose a longer session
+            </Link>
+          </div>
+        ) : (
+          <div className="rounded-3xl border border-border bg-card p-5 dark:bg-slate-900/40">
+            <p className="text-sm font-bold text-foreground">You&apos;re all caught up</p>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              Nothing else is due for review right now. Your next words come back around as they
+              come due.
+            </p>
+          </div>
+        )}
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="pb-4 text-center">
         <Link
           href="/home"
-          className="flex h-12 w-full items-center justify-center rounded-xl border border-border bg-background text-sm font-bold text-foreground transition-colors hover:bg-accent"
+          className="inline-flex min-h-11 items-center px-3 text-sm font-semibold text-muted-foreground underline-offset-4 transition-colors hover:text-foreground hover:underline"
         >
-          Done
+          Finish for today
         </Link>
       </motion.div>
     </motion.div>

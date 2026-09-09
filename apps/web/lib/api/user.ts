@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase"
 import { getUserEmail } from "@/lib/auth-store"
-import { resolveAllowedModel } from "@/lib/server/models"
 import { recommendLevel, type CategoryEvidence } from "@/lib/learning/level-engine"
 import { skillsApi } from "./skills"
 
@@ -24,10 +23,8 @@ type ProfileRow = {
   occupation: string | null
   years_of_experience: number | null
   learning_goal: string | null
-  preferred_model: string | null
   study_reminders_enabled: boolean
   study_reminder_hour: number | null
-  weather_alerts_enabled: boolean | null
   holiday_alerts_enabled: boolean | null
   avatar_url: string | null
 }
@@ -43,10 +40,8 @@ function toCamel(row: ProfileRow | null) {
     occupation: row?.occupation ?? null,
     yearsOfExperience: row?.years_of_experience ?? null,
     learningGoal: row?.learning_goal ?? null,
-    preferredModel: row?.preferred_model ?? null,
     studyRemindersEnabled: row?.study_reminders_enabled ?? false,
     studyReminderHour: row?.study_reminder_hour ?? 20,
-    weatherAlertsEnabled: row?.weather_alerts_enabled ?? false,
     holidayAlertsEnabled: row?.holiday_alerts_enabled ?? false,
     hasProfileImage: Boolean(row?.avatar_url),
     avatarUrl: row?.avatar_url ?? null,
@@ -123,26 +118,10 @@ export const userApi = {
     if (error) throw error
   },
 
-  updatePreferredModel: async (id: string, preferredModel: string) => {
-    const { error } = await supabase
-      .from("kori_profiles")
-      .update({ preferred_model: resolveAllowedModel(preferredModel) })
-      .eq("id", id)
-    if (error) throw error
-  },
-
   updateStudyReminders: async (id: string, enabled: boolean, hour: number) => {
     const { error } = await supabase
       .from("kori_profiles")
       .update({ study_reminders_enabled: enabled, study_reminder_hour: hour })
-      .eq("id", id)
-    if (error) throw error
-  },
-
-  updateWeatherAlerts: async (id: string, enabled: boolean) => {
-    const { error } = await supabase
-      .from("kori_profiles")
-      .update({ weather_alerts_enabled: enabled })
       .eq("id", id)
     if (error) throw error
   },

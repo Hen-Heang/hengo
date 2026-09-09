@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { ArrowLeft, Save, Settings2, ShieldCheck, Trash2 } from "lucide-react"
+import { ArrowLeft, Settings2, ShieldCheck, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import {
@@ -19,7 +19,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { ErrorBanner } from "@/components/ui/error-banner"
+import { FieldSaveStatus } from "@/components/ui/field-save-status"
 import { Skeleton } from "@/components/ui/skeleton"
+import { useFieldAutosave } from "@/hooks/useFieldAutosave"
 import { getApiErrorMessage, koreanCoachApi } from "@/lib/api"
 import {
   koreanCoachPreferencesSchema,
@@ -32,9 +34,9 @@ const selectClass =
 
 export default function KoreanCoachPreferencesPage() {
   useSessionTimer("korean_coach")
+  const { saveField, stateOf } = useFieldAutosave()
   const [preferences, setPreferences] = useState<KoreanCoachPreferences | null>(null)
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [error, setError] = useState("")
 
@@ -56,30 +58,24 @@ export default function KoreanCoachPreferencesPage() {
     }
   }, [])
 
+  // Each control saves itself and confirms next to itself — the same contract
+  // /settings uses. savePreferences writes the whole row, so the changed value
+  // is merged into the current one here rather than read back from state,
+  // which this render's closure has not seen yet.
   function update<K extends keyof KoreanCoachPreferences>(
     key: K,
     value: KoreanCoachPreferences[K],
   ) {
-    setPreferences((current) => (current ? { ...current, [key]: value } : current))
-  }
-
-  async function save() {
-    if (!preferences) return
-    const parsed = koreanCoachPreferencesSchema.safeParse(preferences)
+    const next = preferences ? { ...preferences, [key]: value } : null
+    setPreferences(next)
+    if (!next) return
+    const parsed = koreanCoachPreferencesSchema.safeParse(next)
     if (!parsed.success) {
       setError("Check the preference values and try again.")
       return
     }
-    setSaving(true)
     setError("")
-    try {
-      await koreanCoachApi.savePreferences(parsed.data)
-      toast.success("Korean Coach preferences saved")
-    } catch (cause) {
-      setError(getApiErrorMessage(cause, "Preferences could not be saved."))
-    } finally {
-      setSaving(false)
-    }
+    saveField(key, () => koreanCoachApi.savePreferences(parsed.data))
   }
 
   async function deleteHistory() {
@@ -140,7 +136,10 @@ export default function KoreanCoachPreferencesPage() {
             </CardHeader>
             <CardContent className="grid gap-5 sm:grid-cols-2">
               <label className="space-y-2 text-sm font-medium">
-                Korean level
+                <span className="flex items-center justify-between gap-2">
+                  Korean level
+                  <FieldSaveStatus state={stateOf("level")} />
+                </span>
                 <select
                   className={selectClass}
                   value={preferences.level}
@@ -155,7 +154,10 @@ export default function KoreanCoachPreferencesPage() {
               </label>
 
               <label className="space-y-2 text-sm font-medium">
-                Main goal
+                <span className="flex items-center justify-between gap-2">
+                  Main goal
+                  <FieldSaveStatus state={stateOf("mainGoal")} />
+                </span>
                 <select
                   className={selectClass}
                   value={preferences.mainGoal}
@@ -171,7 +173,10 @@ export default function KoreanCoachPreferencesPage() {
               </label>
 
               <label className="space-y-2 text-sm font-medium">
-                Romanization
+                <span className="flex items-center justify-between gap-2">
+                  Romanization
+                  <FieldSaveStatus state={stateOf("romanizationMode")} />
+                </span>
                 <select
                   className={selectClass}
                   value={preferences.romanizationMode}
@@ -189,7 +194,10 @@ export default function KoreanCoachPreferencesPage() {
               </label>
 
               <label className="space-y-2 text-sm font-medium">
-                Correction detail
+                <span className="flex items-center justify-between gap-2">
+                  Correction detail
+                  <FieldSaveStatus state={stateOf("correctionStrictness")} />
+                </span>
                 <select
                   className={selectClass}
                   value={preferences.correctionStrictness}
@@ -207,7 +215,10 @@ export default function KoreanCoachPreferencesPage() {
               </label>
 
               <label className="space-y-2 text-sm font-medium">
-                Default speech speed
+                <span className="flex items-center justify-between gap-2">
+                  Default speech speed
+                  <FieldSaveStatus state={stateOf("defaultSpeechSpeed")} />
+                </span>
                 <select
                   className={selectClass}
                   value={String(preferences.defaultSpeechSpeed)}
@@ -224,25 +235,16 @@ export default function KoreanCoachPreferencesPage() {
                 </select>
               </label>
 
+              {/* One minutes control, not two. "Preferred session length"
+                  sat right beside this one, also in minutes, with a name a
+                  learner could not tell apart — and nothing read it. This is
+                  the number that actually drives the daily plan: it budgets
+                  today's mission and fills the Daily Goal ring. */}
               <label className="space-y-2 text-sm font-medium">
-                Preferred session length
-                <select
-                  className={selectClass}
-                  value={String(preferences.preferredPracticeDurationMinutes)}
-                  onChange={(event) =>
-                    update("preferredPracticeDurationMinutes", Number(event.target.value))
-                  }
-                >
-                  {[5, 10, 15, 20, 30].map((minutes) => (
-                    <option key={minutes} value={minutes}>
-                      {minutes} minutes
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="space-y-2 text-sm font-medium sm:col-span-2">
-                Daily practice goal
+                <span className="flex items-center justify-between gap-2">
+                  Daily practice goal
+                  <FieldSaveStatus state={stateOf("dailyPracticeGoalMinutes")} />
+                </span>
                 <select
                   className={selectClass}
                   value={String(preferences.dailyPracticeGoalMinutes)}
@@ -302,13 +304,6 @@ export default function KoreanCoachPreferencesPage() {
               </AlertDialog>
             </CardContent>
           </Card>
-
-          <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+0.75rem)] flex justify-end">
-            <Button type="button" size="lg" onClick={save} disabled={saving}>
-              <Save aria-hidden="true" />
-              {saving ? "Saving…" : "Save preferences"}
-            </Button>
-          </div>
         </>
       )}
     </div>
