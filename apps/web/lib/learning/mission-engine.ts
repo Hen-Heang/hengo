@@ -4,10 +4,7 @@ import {
   skillsForScenarioCategory,
   type SkillCode,
 } from "@/lib/learning/skills"
-import {
-  KOREAN_LEARNING_GOAL_LABEL,
-  type KoreanLearningGoal,
-} from "@/lib/korean-coach/schemas"
+import { KOREAN_LEARNING_GOAL_LABEL, type KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 
 // Deterministic daily-mission selection. No Math.random anywhere — the same
 // MissionContext always produces the same DailyMissionPlan, which is what

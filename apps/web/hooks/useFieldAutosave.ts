@@ -88,10 +88,7 @@ export function useFieldAutosave() {
     [run],
   )
 
-  const stateOf = useCallback(
-    (field: string): FieldSaveState => states[field] ?? "idle",
-    [states],
-  )
+  const stateOf = useCallback((field: string): FieldSaveState => states[field] ?? "idle", [states])
 
   return { saveField, stateOf }
 }

@@ -14,7 +14,13 @@ import { cn } from "@/lib/utils"
  * `aria-live="polite"` rather than "assertive": a save confirmation should
  * reach a screen reader, but never interrupt what it is already reading.
  */
-export function FieldSaveStatus({ state, className }: { state: FieldSaveState; className?: string }) {
+export function FieldSaveStatus({
+  state,
+  className,
+}: {
+  state: FieldSaveState
+  className?: string
+}) {
   return (
     <span
       aria-live="polite"

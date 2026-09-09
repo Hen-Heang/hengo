@@ -117,12 +117,7 @@ export const koreanCoachPreferencesSchema = z.object({
   explanationLanguage: z.literal("English").default("English"),
   romanizationMode: romanizationModeSchema.default("on-request"),
   defaultSpeechSpeed: speechSpeedSchema.default(0.75),
-  dailyPracticeGoalMinutes: z
-    .number()
-    .int()
-    .min(5)
-    .max(120)
-    .default(DEFAULT_DAILY_GOAL_MINUTES),
+  dailyPracticeGoalMinutes: z.number().int().min(5).max(120).default(DEFAULT_DAILY_GOAL_MINUTES),
   correctionStrictness: correctionStrictnessSchema.default("balanced"),
 })
 
