@@ -289,25 +289,29 @@ describe("MobileHeader", () => {
     expect(screen.getByRole("button", { name: "Notifications (3 unread)" })).toBeTruthy()
   })
 
-  it("switches to Back | Title | More on a detail route", () => {
+  it("switches to Back | Title | Search Settings on a detail route", () => {
     render(
       <MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />,
     )
     expect(screen.getByRole("button", { name: "Go back" })).toBeTruthy()
-    expect(screen.getByRole("button", { name: "More actions" })).toBeTruthy()
+    expect(screen.getByRole("button", { name: "Search" })).toBeTruthy()
+    expect(screen.getByRole("link", { name: "Settings" }).getAttribute("href")).toBe("/settings")
     expect(screen.queryByRole("button", { name: /notifications/i })).toBeNull()
   })
 
-  it("drops Quick Capture (Inbox) from the detail-page top-bar menu too", async () => {
+  it("has no overflow menu on a detail route — Search and Settings are direct", () => {
+    const onOpenSearch = vi.fn()
+    render(<MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={onOpenSearch} />)
+    expect(screen.queryByRole("button", { name: "More actions" })).toBeNull()
+    fireEvent.click(screen.getByRole("button", { name: "Search" }))
+    expect(onOpenSearch).toHaveBeenCalledOnce()
+  })
+
+  it("still keeps Quick Capture (Inbox) off the detail-page bar", () => {
     render(
       <MobileHeader pathname="/goals/abc-123" searchParams={undefined} onOpenSearch={vi.fn()} />,
     )
-    fireEvent.pointerDown(screen.getByRole("button", { name: "More actions" }), {
-      button: 0,
-      ctrlKey: false,
-    })
-    expect(await screen.findByRole("menuitem", { name: "Search" })).toBeTruthy()
-    expect(screen.queryByRole("menuitem", { name: "Quick capture" })).toBeNull()
+    expect(screen.queryByRole("button", { name: "Quick capture" })).toBeNull()
   })
 
   it("goes back through the router", () => {
