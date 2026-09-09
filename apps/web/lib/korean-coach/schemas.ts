@@ -10,6 +10,23 @@ export const koreanLearningGoalSchema = z.enum([
   "presentation",
   "general",
 ])
+
+/** Prose for each goal, for the one place the slug leaves the app: the
+ *  tutoring system prompt (lib/server/ai.ts's learnerProfileBlock). Keep these
+ *  phrased as what the learner is working toward, not as a UI label. */
+export const KOREAN_LEARNING_GOAL_LABEL: Record<KoreanLearningGoal, string> = {
+  workplace: "Workplace Korean",
+  "daily-life": "Daily life",
+  presentation: "K-Specialist presentation",
+  general: "General conversation",
+}
+
+export const KOREAN_LEARNING_GOAL_PROMPT: Record<KoreanLearningGoal, string> = {
+  workplace: "workplace Korean — standups, meetings, and written messages with colleagues",
+  "daily-life": "everyday Korean — shops, transport, appointments, and neighbours",
+  presentation: "delivering a K-Specialist presentation in Korean, including Q&A",
+  general: "general conversational Korean",
+}
 export const speechSpeedSchema = z.union([z.literal(0.75), z.literal(1), z.literal(1.25)])
 export const koreanCoachPracticeModeSchema = z.enum(["speaking", "listening"])
 

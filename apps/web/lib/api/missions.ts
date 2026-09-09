@@ -2,6 +2,7 @@ import { supabase } from "@/lib/supabase"
 import { requireUserId } from "@/lib/auth-store"
 import { dateKeyInTimeZone, DEFAULT_TIME_ZONE } from "@/lib/date-key"
 import { getDailyGoalMinutes } from "@/lib/onboarding-store"
+import type { KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 import {
   buildDailyMission,
   type MissionContext,
@@ -126,6 +127,7 @@ async function fetchMission(userId: string, dateKey: string): Promise<DailyMissi
 async function buildContext(dateKey: string): Promise<MissionContext> {
   const [
     profileRes,
+    coachPrefsRes,
     dueVocabulary,
     dueVocabularyCount,
     dueCorrections,
@@ -135,7 +137,10 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
     activity,
     duePhrases,
   ] = await Promise.all([
-    supabase.from("kori_profiles").select("korean_level, learning_goal").maybeSingle(),
+    supabase.from("kori_profiles").select("korean_level").maybeSingle(),
+    // The goal comes from the one control that sets it
+    // (/korean-coach/preferences), not from kori_profiles.learning_goal.
+    supabase.from("kori_korean_coach_preferences").select("main_goal").maybeSingle(),
     vocabApi.getDueWords(),
     vocabApi.getDueCount(),
     correctionApi.getDueReviews(),
@@ -155,7 +160,7 @@ async function buildContext(dateKey: string): Promise<MissionContext> {
   return {
     dateKey,
     koreanLevel: profileRes.data?.korean_level ?? "BEGINNER",
-    learningGoal: profileRes.data?.learning_goal ?? null,
+    learningGoal: (coachPrefsRes.data?.main_goal as KoreanLearningGoal | undefined) ?? null,
     availableMinutes: getDailyGoalMinutes(),
     dueVocabulary: dueVocabulary.map((v) => ({ id: v.id, term: v.term, meaning: v.meaning })),
     dueVocabularyCount,

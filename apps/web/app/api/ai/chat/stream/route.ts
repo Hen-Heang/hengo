@@ -13,6 +13,7 @@ import { shouldAnalyzeKoreanTurn } from "@/lib/learning/korean-text"
 import { runTurnAnalysis } from "@/lib/server/turn-analysis"
 import { persistTurnMistakes } from "@/lib/server/corrections-store"
 import { buildPhrasebookContextBlock } from "@/lib/server/phrasebook-context"
+import type { KoreanLearningGoal } from "@/lib/korean-coach/schemas"
 
 const MAX_MESSAGE_LENGTH = 4000
 
@@ -66,6 +67,7 @@ export async function POST(req: Request): Promise<Response> {
   const [
     { data: historyRows },
     { data: profile },
+    { data: coachPreferences },
     { data: userMessage, error: insertError },
     phrasebookBlock,
   ] = await Promise.all([
@@ -77,10 +79,12 @@ export async function POST(req: Request): Promise<Response> {
       .limit(29),
     db
       .from("kori_profiles")
-      .select(
-        "display_name, korean_level, occupation, learning_goal, native_language, country",
-      )
+      .select("display_name, korean_level, occupation, native_language, country")
       .maybeSingle(),
+    // The learner's goal lives in the Korean Coach preferences now — one
+    // control, at /korean-coach/preferences. RLS scopes both selects to the
+    // caller, so no user_id filter is needed here either.
+    db.from("kori_korean_coach_preferences").select("main_goal").maybeSingle(),
     db
       .from("kori_messages")
       .insert({
@@ -108,7 +112,7 @@ export async function POST(req: Request): Promise<Response> {
   const level = profile?.korean_level ?? "BEGINNER"
   const profileBlock = learnerProfileBlock({
     occupation: profile?.occupation,
-    learningGoal: profile?.learning_goal,
+    mainGoal: coachPreferences?.main_goal as KoreanLearningGoal | null | undefined,
     nativeLanguage: profile?.native_language,
     country: profile?.country,
   })

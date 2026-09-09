@@ -59,7 +59,6 @@ function snapshotOf(fields: {
   nativeLanguage: string
   occupation: string
   yearsOfExperience: string
-  learningGoal: string
 }) {
   return JSON.stringify(fields)
 }
@@ -140,7 +139,6 @@ export default function SettingsPage() {
   const [nativeLanguage, setNativeLanguage] = useState("")
   const [occupation, setOccupation] = useState("")
   const [yearsOfExperience, setYearsOfExperience] = useState("")
-  const [learningGoal, setLearningGoal] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -168,7 +166,6 @@ export default function SettingsPage() {
         setNativeLanguage(data.nativeLanguage ?? "")
         setOccupation(data.occupation ?? "")
         setYearsOfExperience(data.yearsOfExperience != null ? String(data.yearsOfExperience) : "")
-        setLearningGoal(data.learningGoal ?? "")
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
         setHolidayAlertsEnabled(data.holidayAlertsEnabled ?? false)
@@ -185,7 +182,6 @@ export default function SettingsPage() {
           nativeLanguage: data.nativeLanguage ?? "",
           occupation: data.occupation ?? "",
           yearsOfExperience: data.yearsOfExperience != null ? String(data.yearsOfExperience) : "",
-          learningGoal: data.learningGoal ?? "",
         })
       })
       .finally(() => setLoading(false))
@@ -260,7 +256,6 @@ export default function SettingsPage() {
     nativeLanguage,
     occupation,
     yearsOfExperience,
-    learningGoal,
   })
   const isDirty = savedSnapshotRef.current !== null && savedSnapshotRef.current !== currentSnapshot
 
@@ -279,7 +274,6 @@ export default function SettingsPage() {
         nativeLanguage: nativeLanguage || undefined,
         occupation: occupation || undefined,
         yearsOfExperience: yearsOfExperience ? Number(yearsOfExperience) : undefined,
-        learningGoal: learningGoal || undefined,
       })
       savedSnapshotRef.current = currentSnapshot
       setSaved(true)
@@ -447,38 +441,30 @@ export default function SettingsPage() {
         </SectionCard>
       </motion.div>
 
-      {/* Learning goal */}
+      {/* Learning goal lives in Korean Coach preferences — the single source
+          of truth (kori_korean_coach_preferences.main_goal) that both the
+          tutoring prompt and Coach's scenario recommendation read. This page
+          used to carry a second, competing list writing a different column;
+          it's a link now so there is only ever one control. */}
       <motion.div variants={itemVariants}>
         <SectionCard>
-          <SectionRow>
+          <button
+            type="button"
+            onClick={() => router.push("/korean-coach/preferences")}
+            className="group flex w-full items-center justify-between px-5 py-4 text-left transition-all hover:bg-accent/5 active:scale-[0.98] sm:px-6"
+          >
             <SectionHeader
               icon={Target}
               title="Learning goal"
               description="Shapes the scenarios and phrasing the AI practices with you"
               color="text-violet-500"
             />
-          </SectionRow>
-          <SectionRow last>
-            <FieldLabel>What are you working toward?</FieldLabel>
-            <select
-              value={learningGoal}
-              onChange={(e) => setLearningGoal(e.target.value)}
-              className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
-            >
-              <option value="">Select your main goal</option>
-              {[
-                "Daily standup participation",
-                "Team meeting communication",
-                "Writing professional messages",
-                "Technical discussion in Korean",
-                "General workplace communication",
-              ].map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
-          </SectionRow>
+            <ChevronRight
+              size={14}
+              strokeWidth={2}
+              className="shrink-0 text-muted-foreground/60 transition-transform group-hover:translate-x-0.5"
+            />
+          </button>
         </SectionCard>
       </motion.div>
 
