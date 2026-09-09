@@ -78,7 +78,7 @@ export async function POST(req: Request): Promise<Response> {
     db
       .from("kori_profiles")
       .select(
-        "display_name, korean_level, preferred_model, occupation, learning_goal, native_language, country",
+        "display_name, korean_level, occupation, learning_goal, native_language, country",
       )
       .maybeSingle(),
     db
@@ -144,7 +144,7 @@ export async function POST(req: Request): Promise<Response> {
       let firstTokenAt: number | null = null
       try {
         const result = streamText({
-          model: aiModel(profile?.preferred_model),
+          model: aiModel(),
           providerOptions: AI_PROVIDER_OPTIONS,
           system,
           messages: history,
@@ -162,7 +162,7 @@ export async function POST(req: Request): Promise<Response> {
         void recordUsage(db, {
           userId: user.id,
           feature: "chat",
-          model: profile?.preferred_model || DEFAULT_MODEL,
+          model: DEFAULT_MODEL,
           inputTokens: usage?.inputTokens ?? null,
           outputTokens: usage?.outputTokens ?? null,
           totalTokens: usage?.totalTokens ?? null,
@@ -182,7 +182,7 @@ export async function POST(req: Request): Promise<Response> {
             .single(),
           db
             .from("kori_conversations")
-            .update({ model_used: profile?.preferred_model ?? null })
+            .update({ model_used: DEFAULT_MODEL })
             .eq("id", conversationId),
         ])
         if (assistantInsert.error) throw assistantInsert.error
@@ -230,7 +230,7 @@ export async function POST(req: Request): Promise<Response> {
         void recordUsage(db, {
           userId: user.id,
           feature: "chat",
-          model: profile?.preferred_model || DEFAULT_MODEL,
+          model: DEFAULT_MODEL,
           latencyMs: Math.round(performance.now() - requestStartedAt),
           success: false,
           errorCode: err instanceof Error ? err.name : "unknown",

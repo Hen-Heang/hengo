@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation"
 import {
   ArrowLeft,
   Mail,
-  Cpu,
   CheckCircle2,
   LogOut,
   ChevronRight,
@@ -35,12 +34,6 @@ import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
 import { cn } from "@/lib/utils"
 
-const models = [
-  { value: "gpt-5-mini", label: "GPT-5 mini", desc: "Latest · recommended" },
-  { value: "gpt-4o", label: "GPT-4o", desc: "Balanced performance" },
-  { value: "gpt-4o-mini", label: "GPT-4o mini", desc: "Fast & efficient" },
-]
-
 const countries = [
   "South Korea",
   "Cambodia",
@@ -68,7 +61,6 @@ function snapshotOf(fields: {
   occupation: string
   yearsOfExperience: string
   learningGoal: string
-  model: string
 }) {
   return JSON.stringify(fields)
 }
@@ -150,8 +142,6 @@ export default function SettingsPage() {
   const [occupation, setOccupation] = useState("")
   const [yearsOfExperience, setYearsOfExperience] = useState("")
   const [learningGoal, setLearningGoal] = useState("")
-  const [preferredModel, setPreferredModel] = useState("gpt-5-mini")
-  const [customModel, setCustomModel] = useState("")
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -182,9 +172,6 @@ export default function SettingsPage() {
         setOccupation(data.occupation ?? "")
         setYearsOfExperience(data.yearsOfExperience != null ? String(data.yearsOfExperience) : "")
         setLearningGoal(data.learningGoal ?? "")
-        const model = data.preferredModel ?? "gpt-5-mini"
-        setPreferredModel(model)
-        if (!models.some((m) => m.value === model)) setCustomModel(model)
         setStudyRemindersEnabled(data.studyRemindersEnabled ?? true)
         setStudyReminderHour(data.studyReminderHour ?? 20)
         setWeatherAlertsEnabled(data.weatherAlertsEnabled ?? false)
@@ -203,7 +190,6 @@ export default function SettingsPage() {
           occupation: data.occupation ?? "",
           yearsOfExperience: data.yearsOfExperience != null ? String(data.yearsOfExperience) : "",
           learningGoal: data.learningGoal ?? "",
-          model,
         })
       })
       .finally(() => setLoading(false))
@@ -286,8 +272,6 @@ export default function SettingsPage() {
     }
   }
 
-  const activeModel = customModel || preferredModel
-
   const currentSnapshot = snapshotOf({
     displayName,
     koreanLevel,
@@ -296,7 +280,6 @@ export default function SettingsPage() {
     occupation,
     yearsOfExperience,
     learningGoal,
-    model: activeModel,
   })
   const isDirty = savedSnapshotRef.current !== null && savedSnapshotRef.current !== currentSnapshot
 
@@ -317,7 +300,6 @@ export default function SettingsPage() {
         yearsOfExperience: yearsOfExperience ? Number(yearsOfExperience) : undefined,
         learningGoal: learningGoal || undefined,
       })
-      await userApi.updatePreferredModel(userId, activeModel)
       savedSnapshotRef.current = currentSnapshot
       setSaved(true)
       setTimeout(() => setSaved(false), 3000)
@@ -656,68 +638,6 @@ export default function SettingsPage() {
                   onChange={(e) => setYearsOfExperience(e.target.value)}
                   placeholder="e.g. 3"
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
-                />
-              </div>
-            </div>
-          </SectionRow>
-        </SectionCard>
-      </motion.div>
-
-      {/* AI Model */}
-      <motion.div variants={itemVariants}>
-        <SectionCard>
-          <SectionRow>
-            <SectionHeader
-              icon={Cpu}
-              title="AI Model"
-              description="Powers your conversations and feedback"
-              color="text-sky-500"
-            />
-          </SectionRow>
-          <SectionRow last>
-            <div className="space-y-4">
-              <div className="grid gap-2 sm:grid-cols-3">
-                {models.map((model) => {
-                  const active = preferredModel === model.value && !customModel
-                  return (
-                    <button
-                      key={model.value}
-                      type="button"
-                      onClick={() => {
-                        setPreferredModel(model.value)
-                        setCustomModel("")
-                      }}
-                      className={cn(
-                        "group relative flex min-h-11 flex-col gap-0.5 rounded-lg border px-4 py-3 text-left transition-colors",
-                        active
-                          ? "border-sky-500/30 bg-sky-500/5 ring-1 ring-sky-500/20"
-                          : "border-border bg-accent/5 hover:border-sky-500/20 hover:bg-background",
-                      )}
-                    >
-                      <p
-                        className={cn(
-                          "text-sm font-semibold",
-                          active ? "text-foreground" : "text-muted-foreground",
-                        )}
-                      >
-                        {model.label}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{model.desc}</p>
-                      {active && (
-                        <div className="absolute right-3 top-3 h-1.5 w-1.5 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)]" />
-                      )}
-                    </button>
-                  )
-                })}
-              </div>
-
-              <div>
-                <FieldLabel>Custom model</FieldLabel>
-                <Input
-                  value={customModel}
-                  onChange={(e) => setCustomModel(e.target.value)}
-                  placeholder="e.g. gpt-4-turbo"
-                  className="h-11 rounded-lg border-border bg-accent/5 px-4 font-mono text-xs transition-colors focus:bg-background"
                 />
               </div>
             </div>

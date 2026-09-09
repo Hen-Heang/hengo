@@ -1,6 +1,5 @@
 import { supabase } from "@/lib/supabase"
 import { getUserEmail } from "@/lib/auth-store"
-import { resolveAllowedModel } from "@/lib/server/models"
 import { recommendLevel, type CategoryEvidence } from "@/lib/learning/level-engine"
 import { skillsApi } from "./skills"
 
@@ -24,7 +23,6 @@ type ProfileRow = {
   occupation: string | null
   years_of_experience: number | null
   learning_goal: string | null
-  preferred_model: string | null
   study_reminders_enabled: boolean
   study_reminder_hour: number | null
   weather_alerts_enabled: boolean | null
@@ -43,7 +41,6 @@ function toCamel(row: ProfileRow | null) {
     occupation: row?.occupation ?? null,
     yearsOfExperience: row?.years_of_experience ?? null,
     learningGoal: row?.learning_goal ?? null,
-    preferredModel: row?.preferred_model ?? null,
     studyRemindersEnabled: row?.study_reminders_enabled ?? false,
     studyReminderHour: row?.study_reminder_hour ?? 20,
     weatherAlertsEnabled: row?.weather_alerts_enabled ?? false,
@@ -120,14 +117,6 @@ export const userApi = {
       korean_level: data.koreanLevel,
       learning_goal: data.learningGoal,
     })
-    if (error) throw error
-  },
-
-  updatePreferredModel: async (id: string, preferredModel: string) => {
-    const { error } = await supabase
-      .from("kori_profiles")
-      .update({ preferred_model: resolveAllowedModel(preferredModel) })
-      .eq("id", id)
     if (error) throw error
   },
 

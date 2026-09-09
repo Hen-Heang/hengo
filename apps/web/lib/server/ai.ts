@@ -19,9 +19,9 @@ export class InputValidationError extends Error {}
 
 export const DEFAULT_MODEL = DEFAULT_ALLOWED_MODEL
 
-// Requested model names come from client-controlled input (profile
-// preference, request body) — always resolve through the allowlist instead
-// of passing an arbitrary string into the OpenAI model factory.
+// Call with no argument for the configured default (that is every caller
+// today). The optional name still resolves through the allowlist so an
+// arbitrary string can never reach the OpenAI model factory.
 export function aiModel(name?: string | null) {
   return openai(resolveAllowedModel(name))
 }
