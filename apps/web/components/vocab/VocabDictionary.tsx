@@ -87,7 +87,8 @@ function matchesMetadata(
   pos: PosFilter,
 ) {
   if (book === "beginner-book" && !hasTag(word, "source:2000-essential-beginner")) return false
-  if (book === "intermediate-book" && !hasTag(word, "source:2000-essential-intermediate")) return false
+  if (book === "intermediate-book" && !hasTag(word, "source:2000-essential-intermediate"))
+    return false
   if (book === "core-300" && !hasTag(word, "core:300")) return false
 
   if (level === "beginner" && !hasTag(word, "level:beginner")) return false
@@ -279,46 +280,78 @@ export function VocabDictionary({
                 Book · level · priority · part of speech
               </p>
               <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-                <Select value={bookFilter} onValueChange={(value) => setBookFilter(value as BookFilter)}>
-                  <SelectTrigger aria-label="Filter vocabulary by book" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                <Select
+                  value={bookFilter}
+                  onValueChange={(value) => setBookFilter(value as BookFilter)}
+                >
+                  <SelectTrigger
+                    aria-label="Filter vocabulary by book"
+                    className="h-10 min-w-0 rounded-xl bg-background shadow-none"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {BOOK_FILTERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={levelFilter} onValueChange={(value) => setLevelFilter(value as LevelFilter)}>
-                  <SelectTrigger aria-label="Filter vocabulary by level" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                <Select
+                  value={levelFilter}
+                  onValueChange={(value) => setLevelFilter(value as LevelFilter)}
+                >
+                  <SelectTrigger
+                    aria-label="Filter vocabulary by level"
+                    className="h-10 min-w-0 rounded-xl bg-background shadow-none"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {LEVEL_FILTERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={priorityFilter} onValueChange={(value) => setPriorityFilter(value as PriorityFilter)}>
-                  <SelectTrigger aria-label="Filter vocabulary by priority" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                <Select
+                  value={priorityFilter}
+                  onValueChange={(value) => setPriorityFilter(value as PriorityFilter)}
+                >
+                  <SelectTrigger
+                    aria-label="Filter vocabulary by priority"
+                    className="h-10 min-w-0 rounded-xl bg-background shadow-none"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {PRIORITY_FILTERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
 
-                <Select value={posFilter} onValueChange={(value) => setPosFilter(value as PosFilter)}>
-                  <SelectTrigger aria-label="Filter vocabulary by part of speech" className="h-10 min-w-0 rounded-xl bg-background shadow-none">
+                <Select
+                  value={posFilter}
+                  onValueChange={(value) => setPosFilter(value as PosFilter)}
+                >
+                  <SelectTrigger
+                    aria-label="Filter vocabulary by part of speech"
+                    className="h-10 min-w-0 rounded-xl bg-background shadow-none"
+                  >
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {POS_FILTERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
@@ -354,20 +387,32 @@ export function VocabDictionary({
 
             <div className="flex items-center gap-2 border-t border-border/50 pt-3">
               <div className="min-w-0 flex-1 sm:max-w-56">
-                <Select value={sortOrder} onValueChange={(value) => setSortOrder(value as SortOrder)}>
-                  <SelectTrigger aria-label="Sort vocabulary words" className="h-10 w-full rounded-xl bg-background shadow-none">
+                <Select
+                  value={sortOrder}
+                  onValueChange={(value) => setSortOrder(value as SortOrder)}
+                >
+                  <SelectTrigger
+                    aria-label="Sort vocabulary words"
+                    className="h-10 w-full rounded-xl bg-background shadow-none"
+                  >
                     <ArrowDownUp className="text-muted-foreground" />
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     {SORT_ORDERS.map(({ value, label }) => (
-                      <SelectItem key={value} value={value}>{label}</SelectItem>
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1" role="group" aria-label="Deck layout">
+              <div
+                className="flex shrink-0 items-center gap-1 rounded-xl border border-border bg-background p-1"
+                role="group"
+                aria-label="Deck layout"
+              >
                 <Button
                   type="button"
                   onClick={() => setViewMode("list")}
@@ -375,7 +420,10 @@ export function VocabDictionary({
                   aria-pressed={viewMode === "list"}
                   variant="ghost"
                   size="icon-lg"
-                  className={cn("rounded-lg", viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground")}
+                  className={cn(
+                    "rounded-lg",
+                    viewMode === "list" ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                  )}
                 >
                   <List size={14} strokeWidth={2.5} />
                 </Button>
@@ -386,7 +434,10 @@ export function VocabDictionary({
                   aria-pressed={viewMode === "grid"}
                   variant="ghost"
                   size="icon-lg"
-                  className={cn("rounded-lg", viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground")}
+                  className={cn(
+                    "rounded-lg",
+                    viewMode === "grid" ? "bg-primary/10 text-primary" : "text-muted-foreground",
+                  )}
                 >
                   <LayoutGrid size={14} strokeWidth={2.5} />
                 </Button>
