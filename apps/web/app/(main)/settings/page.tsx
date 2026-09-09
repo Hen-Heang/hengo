@@ -16,11 +16,10 @@ import {
   Bell,
   Send,
   AlarmClock,
-  Check,
   Target,
   Type,
 } from "lucide-react"
-import { motion, AnimatePresence } from "motion/react"
+import { motion } from "motion/react"
 import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
@@ -31,17 +30,10 @@ import { authApi, userApi } from "@/lib/api"
 import { getUserId } from "@/lib/auth-store"
 import { refreshProfileImage } from "@/hooks/useProfileImage"
 import { usePush } from "@/hooks/usePush"
+import { FieldSaveStatus } from "@/components/ui/field-save-status"
+import { TEXT_DEBOUNCE_MS, useFieldAutosave } from "@/hooks/useFieldAutosave"
 import { isCalendarIntegrationsEnabled } from "@/lib/feature-flags"
 import { cn } from "@/lib/utils"
-
-function snapshotOf(fields: {
-  displayName: string
-  koreanLevel: string
-  nativeLanguage: string
-  occupation: string
-}) {
-  return JSON.stringify(fields)
-}
 
 function SectionCard({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
@@ -91,11 +83,12 @@ function SectionHeader({
   )
 }
 
-function FieldLabel({ children }: { children: React.ReactNode }) {
+function FieldLabel({ children, status }: { children: React.ReactNode; status?: React.ReactNode }) {
   return (
-    <label className="mb-1.5 block px-1 text-sm font-medium text-muted-foreground">
-      {children}
-    </label>
+    <div className="mb-1.5 flex items-center justify-between gap-2 px-1">
+      <label className="text-sm font-medium text-muted-foreground">{children}</label>
+      {status}
+    </div>
   )
 }
 
@@ -112,14 +105,13 @@ const itemVariants = {
 export default function SettingsPage() {
   const router = useRouter()
   const push = usePush()
+  const { saveField, stateOf } = useFieldAutosave()
   const [displayName, setDisplayName] = useState("")
   const [email, setEmail] = useState("")
   const [koreanLevel, setKoreanLevel] = useState("BEGINNER")
   const [nativeLanguage, setNativeLanguage] = useState("")
   const [occupation, setOccupation] = useState("")
   const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [saved, setSaved] = useState(false)
   const [error, setError] = useState("")
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
@@ -129,7 +121,6 @@ export default function SettingsPage() {
   const [holidayAlertsEnabled, setHolidayAlertsEnabled] = useState(false)
   const [savingHolidayAlerts, setSavingHolidayAlerts] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const savedSnapshotRef = useRef<string | null>(null)
 
   useEffect(() => {
     const userId = getUserId()
@@ -151,12 +142,6 @@ export default function SettingsPage() {
             .then(setAvatarUrl)
             .catch(() => {})
         }
-        savedSnapshotRef.current = snapshotOf({
-          displayName: data.displayName ?? "",
-          koreanLevel: data.koreanLevel ?? "BEGINNER",
-          nativeLanguage: data.nativeLanguage ?? "",
-          occupation: data.occupation ?? "",
-        })
       })
       .finally(() => setLoading(false))
   }, [])
@@ -223,36 +208,31 @@ export default function SettingsPage() {
     }
   }
 
-  const currentSnapshot = snapshotOf({
-    displayName,
-    koreanLevel,
-    nativeLanguage,
-    occupation,
-  })
-  const isDirty = savedSnapshotRef.current !== null && savedSnapshotRef.current !== currentSnapshot
-
-  async function handleSave(e: React.FormEvent) {
-    e.preventDefault()
+  // Every profile field autosaves and confirms next to itself — same contract
+  // as /korean-coach/preferences, and as the notification switches on this
+  // page, which have always saved on change. updateProfile writes the whole
+  // row, so each call sends the current value of the others too; `overrides`
+  // supplies the just-changed value, since the state update that triggered it
+  // has not been applied to this render's closure yet.
+  function saveProfileField(
+    field: string,
+    overrides: Partial<{ displayName: string; nativeLanguage: string; occupation: string }>,
+    debounceMs = 0,
+  ) {
     const userId = getUserId()
     if (!userId) return
-    setSaving(true)
-    setError("")
-    setSaved(false)
-    try {
-      await userApi.updateProfile(userId, {
-        displayName,
-        koreanLevel,
-        nativeLanguage: nativeLanguage || undefined,
-        occupation: occupation || undefined,
-      })
-      savedSnapshotRef.current = currentSnapshot
-      setSaved(true)
-      setTimeout(() => setSaved(false), 3000)
-    } catch {
-      setError("Failed to save. Please try again.")
-    } finally {
-      setSaving(false)
-    }
+    const next = { displayName, nativeLanguage, occupation, ...overrides }
+    saveField(
+      field,
+      () =>
+        userApi.updateProfile(userId, {
+          displayName: next.displayName,
+          koreanLevel,
+          nativeLanguage: next.nativeLanguage || undefined,
+          occupation: next.occupation || undefined,
+        }),
+      debounceMs,
+    )
   }
 
   function handleClose() {
@@ -320,11 +300,10 @@ export default function SettingsPage() {
   }
 
   return (
-    <motion.form
+    <motion.div
       initial="hidden"
       animate="visible"
       variants={containerVariants}
-      onSubmit={handleSave}
       className="mx-auto max-w-3xl space-y-5 pb-24"
     >
       {/* Header */}
@@ -393,16 +372,25 @@ export default function SettingsPage() {
                   </p>
                 )}
                 <p className="truncate text-xs font-medium text-muted-foreground">{email}</p>
+                {/* Avatar upload is the one action here that isn't a field
+                    autosave, so it reports next to the avatar rather than
+                    through FieldSaveStatus. */}
+                {error && <p className="mt-1 text-xs font-medium text-destructive">{error}</p>}
               </div>
             </div>
           </SectionRow>
           <SectionRow last>
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <FieldLabel>Display name</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("displayName")} />}>
+                  Display name
+                </FieldLabel>
                 <Input
                   value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
+                  onChange={(e) => {
+                    setDisplayName(e.target.value)
+                    saveProfileField("displayName", { displayName: e.target.value }, TEXT_DEBOUNCE_MS)
+                  }}
                   placeholder={emailLocalPart || "Your name"}
                   className="h-11 rounded-lg border-border bg-accent/5 px-4 font-semibold transition-colors focus:bg-background"
                 />
@@ -527,10 +515,15 @@ export default function SettingsPage() {
                 buildRealtimeInstructions in lib/realtime/session-context.ts. */}
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <FieldLabel>Native language</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("nativeLanguage")} />}>
+                  Native language
+                </FieldLabel>
                 <select
                   value={nativeLanguage}
-                  onChange={(e) => setNativeLanguage(e.target.value)}
+                  onChange={(e) => {
+                    setNativeLanguage(e.target.value)
+                    saveProfileField("nativeLanguage", { nativeLanguage: e.target.value })
+                  }}
                   className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
                 >
                   <option value="">Select language</option>
@@ -553,10 +546,15 @@ export default function SettingsPage() {
                 </select>
               </div>
               <div>
-                <FieldLabel>Occupation</FieldLabel>
+                <FieldLabel status={<FieldSaveStatus state={stateOf("occupation")} />}>
+                  Occupation
+                </FieldLabel>
                 <select
                   value={occupation}
-                  onChange={(e) => setOccupation(e.target.value)}
+                  onChange={(e) => {
+                    setOccupation(e.target.value)
+                    saveProfileField("occupation", { occupation: e.target.value })
+                  }}
                   className="h-11 w-full rounded-lg border border-border bg-accent/5 px-3 text-sm font-semibold text-foreground outline-none transition-colors focus:bg-background focus:ring-2 focus:ring-blue-500/20 dark:bg-white/5"
                 >
                   <option value="">Select role</option>
@@ -778,44 +776,6 @@ export default function SettingsPage() {
         <p className="text-xs text-muted-foreground">© 2026 Hen Heang · FullStack Developer</p>
       </motion.div>
 
-      {/* Sticky save bar — only intrudes once there's something to save */}
-      <AnimatePresence>
-        {(isDirty || saving || saved) && (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className="sticky bottom-[calc(4.5rem+env(safe-area-inset-bottom))] z-30 mx-auto flex w-full max-w-3xl items-center gap-3 rounded-lg border border-border bg-card/95 p-3 shadow-md backdrop-blur-xl dark:bg-slate-900/90 lg:bottom-4"
-          >
-            <p
-              className={cn(
-                "flex-1 truncate px-2 text-xs font-medium",
-                error ? "text-destructive" : "text-muted-foreground",
-              )}
-            >
-              {error || "You have unsaved changes."}
-            </p>
-            <Button
-              type="submit"
-              disabled={saving || !isDirty}
-              className="h-11 shrink-0 rounded-lg bg-blue-600 px-5 text-sm font-semibold text-white transition-colors hover:bg-blue-500 disabled:opacity-60"
-            >
-              {saving ? (
-                <>
-                  <Loader2 size={16} className="mr-2 animate-spin" /> Saving…
-                </>
-              ) : saved ? (
-                <>
-                  <Check size={16} className="mr-2" strokeWidth={3} /> Saved
-                </>
-              ) : (
-                "Save changes"
-              )}
-            </Button>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </motion.form>
+    </motion.div>
   )
 }
