@@ -26,7 +26,7 @@ import { DailyPhraseCard } from "@/components/practice/DailyPhraseCard"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddWordsDialog } from "@/components/vocab/AddWordsDialog"
 import { CoreKoreanPanel } from "@/components/vocab/CoreKoreanPanel"
-import { ReviewSession } from "@/components/vocab/ReviewSession"
+import { ReviewSession, type AutoStart } from "@/components/vocab/ReviewSession"
 import { VocabDictionary } from "@/components/vocab/VocabDictionary"
 import { useLogActivity } from "@/hooks/useLogActivity"
 import { useSessionTimer } from "@/hooks/useSessionTimer"
@@ -88,6 +88,14 @@ function VocabPageContent() {
   // Set by a deck's "Review this deck" button; consumed by ReviewSession to
   // jump straight into a scoped Memory Lab session for that category.
   const [focusCategory, setFocusCategory] = useState<string | null>(null)
+  // "/vocab?review=session" opens Memory Lab straight into the next due batch,
+  // "?review=setup" into its session picker — how /practice and /learn hand a
+  // learner extra reps once the daily mission is finished. Read once into
+  // state so closing the overlay doesn't immediately re-open it.
+  const [autoStart, setAutoStart] = useState<AutoStart | null>(() => {
+    const raw = searchParams.get("review")
+    return raw === "session" || raw === "setup" ? raw : null
+  })
 
   // Phrases tab — merges Daily Phrase history into the same page as the vocab
   // dictionary so both "learn a phrase" surfaces live in one place.
@@ -190,6 +198,15 @@ function VocabPageContent() {
               onRate={rateWord}
               focusCategory={focusCategory}
               onFocusHandled={() => setFocusCategory(null)}
+              autoStart={autoStart}
+              onAutoStartHandled={() => {
+                setAutoStart(null)
+                // Drop the param so a refresh or a Back-then-Forward doesn't
+                // silently re-launch a session the learner already left.
+                const url = new URL(window.location.href)
+                url.searchParams.delete("review")
+                window.history.replaceState(null, "", `${url.pathname}${url.search}`)
+              }}
             />
 
             <CoreKoreanPanel words={words} loading={loading} />

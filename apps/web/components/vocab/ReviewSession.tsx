@@ -54,6 +54,9 @@ function fitText(text: string | null | undefined, base: string, mid: string, sma
 type Mode = "flashcard" | "choice" | "recall" | "listening" | "sentence"
 type Phase = "idle" | "quiz" | "done"
 
+/** How another screen can ask Memory Lab to open — see `autoStart` below. */
+export type AutoStart = "session" | "setup"
+
 type ReviewSessionProps = {
   dueToday: VocabItem[]
   // True backlog size (uncapped) — dueToday is capped at REVIEW_SESSION_SIZE,
@@ -68,6 +71,14 @@ type ReviewSessionProps = {
   // same deck's button still re-triggers it.
   focusCategory?: string | null
   onFocusHandled?: () => void
+  // Set from the "?review=" query param so another screen (the /practice
+  // completion state, Study's recommendation card) can hand the learner
+  // straight into a session instead of dropping them on the vocab page to
+  // find the launch card themselves. "session" starts the next due batch
+  // immediately; "setup" opens the fullscreen picker so they can choose a
+  // bigger or narrower session. Cleared via onAutoStartHandled, like focusCategory.
+  autoStart?: AutoStart | null
+  onAutoStartHandled?: () => void
 }
 
 // Duolingo-style grade buttons: bright fill + darker bottom edge ("3D" press).
@@ -1111,6 +1122,8 @@ export function ReviewSession({
   onRate,
   focusCategory,
   onFocusHandled,
+  autoStart,
+  onAutoStartHandled,
 }: ReviewSessionProps) {
   // isOpen=false → compact launch card on the vocab page
   // isOpen=true  → fullscreen (idle setup → quiz → done)
@@ -1249,6 +1262,25 @@ export function ReviewSession({
     setSaveError(false)
     setPhase("quiz")
   }
+
+  // "?review=session" / "?review=setup" arrived from another screen — wait for
+  // the deck to load (startQuiz reads it), then open. Falls back to the setup
+  // screen when nothing is due, so the learner still lands somewhere they can
+  // act rather than on an empty quiz.
+  useEffect(() => {
+    if (!autoStart || loading) return
+    setSelectedCategories(new Set())
+    setIsOpen(true)
+    if (autoStart === "session" && dueToday.length > 0) {
+      startQuiz()
+    } else {
+      setPhase("idle")
+    }
+    onAutoStartHandled?.()
+    // startQuiz is recreated every render; the effect is keyed on the request
+    // itself, which the parent clears once handled.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, loading, dueToday.length])
 
   // Live sync status for the session header: how many ratings are in flight and
   // whether the last one failed to persist.
@@ -1711,7 +1743,13 @@ export function ReviewSession({
                 className="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-border bg-background py-4 text-xs font-bold uppercase tracking-wide text-foreground transition-all hover:bg-accent active:scale-95"
               >
                 <RotateCcw size={16} strokeWidth={3} />
-                Re-run
+                {/* Grading a batch refetches the deck (useVocab invalidates once
+                    dueWords empties), so by the time this screen renders
+                    filteredDueToday is the NEXT batch, not the one just
+                    finished — "Re-run" undersold what the button actually does. */}
+                {filteredDueToday.length > 0
+                  ? `Review ${filteredDueToday.length} more`
+                  : "Practice again"}
               </button>
               <button
                 type="button"

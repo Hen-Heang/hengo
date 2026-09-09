@@ -1,3 +1,4 @@
+import { isDue } from "./srs"
 import type { VocabItem } from "./types"
 
 export function shuffle<T>(arr: T[]): T[] {
@@ -89,27 +90,47 @@ export function sortVocab(words: VocabItem[], order: SortOrder): VocabItem[] {
 
 export type VocabStats = {
   total: number
+  /** Cards whose next_review has passed — the same quantity vocabApi.getDueCount returns. */
+  due: number
   weak: number
   learning: number
   mastered: number
   averageMastery: number
 }
 
-/** Aggregates a deck into the mastery buckets used across the dictionary. */
-export function computeVocabStats(words: VocabItem[]): VocabStats {
+/**
+ * The single aggregation behind every vocabulary number the app renders — the
+ * /vocab hero stats, the Deck health panel, and each deck row. Pass the whole
+ * collection for collection-wide figures or one deck's items for that deck's;
+ * no surface should reduce over `words` itself, or the page ends up quoting
+ * several different answers to the same question.
+ *
+ * The buckets partition the full 0-100 range (weak < 50 <= learning < 80 <=
+ * mastered), so `weak + learning + mastered === total` always — see
+ * `matchesMastery` above, which uses the same edges for the filter chips.
+ *
+ * `due` is the client-side twin of `vocabApi.getDueCount()`: same predicate
+ * (`isDue`, which getDueWords mirrors as a server-side `.lte`), evaluated
+ * against `now` instead of the server's clock. They agree on the same data;
+ * they can differ by the cards that came due in the seconds between the two
+ * reads. Pass a fixed `now` when several surfaces must show the same instant.
+ */
+export function computeVocabStats(words: VocabItem[], now: Date = new Date()): VocabStats {
   const stats = words.reduce(
     (acc, word) => {
       acc.sum += word.mastery
       if (word.mastery >= 80) acc.mastered += 1
       else if (word.mastery >= 50) acc.learning += 1
       else acc.weak += 1
+      if (isDue(word.nextReview, now)) acc.due += 1
       return acc
     },
-    { sum: 0, weak: 0, learning: 0, mastered: 0 },
+    { sum: 0, due: 0, weak: 0, learning: 0, mastered: 0 },
   )
 
   return {
     total: words.length,
+    due: stats.due,
     weak: stats.weak,
     learning: stats.learning,
     mastered: stats.mastered,

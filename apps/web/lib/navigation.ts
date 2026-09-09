@@ -698,13 +698,47 @@ function section(id: NavSectionId): NavSection {
 // registry item elsewhere) and `label` (a shorter, V2-only display name — the
 // underlying route's own page title/breadcrumb is untouched), the same
 // pattern the old `bottomTabs`'s `tab-learn` override used.
+/**
+ * Shorter display names for the two destinations whose registry labels are
+ * longer than a nav row wants. One map so the sidebar, tablet rail and mobile
+ * bottom bar can't drift into calling the same route different things — the
+ * underlying page title and breadcrumb still come from the registry label.
+ */
+const NAV_DISPLAY_LABELS: Record<string, string> = {
+  "learn-korean-coach": "Coach",
+  "learn-hub": "Study",
+}
+
+function withDisplayLabel(item: NavItem): NavItem {
+  const label = NAV_DISPLAY_LABELS[item.id]
+  return label ? { ...item, label } : item
+}
+
 export const primaryNavItems: NavItem[] = [
   todayItem,
   navItem("learn-vocab"),
   navItem("learn-practice"),
-  { ...navItem("learn-korean-coach"), id: "primary-coach", label: "Coach" },
-  { ...navItem("learn-hub"), id: "primary-study", label: "Study" },
+  { ...withDisplayLabel(navItem("learn-korean-coach")), id: "primary-coach" },
+  { ...withDisplayLabel(navItem("learn-hub")), id: "primary-study" },
 ]
+
+/**
+ * Every shipped destination, grouped by its section — the desktop sidebar's
+ * data source, and the Quick Switcher's pre-typing browse view.
+ *
+ * This deliberately ignores `showInSidebar`. That flag was V2's way of hiding
+ * ~28 built, working routes behind Quick Switcher search only; the audit found
+ * that leaves most of the product with no front door you can click. Sections
+ * and order come straight from `navSections`, so a new route still only needs
+ * registering there.
+ *
+ * `soon` placeholders are filtered out: they have no page behind them, so a
+ * row would be a dead end. They stay in `navSections` (and in `moreComingSoon`)
+ * for whoever builds them.
+ */
+export const sidebarSections: NavSection[] = navSections
+  .map((section) => ({ ...section, items: shippedItems(section.items).map(withDisplayLabel) }))
+  .filter((section) => section.items.length > 0)
 
 // ─── V1 workspace grouping (superseded by `primaryNavItems` above) ───────────
 //

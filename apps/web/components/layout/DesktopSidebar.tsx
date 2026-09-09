@@ -8,7 +8,7 @@ import { NavIconRow, NavRow } from "@/components/layout/NavItem"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import {
   isNavigationItemActive,
-  primaryNavItems,
+  sidebarSections,
   todayItem,
   type NavSearchParams,
 } from "@/lib/navigation"
@@ -20,13 +20,19 @@ export const SIDEBAR_EXPANDED_WIDTH = 232
 export const SIDEBAR_COLLAPSED_WIDTH = 72
 
 /**
- * V2's five-destination sidebar: Today, Vocabulary, Practice, Coach, Study —
- * `primaryNavItems` from `lib/navigation.ts`, flat, in order. No expandable
- * workspace groups, no flyouts — with only five destinations there is nothing
- * to collapse. Everything else the app still supports (Goals, Habits,
- * Recovery, Progress, Notes, Settings, general AI chat, …) stays a real,
- * registered route reachable by direct URL and the Quick Switcher; it simply
- * has no row here.
+ * Every shipped destination, grouped by section — `sidebarSections` from
+ * `lib/navigation.ts`, in registry order. Expanded it's a labelled 232px rail
+ * with section headings; collapsed it's a 72px icon column with the groups
+ * separated by rules and the headings kept for screen readers.
+ *
+ * This replaced V2's five-item rail (Today · Vocabulary · Practice · Coach ·
+ * Study, still exported as `primaryNavItems` and still what the tablet rail
+ * and mobile bottom bar render). V2 hid ~28 built, working routes behind
+ * Quick Switcher search; they now have rows you can click. `soon`
+ * placeholders are excluded — see `sidebarSections`.
+ *
+ * The shell decides at which widths this renders at all (`useNavigationMode`
+ * in AppShell) — there are deliberately no responsive classes here.
  */
 export function DesktopSidebar({
   pathname,
@@ -87,13 +93,51 @@ export function DesktopSidebar({
 
       <div className="mx-3 h-px bg-border" />
 
-      <nav aria-label="Primary" className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
-        {primaryNavItems.map((item) => {
-          const active = isNavigationItemActive({ pathname, searchParams, item })
-          return collapsed ? (
-            <NavIconRow key={item.id} item={item} active={active} />
-          ) : (
-            <NavRow key={item.id} item={item} active={active} />
+      <nav aria-label="Primary" className="flex-1 overflow-y-auto px-3 py-3">
+        {sidebarSections.map((section, index) => {
+          // A section whose only item repeats its own name (Today) would read
+          // as a heading stacked on an identical row — give it the heading for
+          // screen readers and nothing visible.
+          const headingIsRedundant =
+            section.items.length === 1 && section.items[0].label === section.label
+          const headingId = `sidebar-section-${section.id}`
+
+          return (
+            <section
+              key={section.id}
+              aria-labelledby={headingId}
+              className={index > 0 ? "mt-4" : undefined}
+            >
+              {/* Collapsed to icons there's no room for a heading, so the
+                  groups are separated by a rule instead and the label stays
+                  available to assistive tech. */}
+              {collapsed || headingIsRedundant ? (
+                <>
+                  {collapsed && index > 0 && <div className="mx-2 mb-3 h-px bg-border" />}
+                  <h2 id={headingId} className="sr-only">
+                    {section.label}
+                  </h2>
+                </>
+              ) : (
+                <h2
+                  id={headingId}
+                  className="px-3 pb-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/70"
+                >
+                  {section.label}
+                </h2>
+              )}
+
+              <div className="space-y-1">
+                {section.items.map((item) => {
+                  const active = isNavigationItemActive({ pathname, searchParams, item })
+                  return collapsed ? (
+                    <NavIconRow key={item.id} item={item} active={active} />
+                  ) : (
+                    <NavRow key={item.id} item={item} active={active} />
+                  )
+                })}
+              </div>
+            </section>
           )
         })}
       </nav>

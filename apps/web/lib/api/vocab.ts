@@ -16,7 +16,21 @@ import { skillsApi } from "./skills"
 // Cards fetched per review batch. Not a daily cap: when a batch is cleared the
 // next one loads (useVocab invalidates once dueWords empties), so the learner
 // can keep going until the true due count (getDueCount) reaches zero.
-const REVIEW_SESSION_SIZE = 20
+// Exported because every surface that offers "review another batch" (the
+// /practice completion screen, Study's recommendation card) has to name the
+// batch size, and it must be the same number getDueWords actually returns.
+export const REVIEW_BATCH_SIZE = 20
+
+// Page size for the full-collection read below, and a hard stop so a bad
+// server response can't spin the loop forever. The stop is a ceiling on a
+// personal vocabulary collection, not an expected size.
+const COLLECTION_PAGE_SIZE = 1000
+const MAX_COLLECTION_ROWS = 50_000
+
+/** How many cards the next batch will hold, given the true backlog size. */
+export function nextReviewBatchSize(dueCount: number): number {
+  return Math.max(0, Math.min(REVIEW_BATCH_SIZE, dueCount))
+}
 
 // Revised-Romanization pronunciation for a Korean term (es-hangul applies the
 // standard sound-change rules). Returns null for non-Hangul terms so English
@@ -115,13 +129,36 @@ async function rateCard(id: string, rating: ReviewRating): Promise<VocabItem> {
 }
 
 export const vocabApi = {
+  // The learner's whole collection. Every /vocab statistic is derived from
+  // this array client-side, so it has to actually be complete: PostgREST caps
+  // every response at the project's max-rows setting (Supabase defaults to
+  // 1,000) and does it *silently* — a short array, no error, no flag. Past
+  // that many cards an unbounded select stops being "the collection" and
+  // becomes "the first page of it", which is what made /vocab report 1,000
+  // saved words while the uncapped HEAD-count due query reported 1,107.
+  //
+  // Page until a page comes back empty rather than trusting one request, and
+  // advance by the number of rows actually returned so this stays correct
+  // whatever max-rows the project is configured with. created_at alone isn't
+  // a total order (a Core Korean batch inserts 20 rows on one timestamp), so
+  // id breaks ties — without it .range() windows skip and duplicate rows.
   getSavedWords: async (): Promise<VocabItem[]> => {
-    const { data, error } = await supabase
-      .from("kori_vocab_cards")
-      .select("*")
-      .order("created_at", { ascending: false })
-    if (error) throw error
-    return (data as VocabRow[]).map(toItem)
+    const rows: VocabRow[] = []
+    let from = 0
+    while (from < MAX_COLLECTION_ROWS) {
+      const { data, error } = await supabase
+        .from("kori_vocab_cards")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .order("id", { ascending: false })
+        .range(from, from + COLLECTION_PAGE_SIZE - 1)
+      if (error) throw error
+      const page = (data ?? []) as VocabRow[]
+      if (page.length === 0) break
+      rows.push(...page)
+      from += page.length
+    }
+    return rows.map(toItem)
   },
 
   // One batch of due cards, most overdue first — a session-sized slice so a big
@@ -134,7 +171,7 @@ export const vocabApi = {
       .select("*")
       .lte("next_review", new Date().toISOString())
       .order("next_review", { ascending: true })
-      .limit(REVIEW_SESSION_SIZE)
+      .limit(REVIEW_BATCH_SIZE)
     if (error) throw error
     return (data as VocabRow[]).map(toItem)
   },
