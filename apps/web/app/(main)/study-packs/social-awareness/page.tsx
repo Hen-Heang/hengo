@@ -2,7 +2,14 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ArrowRight, BookOpenText, CheckCircle2, Loader2, Sparkles, Words } from "lucide-react"
+import {
+  ArrowRight,
+  BookOpenText,
+  CheckCircle2,
+  Languages,
+  Loader2,
+  Sparkles,
+} from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -90,7 +97,7 @@ export default function SocialAwarenessStudyPackPage() {
           >
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <Words size={20} aria-hidden="true" />
+                <Languages size={20} aria-hidden="true" />
               </div>
               <div>
                 <p className="text-sm font-semibold text-foreground">{level.title}</p>
