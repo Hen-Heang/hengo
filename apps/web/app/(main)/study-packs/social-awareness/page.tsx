@@ -123,7 +123,9 @@ export default function SocialAwarenessStudyPackPage() {
             </div>
           </div>
           <div className="rounded-2xl bg-muted/45 px-4 py-3 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">{SOCIAL_AWARENESS_PHRASES.length}</span>{" "}
+            <span className="font-semibold text-foreground">
+              {SOCIAL_AWARENESS_PHRASES.length}
+            </span>{" "}
             speaking and recognition cards
           </div>
         </div>
@@ -181,11 +183,15 @@ export default function SocialAwarenessStudyPackPage() {
           <div className="mt-4 grid gap-2 border-t border-primary/15 pt-4 text-sm sm:grid-cols-2">
             <p className="rounded-2xl bg-background/70 px-4 py-3 text-muted-foreground">
               New vocabulary added:{" "}
-              <span className="font-mono font-semibold text-foreground">{installed.addedVocab}</span>
+              <span className="font-mono font-semibold text-foreground">
+                {installed.addedVocab}
+              </span>
             </p>
             <p className="rounded-2xl bg-background/70 px-4 py-3 text-muted-foreground">
               New phrase cards added:{" "}
-              <span className="font-mono font-semibold text-foreground">{installed.addedPhrases}</span>
+              <span className="font-mono font-semibold text-foreground">
+                {installed.addedPhrases}
+              </span>
             </p>
           </div>
         ) : null}
