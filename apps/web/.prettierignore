@@ -12,3 +12,6 @@ pnpm-lock.yaml
 # Reference/donor sources not part of this app's build (see eslint.config.mjs).
 goalmap/
 dev-learning-notes/
+
+# Curated script-study data is intentionally kept one entry per authored line.
+lib/study-packs/social-awareness.ts
