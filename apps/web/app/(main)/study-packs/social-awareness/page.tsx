@@ -2,14 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import {
-  ArrowRight,
-  BookOpenText,
-  CheckCircle2,
-  Languages,
-  Loader2,
-  Sparkles,
-} from "lucide-react"
+import { ArrowRight, BookOpenText, CheckCircle2, Languages, Loader2, Sparkles } from "lucide-react"
 import { useQueryClient } from "@tanstack/react-query"
 import { toast } from "sonner"
 
@@ -130,9 +123,7 @@ export default function SocialAwarenessStudyPackPage() {
             </div>
           </div>
           <div className="rounded-2xl bg-muted/45 px-4 py-3 text-sm text-muted-foreground">
-            <span className="font-semibold text-foreground">
-              {SOCIAL_AWARENESS_PHRASES.length}
-            </span>{" "}
+            <span className="font-semibold text-foreground">{SOCIAL_AWARENESS_PHRASES.length}</span>{" "}
             speaking and recognition cards
           </div>
         </div>
