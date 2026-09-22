@@ -8,9 +8,9 @@ what's summarized below.
 ## Snapshot
 
 - **Updated:** 2026-09-22
-- **Branch:** `chore/remove-spring-api` (branched from `fix/local-test-env`)
-- **Last commit:** 1641976 — fix(web): stop Node 24+ Web Storage from breaking the jsdom tests
-- **Working tree:** the backend removal below is staged/unstaged, **not committed**
+- **Branch:** `main` (synced with `origin/main`)
+- **Last commit:** 5260d5a — Merge pull request #24 from Hen-Heang/chore/remove-spring-api
+- **Working tree:** clean
 
 ## Current focus
 
@@ -53,9 +53,11 @@ backup repository.
   references outside `docs/MONOREPO_MIGRATION.md` (intentional) and
   `apps/web/dev-learning-notes` (unrelated embedded project).
 
+PR #24 was merged into `main` on 2026-09-22 with all checks green (Lint &
+Format, Test, Build Verification, Vercel deploy).
+
 ## Next steps
 
-- Commit the removal and open a PR (nothing is committed yet).
 - **Railway:** the service whose Root Directory was `/apps/api` no longer has a
   source here. Delete it or repoint it at `Hen-Heang/hengo-api` so it stops
   deploying a stale image.
