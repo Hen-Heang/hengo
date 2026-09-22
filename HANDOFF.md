@@ -9,8 +9,9 @@ what's summarized below.
 
 - **Updated:** 2026-09-22
 - **Branch:** `main` (synced with `origin/main`)
-- **Last commit:** 5260d5a — Merge pull request #24 from Hen-Heang/chore/remove-spring-api
-- **Working tree:** clean
+- **Last commit:** f629870 — Merge pull request #25 from Hen-Heang/docs/handoff-post-api-removal
+- **Working tree:** clean apart from untracked `.ax/` and `.claude/*` (AX
+  harness install, not part of this work)
 
 ## Current focus
 
@@ -54,13 +55,48 @@ backup repository.
   `apps/web/dev-learning-notes` (unrelated embedded project).
 
 PR #24 was merged into `main` on 2026-09-22 with all checks green (Lint &
-Format, Test, Build Verification, Vercel deploy).
+Format, Test, Build Verification, Vercel deploy), followed by PR #25 (handoff).
+All 11 leftover branches were then deleted — nine merged, plus
+`feat/social-awareness-study-pack` and `chore/fix-social-awareness-format`, whose
+commits were unmerged but whose content was already on `main` via `9a89437` (the
+only difference was a stale Prettier wrapping that would have failed
+`format:web:check`). `main` is now the only branch, local and remote.
+
+## Vercel follow-up (2026-09-22, no repository change)
+
+The cleanup continued outside the repo, in the `hen-heangs-projects/koriai-frontend`
+Vercel project:
+
+- `apps/web` is now linked to that project (`apps/web/.vercel/`, gitignored), and
+  `apps/web/.env.local` holds a Production pull. Without it the app failed at boot
+  with "Supabase is not configured" — the Supabase variables are **Production-scoped
+  only**, so Development had nothing to give.
+- **25 dead variables deleted** from Production and Preview (49 entries total),
+  all Railway/Spring-era with zero references in `apps/web`:
+  `SPRING_DATASOURCE_{URL,USERNAME,PASSWORD}`,
+  `LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_BOOT_AUTOCONFIGURE`, `JAVA_TOOL_OPTIONS`,
+  `CORS_ALLOWED_ORIGINS`, `JWT_SECRET`, `DB_{URL,USERNAME,PASSWORD}`,
+  `RAILWAY_DEPLOYMENT_DRAINING_SECONDS`, `POSTGRES_{DB,USER,PASSWORD}`,
+  `PG{HOST,PORT,USER,PASSWORD,DATABASE,DATA}`, `DATABASE_PUBLIC_URL`,
+  `SSL_CERT_DAYS`, `GOOGLE_CLIENT_IDS`, `APP_FRONTEND_BASE_URL`,
+  `NEXT_PUBLIC_API_BASE_URL`. Verified absent afterwards; 43 rows remain.
+- `vercel env rm <NAME> --yes` fails with `multiple_envs` when a name exists in
+  more than one environment — pass the target explicitly
+  (`vercel env rm <NAME> production --yes`).
 
 ## Next steps
 
 - **Railway:** the service whose Root Directory was `/apps/api` no longer has a
   source here. Delete it or repoint it at `Hen-Heang/hengo-api` so it stops
   deploying a stale image.
+- **Preview deploys are still broken:** `NEXT_PUBLIC_SUPABASE_URL` and
+  `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` exist only in Production, so every PR
+  preview hits the same "Supabase is not configured" error. Copy both to Preview.
+- Undecided, left in place deliberately: `VAPID_{PRIVATE_KEY,PUBLIC_KEY,SUBJECT}`
+  and `TELEGRAM_WEBHOOK_SECRET` have no `apps/web` references but delivery runs in
+  Supabase Edge Functions, so they may be Spring-era leftovers or may not.
+  `DATABASE_URL` / `DATABASE_URL_UNPOOLED` have per-git-branch Preview copies and
+  look integration-managed — disconnect the integration rather than deleting rows.
 - Optional: `.mcp.json` and `.codex/config.toml` still declare the IntelliJ IDEA
   MCP bridge (`127.0.0.1:64342`), which was mainly for Java work.
 - Optional: root `supabase/seed/` duplicates the `apps/web/supabase/` layout —
