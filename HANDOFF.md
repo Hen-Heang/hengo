@@ -7,75 +7,66 @@ what's summarized below.
 
 ## Snapshot
 
-- **Updated:** 2026-09-04
-- **Branch:** `main` (aligned with `origin/main` before the handoff edits)
-- **Last commit:** b232872 — Merge pull request #17 from Hen-Heang/feat/core-korean-300
+- **Updated:** 2026-09-22
+- **Branch:** `chore/remove-spring-api` (branched from `fix/local-test-env`)
+- **Last commit:** 1641976 — fix(web): stop Node 24+ Web Storage from breaking the jsdom tests
+- **Working tree:** the backend removal below is staged/unstaged, **not committed**
 
 ## Current focus
 
-**Account-specific Korean pattern practice was expanded in the live Hengo
-Supabase project** (`dnzqgnejwyucenghugrb`) for `henheang15@gmail.com`
-(`auth.users.id = 31dec390-4b91-4516-bcc0-a0f5f9045217`). No schema or
-application-code change was needed because the existing Phrasebook already
-supports collections, cards, speaking practice, and review progress.
+**The Spring Boot backend was removed so the repository is frontend-only.**
+The project's focus is `apps/web`; `apps/api` had been an unused subtree import
+(untouched since `f51e4d5`, 2026-08-03) that still slowed down every root
+workflow.
 
-A pinned collection was created idempotently:
+Removed:
 
-- Collection: `직장·일상 실전 한국어 문형 22` /
-  `22 Essential Work & Daily Korean Patterns`
-- Collection ID: `83a5152d-c4bf-4b59-99e5-2d8cf5c0e400`
-- Source key: `mentor-real-situation-patterns`
-- Seed/content version: 2
-- Twenty-two active, user-editable cards cover the original mentor patterns
-  plus high-utility work and daily-life situations.
-- Original patterns:
-  - `믿기지 않을 정도로 ~`
-  - `~했을 뿐이에요`
-  - `~에 대해서는 잘 모르겠어요`
-  - quoted clause + `~라고/다고 생각하다`
-- Added workplace language: work in progress, completion estimates, blockers,
-  clarification, permission, checking and following up, suggestions, respectful
-  disagreement, completion reports, and polite refusal/availability.
-- Added daily-life language: intentions, decided plans, past experience, things
-  the learner wants to try, café ordering, exchanges/refunds, directions, and
-  appointments.
+- `apps/api/` — 348 tracked files, including 11 committed junk files
+  (`boot-8080*.log` ×6, `run.log`, `boot-test-err.log`, `java-run.args`,
+  `java-test.args`, `sql-practice/practice.sql`). Only local dev values were in
+  those logs, no production secrets.
+- `.github/workflows/api.yml` — Maven tests + Docker image build.
+- `scripts/maven.mjs` and `scripts/dev.mjs` (the `scripts/` directory is gone).
+- `infra/` — its Compose stack only existed to serve the Spring app; the web app
+  uses hosted Supabase.
+- `.claude/agents/dev-backend.md`.
 
-Each card uses a realistic workplace prompt, romanization, English meaning,
-alternate answers, usage/register guidance, vocabulary, and recall-oriented
-tags. The mentor's casual `~라고 생각하니?` is retained as a variant; the
-recommended workplace answer uses polite `~라고 생각하세요?`.
+Rewired: root `package.json` (`dev`/`test`/`build` are now frontend-only, and
+`dev:api`/`test:api`/`package:api` are gone), `README.md`, `AGENTS.md`,
+`docs/DEVELOPMENT.md`, `docs/MONOREPO_MIGRATION.md` (now a history +
+recovery note), `docs/NOTION_MCP.md`, `apps/web/docs/chatgpt-mcp-integration.md`,
+and the three remaining subagent definitions.
+
+The backend is recoverable from this repo's git history
+(`git show f51e4d5:apps/api/...`) and from the untouched `Hen-Heang/hengo-api`
+backup repository.
 
 ## Verification
 
-- Live Auth lookup found exactly the requested account, with a recent sign-in.
-- The collection is pinned and owns exactly 22 active cards in positions 0–21,
-  with 22 distinct positions.
-- Category distribution is 10 workplace, 8 daily-life, and 4 original mentor
-  pattern cards.
-- All questions are JSON objects; all answer lists are non-empty; every card has
-  a recommended answer. Required Korean, romanization, English, register,
-  vocabulary, and tags all passed live integrity queries.
-- `kori_phrase_collections` and `kori_phrase_cards` both have RLS enabled with
-  their existing per-owner policies.
-- Stable per-user source keys make both the original and expanded data writes
-  safe to rerun without duplicating the collection or cards.
-
-## Working tree
-
-- Only `HANDOFF.md` and `HANDOFF_HISTORY.md` were changed to record this live
-  data update; the application source was not modified.
+- `pnpm test` (now frontend-only) — 1129 passed, 1 failed: a 5s timeout in
+  `components/layout/navigation-shell.test.tsx` "offers only Ask AI by default".
+  Re-running that file alone passes 56/56, so it is a load-related flake under
+  the full suite, not a consequence of this change.
+- `pnpm lint` — 0 errors, 5 pre-existing `no-unused-vars` / react-hooks
+  warnings.
+- Repo-wide grep shows no remaining `apps/api`, `mvnw`, or `localhost:8080`
+  references outside `docs/MONOREPO_MIGRATION.md` (intentional) and
+  `apps/web/dev-learning-notes` (unrelated embedded project).
 
 ## Next steps
 
-- The user can open `/phrasebook`, select the pinned collection, and start the
-  built-in practice flow.
-- Browser verification is still optional because no login password/session was
-  provided; database shape, ownership, content, and RLS were verified directly.
+- Commit the removal and open a PR (nothing is committed yet).
+- **Railway:** the service whose Root Directory was `/apps/api` no longer has a
+  source here. Delete it or repoint it at `Hen-Heang/hengo-api` so it stops
+  deploying a stale image.
+- Optional: `.mcp.json` and `.codex/config.toml` still declare the IntelliJ IDEA
+  MCP bridge (`127.0.0.1:64342`), which was mainly for Java work.
+- Optional: root `supabase/seed/` duplicates the `apps/web/supabase/` layout —
+  worth folding in or deleting on a future pass.
 
 ## Notes for future sessions
 
-- Two independent apps remain: `apps/web` uses Next.js/Supabase; `apps/api` is
-  an imported backup and is not the live backend.
+- One app remains: `apps/web`, Next.js/Supabase + `app/api/ai/*` routes.
 - V2 features hidden from navigation are not safe to delete.
 - Query live Supabase before schema claims; the repository migration folder is
   not a complete live-schema ledger.
