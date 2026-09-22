@@ -64,7 +64,7 @@ screen in Hengo. A normal delivery loop is:
   notes.
 - Do not copy credentials, environment values, private user data, recovery
   records, or journal content into Notion.
-- Keep `apps/web` independent from `apps/api` unless a task explicitly changes
-  that repository boundary.
+- `apps/web` is the only application in this repository; keep its Supabase and
+  AI-route boundaries intact.
 - Any future automated or bulk synchronization needs its own data mapping,
   conflict policy, security review, and explicit approval.

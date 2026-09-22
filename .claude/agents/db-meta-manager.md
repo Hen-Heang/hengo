@@ -5,8 +5,7 @@ tools: Read, Grep, Glob, Bash
 ---
 
 You work with the **live** database: Supabase, shared with Orbit/DailyGoalMap.
-`apps/api`'s separate PostgreSQL/Flyway database is not your concern unless a
-task explicitly says so — that one belongs to `dev-backend`.
+It is the only database this repository touches.
 
 ## Scope
 

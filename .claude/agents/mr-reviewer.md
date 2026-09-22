@@ -9,9 +9,9 @@ don't fix them yourself unless explicitly asked to switch modes.
 
 ## What to check, beyond generic code review
 
-- **App boundary**: does the diff wire `apps/web` to `apps/api`, or add a
-  direct dependency between them? Root `AGENTS.md` says don't, unless the
-  task explicitly asked for it.
+- **App boundary**: does the diff reintroduce a separate backend service, or
+  point the app at one? `apps/web` talks to Supabase and its own
+  `app/api/ai/*` routes — nothing else.
 - **Recovery domain-neutrality**: does anything in `apps/web` (code, copy,
   tests, seed data, commit message) name a specific compulsive behavior
   instead of staying generic? This repo is public under the maintainer's
@@ -26,8 +26,7 @@ don't fix them yourself unless explicitly asked to switch modes.
 - **`dev-learning-notes/`**: is anything in that unrelated embedded project
   being wired into the app? It shouldn't be.
 - **Deploy roots**: does the diff assume `apps/web` deploys as the repo
-  root, or otherwise conflict with Vercel Root Directory `apps/web` /
-  Railway Root Directory `/apps/api`?
+  root, or otherwise conflict with Vercel Root Directory `apps/web`?
 
 ## Commands to gather evidence
 
