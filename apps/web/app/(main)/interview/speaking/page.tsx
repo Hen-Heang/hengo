@@ -201,7 +201,8 @@ export default function SpeakingDrillPage() {
       .drillQuestions({
         kind: "speaking",
         count: DRILL_SIZE,
-        complexityHint: "natural weather-interview phrasing for a beginner answer of 2-3 sentences",
+        complexityHint:
+          "natural habits-and-hobbies interview phrasing for a beginner answer of 2-3 sentences",
         styleExamples: pickStyleExamples(),
         avoid: staticQueue.map((question) => question.ko),
       })

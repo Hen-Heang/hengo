@@ -27,7 +27,7 @@ describe("daysUntil", () => {
 
 describe("getCurrentWeek", () => {
   it("finds the week containing today", () => {
-    expect(getCurrentWeek(new Date(2026, 5, 25)).id).toBe("w1") // Jun 23–29
+    expect(getCurrentWeek(new Date(2026, 9, 7)).id).toBe("w3") // Oct 5–11
   })
 
   it("clamps to the first week before the plan starts", () => {
@@ -35,11 +35,12 @@ describe("getCurrentWeek", () => {
   })
 
   it("clamps to the last week after the plan ends", () => {
-    expect(getCurrentWeek(new Date(2026, 8, 15)).id).toBe(STUDY_WEEKS[STUDY_WEEKS.length - 1].id)
+    expect(getCurrentWeek(new Date(2026, 11, 15)).id).toBe(STUDY_WEEKS[STUDY_WEEKS.length - 1].id)
   })
 
   it("keeps the exam date in sync with the plan window", () => {
-    expect(EXAM_DATE).toBe("2026-08-29")
+    expect(EXAM_DATE).toBe("2026-11-28")
+    expect(STUDY_WEEKS[STUDY_WEEKS.length - 1].end).toBe(EXAM_DATE)
   })
 })
 
@@ -49,9 +50,13 @@ describe("isExamActive", () => {
     expect(isExamActive(new Date(new Date(EXAM_END_DATETIME).getTime() - 1000))).toBe(true)
   })
 
-  it("is false once the exam window is fully over — e.g. today, 2026-08-31", () => {
+  it("is false once the exam window is fully over — e.g. 2026-11-30", () => {
     expect(isExamActive(new Date(new Date(EXAM_END_DATETIME).getTime() + 1000))).toBe(false)
-    expect(isExamActive(new Date(2026, 7, 31))).toBe(false)
+    expect(isExamActive(new Date(2026, 10, 30))).toBe(false)
+  })
+
+  it("is active again for the 6th exam cycle — e.g. 2026-09-29", () => {
+    expect(isExamActive(new Date(2026, 8, 29))).toBe(true)
   })
 })
 

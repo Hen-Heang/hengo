@@ -35,6 +35,7 @@ import {
   type QAItem,
 } from "@/lib/interview"
 import { duplicateVersionLabel, suggestUniqueVersionLabel } from "@/lib/interview-practice"
+import { SCRIPT_DUE_LABEL } from "@/lib/study-plan"
 import { cn } from "@/lib/utils"
 
 const topic = INTERVIEW_TOPICS[0]
@@ -1069,7 +1070,7 @@ export default function InterviewScriptPage() {
                     {topic.labelKo}
                   </h1>
                   <p className="mt-2 text-sm font-medium text-muted-foreground">
-                    {topic.label} · Interview script · Submit by Aug 21
+                    {topic.label} · Interview script · Submit by {SCRIPT_DUE_LABEL}
                   </p>
                   <p className="mt-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">
                     {completedSections}/{allSections.length} sections · {totalWords} words ·{" "}

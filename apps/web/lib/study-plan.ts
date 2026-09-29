@@ -1,17 +1,23 @@
-// Study plan for the 제5회 K-Specialist exam, surfaced on the interview page so
+// Study plan for the 제6회 K-Specialist exam, surfaced on the interview page so
 // the candidate sees their countdown + this week's tasks where they practice
 // daily. Pure data + date helpers; the UI lives in
 // components/interview/StudyPlanCard.tsx.
 
-export const EXAM_DATE = "2026-08-29"
-export const SCRIPT_DUE_DATE = "2026-08-21"
+export const EXAM_DATE = "2026-11-28"
+export const SCRIPT_DUE_DATE = "2026-11-20"
 
-// The exam starts at 13:00 KST (UTC+9) on exam day — per the official notice
-// "2026년 08월 29일(토) 13시". Pinned to the KST instant so the live countdown is
+// Short labels for the UI copy that names the dates ("Q&A · Nov 28"). Keep
+// them in step with EXAM_DATE / SCRIPT_DUE_DATE above.
+export const EXAM_DATE_LABEL = "Nov 28"
+export const SCRIPT_DUE_LABEL = "Nov 20"
+
+// The interview starts at 13:00 KST (UTC+9) on exam day — the planned slot is
+// "2026년 11월 28일(토) 13시" (the notice also mentions 11/29, so re-check the
+// final announcement). Pinned to the KST instant so the live countdown is
 // correct from any timezone. EXAM_END is end of exam day: the banner stays up
 // through the whole day ("until you finish"), then hides.
-export const EXAM_DATETIME = "2026-08-29T13:00:00+09:00"
-export const EXAM_END_DATETIME = "2026-08-29T23:59:59+09:00"
+export const EXAM_DATETIME = "2026-11-28T13:00:00+09:00"
+export const EXAM_END_DATETIME = "2026-11-28T23:59:59+09:00"
 
 export type StudyPhase = "Baseline" | "Foundation" | "Speaking" | "Polish" | "Taper"
 
@@ -30,113 +36,99 @@ export interface StudyWeek {
 
 export const STUDY_WEEKS: StudyWeek[] = [
   {
-    id: "w0",
-    label: "Week 0",
-    range: "Jun 17–22",
-    start: "2026-06-17",
-    end: "2026-06-22",
-    phase: "Baseline",
-    tasks: [
-      "Take one full mock — write down your 4-criteria baseline score",
-      "Add all 20 weather words to your SRS deck",
-      "Write a rough draft of all 7 script sections",
-      "Start the daily core routine",
-    ],
-  },
-  {
     id: "w1",
     label: "Week 1",
-    range: "Jun 23–29",
-    start: "2026-06-23",
-    end: "2026-06-29",
-    phase: "Foundation",
+    range: "Sep 21–27",
+    start: "2026-09-21",
+    end: "2026-09-27",
+    phase: "Baseline",
     tasks: [
-      "Daily core routine ×7",
-      "Grammar: comparison 'A보다 B가 더 ~'",
-      "Rewrite script sections 1–2 (intro, Korea summer)",
-      "3× Listening module sessions",
+      "Read the new habits/hobbies script aloud once a day",
+      "Learn the flow: 교통 → 날씨 → 분리배출/요리 → 운동 → 친구/여행 → 한국어 → 변화",
+      "Answer the TOP 5 questions in 1–3 sentences",
+      "Start the daily 15–20 minute check",
     ],
   },
   {
     id: "w2",
     label: "Week 2",
-    range: "Jun 30–Jul 6",
-    start: "2026-06-30",
-    end: "2026-07-06",
+    range: "Sep 28–Oct 4",
+    start: "2026-09-28",
+    end: "2026-10-04",
     phase: "Foundation",
     tasks: [
-      "Daily core routine ×7",
-      "Grammar: '처음에는 ~지만 지금은 ~' + cause '~아서/어서'",
-      "Rewrite script sections 3–4 (compare, daily life)",
-      "3× Listening — transcribe each sample question",
+      "Question comprehension: 왜 · 어떻게 · 어디 · 언제 · 가장 — catch 2–4 words",
+      "Grammar: 'V-게 되었어요' + '처음에는 ~, 하지만 지금은 ~'",
+      "Everyday Q&A: company, home, weekend, food, life in Korea",
+      "3× Listening sessions — no English first",
     ],
   },
   {
     id: "w3",
     label: "Week 3",
-    range: "Jul 7–13",
-    start: "2026-07-07",
-    end: "2026-07-13",
+    range: "Oct 5–11",
+    start: "2026-10-05",
+    end: "2026-10-11",
     phase: "Foundation",
     tasks: [
-      "Daily core routine ×7",
-      "Grammar: '~는 것 같아요' + linking sentences smoothly",
-      "Rewrite script sections 5–7 (health, reflection, conclusion)",
+      "Answer all 18 expected questions without looking",
+      "Grammar: 'V-(으)면서', 'V-거나', 'V-아/어 보다'",
+      "Self-introduction: short and natural, not memorized-sounding",
       "First self-recording — answer 3 questions, listen back",
     ],
   },
   {
     id: "w4",
     label: "Week 4",
-    range: "Jul 14–20",
-    start: "2026-07-14",
-    end: "2026-07-20",
+    range: "Oct 12–18",
+    start: "2026-10-12",
+    end: "2026-10-18",
     phase: "Speaking",
     tasks: [
-      "Daily FULL mock (5+ turns), answer aloud, save scorecard",
+      "Daily mock (5+ turns) — answer aloud, save the scorecard",
+      "Follow-ups: 왜요? · 언제부터? · 얼마나 자주? · 누구와?",
+      "Hear the same question phrased 2–3 different ways",
       "Log your 3 most common mistakes and drill them",
-      "Answer 5 sample questions 2 ways each (paraphrase)",
-      "Listening: hide the English on every question",
     ],
   },
   {
     id: "w5",
     label: "Week 5",
-    range: "Jul 21–27",
-    start: "2026-07-21",
-    end: "2026-07-27",
+    range: "Oct 19–25",
+    start: "2026-10-19",
+    end: "2026-10-25",
     phase: "Speaking",
     tasks: [
-      "Daily full mock; target Speaking + Vocabulary ≥ 4/5",
+      "Daily mock; keep going after a grammar mistake",
+      "Reuse real stories (한강 자전거, 부산 여행) for different follow-ups",
       "Record vs TTS — fix your top 2 pronunciation issues",
-      "Practice follow-up questions (examiner goes deeper)",
-      "Memorize section CONTENT for sections 1–4",
+      "Topic summary: one reason + one real experience",
     ],
   },
   {
     id: "w6",
     label: "Week 6",
-    range: "Jul 28–Aug 3",
-    start: "2026-07-28",
-    end: "2026-08-03",
+    range: "Oct 26–Nov 1",
+    start: "2026-10-26",
+    end: "2026-11-01",
     phase: "Speaking",
     tasks: [
-      "Daily full mock; target all 4 criteria ≥ 4/5",
-      "Memorize section CONTENT for sections 5–7",
-      "Drill recovery phrases: 글쎄요…, 좋은 질문이에요, 다시 말씀해 주시겠어요?",
-      "Can answer all 8 sample questions confidently",
+      "📋 Oct 30: interview group assignment — match mocks to the real format",
+      "Daily mock with random questions + follow-ups",
+      "Drill recovery lines: 한 번만 다시 말씀해 주시겠습니까?",
+      "Can answer the TOP 5 confidently in 1 second",
     ],
   },
   {
     id: "w7",
     label: "Week 7",
-    range: "Aug 4–10",
-    start: "2026-08-04",
-    end: "2026-08-10",
+    range: "Nov 2–8",
+    start: "2026-11-02",
+    end: "2026-11-08",
     phase: "Polish",
     tasks: [
-      "Daily full mock at full difficulty",
-      "Script: tighten wording, swap weak vocab for strong terms",
+      "Self-intro + topic intro + Q&A as one full run",
+      "Script: tighten wording, keep grammar simple",
       "Target your weak pronunciation sounds daily",
       "Practice unexpected / off-script questions",
     ],
@@ -144,42 +136,42 @@ export const STUDY_WEEKS: StudyWeek[] = [
   {
     id: "w8",
     label: "Week 8",
-    range: "Aug 11–17",
-    start: "2026-08-11",
-    end: "2026-08-17",
+    range: "Nov 9–15",
+    start: "2026-11-09",
+    end: "2026-11-15",
     phase: "Polish",
     tasks: [
-      "Daily full mock; aim 4–5/5 consistently",
+      "Daily full mock; aim for short answers with no long pauses",
       "Script: final proofread pass (grammar, spelling, flow)",
-      "Read full script aloud twice; time it",
+      "Read the full script aloud twice; time it",
       "Listening comfortable without English now",
     ],
   },
   {
     id: "w9",
     label: "Week 9",
-    range: "Aug 18–21",
-    start: "2026-08-18",
-    end: "2026-08-21",
+    range: "Nov 16–20",
+    start: "2026-11-16",
+    end: "2026-11-20",
     phase: "Polish",
     tasks: [
-      "Aug 19: script FINAL — no more changes",
-      "Aug 20: read aloud one last time",
-      "🚩 Aug 21: SUBMIT THE SCRIPT",
+      "Nov 18: script FINAL — no more changes",
+      "Nov 19: read aloud one last time",
+      "🚩 Nov 20: SUBMIT THE KOREAN PRESENTATION SCRIPT",
     ],
   },
   {
     id: "w10",
     label: "Week 10",
-    range: "Aug 22–29",
-    start: "2026-08-22",
-    end: "2026-08-29",
+    range: "Nov 21–28",
+    start: "2026-11-21",
+    end: "2026-11-28",
     phase: "Taper",
     tasks: [
-      "Daily TIMED mock, real conditions: no English, no notes",
-      "Light vocab review only — do NOT learn new words",
-      "Aug 28: light review of script + 10 key phrases",
-      "Aug 29: rest, sleep early, no cramming",
+      "Daily mock: random question → 1 second → 1–3 sentences → follow-up",
+      "No new content — repeat only weak questions and mistakes",
+      "Nov 27: light review of the 60-second intro + TOP 5 + emergency lines",
+      "Nov 28 13:00: interview day — rest, no cramming",
     ],
   },
 ]

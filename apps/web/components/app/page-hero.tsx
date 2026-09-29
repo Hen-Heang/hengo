@@ -42,7 +42,7 @@ export function PageHero({
     >
       <div className="pointer-events-none absolute inset-0 z-0 overflow-hidden" aria-hidden="true">
         {!isCompact && (
-          <div className="absolute -left-20 -top-24 h-56 w-56 rounded-full bg-primary/[0.06] blur-[72px]" />
+          <div className="absolute -left-20 -top-24 h-56 w-56 rounded-full bg-primary/6 blur-[72px]" />
         )}
         <div className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-primary/25 to-transparent" />
       </div>
@@ -93,7 +93,7 @@ export function PageHero({
                     <p className="font-mono text-base font-semibold tracking-tight text-foreground sm:text-lg">
                       {stat.value}
                     </p>
-                    <p className="mt-0.5 break-words text-xs font-medium leading-4 text-muted-foreground">
+                    <p className="mt-0.5 wrap-break-word text-xs font-medium leading-4 text-muted-foreground">
                       {stat.label}
                     </p>
                   </>

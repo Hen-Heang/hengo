@@ -29,7 +29,7 @@ describe("getInterviewTopic", () => {
   })
 })
 
-describe("weather topic prep", () => {
+describe("current exam topic prep (habits & hobbies)", () => {
   it("ships curated vocabulary, phrases, and sample questions", () => {
     const weather = getInterviewTopic("weather")
     expect(weather.recommended).toBe(true)
@@ -69,23 +69,28 @@ describe("weather topic prep", () => {
     }
   })
 
-  it("cites authoritative weather, health, Cambodia-climate, and Korean-language references", () => {
+  it("cites a Korean-language reference", () => {
     const sources = getInterviewTopic("weather").prep!.sources ?? []
     const publishers = sources.map((source) => source.publisher).join(" ")
 
-    expect(publishers).toContain("질병관리청")
-    expect(publishers).toContain("기상청")
-    expect(publishers).toContain("World Bank")
     expect(publishers).toContain("국립국어원")
   })
 })
 
-describe("weather topic script outline", () => {
+describe("current exam topic script outline", () => {
   it("ships an ordered script outline", () => {
     const outline = getInterviewTopic("weather").scriptOutline
     expect(outline).toBeDefined()
     expect(outline!.length).toBeGreaterThanOrEqual(5)
-    expect(outline![0].id).toBe("intro")
+    expect(outline![0].id).toBe("opening")
+  })
+
+  it("seeds every outline section in Korean and English", () => {
+    const topic = getInterviewTopic("weather")
+    for (const section of topic.scriptOutline!) {
+      expect(topic.scriptSeed?.[section.id]?.trim()).toBeTruthy()
+      expect(topic.scriptSeedEn?.[section.id]?.trim()).toBeTruthy()
+    }
   })
 })
 
@@ -94,15 +99,15 @@ describe("buildScriptDocument", () => {
 
   it("assembles filled sections with headings and skips empties", () => {
     const doc = buildScriptDocument(weather, {
-      intro: "안녕하세요. 저는 헨입니다.",
-      "korea-summer": "한국 여름은 덥고 습해요.",
-      compare: "   ", // whitespace-only is skipped
+      opening: "안녕하세요. 저는 헨입니다.",
+      transport: "한국에서는 매일 걸어서 출근해요.",
+      "weather-check": "   ", // whitespace-only is skipped
     })
     expect(doc).toContain(weather.labelKo)
     expect(doc).toContain("인사 및 주제 소개")
     expect(doc).toContain("안녕하세요. 저는 헨입니다.")
-    expect(doc).toContain("한국 여름은 덥고 습해요.")
-    expect(doc).not.toContain("캄보디아 날씨와 비교")
+    expect(doc).toContain("한국에서는 매일 걸어서 출근해요.")
+    expect(doc).not.toContain("날씨 확인 습관")
   })
 
   it("returns just the title when nothing is written", () => {
@@ -113,7 +118,7 @@ describe("buildScriptDocument", () => {
 describe("buildInterviewSystemPrompt", () => {
   it("embeds the topic and the response-format tags (practice default)", () => {
     const prompt = buildInterviewSystemPrompt(getInterviewTopic("weather"))
-    expect(prompt).toContain("한국 여름 날씨")
+    expect(prompt).toContain("한국에 온 후 새로 생긴 습관/취미")
     expect(prompt).toContain("[QUESTION_KO]")
     expect(prompt).toContain("[QUESTION_EN]")
     expect(prompt).toContain("[FEEDBACK]")

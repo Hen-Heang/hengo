@@ -18,6 +18,7 @@ import {
   type QuestionBankItem,
   type QuestionProgress,
 } from "@/lib/interview-practice"
+import { EXAM_DATE_LABEL } from "@/lib/study-plan"
 import { cn } from "@/lib/utils"
 
 const LEVELS: { id: PracticeDifficulty; label: string }[] = [
@@ -73,21 +74,25 @@ export function ExamPracticeDashboard({
                 <Badge className="border-none bg-blue-500/10 text-blue-700 dark:text-blue-300">
                   K-Specialist Exam Prep
                 </Badge>
-                <span className="text-sm font-medium text-muted-foreground">Q&A · Aug 29</span>
+                <span className="text-sm font-medium text-muted-foreground">
+                  Q&A · {EXAM_DATE_LABEL}
+                </span>
               </div>
               <h1 className="mt-3 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
                 Train the questions you are most likely to hear
               </h1>
               <p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">
-                Catch the keyword → choose your real story → answer in 2–3 short formal sentences.
-                Clear Korean matters more than long answers.
+                Catch the keyword → choose your real story → answer in 1–3 short sentences. Clear
+                Korean matters more than long answers.
               </p>
             </div>
             <div className="flex shrink-0 items-center gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 sm:px-5">
               <CalendarDays className="size-5 text-blue-600" aria-hidden="true" />
               <div>
                 <p className="text-3xl font-bold tabular-nums text-foreground">{daysRemaining}</p>
-                <p className="text-xs font-medium text-muted-foreground">days until Aug 29</p>
+                <p className="text-xs font-medium text-muted-foreground">
+                  days until {EXAM_DATE_LABEL}
+                </p>
               </div>
             </div>
           </div>

@@ -17,6 +17,7 @@ import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import {
   EXAM_DATE,
+  EXAM_DATE_LABEL,
   SCRIPT_DUE_DATE,
   STUDY_WEEKS,
   daysUntil,
@@ -283,7 +284,7 @@ export function StudyPlanCard() {
               </li>
             ))}
             <li className="flex items-center justify-between rounded-lg bg-rose-500/10 px-3 py-1.5 text-xs font-bold text-rose-600 dark:text-rose-400">
-              <span>Aug 29</span>
+              <span>{EXAM_DATE_LABEL}</span>
               <span>EXAM 🎯</span>
             </li>
           </ul>
