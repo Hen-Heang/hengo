@@ -19,7 +19,6 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FINAL_WEATHER_CORE_VOCABULARY } from "@/lib/exam-core-vocabulary"
 import type { InterviewTopic, PhraseEntry, PracticeQuestion, VocabEntry } from "@/lib/interview"
 import { cn } from "@/lib/utils"
 
@@ -38,16 +37,8 @@ export function StudyPack({
   const prep = topic.prep
   if (!prep) return null
 
-  const useFinalWeatherDeck = topic.id === "weather"
-  const finalCoreTerms = new Set(FINAL_WEATHER_CORE_VOCABULARY.map((item) => item.term))
-  const coreVocabulary = useFinalWeatherDeck
-    ? FINAL_WEATHER_CORE_VOCABULARY
-    : prep.vocabulary.filter((item) => item.priority === "core")
-  const stretchVocabulary = useFinalWeatherDeck
-    ? prep.vocabulary
-        .filter((item) => !finalCoreTerms.has(item.term))
-        .map((item) => ({ ...item, priority: "stretch" as const }))
-    : prep.vocabulary.filter((item) => item.priority !== "core")
+  const coreVocabulary = prep.vocabulary.filter((item) => item.priority === "core")
+  const stretchVocabulary = prep.vocabulary.filter((item) => item.priority !== "core")
   const visibleVocabulary = vocabLevel === "core" ? coreVocabulary : stretchVocabulary
   const modelQuestions = prep.sampleQuestions.filter((question) => question.answerKo)
 

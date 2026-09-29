@@ -63,6 +63,7 @@ import {
   type ScorecardRecord,
 } from "@/lib/interview-history"
 import { registerSpeechAudio, stopSpeechAudio } from "@/lib/speech-audio"
+import { EXAM_DATE_LABEL } from "@/lib/study-plan"
 import { cn } from "@/lib/utils"
 
 type SessionEntry =
@@ -388,8 +389,8 @@ export default function InterviewPage() {
             title="Mock Interview"
             description="Practice the K-Specialist spoken Q&A. The AI examiner asks one question at a time and keeps probing with follow-ups — train in Practice mode, then prove it under real exam conditions."
             stats={[
-              { label: "Exam", value: "Aug 29" },
-              { label: "Format", value: "Q&A only" },
+              { label: "Exam", value: EXAM_DATE_LABEL },
+              { label: "Format", value: "Intro + Q&A" },
               { label: "Judged on", value: "Speaking" },
             ]}
           />

@@ -29,7 +29,7 @@ export const POST = jsonAiRoute({
   }),
   buildPrompt: ({ count, complexityHint, styleExamples, avoid }) =>
     `Generate ${count} NEW Korean questions a K-Specialist interviewer would ask — ` +
-    "mix the candidate's prepared topic (Korean summer weather vs Cambodia, its impact on daily life and health) with " +
+    "mix the candidate's prepared topic (new habits and hobbies developed after moving from Cambodia to Korea: walking and public transport, checking the weather, separating trash, cooking, walking/jogging/cycling at Yeouido Park and the Han River, trips with friends, studying Korean) with " +
     "everyday off-topic probes (life in Korea, work, hometown, food, hobbies, future plans, Korean study). " +
     (styleExamples.length
       ? "Use the formal interviewer register of these examples:\n" +

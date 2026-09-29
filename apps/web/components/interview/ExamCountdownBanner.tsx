@@ -6,6 +6,7 @@ import { ArrowRight, FileText, GraduationCap } from "lucide-react"
 
 import {
   EXAM_DATETIME,
+  EXAM_DATE_LABEL,
   SCRIPT_DUE_DATE,
   countdownTo,
   daysUntil,
@@ -109,7 +110,7 @@ export function ExamCountdownBanner() {
           )}
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-medium text-muted-foreground">
-            <span>K-Specialist speaking exam · Aug 29</span>
+            <span>K-Specialist speaking exam · {EXAM_DATE_LABEL}</span>
             {daysToScript >= 0 && (
               <span className="inline-flex shrink-0 items-center gap-1 text-blue-600 dark:text-blue-400">
                 <FileText size={12} strokeWidth={2} />

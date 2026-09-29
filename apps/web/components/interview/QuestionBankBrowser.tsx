@@ -88,7 +88,7 @@ export function QuestionBankBrowser({
           </Button>
           <h1 className="mt-2 text-2xl font-bold text-foreground">Question Bank</h1>
           <p className="mt-1 text-sm text-muted-foreground">
-            Browse all {questions.length} stable weather questions and start a focused drill.
+            Browse all {questions.length} stable exam questions and start a focused drill.
           </p>
         </div>
         <Button
